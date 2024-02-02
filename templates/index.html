@@ -24,7 +24,15 @@
 			{% if day == 0 %}
 				<div class="rounded-md bg-gray-700"></div>
 			{% else %}
-				<div class="rounded-md bg-gray-100 text-gray-900 text-center">{{ day }}
+				<div class="grid rounded-md bg-gray-100 text-gray-900 text-center">
+					<span>
+
+						{{ day }}
+					</span>
+					<span>
+
+						N
+					</span>
 				</div>
 			{% endif %}
 		{% endfor %}
