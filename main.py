@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-
+from pydantic import BaseModel
 
 
 import time_service
@@ -10,31 +10,21 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
 
+class ScheduleDay(BaseModel):
+	"""Schedule day"""
+	date: int
+	type: str
+
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 SHIFT_TYPES = ["N","D","W"]
 
 SHIFTS = [
-	{
-		"type": "N",
-		"date": 1
-	},
-	{
-		"type": "N",
-		"date": 11
-	},
-	{
-		"type": "D",
-		"date": 21
-	},
-	{
-		"type": "N",
-		"date": 25
-	},
-	{
-		"type": "W",
-		"date": 29
-	},
+	ScheduleDay(date=1, type="N"),
+	ScheduleDay(date=11, type="N"),
+	ScheduleDay(date=21, type="N"),
+	ScheduleDay(date=25, type="N"),
+	ScheduleDay(date=29, type="N"),
 ]
 
 MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
