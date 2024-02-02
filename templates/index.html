@@ -26,12 +26,14 @@
 			{% else %}
 				<div class="grid rounded-md bg-gray-100 text-gray-900 text-center">
 					<span>
-
 						{{ day }}
 					</span>
 					<span>
-
-						N
+					{% for shift in shifts %}
+						{% if shift.date == day %}
+							{{ shift.type }}
+						{% endif %}
+					{% endfor %}
 					</span>
 				</div>
 			{% endif %}
