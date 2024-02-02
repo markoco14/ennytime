@@ -15,5 +15,10 @@
     <span>Ennytime</span>
     <h1>Make 'finding the time' easy again.</h1>
     <p>A work schedule sharing app for couples.</p>
+	<div class="grid grid-cols-7 gap-2">
+      {% for day in days_of_week %}
+      <div>{{ day }}</div>
+      {% endfor %}
+    </div>
   </body>
 </html>
