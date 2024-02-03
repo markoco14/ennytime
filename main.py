@@ -44,3 +44,17 @@ def index(request: Request):
 		name="index.html",
 		context=context
 		)
+
+@app.get("/profile", response_class=HTMLResponse)
+def profile(request: Request):
+	"""Profile page"""
+
+	context = {
+		"request": request,
+	}
+
+	return templates.TemplateResponse(
+		request=request,
+		name="profile.html",
+		context=context
+		)
