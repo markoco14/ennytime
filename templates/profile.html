@@ -15,14 +15,20 @@
     {% include 'header.html' %}
     <div class="container mx-auto p-2">
       <h1>Manage your profile</h1>
-      <article>
-        <h2>Your shifts</h2>
-        <ul>
-          <li>Night</li>
-          <li>Day</li>
-          <li>Wash</li>
-        </ul>
-      </article>
+	  <section>
+		<h2>Shift details</h2>
+		<div class="flex">
+			<article class="min-w-[400px]">
+			  <h3 class="text-xl text-gray-600">Your shifts</h3>
+			  <ul>
+				  {% for shift in shift_types %}
+				  <li>{{ shift }}</li>
+				  {% endfor %}
+			  </ul>
+			</article>
+			
+		</div>
+	  </section>
     </div>
   </body>
 </html>

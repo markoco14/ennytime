@@ -51,6 +51,7 @@ def profile(request: Request):
 
 	context = {
 		"request": request,
+		"shift_types": SHIFT_TYPES,
 	}
 
 	return templates.TemplateResponse(
