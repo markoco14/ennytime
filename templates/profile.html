@@ -20,13 +20,9 @@
 		<div class="flex">
 			<article class="min-w-[400px]">
 			  <h3 class="text-xl text-gray-600">Your shifts</h3>
-			  <ul>
-				  {% for shift in shift_types %}
-				  <li>{{ shift }}</li>
-				  {% endfor %}
-			  </ul>
+			  {% include 'shifts/shift-list.html' %}
 			</article>
-			
+	
 		</div>
 	  </section>
     </div>
