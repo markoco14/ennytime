@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request
+from typing import Annotated
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -17,7 +18,7 @@ class ScheduleDay(BaseModel):
 
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-SHIFT_TYPES = ["N","D","W"]
+SHIFT_TYPES = []
 
 SHIFTS = [
 	ScheduleDay(date=1, type="N"),
@@ -59,3 +60,18 @@ def profile(request: Request):
 		name="profile.html",
 		context=context
 		)
+
+@app.post("/register-shift-type", response_class=HTMLResponse)
+def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
+	"""Register shift type"""
+	SHIFT_TYPES.append(shift_type)
+	context={
+		"request": request,
+		"shift_types": SHIFT_TYPES,
+		  }
+
+	return templates.TemplateResponse(
+		request=request,
+		name="shifts/shift-list.html", # change to list template
+		context=context
+	)

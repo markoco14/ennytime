@@ -22,7 +22,14 @@
 			  <h3 class="text-xl text-gray-600">Your shifts</h3>
 			  {% include 'shifts/shift-list.html' %}
 			</article>
-	
+			<form class="min-w-[400px]" hx-post="register-shift-type" hx-target="#shift-list">
+			  <h3 class="text-xl text-gray-600">Add new shift types</h3>
+			  <div class="flex flex-col gap-1">
+				  <label for="shift_type">Add a shift type</label>
+				  <input type="text" id="shift_type" name="shift_type" class="border p-2 shadow rounded" />
+			  </div>
+			  <button>Save</button>
+			</form>
 		</div>
 	  </section>
     </div>
