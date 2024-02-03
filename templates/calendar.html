@@ -1,13 +1,13 @@
 <div class="grid grid-cols-7 gap-2">
       {% for day in days_of_week %}
-		<div>{{ day }}</div>
+		<div class="text-center text-xl font-bold">{{ day }}</div>
       {% endfor %}
 	  {% for week in month_calendar %}
 		{% for day in week %}
 			{% if day == 0 %}
-				<div class="rounded-md bg-gray-700"></div>
+				<div class="min-h-[48px] rounded-md bg-gray-700"></div>
 			{% else %}
-				<div class="grid rounded-md bg-gray-100 text-gray-900 text-center">
+				<div class="min-h-[48px] grid rounded-md bg-gray-100 text-gray-900 text-center">
 					<span>
 						{{ day }}
 					</span>

@@ -40,7 +40,7 @@ def index(request: Request):
 	}
 
 	return templates.TemplateResponse(
-		request=request, 
+		request=request,
 		name="index.html",
 		context=context
 		)
