@@ -69,3 +69,17 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
 		name="shifts/shift-list.html", # change to list template
 		context=context
 	)
+
+@app.get("/modal", response_class=HTMLResponse)
+def modal(request: Request):
+	"""Sends modal to client"""
+
+	context = {
+		"request": request,
+	}
+
+	return templates.TemplateResponse(
+		request=request,
+		name="modal.html",
+		context=context
+		)
