@@ -73,13 +73,31 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
 @app.get("/modal", response_class=HTMLResponse)
 def modal(request: Request):
 	"""Sends modal to client"""
-
-	context = {
+	context={
 		"request": request,
-	}
+		"shift_types": SHIFT_TYPES,
+		  }
 
 	return templates.TemplateResponse(
 		request=request,
 		name="modal.html",
 		context=context
 		)
+
+@app.post("/register-shift", response_class=HTMLResponse)
+def schedule_shift(request: Request, shift_type: Annotated[str, Form()]):
+	"""Add shift to calendar date"""
+
+	new_shift = ScheduleDay(date=1, type=shift_type)
+	SHIFTS.append(new_shift)
+
+	context={"request": request,
+		"days_of_week": DAYS_OF_WEEK,
+		"month_calendar": MONTH_CALENDAR,
+		"shifts": SHIFTS,
+		  }
+	return templates.TemplateResponse(
+		request=request,
+		name="success.html",
+		context=context
+	)

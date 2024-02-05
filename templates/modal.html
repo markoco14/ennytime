@@ -1,11 +1,24 @@
-<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
-	<div class="modal-underlay" _="on click trigger closeModal"></div>
-	<div class="modal-content">
-		<h1>Modal Dialog</h1>
-		This is the modal content.
-		You can put anything here, like text, or a form, or an image.
-		<br>
-		<br>
-		<button _="on click trigger closeModal">Close</button>
-	</div>
+<div
+  id="modal"
+  _="on closeModal add .closing then wait for animationend then remove me"
+>
+  <div class="modal-underlay" _="on click trigger closeModal"></div>
+  <div class="modal-content">
+    <h1>Register shift to date</h1>
+    <form hx-post="register-shift">
+      {% for shift in shift_types %}
+      <div>
+        <label> {{shift}} </label>
+        <input
+          type="radio"
+          id="{{shift}}"
+          name="shift_type"
+          value="{{shift}}"
+        />
+      </div>
+      {% endfor %}
+      <button type="submit">Save shift</button>
+    </form>
+    <button _="on click trigger closeModal">Close</button>
+  </div>
 </div>
