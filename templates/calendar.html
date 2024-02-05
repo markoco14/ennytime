@@ -5,9 +5,9 @@
 	  {% for week in month_calendar %}
 		{% for day in week %}
 			{% if day == 0 %}
-				<div class="min-h-[48px] rounded-md bg-gray-700"></div>
+				<div class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300"></div>
 			{% else %}
-				<div class="min-h-[48px] grid rounded-md bg-gray-100 text-gray-900 text-center">
+				<div class="min-h-[48px] grid rounded-md border border-gray-900 text-gray-900 text-center">
 					<span>
 						{{ day }}
 					</span>

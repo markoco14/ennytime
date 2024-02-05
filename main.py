@@ -20,13 +20,7 @@ DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 SHIFT_TYPES = []
 
-SHIFTS = [
-	ScheduleDay(date=1, type="N"),
-	ScheduleDay(date=11, type="N"),
-	ScheduleDay(date=21, type="N"),
-	ScheduleDay(date=25, type="N"),
-	ScheduleDay(date=29, type="N"),
-]
+SHIFTS = []
 
 MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
 @app.get("/", response_class=HTMLResponse)
