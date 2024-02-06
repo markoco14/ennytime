@@ -6,11 +6,8 @@
 		{% for day in week %}
 			{% if day == 0 %}
 				<div 
-				hx-get="/modal/{{ day }}"
-				hx-target="body"
-				hx-swap="beforeend"
-				hx-trigger="click"
-				class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300 cursor-pointer"
+				
+				class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300 cursor-not-allowed"
 				></div>
 			{% else %}
 				<div 
