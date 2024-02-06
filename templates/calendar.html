@@ -6,7 +6,7 @@
 		{% for day in week %}
 			{% if day == 0 %}
 				<div 
-				hx-get="/modal"
+				hx-get="/modal/{{ day }}"
 				hx-target="body"
 				hx-swap="beforeend"
 				hx-trigger="click"
@@ -14,7 +14,7 @@
 				></div>
 			{% else %}
 				<div 
-				hx-get="/modal"
+				hx-get="/modal/{{ day }}"
 				hx-target="body"
 				hx-swap="beforeend"
 				hx-trigger="click"
