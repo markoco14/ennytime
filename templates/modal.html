@@ -5,6 +5,10 @@
   <div class="modal-underlay" _="on click trigger closeModal"></div>
   <div class="modal-content">
     <h1>Register shift to date</h1>
+    {% if shift_types == [] %}
+    <p>No shift types available</p>
+    <p><a href="/profile">Go your your profile to make some.</a> </p>
+    {% else %}
     <form hx-post="register-shift">
       {% for shift in shift_types %}
       <div>
@@ -19,6 +23,7 @@
       {% endfor %}
       <button type="submit">Save shift</button>
     </form>
+    {% endif %}
     <button _="on click trigger closeModal">Close</button>
   </div>
 </div>
