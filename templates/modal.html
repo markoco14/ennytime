@@ -4,13 +4,24 @@
 >
   <div class="modal-underlay" _="on click trigger closeModal"></div>
   <div class="modal-content">
-    <h1>Register shift to Month X Day {{ day_number }}</h1>
+    <h2>Schedule new shift</h2>
     {% if shift_types == [] %}
     <p>No shift types available</p>
-    <p><a href="/profile">Go your your profile to make some.</a> </p>
+    <p><a href="/profile">Go your your profile to make some.</a></p>
     {% else %}
-    <form hx-post="register-shift">
+    <p>You are registering your shift for Month X Day {{day_number}}</p>
+    <form hx-post="register-shift" hx-include="#form_day_number">
       {% for shift in shift_types %}
+      <div class="flex flex-col gap-1 sr-only">
+        <label>Date</label>
+        <input
+          readonly
+          type="number"
+          value="{{day_number}}"
+          name="date"
+          class="border rounded p-2"
+        />
+      </div>
       <div>
         <label> {{shift}} </label>
         <input

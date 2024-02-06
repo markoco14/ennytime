@@ -18,7 +18,7 @@ class ScheduleDay(BaseModel):
 
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-SHIFT_TYPES = []
+SHIFT_TYPES = ['Night']
 
 SHIFTS = []
 
@@ -86,11 +86,16 @@ def modal(request: Request, day_number: int):
 		context=context
 		)
 
-@app.post("/register-shift", response_class=HTMLResponse)
-def schedule_shift(request: Request, shift_type: Annotated[str, Form()]):
-	"""Add shift to calendar date"""
 
-	new_shift = ScheduleDay(date=1, type=shift_type)
+
+@app.post("/register-shift", response_class=HTMLResponse)
+def schedule_shift(
+	request: Request,
+	shift_type: Annotated[str, Form()],
+	date: Annotated[int, Form()],
+	):
+	"""Add shift to calendar date"""
+	new_shift = ScheduleDay(date=date, type=shift_type)
 	SHIFTS.append(new_shift)
 
 	context={"request": request,
