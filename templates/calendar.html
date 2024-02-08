@@ -10,10 +10,12 @@
 				class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300 cursor-not-allowed"
 				></div>
 			{% else %}
+			<div>
+
 				<div 
-				hx-get="/modal/{{ day }}"
-				hx-target="body"
-				hx-swap="beforeend"
+				hx-get="/add-shift-form/{{ day }}"
+				hx-target="this"
+				hx-swap="outerHTML"
 				hx-trigger="click"
 				class="min-h-[48px] grid rounded-md border border-gray-900 text-gray-900 text-center cursor-pointer"
 				>
@@ -28,6 +30,7 @@
 					{% endfor %}
 					</span>
 				</div>
+			</div>
 			{% endif %}
 		{% endfor %}
 	  {% endfor %}

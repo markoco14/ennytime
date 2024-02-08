@@ -1,0 +1,30 @@
+<form 
+hx-post="register-shift"
+hx-target="this"
+hx-swap="outerHTML"
+>
+  {% for type in shift_types %}
+  <div class="flex flex-col gap-1 sr-only">
+    <label>Date</label>
+    <input
+      readonly
+      type="number"
+      value="{{day_number}}"
+      name="date"
+      class="border rounded p-2"
+    />
+  </div>
+  <div>
+    <label> {{type}} </label>
+    <input
+      required
+      type="radio"
+      id="{{type}}"
+      name="shift_type"
+      value="{{type}}"
+    />
+  </div>
+  {% endfor %}
+  <button type="submit">Save shift</button>
+</form>
+

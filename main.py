@@ -72,6 +72,22 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
         context=context
     )
 
+@app.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
+def get_calendar_day_form(request: Request, day_number: int):
+    """Get calendar day form"""
+
+    context={
+        "request": request,
+        "shift_types": SHIFT_TYPES,
+        "day_number": day_number,
+          }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="/calendar/add-shift-form.html",
+        context=context
+        )
+
 @app.get("/modal/{day_number}", response_class=HTMLResponse)
 def modal(request: Request, day_number: int):
     """Sends modal to client"""
