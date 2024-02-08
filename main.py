@@ -98,6 +98,20 @@ def schedule_shift(
     ):
     """Add shift to calendar date"""
     new_shift = ScheduleDay(date=date, type=shift_type)
+    shift_types = SHIFT_TYPES
+    if new_shift in SHIFTS:
+        context={"request": request,
+            "days_of_week": DAYS_OF_WEEK,
+            "month_calendar": MONTH_CALENDAR,
+            "shifts": SHIFTS,
+            "shift_types": shift_types,
+            "day_number": date,
+            }
+        return templates.TemplateResponse(
+            request=request,
+            name="shift-exists.html",
+            context=context
+        )
     SHIFTS.append(new_shift)
 
     context={"request": request,

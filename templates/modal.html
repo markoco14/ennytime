@@ -10,8 +10,8 @@
     <p><a href="/profile">Go your your profile to make some.</a></p>
     {% else %}
     <p>You are registering your shift for Month X Day {{day_number}}</p>
-    <form hx-post="register-shift" hx-include="#form_day_number">
-      {% for shift in shift_types %}
+    <form hx-post="register-shift">
+      {% for type in shift_types %}
       <div class="flex flex-col gap-1 sr-only">
         <label>Date</label>
         <input
@@ -23,13 +23,13 @@
         />
       </div>
       <div>
-        <label> {{shift}} </label>
+        <label> {{type}} </label>
         <input
           required
           type="radio"
-          id="{{shift}}"
+          id="{{type}}"
           name="shift_type"
-          value="{{shift}}"
+          value="{{type}}"
         />
       </div>
       {% endfor %}
