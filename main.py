@@ -93,7 +93,8 @@ def get_calendar_day_card(request: Request, day_number: int):
     """Get calendar day card"""
     context = {
         "request": request,
-        "day_number": day_number,    
+        "day_number": day_number,
+        "shifts": SHIFTS,    
     }
 
     return templates.TemplateResponse(
