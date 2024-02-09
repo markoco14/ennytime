@@ -3,7 +3,6 @@
 class="border rounded-md border-black p-2 min-h-[48px]">
 
   <form 
-  
   hx-post="register-shift"
   hx-target="this"
   hx-swap="outerHTML"
@@ -36,6 +35,7 @@ class="border rounded-md border-black p-2 min-h-[48px]">
     hx-get="/calendar-card/{{day_number}}"
     hx-target="#form-{{day_number}}"
     hx-swap="outerHTML"
+    onclick="popOut({{day_number}})"
   >Close</button>
 </div>
 
