@@ -3,8 +3,8 @@
   hx-target="this"
   hx-swap="outerHTML"
   hx-trigger="click"
-  class="min-h-full grid rounded-md text-gray-900 text-center cursor-pointer p-2 bg-white"
-  onclick="popOut({{ day_number }})"
+  class="min-h-[48px] grid rounded-md text-gray-900 text-center cursor-pointer p-2 bg-white"
+  onclick="popOut(Number(`{{ day_number }}`))"
 >
   <span> {{ day_number }} </span>
   <span>

@@ -27,7 +27,7 @@
     hx-get="/calendar-card/{{day_number}}"
     hx-target="#day-{{day_number}}"
     hx-swap="innerHTML"
-    onclick="popOut({{ day_number }})"
+    onclick="popOut(Number(`{{ day_number }}`))"
   >
     Close
   </button>
