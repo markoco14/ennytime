@@ -1,26 +1,18 @@
 <div class="grid grid-cols-7 gap-2">
-  {% for day in days_of_week %}
-  <div class="text-center text-xl font-bold">{{ day }}</div>
-  {% endfor %} {% for week in month_calendar %} {% for day in week %} {% if day
-  == 0 %}
-  <div
-    class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300 cursor-not-allowed"
-  ></div>
-  {% else %}
-  <div>
-    <div
-      hx-get="/add-shift-form/{{ day }}"
-      hx-target="this"
-      hx-swap="outerHTML"
-      hx-trigger="click"
-      class="min-h-[48px] grid rounded-md border border-gray-900 text-gray-900 text-center cursor-pointer p-2"
-    >
-      <span> {{ day }} </span>
-      <span>
-        {% for shift in shifts %} {% if shift.date == day %} {{ shift.type }} {%
-        endif %} {% endfor %}
-      </span>
-    </div>
-  </div>
-  {% endif %} {% endfor %} {% endfor %}
+  {% for day_name in days_of_week %}
+  <div class="text-center text-xl font-bold">{{ day_name }}</div>
+    {% endfor %} 
+      {% for week in month_calendar %} 
+        {% for day_number in week %} 
+          {% if day_number == 0 %}
+          <div
+            class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300 cursor-not-allowed"
+          ></div>
+          {% else %}
+          <div>
+            {% include 'calendar/calendar-day-card.html' %}
+          </div>
+        {% endif %} 
+    {% endfor %} 
+  {% endfor %}
 </div>
