@@ -1,0 +1,16 @@
+<div
+  hx-get="/add-shift-form/{{ day_number }}"
+  hx-target="this"
+  hx-swap="outerHTML"
+  hx-trigger="click"
+  class="min-h-[48px] grid rounded-md border border-gray-900 text-gray-900 text-center cursor-pointer p-2"
+>
+  <span> {{ day_number }} </span>
+  <span>
+    {% for shift in shifts %} 
+		{% if shift.date == day_number %} 
+			{{ shift.type }}
+		{% endif %} 
+	{% endfor %}
+  </span>
+</div>

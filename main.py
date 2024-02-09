@@ -88,6 +88,20 @@ def get_calendar_day_form(request: Request, day_number: int):
         context=context
         )
 
+@app.get("/calendar-card/{day_number}", response_class=HTMLResponse)
+def get_calendar_day_card(request: Request, day_number: int):
+    """Get calendar day card"""
+    context = {
+        "request": request,
+        "day_number": day_number,    
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="/calendar/calendar-day-card.html",
+        context=context,
+    )
+
 @app.get("/modal/{day_number}", response_class=HTMLResponse)
 def modal(request: Request, day_number: int):
     """Sends modal to client"""
