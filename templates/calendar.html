@@ -9,8 +9,10 @@
             class="min-h-[48px] rounded-md border border-gray-900 bg-gray-300 cursor-not-allowed"
           ></div>
           {% else %}
-          <div>
-            {% include 'calendar/calendar-day-card.html' %}
+          <div class="prop bg-gray-200 rounded-md">
+            <div id="day-{{day_number}}" class="bg-white rounded-md border border-gray-900 ">
+              {% include 'calendar/calendar-day-card.html' %}
+            </div>
           </div>
         {% endif %} 
     {% endfor %} 

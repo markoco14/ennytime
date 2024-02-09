@@ -1,12 +1,4 @@
-
-<div id="form-{{day_number}}"
-class="border rounded-md border-black p-2 min-h-[48px]">
-
-  <form 
-  hx-post="register-shift"
-  hx-target="this"
-  hx-swap="outerHTML"
-  >
+  <form hx-post="register-shift" hx-target="this" hx-swap="outerHTML">
     {% for type in shift_types %}
     <div class="flex flex-col gap-1 sr-only">
       <label>Date</label>
@@ -33,9 +25,9 @@ class="border rounded-md border-black p-2 min-h-[48px]">
   </form>
   <button
     hx-get="/calendar-card/{{day_number}}"
-    hx-target="#form-{{day_number}}"
-    hx-swap="outerHTML"
-    onclick="popOut({{day_number}})"
-  >Close</button>
-</div>
-
+    hx-target="#day-{{day_number}}"
+    hx-swap="innerHTML"
+    onclick="popOut({{ day_number }})"
+  >
+    Close
+  </button>
