@@ -68,9 +68,15 @@ def get_signin_page(request: Request, response: Response):
         )
 
 
-@app.get("/profile", response_class=HTMLResponse)
+@app.get("/profile", response_class=HTMLResponse | Response)
 def profile(request: Request):
     """Profile page"""
+    if not request.cookies.get("session-test"):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
     context = {
         "request": request,
         "shift_types": SHIFT_TYPES,
