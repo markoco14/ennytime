@@ -1,8 +1,8 @@
 """Main file to hold app and api routes"""
 
 from typing import Annotated
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, Form, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
@@ -25,10 +25,41 @@ SHIFT_TYPES = []
 SHIFTS = []
 
 MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
+
+@app.post("/signin", response_class=Response)
+def signin(request: Request, response: Response):
+    """Sign in a user"""
+    response = Response(status_code=200)
+    response.set_cookie(
+        key="session-test",
+        value="this-is-a-session-id",
+        httponly=True,
+        secure=True,
+        samesite="Lax"
+    )
+    response.headers["HX-Redirect"] = "/"
+    return response
+
+
+@app.get("/signout", response_class=HTMLResponse)
+def signout(request: Request, response: Response):
+    """Sign out a user"""
+    response = Response(status_code=200)
+    response.delete_cookie(key="session-test")
+    response.headers["HX-Redirect"] = "/"
+    return response
+
+
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request):
+def index(request: Request, response: Response):
     """Index page"""
 
+    print(request.cookies)
+    if not request.cookies.get("session-test"):
+        return templates.TemplateResponse(
+            request=request,
+            name="access-denied.html"
+        )
     context = {
         "request": request,
         "days_of_week": DAYS_OF_WEEK,
@@ -36,16 +67,19 @@ def index(request: Request):
         "shifts": SHIFTS,
     }
 
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="index.html",
         context=context
         )
+    
+    return response
+
 
 @app.get("/profile", response_class=HTMLResponse)
 def profile(request: Request):
     """Profile page"""
-
+    print(request.cookies)
     context = {
         "request": request,
         "shift_types": SHIFT_TYPES,
@@ -56,6 +90,7 @@ def profile(request: Request):
         name="profile.html",
         context=context
         )
+
 
 @app.post("/register-shift-type", response_class=HTMLResponse)
 def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
@@ -71,6 +106,7 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
         name="shifts/shift-list.html", # change to list template
         context=context
     )
+
 
 @app.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
 def get_calendar_day_form(request: Request, day_number: int):
@@ -88,6 +124,7 @@ def get_calendar_day_form(request: Request, day_number: int):
         context=context
         )
 
+
 @app.get("/calendar-card/{day_number}", response_class=HTMLResponse)
 def get_calendar_day_card(request: Request, day_number: int):
     """Get calendar day card"""
@@ -102,6 +139,7 @@ def get_calendar_day_card(request: Request, day_number: int):
         name="/calendar/calendar-day-card.html",
         context=context,
     )
+
 
 @app.get("/modal/{day_number}", response_class=HTMLResponse)
 def modal(request: Request, day_number: int):
@@ -118,7 +156,6 @@ def modal(request: Request, day_number: int):
         name="modal.html",
         context=context
         )
-
 
 
 @app.post("/register-shift", response_class=HTMLResponse)
