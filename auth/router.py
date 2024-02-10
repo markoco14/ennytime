@@ -1,11 +1,13 @@
-from typing import Annotated, List
+from typing import Annotated
 from fastapi import APIRouter, Form, Request, Response
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 from auth import auth_service
 
 router = APIRouter()
+templates = Jinja2Templates(directory="templates")
 
 class User(BaseModel):
     """User"""
@@ -17,14 +19,14 @@ USERS = {
         "username": "johndoe",
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "hashed_password": "fakehashedsecret",
+        "password": "fakehashedsecret",
         "disabled": False,
     },
     "alice@example.com": {
         "username": "alice",
         "full_name": "Alice Wonderson",
         "email": "alice@example.com",
-        "hashed_password": "fakehashedsecret2",
+        "password": "fakehashedsecret2",
         "disabled": True,
     },
 }
@@ -48,7 +50,6 @@ def signup(
     user = User(email=email, password=hashed_password)
     # add user to USERS
     USERS.update({email: user})
-    print(USERS)
 
     # return response with session cookie and redirect to index
     response = Response(status_code=200)
@@ -68,8 +69,32 @@ def signup(
     
 
 @router.post("/signin", response_class=Response)
-def signin(request: Request, response: Response):
+def signin(
+    request: Request,
+    response: Response,
+    email: Annotated[str, Form()],
+    password: Annotated[str, Form()]
+    ):
     """Sign in a user"""
+    # check if user exists
+    user = USERS.get(email)
+    if not user:
+        return templates.TemplateResponse(
+            request=request,
+            name="/auth/sign-in-form.html",
+            context={"request": request, "error": "Invalid email or password"}
+            
+        )
+    # verify the password
+    if not auth_service.verify_password(password, user.password):
+        return templates.TemplateResponse(
+            request=request,
+            name="/auth/sign-in-form.html",
+            context={"request": request, "error": "Invalid email or password"}
+            
+        )
+
+    # return response with session cookie and redirect to index
     response = Response(status_code=200)
     response.set_cookie(
         key="session-test",
@@ -87,5 +112,5 @@ def signout(request: Request, response: Response):
     """Sign out a user"""
     response = Response(status_code=200)
     response.delete_cookie(key="session-test")
-    response.headers["HX-Redirect"] = "/"
+    response.headers["HX-Redirect"] = "/signin"
     return response
