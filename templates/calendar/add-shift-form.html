@@ -1,6 +1,5 @@
-  <form hx-post="register-shift" hx-target="this" hx-swap="outerHTML">
-    {% for type in shift_types %}
-    <div class="flex flex-col gap-1 sr-only">
+  <form class="min-w-[300px]" hx-post="register-shift" hx-target="this" hx-swap="outerHTML">
+    <div class="sr-only">
       <label>Date</label>
       <input
         readonly
@@ -10,20 +9,27 @@
         class="border rounded p-2"
       />
     </div>
-    <div>
-      <label> {{type}} </label>
-      <input
-        required
-        type="radio"
-        id="{{type}}"
-        name="shift_type"
-        value="{{type}}"
-      />
+    <div class="grid gap-2 mb-2">
+    {% for type in shift_types %}
+      <label class="peer grid "> 
+        <input
+          class="sr-only peer"
+          required
+          type="radio"
+          id="{{type}}"
+          name="shift_type"
+          value="{{type}}"
+        />
+        <span class="hover:bg-pink-300 active:bg-pink-400 cursor-pointer ease-in-out duration-200 w-full p-2 rounded-md peer-checked:bg-pink-700 peer-checked:text-pink-100">
+          {{type}} 
+        </span>
+      </label>
+      {% endfor %}
     </div>
-    {% endfor %}
-    <button type="submit">Save shift</button>
+    <button type="submit" class="dark:bg-[#E22C7B] px-3 py-1 rounded-md">Save shift</button>
   </form>
   <button
+  class="hover:underline underline-offset-2"
     hx-get="/calendar-card/{{day_number}}"
     hx-target="#day-{{day_number}}"
     hx-swap="innerHTML"
