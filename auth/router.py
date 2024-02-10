@@ -12,7 +12,22 @@ class User(BaseModel):
     email: str
     password: str
 
-USERS: List[User] = []
+USERS = {
+    "johndoe@example.com": {
+        "username": "johndoe",
+        "full_name": "John Doe",
+        "email": "johndoe@example.com",
+        "hashed_password": "fakehashedsecret",
+        "disabled": False,
+    },
+    "alice@example.com": {
+        "username": "alice",
+        "full_name": "Alice Wonderson",
+        "email": "alice@example.com",
+        "hashed_password": "fakehashedsecret2",
+        "disabled": True,
+    },
+}
 
 @router.post("/signup", response_class=Response)
 def signup(
@@ -32,7 +47,7 @@ def signup(
     # create new user with encrypted password
     user = User(email=email, password=hashed_password)
     # add user to USERS
-    USERS.append(user)
+    USERS.update({email: user})
     print(USERS)
 
     # return response with session cookie and redirect to index
@@ -47,6 +62,10 @@ def signup(
     response.headers["HX-Redirect"] = "/"
 
     return response
+
+
+
+    
 
 @router.post("/signin", response_class=Response)
 def signin(request: Request, response: Response):
