@@ -14,21 +14,19 @@ class User(BaseModel):
     email: str
     password: str
 
-USERS = {
+USERS: dict[User] = {
     "johndoe@example.com": {
-        "username": "johndoe",
-        "full_name": "John Doe",
         "email": "johndoe@example.com",
         "password": "fakehashedsecret",
-        "disabled": False,
     },
     "alice@example.com": {
-        "username": "alice",
-        "full_name": "Alice Wonderson",
         "email": "alice@example.com",
         "password": "fakehashedsecret2",
-        "disabled": True,
     },
+    "mark.oconnor14@gmail.com": {
+        "email": "mark.oconnor14@gmail.com",
+        "password": "$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
+    }
 }
 
 @router.post("/signup", response_class=Response)
@@ -90,7 +88,7 @@ def signin(
             
         )
     # verify the password
-    if not auth_service.verify_password(password, user.password):
+    if not auth_service.verify_password(password, user['password']):
         return templates.TemplateResponse(
             request=request,
             name="/auth/form-error.html",
