@@ -1,8 +1,8 @@
 """Main file to hold app and api routes"""
 
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import FastAPI, Request, Form, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
@@ -18,13 +18,44 @@ class ScheduleDay(BaseModel):
     date: int
     type: str
 
+class User(BaseModel):
+    """User"""
+    email: str
+    password: str
+
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 SHIFT_TYPES = []
 
 SHIFTS = []
 
+USERS: List[User] = []
+
 MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
+
+@app.post("/signup", response_class=Response)
+def signup(
+    request: Request,
+    response: Response,
+    email: Annotated[str, Form()],
+    password: Annotated[str, Form()]
+    ):
+    """Sign up a user"""
+    # Create new user and add to USERS
+    user = User(email=email, password=password)
+    USERS.append(user)
+
+    # return response with session cookie and redirect to index
+    response = Response(status_code=200)
+    response.set_cookie(
+        key="session-test",
+        value="this-is-a-session-id",
+        httponly=True,
+        secure=True,
+        samesite="Lax"
+    )
+    response.headers["HX-Redirect"] = "/"
+    return response
 
 @app.post("/signin", response_class=Response)
 def signin(request: Request, response: Response):
