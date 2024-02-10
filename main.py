@@ -25,7 +25,7 @@ class ScheduleDay(BaseModel):
 
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-SHIFT_TYPES = []
+SHIFT_TYPES = ["W", "D", "N"]
 
 SHIFTS = []
 

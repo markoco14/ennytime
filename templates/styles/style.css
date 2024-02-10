@@ -1,0 +1,12 @@
+:root {
+	/* light colors */
+	--primary-color: #D31D6C;
+	--secondary-color: #E396B8;
+	--button-light: #F4DAE5;
+	--accent-color: #DD699B;
+	/* dark colors */
+	--primary-dark-color: #E22C7B;
+	--secondary-dark-color: #691C3D;
+	--button-dark: #240A15;
+	--dark-accent-color: #962254;
+}
