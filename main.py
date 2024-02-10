@@ -60,6 +60,15 @@ def index(request: Request, response: Response):
     return response
 
 
+@app.get("/signin", response_class=HTMLResponse)
+def get_signin_page(request: Request, response: Response):
+    """Go to the sign in page"""
+    return templates.TemplateResponse(
+        request=request,
+        name="signin.html",
+        )
+
+
 @app.get("/profile", response_class=HTMLResponse)
 def profile(request: Request):
     """Profile page"""

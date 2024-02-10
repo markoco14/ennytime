@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://unpkg.com/htmx.org@1.9.10"
+      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ennytime Couple's Calendar</title>
+  </head>
+  <body>
+    <section class="w-screen h-screen grid place-items-center p-2 bg-pink-700">
+      <article
+        class="grid mx-auto bg-white rounded-md text-black p-8 md:p-16 min-h-[500px] max-w-[400px]"
+      >
+        <h2 class="text-5xl mb-4">Sign in</h2>
+        <p class="mb-4 text-gray-700 text-[16px]">
+          Welcome back to getting the most possible time with your special
+          someone.
+        </p>
+        <form hx-post="/signin" hx-swap="none" class="grid gap-2 mb-8">
+          <div class="flex flex-col gap-1">
+            <label>Email</label>
+            <input
+              class="border rounded p-2"
+              type="email"
+              name="email"
+              required
+            />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label>Password</label>
+            <input
+              class="border rounded p-2"
+              type="password"
+              name="password"
+              required
+            />
+          </div>
+          <button class="px-2 py-1 bg-pink-700 text-white rounded">
+            Sign in
+          </button>
+        </form>
+        <p>
+          Don't have an account?
+          <a href="/" class="text-pink-700 underline"> Sign up </a>
+        </p>
+      </article>
+    </section>
+  </body>
+</html>
