@@ -58,7 +58,7 @@ def index(request: Request, response: Response):
     if not request.cookies.get("session-test"):
         return templates.TemplateResponse(
             request=request,
-            name="access-denied.html"
+            name="landing-page.html"
         )
     context = {
         "request": request,
