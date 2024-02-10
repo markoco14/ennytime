@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from passlib.context import CryptContext
 
 
 import time_service
@@ -13,6 +14,10 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
 class ScheduleDay(BaseModel):
     """Schedule day"""
     date: int
@@ -41,8 +46,17 @@ def signup(
     password: Annotated[str, Form()]
     ):
     """Sign up a user"""
-    # Create new user and add to USERS
-    user = User(email=email, password=password)
+    # TODO: Check if email is already in use
+
+    # TODO: return response about email/password combo being no good
+    
+    # Hash password
+    hashed_password = get_password_hash(password)
+    
+    # create new user with encrypted password
+    user = User(email=email, password=hashed_password)
+    
+    # add user to USERS
     USERS.append(user)
 
     # return response with session cookie and redirect to index
@@ -55,6 +69,7 @@ def signup(
         samesite="Lax"
     )
     response.headers["HX-Redirect"] = "/"
+    
     return response
 
 @app.post("/signin", response_class=Response)
