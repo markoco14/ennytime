@@ -21,29 +21,7 @@
           Welcome back to getting the most possible time with your special
           someone.
         </p>
-        <form hx-post="/signin" hx-swap="none" class="grid gap-2 mb-8">
-          <div class="flex flex-col gap-1">
-            <label>Email</label>
-            <input
-              class="border rounded p-2"
-              type="email"
-              name="email"
-              required
-            />
-          </div>
-          <div class="flex flex-col gap-1">
-            <label>Password</label>
-            <input
-              class="border rounded p-2"
-              type="password"
-              name="password"
-              required
-            />
-          </div>
-          <button class="px-2 py-1 bg-pink-700 text-white rounded">
-            Sign in
-          </button>
-        </form>
+        {% include 'auth/sign-in-form.html' %}
         <p>
           Don't have an account?
           <a href="/" class="text-pink-700 underline"> Sign up </a>
