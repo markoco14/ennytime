@@ -38,7 +38,6 @@ MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
 def index(request: Request, response: Response):
     """Index page"""
 
-    print(request.cookies)
     if not request.cookies.get("session-test"):
         return templates.TemplateResponse(
             request=request,
@@ -72,7 +71,6 @@ def get_signin_page(request: Request, response: Response):
 @app.get("/profile", response_class=HTMLResponse)
 def profile(request: Request):
     """Profile page"""
-    print(request.cookies)
     context = {
         "request": request,
         "shift_types": SHIFT_TYPES,

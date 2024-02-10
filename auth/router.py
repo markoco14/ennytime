@@ -39,10 +39,14 @@ def signup(
     password: Annotated[str, Form()]
     ):
     """Sign up a user"""
-    # TODO: Check if email is already in use
-
-    # TODO: return response about email/password combo being no good
-    
+    # check if user exists
+    user = USERS.get(email)
+    if user:
+        return templates.TemplateResponse(
+            request=request,
+            name="/auth/form-error.html",
+            context={"request": request, "error": "Invalid email or password."}
+        )
     # Hash password
     hashed_password = auth_service.get_password_hash(password)
     
@@ -81,15 +85,15 @@ def signin(
     if not user:
         return templates.TemplateResponse(
             request=request,
-            name="/auth/sign-in-form.html",
-            context={"request": request, "error": "Invalid email or password"}
+            name="/auth/form-error.html",
+            context={"request": request, "error": "Invalid email or password."}
             
         )
     # verify the password
     if not auth_service.verify_password(password, user.password):
         return templates.TemplateResponse(
             request=request,
-            name="/auth/sign-in-form.html",
+            name="/auth/form-error.html",
             context={"request": request, "error": "Invalid email or password"}
             
         )
