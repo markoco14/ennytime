@@ -1,4 +1,5 @@
 """ Auth service functions """
+from datetime import datetime, timedelta
 import secrets
 
 from passlib.context import CryptContext
@@ -18,3 +19,7 @@ def verify_password(plain_password, hashed_password):
 
 def generate_session_token():
     return secrets.token_hex(16)
+
+
+def generate_session_expiry():
+    return datetime.now() + timedelta(days=3)

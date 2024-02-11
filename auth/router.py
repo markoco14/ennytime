@@ -6,8 +6,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
-from memory_db import USERS, USER_ID
-from schemas import User
+from memory_db import SESSIONS, USERS, USER_ID
+from schemas import Session, User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -82,6 +82,13 @@ def signin(
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
+    new_session = Session(
+        session_id=session_cookie,
+        user_id=db_user.id,
+        expires_at=auth_service.generate_session_expiry()
+    )
+    # add session to SESSIONS 
+    SESSIONS.update({new_session.session_id: new_session})
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
@@ -97,6 +104,7 @@ def signin(
 @router.get("/signout", response_class=HTMLResponse)
 def signout(request: Request, response: Response):
     """Sign out a user"""
+
     response = Response(status_code=200)
     response.delete_cookie(key="session-id")
     response.headers["HX-Redirect"] = "/signin"

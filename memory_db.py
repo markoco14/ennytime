@@ -25,11 +25,13 @@ USER_ID = 4
 SESSIONS: dict[Session]= {
 	"first-test-session": Session(
 		session_id="a-test-session",
-		user_id=1
+		user_id=1,
+		expires_at="2024-02-14 00:00:00"
 	),
 	"second-test-session": Session(
 		session_id="a-test-session",
-		user_id=2
+		user_id=2,
+		expires_at="2024-02-09 00:00:00"
 	)
 }
 
