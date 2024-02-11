@@ -15,18 +15,18 @@ class User(BaseModel):
     password: str
 
 USERS: dict[User] = {
-    "johndoe@example.com": {
-        "email": "johndoe@example.com",
-        "password": "fakehashedsecret",
-    },
-    "alice@example.com": {
-        "email": "alice@example.com",
-        "password": "fakehashedsecret2",
-    },
-    "mark.oconnor14@gmail.com": {
-        "email": "mark.oconnor14@gmail.com",
-        "password": "$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
-    }
+    "johndoe@example.com": User(
+        email="johndoe@example.com",
+        password="fakehashedsecret"
+        ),
+    "alice@example.com": User(
+        email="alice@example.com",
+        password="fakehashedsecret"
+        ),
+    "mark.oconnor14@gmail.com": User(
+        email="mark.oconnor14@gmail.com",
+        password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK"
+        ),
 }
 
 @router.post("/signup", response_class=Response)
@@ -38,8 +38,8 @@ def signup(
     ):
     """Sign up a user"""
     # check if user exists
-    user = USERS.get(email)
-    if user:
+    db_user: User = USERS.get(email)
+    if db_user:
         return templates.TemplateResponse(
             request=request,
             name="/auth/form-error.html",
@@ -49,9 +49,9 @@ def signup(
     hashed_password = auth_service.get_password_hash(password)
     
     # create new user with encrypted password
-    user = User(email=email, password=hashed_password)
+    new_user = User(email=email, password=hashed_password)
     # add user to USERS
-    USERS.update({email: user})
+    USERS.update({email: new_user})
 
     # return response with session cookie and redirect to index
     response = Response(status_code=200)
@@ -79,8 +79,8 @@ def signin(
     ):
     """Sign in a user"""
     # check if user exists
-    user = USERS.get(email)
-    if not user:
+    db_user: User = USERS.get(email)
+    if not db_user:
         return templates.TemplateResponse(
             request=request,
             name="/auth/form-error.html",
@@ -88,7 +88,7 @@ def signin(
             
         )
     # verify the password
-    if not auth_service.verify_password(password, user['password']):
+    if not auth_service.verify_password(password, db_user.password):
         return templates.TemplateResponse(
             request=request,
             name="/auth/form-error.html",
