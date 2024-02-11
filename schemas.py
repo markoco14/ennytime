@@ -1,5 +1,6 @@
 """Schemas for the application"""
 
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -13,6 +14,7 @@ class Session(BaseModel):
     """Session"""
     session_id: str
     user_id: int
+    expires_at: datetime
 
 
 class User(BaseModel):
