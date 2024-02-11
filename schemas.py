@@ -15,5 +15,6 @@ class Session(BaseModel):
 
 class User(BaseModel):
     """User"""
+    id: int
     email: str
     password: str
