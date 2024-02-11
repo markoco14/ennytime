@@ -4,17 +4,35 @@ This is a temporary solution.
 """
 
 import calendar_service
-from schemas import User
+from schemas import Session, User
+
 
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
+
 SHIFT_TYPES = ["W", "D", "N"]
+
 
 SHIFTS = []
 
+
 MONTH_CALENDAR = calendar_service.get_month_calendar(2024, 2)
 
+
 USER_ID = 4
+
+
+SESSIONS: dict[Session]= {
+	"first-test-session": Session(
+		session_id="a-test-session",
+		user_id=1
+	),
+	"second-test-session": Session(
+		session_id="a-test-session",
+		user_id=2
+	)
+}
+
 
 USERS: dict[User] = {
     "johndoe@example.com": User(

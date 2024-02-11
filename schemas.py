@@ -8,10 +8,12 @@ class ScheduleDay(BaseModel):
     date: int
     type: str
 
+
 class Session(BaseModel):
     """Session"""
     session_id: str
-    user_id: str
+    user_id: int
+
 
 class User(BaseModel):
     """User"""

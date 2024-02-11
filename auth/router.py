@@ -13,8 +13,6 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-
-
 @router.post("/signup", response_class=Response)
 def signup(
     request: Request,
@@ -55,9 +53,6 @@ def signup(
 
     return response
 
-
-
-    
 
 @router.post("/signin", response_class=Response)
 def signin(
