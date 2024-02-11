@@ -78,6 +78,12 @@ def profile(request: Request):
 @app.get("/users", response_class=HTMLResponse)
 def list_users(request: Request):
     """List users"""
+    if not request.cookies.get("session-id"):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
     context = {
         "request": request,
         "users": USERS,
@@ -90,6 +96,12 @@ def list_users(request: Request):
 @app.get("/sessions", response_class=HTMLResponse)
 def list_sessions(request: Request):
     """List sessions"""
+    if not request.cookies.get("session-id"):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
     context = {
         "request": request,
         "sessions": SESSIONS,
