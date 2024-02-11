@@ -37,12 +37,18 @@ MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, response: Response):
     """Index page"""
-
-    if not request.cookies.get("session-test"):
+    # check if session cookie exists
+    # if no, not authenticated
+    # return landing page
+    if not request.cookies.get("session-id"):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html"
         )
+    
+    # if yes, check if the session exists in db
+    # if not, delete cookie and return landing page
+    # if right token, return index page
     context = {
         "request": request,
         "days_of_week": DAYS_OF_WEEK,
@@ -71,7 +77,7 @@ def get_signin_page(request: Request, response: Response):
 @app.get("/profile", response_class=HTMLResponse | Response)
 def profile(request: Request):
     """Profile page"""
-    if not request.cookies.get("session-test"):
+    if not request.cookies.get("session-id"):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html",

@@ -54,10 +54,11 @@ def signup(
     USERS.update({email: new_user})
 
     # return response with session cookie and redirect to index
+    session_cookie = auth_service.generate_session_token()
     response = Response(status_code=200)
     response.set_cookie(
-        key="session-test",
-        value="this-is-a-session-id",
+        key="session-id",
+        value=session_cookie,
         httponly=True,
         secure=True,
         samesite="Lax"
@@ -97,10 +98,11 @@ def signin(
         )
 
     # return response with session cookie and redirect to index
+    session_cookie = auth_service.generate_session_token()
     response = Response(status_code=200)
     response.set_cookie(
-        key="session-test",
-        value="this-is-a-session-id",
+        key="session-id",
+        value=session_cookie,
         httponly=True,
         secure=True,
         samesite="Lax"
@@ -113,6 +115,6 @@ def signin(
 def signout(request: Request, response: Response):
     """Sign out a user"""
     response = Response(status_code=200)
-    response.delete_cookie(key="session-test")
+    response.delete_cookie(key="session-id")
     response.headers["HX-Redirect"] = "/signin"
     return response
