@@ -41,6 +41,13 @@ def signup(
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
+    new_session = Session(
+        session_id=session_cookie,
+        user_id=new_user.id,
+        expires_at=auth_service.generate_session_expiry()
+    )
+    # add session to SESSIONS 
+    SESSIONS.update({new_session.session_id: new_session})
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
