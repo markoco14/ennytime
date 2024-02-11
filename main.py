@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 
 from auth import router as auth_router
-from memory_db import SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR
+from memory_db import SESSIONS, SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR, USERS
 from schemas import ScheduleDay
 
 app = FastAPI()
@@ -75,6 +75,31 @@ def profile(request: Request):
         context=context
         )
 
+@app.get("/users", response_class=HTMLResponse)
+def list_users(request: Request):
+    """List users"""
+    context = {
+        "request": request,
+        "users": USERS,
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="users.html",
+        context=context
+    )
+@app.get("/sessions", response_class=HTMLResponse)
+def list_sessions(request: Request):
+    """List sessions"""
+    context = {
+        "request": request,
+        "sessions": SESSIONS,
+    }
+    print(SESSIONS)
+    return templates.TemplateResponse(
+        request=request,
+        name="sessions.html",
+        context=context
+    )
 
 @app.post("/register-shift-type", response_class=HTMLResponse)
 def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
