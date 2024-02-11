@@ -104,6 +104,9 @@ def signin(
 @router.get("/signout", response_class=HTMLResponse)
 def signout(request: Request, response: Response):
     """Sign out a user"""
+    session_id = request.cookies.get("session-id")
+    if session_id:
+        del SESSIONS[f"{session_id}"]
 
     response = Response(status_code=200)
     response.delete_cookie(key="session-id")
