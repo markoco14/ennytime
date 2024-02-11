@@ -4,6 +4,11 @@
 	--secondary-color: #E396B8;
 	--button-light: #F4DAE5;
 	--accent-color: #DD699B;
+
+	--accent-light-contrast: #a51755;
+
+	--bg-pink-light: #FDE5EC;
+	--bg-pink-dark: #21060E;
 	/* dark colors */
 	--primary-dark-color: #E22C7B;
 	--secondary-dark-color: #691C3D;
