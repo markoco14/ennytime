@@ -1,3 +1,5 @@
+"""Functions for calendar"""
+
 import calendar
 
 month_calendar = calendar.Calendar(firstweekday=6)

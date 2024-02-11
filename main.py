@@ -4,35 +4,16 @@ from typing import Annotated
 from fastapi import FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
 
 
 from auth import router as auth_router
-import time_service
+from memory_db import SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR
+from schemas import ScheduleDay
 
 app = FastAPI()
 app.include_router(auth_router.router)
 
 templates = Jinja2Templates(directory="templates")
-
-
-class ScheduleDay(BaseModel):
-    """Schedule day"""
-    date: int
-    type: str
-
-
-
-DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-
-SHIFT_TYPES = ["W", "D", "N"]
-
-SHIFTS = []
-
-
-
-MONTH_CALENDAR = time_service.get_month_calendar(2024, 2)
-
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, response: Response):

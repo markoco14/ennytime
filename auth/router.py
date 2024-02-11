@@ -1,33 +1,19 @@
+"""User authentication routes"""
+
 from typing import Annotated
 from fastapi import APIRouter, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
 
 from auth import auth_service
+from memory_db import USERS
+from schemas import User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-class User(BaseModel):
-    """User"""
-    email: str
-    password: str
 
-USERS: dict[User] = {
-    "johndoe@example.com": User(
-        email="johndoe@example.com",
-        password="fakehashedsecret"
-        ),
-    "alice@example.com": User(
-        email="alice@example.com",
-        password="fakehashedsecret"
-        ),
-    "mark.oconnor14@gmail.com": User(
-        email="mark.oconnor14@gmail.com",
-        password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK"
-        ),
-}
+
 
 @router.post("/signup", response_class=Response)
 def signup(
