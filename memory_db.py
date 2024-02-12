@@ -32,7 +32,12 @@ SESSIONS: dict[Session]= {
 		session_id="a-test-session",
 		user_id=2,
 		expires_at="2024-02-09 00:00:00"
-	)
+	),
+	"b19382f842a98b13abd73b11cea4a7d3": Session(
+		session_id="b19382f842a98b13abd73b11cea4a7d3",
+		user_id=3,
+		expires_at="2024-02-12 23:59:59"
+	),
 }
 
 

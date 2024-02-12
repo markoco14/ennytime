@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import router as auth_router
 from memory_db import SESSIONS, SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR, USERS
-from schemas import ScheduleDay
+from schemas import ScheduleDay, Session, User
 
 app = FastAPI()
 app.include_router(auth_router.router)
@@ -64,9 +64,23 @@ def profile(request: Request):
             name="landing-page.html",
             headers={"HX-Redirect": "/"},
         )
+    
+    # get the user id from the session
+    session_token = request.cookies.get("session-id")
+    session_data: Session = SESSIONS.get(session_token)
+
+    # get users as a list (from memory db)
+    db_users = list(USERS.values())
+
+    # find the user in the list
+    for user in db_users:
+        if user.id == session_data.user_id:
+            current_user = user
+
     context = {
         "request": request,
         "shift_types": SHIFT_TYPES,
+        "user": current_user,
     }
 
     return templates.TemplateResponse(
