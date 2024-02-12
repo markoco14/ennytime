@@ -36,20 +36,24 @@ SHIFTS = []
 
 
 USER_ID = 4
+SESSION_ID = 4
 
 
 SESSIONS: dict[Session]= {
 	"first-test-session": Session(
+		id=1,
 		session_id="a-test-session",
 		user_id=1,
 		expires_at="2024-02-14 00:00:00"
 	),
 	"second-test-session": Session(
+		id=2,
 		session_id="a-test-session",
 		user_id=2,
 		expires_at="2024-02-09 00:00:00"
 	),
 	"58ce46c62a116760ef76cb2b791d310e": Session(
+		id=3,
 		session_id="58ce46c62a116760ef76cb2b791d310e",
 		user_id=3,
 		expires_at="2024-02-12 23:59:59"

@@ -11,6 +11,7 @@ import calendar_service
 import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
 from repositories import user_repository as UserRepository
+from repositories import session_repository as SessionRepository
 from schemas import ScheduleDay, Session, ShiftType, User
 
 app = FastAPI()
@@ -31,13 +32,12 @@ def index(
             request=request,
             name="landing-page.html"
         )
-    
-    
+
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
-    
+
     month_calendar = calendar_service.get_month_calendar(current_year, current_month)
-    
+
     context = {
         "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
@@ -123,9 +123,11 @@ def list_sessions(request: Request):
             name="landing-page.html",
             headers={"HX-Redirect": "/"},
         )
+    
+    sessions = SessionRepository.list_sessions()
     context = {
         "request": request,
-        "sessions": memory_db.SESSIONS,
+    "sessions": sessions,
     }
     return templates.TemplateResponse(
         request=request,

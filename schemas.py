@@ -18,6 +18,7 @@ class ShiftType(BaseModel):
 
 class Session(BaseModel):
     """Session"""
+    id: int
     session_id: str
     user_id: int
     expires_at: datetime
