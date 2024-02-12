@@ -3,11 +3,9 @@ In-memory database for the application.
 This is a temporary solution.
 """
 
-import calendar_service
 from schemas import Session, ShiftType, User
 
 
-DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 
 SHIFT_TYPES: list[ShiftType] = [
@@ -37,9 +35,6 @@ SHIFT_TYPES: list[ShiftType] = [
 SHIFTS = []
 
 
-MONTH_CALENDAR = calendar_service.get_month_calendar(2024, 2)
-
-
 USER_ID = 4
 
 
@@ -54,8 +49,8 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 00:00:00"
 	),
-	"9e599e96c11544ff381ee845c2c89de7": Session(
-		session_id="9e599e96c11544ff381ee845c2c89de7",
+	"58ce46c62a116760ef76cb2b791d310e": Session(
+		session_id="58ce46c62a116760ef76cb2b791d310e",
 		user_id=3,
 		expires_at="2024-02-12 23:59:59"
 	),

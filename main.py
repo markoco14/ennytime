@@ -1,13 +1,14 @@
 """Main file to hold app and api routes"""
+from typing import Annotated, Optional
 
-from typing import Annotated
 from fastapi import FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 
 from auth import auth_service, router as auth_router
-from memory_db import SESSIONS, SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR, USERS
+import calendar_service
+import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
 from schemas import ScheduleDay, Session, ShiftType, User
 
@@ -17,25 +18,32 @@ app.include_router(auth_router.router)
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request, response: Response):
+def index(
+    request: Request,
+    response: Response,
+    month: Optional[int] = None,
+    year: Optional[int] = None,
+    ):
     """Index page"""
-    # check if session cookie exists
-    # if no, not authenticated
-    # return landing page
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html"
         )
     
-    # if yes, check if the session exists in db
-    # if not, delete cookie and return landing page
-    # if right token, return index page
+    
+    current_month = calendar_service.get_current_month(month)
+    current_year = calendar_service.get_current_year(year)
+    
+    month_calendar = calendar_service.get_month_calendar(current_year, current_month)
+    
     context = {
         "request": request,
-        "days_of_week": DAYS_OF_WEEK,
-        "month_calendar": MONTH_CALENDAR,
-        "shifts": SHIFTS,
+        "days_of_week": calendar_service.DAYS_OF_WEEK,
+        "current_year": current_year,
+        "current_month": calendar_service.MONTHS[current_month - 1],
+        "month_calendar": month_calendar,
+        "shifts": memory_db.SHIFTS,
     }
 
     response = templates.TemplateResponse(
@@ -48,7 +56,7 @@ def index(request: Request, response: Response):
 
 
 @app.get("/signin", response_class=HTMLResponse)
-def get_signin_page(request: Request, response: Response):
+def get_signin_page(request: Request):
     """Go to the sign in page"""
     return templates.TemplateResponse(
         request=request,
@@ -96,7 +104,7 @@ def list_users(request: Request):
         )
     context = {
         "request": request,
-        "users": USERS,
+        "users": memory_db.USERS,
     }
     return templates.TemplateResponse(
         request=request,
@@ -114,7 +122,7 @@ def list_sessions(request: Request):
         )
     context = {
         "request": request,
-        "sessions": SESSIONS,
+        "sessions": memory_db.SESSIONS,
     }
     return templates.TemplateResponse(
         request=request,
@@ -137,13 +145,13 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
     current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
             
     new_shift_type = ShiftType(
-        id=len(SHIFT_TYPES) + 1,
+        id=len(memory_db.SHIFT_TYPES) + 1,
         type=shift_type,
         user_id=current_user.id
     )
-    SHIFT_TYPES.append(new_shift_type)
+    memory_db.SHIFT_TYPES.append(new_shift_type)
 
-    shift_types = [shift_type for shift_type in SHIFT_TYPES if shift_type.user_id == current_user.id]
+    shift_types = [shift_type for shift_type in memory_db.SHIFT_TYPES if shift_type.user_id == current_user.id]
     context={
         "request": request,
         "shift_types": shift_types,
@@ -162,7 +170,7 @@ def get_calendar_day_form(request: Request, day_number: int):
 
     context={
         "request": request,
-        "shift_types": SHIFT_TYPES,
+        "shift_types": memory_db.SHIFT_TYPES,
         "day_number": day_number,
           }
 
@@ -179,7 +187,7 @@ def get_calendar_day_card(request: Request, day_number: int):
     context = {
         "request": request,
         "day_number": day_number,
-        "shifts": SHIFTS,    
+        "shifts": memory_db.SHIFTS,    
     }
 
     return templates.TemplateResponse(
@@ -195,7 +203,7 @@ def modal(request: Request, day_number: int):
 
     context={
         "request": request,
-        "shift_types": SHIFT_TYPES,
+        "shift_types": memory_db.SHIFT_TYPES,
         "day_number": day_number,
           }
 
@@ -214,12 +222,12 @@ def schedule_shift(
     ):
     """Add shift to calendar date"""
     new_shift = ScheduleDay(date=date, type=shift_type)
-    shift_types = SHIFT_TYPES
-    if new_shift in SHIFTS:
+    shift_types = memory_db.SHIFT_TYPES
+    if new_shift in memory_db.SHIFTS:
         context={"request": request,
-            "days_of_week": DAYS_OF_WEEK,
-            "month_calendar": MONTH_CALENDAR,
-            "shifts": SHIFTS,
+            "days_of_week": calendar_service.DAYS_OF_WEEK,
+            # "month_calendar": MONTH_CALENDAR,
+            "shifts": memory_db.SHIFTS,
             "shift_types": shift_types,
             "day_number": date,
             }
@@ -228,12 +236,12 @@ def schedule_shift(
             name="shift-exists.html",
             context=context
         )
-    SHIFTS.append(new_shift)
+    memory_db.SHIFTS.append(new_shift)
 
     context={"request": request,
-        "days_of_week": DAYS_OF_WEEK,
-        "month_calendar": MONTH_CALENDAR,
-        "shifts": SHIFTS,
+        # "days_of_week": DAYS_OF_WEEK,
+        # "month_calendar": MONTH_CALENDAR,
+        "shifts": memory_db.SHIFTS,
           }
     return templates.TemplateResponse(
         request=request,
