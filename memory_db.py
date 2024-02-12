@@ -54,8 +54,8 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 00:00:00"
 	),
-	"692eeb061bea21c5c4808d9659179bb8": Session(
-		session_id="692eeb061bea21c5c4808d9659179bb8",
+	"9e599e96c11544ff381ee845c2c89de7": Session(
+		session_id="9e599e96c11544ff381ee845c2c89de7",
 		user_id=3,
 		expires_at="2024-02-12 23:59:59"
 	),

@@ -1,6 +1,7 @@
 """ Auth service functions """
 from datetime import datetime, timedelta
 import secrets
+from typing import Dict
 
 from passlib.context import CryptContext
 from memory_db import SESSIONS, USERS
@@ -8,7 +9,6 @@ from memory_db import SESSIONS, USERS
 from schemas import Session
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def get_password_hash(password):
     """returns hashed password"""
@@ -26,6 +26,13 @@ def generate_session_token():
 
 def generate_session_expiry():
     return datetime.now() + timedelta(days=3)
+
+def get_session_cookie(cookies: Dict[str, str]):
+    if not cookies.get("session-id"):
+        return False
+    
+    return True
+        
 
 def get_session_data(session_token):
     session_data: Session = SESSIONS.get(session_token)

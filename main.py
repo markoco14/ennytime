@@ -22,7 +22,7 @@ def index(request: Request, response: Response):
     # check if session cookie exists
     # if no, not authenticated
     # return landing page
-    if not request.cookies.get("session-id"):
+    if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html"
@@ -59,13 +59,13 @@ def get_signin_page(request: Request, response: Response):
 @app.get("/profile", response_class=HTMLResponse | Response)
 def profile(request: Request):
     """Profile page"""
-    if not request.cookies.get("session-id"):
+    if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html",
             headers={"HX-Redirect": "/"},
         )
-    
+
     session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
     
     current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
@@ -88,7 +88,7 @@ def profile(request: Request):
 @app.get("/users", response_class=HTMLResponse)
 def list_users(request: Request):
     """List users"""
-    if not request.cookies.get("session-id"):
+    if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html",
@@ -106,7 +106,7 @@ def list_users(request: Request):
 @app.get("/sessions", response_class=HTMLResponse)
 def list_sessions(request: Request):
     """List sessions"""
-    if not request.cookies.get("session-id"):
+    if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html",
@@ -125,7 +125,7 @@ def list_sessions(request: Request):
 @app.post("/register-shift-type", response_class=HTMLResponse)
 def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
     """Register shift type"""
-    if not request.cookies.get("session-id"):
+    if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
             name="landing-page.html",
