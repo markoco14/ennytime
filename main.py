@@ -10,6 +10,7 @@ from auth import auth_service, router as auth_router
 import calendar_service
 import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
+from repositories import user_repository as UserRepository
 from schemas import ScheduleDay, Session, ShiftType, User
 
 app = FastAPI()
@@ -102,9 +103,11 @@ def list_users(request: Request):
             name="landing-page.html",
             headers={"HX-Redirect": "/"},
         )
+    
+    users = UserRepository.list_users()
     context = {
         "request": request,
-        "users": memory_db.USERS,
+        "users": users,
     }
     return templates.TemplateResponse(
         request=request,
