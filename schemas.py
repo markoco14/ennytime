@@ -16,6 +16,12 @@ class ShiftType(BaseModel):
     type: str
     user_id: int
 
+class Shift(BaseModel):
+    id: int
+    type_id: int
+    user_id: int
+    date: datetime
+
 class Session(BaseModel):
     """Session"""
     id: int

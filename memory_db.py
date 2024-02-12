@@ -3,36 +3,44 @@ In-memory database for the application.
 This is a temporary solution.
 """
 
-from schemas import Session, ShiftType, User
+import datetime
+from schemas import Session, Shift, ShiftType, User
 
 
 
 
-SHIFT_TYPES: list[ShiftType] = [
-	ShiftType(
+SHIFT_TYPES: dict[ShiftType] = {
+	1: ShiftType(
 		id=1,
 		type="D",
 		user_id=2,
 	),
-	ShiftType(
+	2: ShiftType(
 		id=2,
 		type="N",
 		user_id=3,
 	),
-	ShiftType(
+	3: ShiftType(
 		id=3,
 		type="W",
 		user_id=3,
 	),
-	ShiftType(
+	4: ShiftType(
 		id=4,
 		type="W",
 		user_id=4,
 	),
+}
+
+
+SHIFTS: list[Shift] = [
+	Shift(
+		id=1,
+		type_id=2,
+		user_id=3,
+		date=datetime.datetime(2024, 2, 9),
+	),
 ]
-
-
-SHIFTS = []
 
 
 USER_ID = 4
@@ -52,9 +60,9 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 00:00:00"
 	),
-	"58ce46c62a116760ef76cb2b791d310e": Session(
+	"ff8b3b5e4d826bb8525aa5296a21237e": Session(
 		id=3,
-		session_id="58ce46c62a116760ef76cb2b791d310e",
+		session_id="ff8b3b5e4d826bb8525aa5296a21237e",
 		user_id=3,
 		expires_at="2024-02-12 23:59:59"
 	),
