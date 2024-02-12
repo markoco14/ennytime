@@ -10,6 +10,12 @@ class ScheduleDay(BaseModel):
     type: str
 
 
+class ShiftType(BaseModel):
+    """Shift type"""
+    id: int
+    type: str
+    user_id: int
+
 class Session(BaseModel):
     """Session"""
     session_id: str

@@ -4,13 +4,34 @@ This is a temporary solution.
 """
 
 import calendar_service
-from schemas import Session, User
+from schemas import Session, ShiftType, User
 
 
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 
-SHIFT_TYPES = ["W", "D", "N"]
+SHIFT_TYPES: list[ShiftType] = [
+	ShiftType(
+		id=1,
+		type="D",
+		user_id=2,
+	),
+	ShiftType(
+		id=2,
+		type="N",
+		user_id=3,
+	),
+	ShiftType(
+		id=3,
+		type="W",
+		user_id=3,
+	),
+	ShiftType(
+		id=4,
+		type="W",
+		user_id=4,
+	),
+]
 
 
 SHIFTS = []
