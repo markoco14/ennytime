@@ -172,10 +172,23 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
 @app.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
 def get_calendar_day_form(request: Request, day_number: int):
     """Get calendar day form"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
+    
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
 
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+
+    shift_types = ShiftTypeRepository.list_user_shift_types(
+        user_id=current_user.id)
+    
     context={
         "request": request,
-        "shift_types": memory_db.SHIFT_TYPES,
+        "shift_types": shift_types,
         "day_number": day_number,
           }
 
