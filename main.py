@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 
-from auth import router as auth_router
+from auth import auth_service, router as auth_router
 from memory_db import SESSIONS, SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR, USERS
 from schemas import ScheduleDay, Session, ShiftType, User
 
@@ -65,17 +65,9 @@ def profile(request: Request):
             headers={"HX-Redirect": "/"},
         )
     
-    # get the user id from the session
-    session_token = request.cookies.get("session-id")
-    session_data: Session = SESSIONS.get(session_token)
-
-    # get users as a list (from memory db)
-    db_users = list(USERS.values())
-
-    # find the user in the list
-    for user in db_users:
-        if user.id == session_data.user_id:
-            current_user = user
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
 
     # get users shift types
     shift_types = [shift_type for shift_type in SHIFT_TYPES if shift_type.user_id == current_user.id]
@@ -137,17 +129,10 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
             name="landing-page.html",
             headers={"HX-Redirect": "/"},
         )
-    # get the user id from the session
-    session_token = request.cookies.get("session-id")
-    session_data: Session = SESSIONS.get(session_token)
+    
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
 
-    # get users as a list (from memory db)
-    db_users = list(USERS.values())
-
-    # find the user in the list
-    for user in db_users:
-        if user.id == session_data.user_id:
-            current_user = user
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
             
     new_shift_type = ShiftType(
         id=len(SHIFT_TYPES) + 1,

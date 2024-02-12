@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 import secrets
 
 from passlib.context import CryptContext
+from memory_db import SESSIONS, USERS
+
+from schemas import Session
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -23,3 +26,18 @@ def generate_session_token():
 
 def generate_session_expiry():
     return datetime.now() + timedelta(days=3)
+
+def get_session_data(session_token):
+    session_data: Session = SESSIONS.get(session_token)
+    return session_data
+
+def get_current_user(user_id: int):
+     # get users as a list (from memory db)
+    db_users = list(USERS.values())
+
+    # find the user in the list
+    for user in db_users:
+        if user.id == user_id:
+            current_user = user
+
+    return current_user
