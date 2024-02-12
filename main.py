@@ -8,6 +8,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import auth_service, router as auth_router
 from memory_db import SESSIONS, SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR, USERS
+from repositories import shift_type_repository as ShiftTypeRepository
 from schemas import ScheduleDay, Session, ShiftType, User
 
 app = FastAPI()
@@ -69,8 +70,9 @@ def profile(request: Request):
     
     current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
 
-    # get users shift types
-    shift_types = [shift_type for shift_type in SHIFT_TYPES if shift_type.user_id == current_user.id]
+    shift_types = ShiftTypeRepository.list_user_shift_types(
+        user_id=current_user.id)
+    
     context = {
         "request": request,
         "shift_types": shift_types,
