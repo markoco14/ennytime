@@ -9,6 +9,14 @@ MONTHS = ["January", "February", "March", "April", "May", "June", "July", "Augus
 
 MONTH_CALENDAR = calendar.Calendar(firstweekday=6)
 
+def get_current_day(day):
+    if not day:
+        current_day = datetime.date.today().day
+    else:
+        current_day = day
+
+    return current_day
+
 def get_current_month(month):
     """ Returns the current month or the user's selected month"""
     if not month:
@@ -27,9 +35,10 @@ def get_current_year(year):
 
     return current_year
 
+
 def get_month_calendar(year, month):
     """ Returns the month calendar for the current month/year
     or the user's selected month/year"""
-    return MONTH_CALENDAR.monthdayscalendar(year, month)
+    return MONTH_CALENDAR.itermonthdates(year, month)
 
 
