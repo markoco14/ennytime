@@ -42,6 +42,7 @@ def signup(
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
     new_session = Session(
+        id=len(SESSIONS) + 1,
         session_id=session_cookie,
         user_id=new_user.id,
         expires_at=auth_service.generate_session_expiry()
@@ -90,6 +91,7 @@ def signin(
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
     new_session = Session(
+        id=len(SESSIONS) + 1,
         session_id=session_cookie,
         user_id=db_user.id,
         expires_at=auth_service.generate_session_expiry()
