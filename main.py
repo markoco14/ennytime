@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import router as auth_router
 from memory_db import SESSIONS, SHIFTS, SHIFT_TYPES, DAYS_OF_WEEK, MONTH_CALENDAR, USERS
-from schemas import ScheduleDay, Session, User
+from schemas import ScheduleDay, Session, ShiftType, User
 
 app = FastAPI()
 app.include_router(auth_router.router)
@@ -122,7 +122,6 @@ def list_sessions(request: Request):
         "request": request,
         "sessions": SESSIONS,
     }
-    print(SESSIONS)
     return templates.TemplateResponse(
         request=request,
         name="sessions.html",
@@ -132,10 +131,35 @@ def list_sessions(request: Request):
 @app.post("/register-shift-type", response_class=HTMLResponse)
 def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
     """Register shift type"""
-    SHIFT_TYPES.append(shift_type)
+    if not request.cookies.get("session-id"):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
+    # get the user id from the session
+    session_token = request.cookies.get("session-id")
+    session_data: Session = SESSIONS.get(session_token)
+
+    # get users as a list (from memory db)
+    db_users = list(USERS.values())
+
+    # find the user in the list
+    for user in db_users:
+        if user.id == session_data.user_id:
+            current_user = user
+            
+    new_shift_type = ShiftType(
+        id=len(SHIFT_TYPES) + 1,
+        type=shift_type,
+        user_id=current_user.id
+    )
+    SHIFT_TYPES.append(new_shift_type)
+
+    shift_types = [shift_type for shift_type in SHIFT_TYPES if shift_type.user_id == current_user.id]
     context={
         "request": request,
-        "shift_types": SHIFT_TYPES,
+        "shift_types": shift_types,
           }
 
     return templates.TemplateResponse(
