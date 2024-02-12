@@ -77,9 +77,11 @@ def profile(request: Request):
         if user.id == session_data.user_id:
             current_user = user
 
+    # get users shift types
+    shift_types = [shift_type for shift_type in SHIFT_TYPES if shift_type.user_id == current_user.id]
     context = {
         "request": request,
-        "shift_types": SHIFT_TYPES,
+        "shift_types": shift_types,
         "user": current_user,
     }
 
