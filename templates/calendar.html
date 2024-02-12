@@ -1,20 +1,24 @@
+
 <div class="grid grid-cols-7 gap-2">
   {% for day_name in days_of_week %}
-  <div class="text-center text-xl font-bold">{{ day_name }}</div>
-    {% endfor %} 
-      {% for week in month_calendar %} 
-        {% for day_number in week %} 
-          {% if day_number == 0 %}
-          <div
-            class="min-h-[48px] rounded-md bg-gray-300 dark:bg-gray-800  border border-gray-900 dark:border-0 cursor-not-allowed"
-          ></div>
-          {% else %}
-          <div class="prop bg-gray-200 dark:bg-gray-700 rounded-md border border-gray-900 dark:border-0 ">
-            <div id="day-{{day_number}}" class="grid place-items-center h-full bg-white dark:bg-gray-700 rounded-md">
-              {% include 'calendar/calendar-day-card.html' %}
-            </div>
-          </div>
-        {% endif %} 
-    {% endfor %} 
+    <div class="text-center text-xl font-bold">{{ day_name }}</div>
+  {% endfor %} 
+  {% for date in month_calendar %} 
+        <div
+        {% if not date.shift_type %}
+          class="min-h-[48px] rounded-md bg-green-300 dark:bg-green-800  border border-gray-900 dark:border-0 cursor-not-allowed"
+        {% else %}
+          class="min-h-[48px] rounded-md bg-red-300 dark:bg-red-800  border border-gray-900 dark:border-0 cursor-not-allowed"
+        {% endif %}
+        >
+        <p>
+        {{ date.date }}
+        </p>
+        {% if date.shift_type_id %}
+        <p>
+        {{ date.shift_type.type }}
+        </p>
+        {% endif %}
+        </div>
   {% endfor %}
 </div>

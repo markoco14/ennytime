@@ -10,7 +10,7 @@
   <span>
     {% for shift in shifts %} 
       {% if shift.date == day_number %} 
-        {{ shift.type }}
+        {{ shift.type_id }}
       {% endif %} 
     {% endfor %}
   </span>

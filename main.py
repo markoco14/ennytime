@@ -33,17 +33,33 @@ def index(
             name="landing-page.html"
         )
 
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
 
     month_calendar = calendar_service.get_month_calendar(current_year, current_month)
+    
+    month_dictionary = dict((str(day), {"date": str(day)}) for day in month_calendar)
+    
+    
+    shift_types = ShiftTypeRepository.list_user_shift_types(
+        user_id=current_user.id)
+    shift_type_dict = dict((str(shift_type.id), shift_type) for shift_type in shift_types)
+
+    for shift in memory_db.SHIFTS:
+        if month_dictionary.get(str(shift.date.date())):
+            month_dictionary[str(shift.date.date())]['shift_type_id'] = shift.type_id
+            month_dictionary[str(shift.date.date())]['shift_type'] = shift_type_dict.get(str(shift.type_id))
 
     context = {
         "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
         "current_month": calendar_service.MONTHS[current_month - 1],
-        "month_calendar": month_calendar,
+        "month_calendar": list(month_dictionary.values()),
         "shifts": memory_db.SHIFTS,
     }
 
@@ -170,7 +186,12 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
 
 
 @app.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
-def get_calendar_day_form(request: Request, day_number: int):
+def get_calendar_day_form(
+    request: Request, 
+    day_number: int, 
+    month: Optional[int] = None, 
+    year: Optional[int] = None
+    ):
     """Get calendar day form"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -185,11 +206,25 @@ def get_calendar_day_form(request: Request, day_number: int):
 
     shift_types = ShiftTypeRepository.list_user_shift_types(
         user_id=current_user.id)
-    
+    current_month = calendar_service.get_current_month(month)
+    current_year = calendar_service.get_current_year(year)
+
+    if day_number < 10:
+        current_day = f"0{day_number}"
+    else:
+        current_day = day_number
+
+    if current_month < 10:
+        current_month = f"0{current_month}"
+        
+    date_string = f"{current_year}-{current_month}-{current_day}"
     context={
         "request": request,
         "shift_types": shift_types,
         "day_number": day_number,
+        "current_month": current_month,
+        "current_year": current_year,
+        "date_string": date_string
           }
 
     return templates.TemplateResponse(
@@ -236,9 +271,14 @@ def modal(request: Request, day_number: int):
 def schedule_shift(
     request: Request,
     shift_type: Annotated[str, Form()],
-    date: Annotated[int, Form()],
+    date: Annotated[str, Form()],
     ):
     """Add shift to calendar date"""
+    return templates.TemplateResponse(
+        request=request,
+        name="shift-exists.html",
+        # context=context
+    )
     new_shift = ScheduleDay(date=date, type=shift_type)
     shift_types = memory_db.SHIFT_TYPES
     if new_shift in memory_db.SHIFTS:
