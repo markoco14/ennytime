@@ -231,6 +231,7 @@ def get_calendar_day_form(
         "date_string": date_string
           }
 
+    print(date_string)
     return templates.TemplateResponse(
         request=request,
         name="/calendar/add-shift-form.html",
@@ -238,13 +239,20 @@ def get_calendar_day_form(
         )
 
 
-@app.get("/calendar-card/{day_number}", response_class=HTMLResponse)
-def get_calendar_day_card(request: Request, day_number: int):
+@app.get("/calendar-card/{date_string}", response_class=HTMLResponse)
+def get_calendar_day_card(request: Request, date_string: str):
     """Get calendar day card"""
+    print(date_string)
+    updated_shifts = []
+    for shift in memory_db.SHIFTS:
+        if str(shift.date.date()) == date_string:
+            date_string = shift.date.date()
+            updated_shifts.append(shift)
+    print(updated_shifts)
     context = {
         "request": request,
-        "day_number": day_number,
-        "shifts": memory_db.SHIFTS,    
+        "day_number": date_string,
+        "shifts": updated_shifts,    
     }
 
     return templates.TemplateResponse(
