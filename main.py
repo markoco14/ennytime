@@ -303,3 +303,32 @@ def schedule_shift(
         name="success.html",
         context=context
     )
+
+@app.post("/search", response_class=HTMLResponse)
+def search_users_to_share(
+    request: Request,
+    search_email: Annotated[str, Form()] = ""
+    ):
+    """ Returns a list of users that match the search string. """
+    if search_email == "":
+        return templates.TemplateResponse(
+            request=request,
+            name="search-results.html",
+            context={"request": request, "matching_users": []}
+        )
+    
+    search_email_lower = search_email.lower()
+    user_list = list(memory_db.USERS.values())
+    matching_users = []
+    for user in user_list:
+        if search_email_lower in user.email.lower():
+           matching_users.append(user)
+        
+    context = {"request": request, "matching_users": matching_users}
+
+    return templates.TemplateResponse(
+        request=request,
+        name="search-results.html",
+        context=context
+    )
+
