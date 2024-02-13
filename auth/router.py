@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
-from memory_db import SESSIONS, USERS, USER_ID
+from memory_db import SESSIONS, USERS
 from schemas import Session, User
 
 router = APIRouter()
@@ -33,9 +33,7 @@ def signup(
     hashed_password = auth_service.get_password_hash(password)
     
     # create new user with encrypted password
-    global USER_ID
-    new_user = User(id=USER_ID, email=email, password=hashed_password)
-    USER_ID += 1
+    new_user = User(id=len(USERS)+1, email=email, password=hashed_password)
     # add user to USERS
     USERS.update({email: new_user})
 

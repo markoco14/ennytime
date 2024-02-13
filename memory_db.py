@@ -43,8 +43,6 @@ SHIFTS: list[Shift] = [
 ]
 
 
-USER_ID = 4
-SESSION_ID = 4
 
 
 SESSIONS: dict[Session]= {
@@ -60,9 +58,9 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 00:00:00"
 	),
-	"ff8b3b5e4d826bb8525aa5296a21237e": Session(
+	"9d5fb05379ea64e7aaf2756d7048bfab": Session(
 		id=3,
-		session_id="ff8b3b5e4d826bb8525aa5296a21237e",
+		session_id="9d5fb05379ea64e7aaf2756d7048bfab",
 		user_id=3,
 		expires_at="2024-02-12 23:59:59"
 	),
