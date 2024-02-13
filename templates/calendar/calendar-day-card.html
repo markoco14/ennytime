@@ -8,9 +8,6 @@
 >
   <span> {{ day_number }} </span>
   {% for shift in shifts %}
-  <span>{{shift.type}}</span>
+    <span>{{shift.type.type}}</span>
   {% endfor %}
-  {# {% if shift_type %}
-  <span> {{shift_type.type}} </span>
-  {%endif%} #}
 </div>

@@ -242,17 +242,29 @@ def get_calendar_day_form(
 @app.get("/calendar-card/{date_string}", response_class=HTMLResponse)
 def get_calendar_day_card(request: Request, date_string: str):
     """Get calendar day card"""
-    print(date_string)
-    updated_shifts = []
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
+    
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    date_segments = date_string.split("-")
+
+    shifts = []
     for shift in memory_db.SHIFTS:
-        if str(shift.date.date()) == date_string:
-            date_string = shift.date.date()
-            updated_shifts.append(shift)
-    print(updated_shifts)
+        if str(shift.date.date()) == date_string and shift.user_id == current_user.id:
+            shift.type = ShiftTypeRepository.get_shift_type(shift_type_id=shift.type_id)
+            shifts.append(shift)
+
     context = {
         "request": request,
-        "day_number": date_string,
-        "shifts": updated_shifts,    
+        "day_number": int(date_segments[2]),
+        "date_string": date_string,
+        "shifts": shifts,    
     }
 
     return templates.TemplateResponse(
