@@ -13,27 +13,12 @@
       </div>
     {% else %}
       <div class=" min-h-[48px] border rounded-md border-gray-900 bg-white">
-          <div 
+        <div 
           id="day-{{date.day_number}}" 
-          class="prop h-full bg-white dark:bg-gray-700 rounded-md">
-            <div
-              hx-get="/add-shift-form/{{date.day_number}}"
-              hx-target="this"
-              hx-swap="outerHTML"
-              hx-trigger="click delay:300ms"
-              class="w-full h-full grid rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer p-2 "
-              onclick="popOut(Number(`{{date.day_number}}`))"
-            >
-              <span> {{ date.day_number }} </span>
-              {% if date.shifts|length > 0%}
-                {% for shift in date.shifts %}
-                  <span>
-                  {{shift.type.type}}
-                  </span>
-                {% endfor %}
-              {% endif %}
-            </div>
-          </div>
+          class="prop h-full bg-white dark:bg-gray-700 rounded-md"
+        >
+          {% include '/calendar/calendar-day-card.html'%}
+        </div>
       </div>
     {%endif%}
   {% endfor %}

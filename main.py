@@ -231,9 +231,12 @@ def get_calendar_day_card(request: Request, date_string: str):
 
     context = {
         "request": request,
-        "day_number": int(date_segments[2]),
+        
         "date_string": date_string,
-        "shifts": shifts,    
+        "date": {
+            "shifts": shifts,
+            "day_number": int(date_segments[2])
+            },    
     }
 
     return templates.TemplateResponse(

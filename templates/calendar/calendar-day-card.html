@@ -1,14 +1,14 @@
 <div
-  hx-get="/add-shift-form/{{day_number}}"
+  hx-get="/add-shift-form/{{date.day_number}}"
   hx-target="this"
   hx-swap="outerHTML"
-  hx-trigger="click"
+  hx-trigger="click delay:300ms"
   class="grid w-full h-full rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer p-2 bg-white dark:bg-gray-700"
-  onclick="popOut(Number(`{{day_number}}`))"
+  onclick="popOut(Number(`{{date.day_number}}`))"
 >
-  <span> {{ day_number }} </span>
-  {% if shifts|length > 0%}
-    {% for shift in shifts %}
+  <span> {{ date.day_number }} </span>
+  {% if date.shifts|length > 0%}
+    {% for shift in date.shifts %}
       <span>{{shift.type.type}}</span>
     {% endfor %}
   {%endif%}
