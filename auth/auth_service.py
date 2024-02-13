@@ -32,6 +32,13 @@ def get_session_cookie(cookies: Dict[str, str]):
         return False
     
     return True
+
+def destroy_db_session(session_token):
+    SESSIONS.pop(session_token)
+
+def is_session_expired(expiry: datetime):
+    if expiry < datetime.now():
+        return True
         
 
 def get_session_data(session_token):
