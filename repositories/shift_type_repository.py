@@ -11,3 +11,9 @@ def list_user_shift_types(user_id: int):
 	
 	return shift_types
 
+def get_shift_type(shift_type_id: int):
+	""" Returns a shift type for a given shift type id """
+	shift_type = SHIFT_TYPES.get(shift_type_id)
+	
+	return shift_type
+
