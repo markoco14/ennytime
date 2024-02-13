@@ -87,6 +87,11 @@ SHARED_CALENDARS: dict[Share] = {
 		id=2,
 		owner_id=1,
 		guest_id=2,
+	),
+	"owner3guest4": Share(
+		id=3,
+		owner_id=3,
+		guest_id=4,
 	)
 }
 
@@ -104,9 +109,9 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 23:59:59"
 	),
-	"a1919b7bb607df34838c814b3757980e": Session(
+	"e64f012ab62dd8ee8b251c856b7944fe": Session(
 		id=3,
-		session_id="a1919b7bb607df34838c814b3757980e",
+		session_id="e64f012ab62dd8ee8b251c856b7944fe",
 		user_id=3,
 		expires_at="2024-02-14 23:59:59"
 	),

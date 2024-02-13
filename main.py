@@ -73,14 +73,14 @@ def index(
     for share in shares:
         if share.guest_id == current_user.id:
             shared_with_me.append(share)
-
-    bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
-    # but could get list of just bae.owner_id and loop through that
-    # adding shifts to the 'shared with me' section of calendar card
-    
-    for shift in memory_db.SHIFTS:
-        if month_calendar_dict.get(str(shift.date.date())) and shift.user_id == bae_calendar.owner_id:
-            month_calendar_dict[str(shift.date.date())]['bae_shifts'].append(shift)
+    if len(shared_with_me) >= 1:
+        bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
+        # but could get list of just bae.owner_id and loop through that
+        # adding shifts to the 'shared with me' section of calendar card
+        
+        for shift in memory_db.SHIFTS:
+            if month_calendar_dict.get(str(shift.date.date())) and shift.user_id == bae_calendar.owner_id:
+                month_calendar_dict[str(shift.date.date())]['bae_shifts'].append(shift)
         
 
     context = {
@@ -250,14 +250,14 @@ def get_calendar_day_card(request: Request, date_string: str):
     for share in shares:
         if share.guest_id == current_user.id:
             shared_with_me.append(share)
-
-    bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
-    # but could get list of just bae.owner_id and loop through that
-    # adding shifts to the 'shared with me' section of calendar card
-    bae_shifts = []
-    for shift in memory_db.SHIFTS:
-        if str(shift.date.date()) == date_string and shift.user_id == bae_calendar.owner_id:
-            bae_shifts.append(shift)
+    if len(shared_with_me) >= 1:
+        bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
+        # but could get list of just bae.owner_id and loop through that
+        # adding shifts to the 'shared with me' section of calendar card
+        bae_shifts = []
+        for shift in memory_db.SHIFTS:
+            if str(shift.date.date()) == date_string and shift.user_id == bae_calendar.owner_id:
+                bae_shifts.append(shift)
 
     context = {
         "request": request,
