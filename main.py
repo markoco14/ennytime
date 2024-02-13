@@ -1,4 +1,5 @@
 """Main file to hold app and api routes"""
+import datetime
 from typing import Annotated, Optional
 
 from fastapi import FastAPI, Request, Form, Response
@@ -12,7 +13,7 @@ import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
 from repositories import user_repository as UserRepository
 from repositories import session_repository as SessionRepository
-from schemas import ScheduleDay, Session, ShiftType, User
+from schemas import Session, Shift, ShiftType, User
 
 app = FastAPI()
 app.include_router(auth_router.router)
@@ -277,33 +278,34 @@ def schedule_shift(
     date: Annotated[str, Form()],
     ):
     """Add shift to calendar date"""
-    return templates.TemplateResponse(
-        request=request,
-        name="shift-exists.html",
-        # context=context
-    )
-    new_shift = ScheduleDay(date=date, type=shift_type)
-    shift_types = memory_db.SHIFT_TYPES
-    if new_shift in memory_db.SHIFTS:
-        context={"request": request,
-            "days_of_week": calendar_service.DAYS_OF_WEEK,
-            # "month_calendar": MONTH_CALENDAR,
-            "shifts": memory_db.SHIFTS,
-            "shift_types": shift_types,
-            "day_number": date,
-            }
+    if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="shift-exists.html",
-            context=context
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
         )
+    
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+  
+    date_segments = date.split("-")
+    new_shift = Shift(
+        id=len(memory_db.SHIFTS) + 1,
+        type_id=shift_type,
+        user_id=current_user.id,
+        date=datetime.datetime(int(date_segments[0]), int(date_segments[1]), int(date_segments[2]))
+        )
+    
+    # REMOVED CHECK FOR SHIFT EXISTS/DAY HAS SHIFT
+    # TODO: check if day already has that shift type
+    # a day might have 2 shifts (for now, because might have 2 jobs)
     memory_db.SHIFTS.append(new_shift)
 
     context={"request": request,
-        # "days_of_week": DAYS_OF_WEEK,
-        # "month_calendar": MONTH_CALENDAR,
         "shifts": memory_db.SHIFTS,
           }
+    
     return templates.TemplateResponse(
         request=request,
         name="success.html",

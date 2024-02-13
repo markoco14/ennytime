@@ -4,12 +4,6 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class ScheduleDay(BaseModel):
-    """Schedule day"""
-    date: int
-    type: str
-
-
 class ShiftType(BaseModel):
     """Shift type"""
     id: int
