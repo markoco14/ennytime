@@ -170,9 +170,11 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
         type=shift_type,
         user_id=current_user.id
     )
-    memory_db.SHIFT_TYPES.append(new_shift_type)
+    memory_db.SHIFT_TYPES.update({new_shift_type.id:new_shift_type})
 
-    shift_types = [shift_type for shift_type in memory_db.SHIFT_TYPES if shift_type.user_id == current_user.id]
+    shift_types = ShiftTypeRepository.list_user_shift_types(
+        user_id=current_user.id)
+    
     context={
         "request": request,
         "shift_types": shift_types,
