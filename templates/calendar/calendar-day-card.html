@@ -7,7 +7,9 @@
   onclick="popOut(Number(`{{day_number}}`))"
 >
   <span> {{ day_number }} </span>
-  {% for shift in shifts %}
-    <span>{{shift.type.type}}</span>
-  {% endfor %}
+  {% if shifts|length > 0%}
+    {% for shift in shifts %}
+      <span>{{shift.type.type}}</span>
+    {% endfor %}
+  {%endif%}
 </div>

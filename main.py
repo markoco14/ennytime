@@ -43,17 +43,21 @@ def index(
 
     month_calendar = calendar_service.get_month_calendar(current_year, current_month)
     
-    month_dictionary = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month}) for day in month_calendar)
+    month_calendar_dict = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month, "shifts": []}) for day in month_calendar)
     
     
     shift_types = ShiftTypeRepository.list_user_shift_types(
         user_id=current_user.id)
     shift_type_dict = dict((str(shift_type.id), shift_type) for shift_type in shift_types)
 
+    
     for shift in memory_db.SHIFTS:
-        if month_dictionary.get(str(shift.date.date())):
-            month_dictionary[str(shift.date.date())]['shift_type_id'] = shift.type_id
-            month_dictionary[str(shift.date.date())]['shift_type'] = shift_type_dict.get(str(shift.type_id))
+        if month_calendar_dict.get(str(shift.date.date())):
+            month_calendar_dict[str(shift.date.date())]['shift_type_id'] = shift.type_id
+            month_calendar_dict[str(shift.date.date())]['shift_type'] = shift_type_dict.get(str(shift.type_id))
+            month_calendar_dict[str(shift.date.date())]['shifts'].append(shift)
+        
+
 
     context = {
         "request": request,
@@ -61,8 +65,7 @@ def index(
         "current_year": current_year,
         "current_month_number": current_month,
         "current_month": calendar_service.MONTHS[current_month - 1],
-        "month_calendar": list(month_dictionary.values()),
-        "shifts": memory_db.SHIFTS,
+        "month_calendar": list(month_calendar_dict.values()),
     }
 
     response = templates.TemplateResponse(
