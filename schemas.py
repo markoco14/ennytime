@@ -1,6 +1,7 @@
 """Schemas for the application"""
 
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -10,11 +11,15 @@ class ShiftType(BaseModel):
     type: str
     user_id: int
 
+
 class Shift(BaseModel):
+    """Shift data class"""
     id: int
     type_id: int
     user_id: int
     date: datetime
+    type: Optional[ShiftType] = None
+
 
 class Session(BaseModel):
     """Session"""

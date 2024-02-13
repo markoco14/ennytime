@@ -39,6 +39,7 @@ SHIFTS: list[Shift] = [
 		type_id=2,
 		user_id=3,
 		date=datetime.datetime(2024, 2, 9),
+		type=SHIFT_TYPES[2],
 	),
 ]
 
