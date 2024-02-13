@@ -1,13 +1,9 @@
 <form
-  class="min-w-[300px]"
+  class="min-w-[300px] p-[40px]"
   hx-post="register-shift"
   hx-target="this"
   hx-swap="outerHTML"
 >
-  <p class="dark:text-gray-100">{{day_number}}</p>
-  {# <p class="dark:text-gray-100">{{current_month}}</p> #}
-  {# <p class="dark:text-gray-100">{{current_year}}</p> #}
-  {# <p class="dark:text-gray-100">{{date_string}}</p> #}
   <div class="sr-only">
     <label>Date</label>
     <input
@@ -44,10 +40,11 @@
   </button>
 </form>
 <button
-  class="hover:underline underline-offset-2"
+  class="absolute top-2 right-2 hover:underline underline-offset-2"
   hx-get="/calendar-card/{{date_string}}"
   hx-target="#day-{{day_number}}"
   hx-swap="innerHTML"
+  hx-trigger="click delay:300ms"
   onclick="popOut(Number(`{{ day_number }}`))"
 >
   Close
