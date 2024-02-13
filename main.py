@@ -243,14 +243,30 @@ def get_calendar_day_card(request: Request, date_string: str):
             shift.type = ShiftTypeRepository.get_shift_type(shift_type_id=shift.type_id)
             shifts.append(shift)
 
+
+    # handle shared shifts
+    shares = list(memory_db.SHARED_CALENDARS.values())
+    shared_with_me = []
+    for share in shares:
+        if share.guest_id == current_user.id:
+            shared_with_me.append(share)
+
+    bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
+    # but could get list of just bae.owner_id and loop through that
+    # adding shifts to the 'shared with me' section of calendar card
+    bae_shifts = []
+    for shift in memory_db.SHIFTS:
+        if str(shift.date.date()) == date_string and shift.user_id == bae_calendar.owner_id:
+            bae_shifts.append(shift)
+
     context = {
         "request": request,
-        
         "date_string": date_string,
         "date": {
             "shifts": shifts,
-            "day_number": int(date_segments[2])
-            },    
+            "day_number": int(date_segments[2]),
+            "bae_shifts": bae_shifts,
+            },
     }
 
     return templates.TemplateResponse(
