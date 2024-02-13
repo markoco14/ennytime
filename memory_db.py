@@ -4,9 +4,7 @@ This is a temporary solution.
 """
 
 import datetime
-from schemas import Session, Shift, ShiftType, User
-
-
+from schemas import Session, Share, Shift, ShiftType, User
 
 
 SHIFT_TYPES: dict[ShiftType] = {
@@ -41,9 +39,56 @@ SHIFTS: list[Shift] = [
 		date=datetime.datetime(2024, 2, 9),
 		type=SHIFT_TYPES[2],
 	),
+	Shift(
+		id=2,
+		type_id=3,
+		user_id=3,
+		date=datetime.datetime(2024, 2, 11),
+		type=SHIFT_TYPES[3],
+	),
+	Shift(
+		id=3,
+		type_id=1,
+		user_id=2,
+		date=datetime.datetime(2024, 2, 11),
+		type=SHIFT_TYPES[1],
+	),
+	Shift(
+		id=4,
+		type_id=2,
+		user_id=3,
+		date=datetime.datetime(2024, 2, 19),
+		type=SHIFT_TYPES[2],
+	),
+	Shift(
+		id=5,
+		type_id=2,
+		user_id=1,
+		date=datetime.datetime(2024, 2, 19),
+		type=SHIFT_TYPES[2],
+	),
+	Shift(
+		id=6,
+		type_id=3,
+		user_id=2,
+		date=datetime.datetime(2024, 2, 19),
+		type=SHIFT_TYPES[3],
+	),
 ]
 
 
+SHARED_CALENDARS: dict[Share] = {
+	"owner2guest3": Share(
+		id=1,
+		owner_id=2,
+		guest_id=3,
+	),
+	"owner1guest2": Share(
+		id=2,
+		owner_id=1,
+		guest_id=2,
+	)
+}
 
 
 SESSIONS: dict[Session]= {

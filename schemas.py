@@ -34,3 +34,9 @@ class User(BaseModel):
     id: int
     email: str
     password: str
+
+class Share(BaseModel):
+    """Shares"""
+    id: int
+    owner_id: int
+    guest_id: int

@@ -6,10 +6,21 @@
   class="grid w-full h-full rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer p-2 bg-white dark:bg-gray-700"
   onclick="popOut(Number(`{{date.day_number}}`))"
 >
+  <div class="grid gap-2">
   <span> {{ date.day_number }} </span>
   {% if date.shifts|length > 0%}
+  <ul>
     {% for shift in date.shifts %}
-      <span>{{shift.type.type}}</span>
+      <li class="rounded-md bg-green-300 text-black dark:bg-green-700 dark:text-white">{{shift.type.type}}</li>
     {% endfor %}
+  </ul>
   {%endif%}
+  {% if date.bae_shifts and date.bae_shifts|length > 0%}
+  <ul>
+    {% for shift in date.bae_shifts %}
+      <li class="rounded-md bg-pink-300 text-black dark:bg-pink-700 dark:text-white">{{shift.type.type}}</li>
+    {% endfor %}
+  </ul>
+  {%endif%}
+  </div>
 </div>

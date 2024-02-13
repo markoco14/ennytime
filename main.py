@@ -53,7 +53,7 @@ def index(
 
     month_calendar = calendar_service.get_month_calendar(current_year, current_month)
     
-    month_calendar_dict = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month, "shifts": []}) for day in month_calendar)
+    month_calendar_dict = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
     
     
     shift_types = ShiftTypeRepository.list_user_shift_types(
@@ -62,12 +62,26 @@ def index(
 
     
     for shift in memory_db.SHIFTS:
-        if month_calendar_dict.get(str(shift.date.date())):
+        if month_calendar_dict.get(str(shift.date.date())) and shift.user_id == current_user.id:
             month_calendar_dict[str(shift.date.date())]['shift_type_id'] = shift.type_id
             month_calendar_dict[str(shift.date.date())]['shift_type'] = shift_type_dict.get(str(shift.type_id))
             month_calendar_dict[str(shift.date.date())]['shifts'].append(shift)
-        
 
+    # handle shared shifts
+    shares = list(memory_db.SHARED_CALENDARS.values())
+    shared_with_me = []
+    for share in shares:
+        if share.guest_id == current_user.id:
+            shared_with_me.append(share)
+
+    bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
+    # but could get list of just bae.owner_id and loop through that
+    # adding shifts to the 'shared with me' section of calendar card
+    
+    for shift in memory_db.SHIFTS:
+        if month_calendar_dict.get(str(shift.date.date())) and shift.user_id == bae_calendar.owner_id:
+            month_calendar_dict[str(shift.date.date())]['bae_shifts'].append(shift)
+        
 
     context = {
         "request": request,

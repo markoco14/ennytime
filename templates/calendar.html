@@ -5,17 +5,17 @@
   {% endfor %} 
   {% for date in month_calendar %} 
     {% if date.month_number != current_month_number %}
-      <div class=" min-h-[48px] border rounded-md border-gray-900 bg-gray-100">
+      <div class=" min-h-[48px] border rounded-md bg-gray-300 dark:bg-gray-900 dark:border-gray-500">
         
-          <div  class="grid place-items-center h-full dark:bg-gray-700 rounded-md">
+          <div  class="grid place-items-center h-full rounded-md">
           {{date.day_number}}
           </div>
       </div>
     {% else %}
-      <div class=" min-h-[48px] border rounded-md border-gray-900 bg-white">
+      <div class=" min-h-[48px] border rounded-md border-gray-900 bg-white dark:bg-gray-900">
         <div 
           id="day-{{date.day_number}}" 
-          class="prop h-full bg-white dark:bg-gray-700 rounded-md"
+          class="prop h-full dark:bg-gray-700 rounded-md bg-white dark:bg-gray-900"
         >
           {% include '/calendar/calendar-day-card.html'%}
         </div>
