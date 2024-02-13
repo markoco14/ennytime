@@ -8,15 +8,15 @@ from fastapi.templating import Jinja2Templates
 
 
 from auth import auth_service, router as auth_router
+from admin import router as admin_router
 import calendar_service
 import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
-from repositories import user_repository as UserRepository
-from repositories import session_repository as SessionRepository
 from schemas import Session, Shift, ShiftType, User
 
 app = FastAPI()
 app.include_router(auth_router.router)
+app.include_router(admin_router.router)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -35,7 +35,17 @@ def index(
         )
 
     session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+
+    if auth_service.is_session_expired(expiry=session_data.expires_at):
+        auth_service.destroy_db_session(session_token=session_data.session_id)
+        response = templates.TemplateResponse(
+            request=request,
+            name="landing-page.html"
+            )
+        response.delete_cookie("session-id")
     
+        return response
+       
     current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
 
     current_month = calendar_service.get_current_month(month)
@@ -115,46 +125,6 @@ def profile(request: Request):
         context=context
         )
 
-@app.get("/users", response_class=HTMLResponse)
-def list_users(request: Request):
-    """List users"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="landing-page.html",
-            headers={"HX-Redirect": "/"},
-        )
-    
-    users = UserRepository.list_users()
-    context = {
-        "request": request,
-        "users": users,
-    }
-    return templates.TemplateResponse(
-        request=request,
-        name="users.html",
-        context=context
-    )
-@app.get("/sessions", response_class=HTMLResponse)
-def list_sessions(request: Request):
-    """List sessions"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="landing-page.html",
-            headers={"HX-Redirect": "/"},
-        )
-    
-    sessions = SessionRepository.list_sessions()
-    context = {
-        "request": request,
-    "sessions": sessions,
-    }
-    return templates.TemplateResponse(
-        request=request,
-        name="sessions.html",
-        context=context
-    )
 
 @app.post("/register-shift-type", response_class=HTMLResponse)
 def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
