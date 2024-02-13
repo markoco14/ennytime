@@ -42,7 +42,7 @@ def index(
 
     month_calendar = calendar_service.get_month_calendar(current_year, current_month)
     
-    month_dictionary = dict((str(day), {"date": str(day)}) for day in month_calendar)
+    month_dictionary = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month}) for day in month_calendar)
     
     
     shift_types = ShiftTypeRepository.list_user_shift_types(
@@ -58,6 +58,7 @@ def index(
         "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
+        "current_month_number": current_month,
         "current_month": calendar_service.MONTHS[current_month - 1],
         "month_calendar": list(month_dictionary.values()),
         "shifts": memory_db.SHIFTS,

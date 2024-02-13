@@ -4,21 +4,35 @@
     <div class="text-center text-xl font-bold">{{ day_name }}</div>
   {% endfor %} 
   {% for date in month_calendar %} 
-        <div
-        {% if not date.shift_type %}
-          class="min-h-[48px] rounded-md bg-green-300 dark:bg-green-800  border border-gray-900 dark:border-0 cursor-not-allowed"
-        {% else %}
-          class="min-h-[48px] rounded-md bg-red-300 dark:bg-red-800  border border-gray-900 dark:border-0 cursor-not-allowed"
-        {% endif %}
-        >
-        <p>
-        {{ date.date }}
-        </p>
-        {% if date.shift_type_id %}
-        <p>
-        {{ date.shift_type.type }}
-        </p>
-        {% endif %}
-        </div>
+    {% if date.month_number != current_month_number %}
+      <div class=" min-h-[48px] border rounded-md border-gray-900 bg-gray-100">
+        
+          <div  class="grid place-items-center h-full dark:bg-gray-700 rounded-md">
+          {{date.day_number}}
+          </div>
+      </div>
+    {% else %}
+      <div class=" min-h-[48px] border rounded-md border-gray-900 bg-white">
+          <div 
+          id="day-{{date.day_number}}" 
+          class="prop grid place-items-center h-full bg-white dark:bg-gray-700 rounded-md">
+            <div
+              hx-get="/add-shift-form/{{date.day_number}}"
+              hx-target="this"
+              hx-swap="outerHTML"
+              hx-trigger="click"
+              class=" grid rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer p-2 "
+              onclick="popOut(Number(`{{date.day_number}}`))"
+            >
+              <span> {{ date.day_number }} </span>
+              {% if date.shift_type %}
+                <span>
+                {{date.shift_type.type}}
+                </span>
+              {%endif%}
+            </div>
+          </div>
+      </div>
+    {%endif%}
   {% endfor %}
 </div>
