@@ -213,15 +213,12 @@ def get_calendar_day_form(
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
 
-    if day_number < 10:
-        current_day = f"0{day_number}"
-    else:
-        current_day = day_number
+    date_string = datetime.datetime(
+        current_year,
+        current_month,
+        day_number
+        ).date()
 
-    if current_month < 10:
-        current_month = f"0{current_month}"
-        
-    date_string = f"{current_year}-{current_month}-{current_day}"
     context={
         "request": request,
         "shift_types": shift_types,
@@ -231,7 +228,6 @@ def get_calendar_day_form(
         "date_string": date_string
           }
 
-    print(date_string)
     return templates.TemplateResponse(
         request=request,
         name="/calendar/add-shift-form.html",
