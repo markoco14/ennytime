@@ -36,6 +36,13 @@ class User(BaseModel):
     password: str
     display_name: Optional[str] = None
 
+    
+class AppUser(BaseModel):
+    """User"""
+    id: int
+    email: str
+    display_name: Optional[str] = None
+
 class CreateUser(BaseModel):
     """Create user"""
     email: str
