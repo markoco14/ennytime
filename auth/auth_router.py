@@ -8,8 +8,8 @@ from fastapi.templating import Jinja2Templates
 from auth import auth_service
 from core.database import get_db
 from core.memory_db import SESSIONS, USERS
-from schemas import Session, User, CreateUserHashed
-from repositories import user_repository
+from schemas import CreateUserSession, Session, User, CreateUserHashed
+from repositories import user_repository, session_repository
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -45,14 +45,14 @@ def signup(
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
-    new_session = Session(
-        id=len(SESSIONS) + 1,
+    new_session = CreateUserSession(
         session_id=session_cookie,
         user_id=app_user.id,
         expires_at=auth_service.generate_session_expiry()
     )
     # add session to SESSIONS 
-    SESSIONS.update({new_session.session_id: new_session})
+    session_repository.create_session(db=db, session=new_session)
+    
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
@@ -115,11 +115,11 @@ def signin(
 
 
 @router.get("/signout", response_class=HTMLResponse)
-def signout(request: Request, response: Response):
+def signout(request: Request, response: Response, db: Annotated[Session, Depends(get_db)],):
     """Sign out a user"""
     session_id = request.cookies.get("session-id")
     if session_id:
-        del SESSIONS[f"{session_id}"]
+        session_repository.destroy_session(db=db, session_id=session_id)
 
     response = Response(status_code=200)
     response.delete_cookie(key="session-id")
