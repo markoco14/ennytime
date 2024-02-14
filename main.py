@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import auth_router, auth_service
 from routers import admin_router, user_router
-import calendar_service
+from services import calendar_service
 import core.memory_db as memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
 from schemas import Session, Shift, ShiftType, User
