@@ -16,7 +16,10 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/users", response_class=HTMLResponse)
-def list_users(request: Request):
+def list_users(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    ):
     """List users"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -25,7 +28,7 @@ def list_users(request: Request):
             headers={"HX-Redirect": "/"},
         )
     
-    users = UserRepository.list_users()
+    users = UserRepository.list_users(db=db)
     context = {
         "request": request,
         "users": users,

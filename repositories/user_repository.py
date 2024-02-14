@@ -34,9 +34,10 @@ def create_user(db: Session, user: schemas.CreateUserHashed) -> schemas.AppUser:
     return db_user
 
 
-def list_users():
+def list_users(db: Session):
     """ Returns a list of users """
-    return list(USERS.values())
+    db_users = db.query(DBUser).all()
+    return db_users
 
 
 def patch_user(current_user: schemas.User, display_name: str = None):
