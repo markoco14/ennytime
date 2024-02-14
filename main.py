@@ -37,7 +37,7 @@ def index(
             name="landing-page.html"
         )
     try:
-        session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+        session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine
@@ -149,7 +149,7 @@ def register_shift_type(
             headers={"HX-Redirect": "/"},
         )
     
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
             
@@ -191,7 +191,7 @@ def get_calendar_day_form(
             headers={"HX-Redirect": "/"},
         )
     
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
 
@@ -235,7 +235,7 @@ def get_calendar_day_card(
             headers={"HX-Redirect": "/"},
         )
     
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
@@ -311,7 +311,7 @@ def schedule_shift(
             headers={"HX-Redirect": "/"},
         )
     
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
   
@@ -351,7 +351,7 @@ def search_users_to_share(
             name="landing-page.html"
         )
 
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     if auth_service.is_session_expired(expiry=session_data.expires_at):
         auth_service.destroy_db_session(session_token=session_data.session_id)
