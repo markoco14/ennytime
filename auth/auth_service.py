@@ -3,10 +3,12 @@ from datetime import datetime, timedelta
 import secrets
 from typing import Dict
 
+from sqlalchemy.orm import Session
+
 from passlib.context import CryptContext
 from core.memory_db import SESSIONS, USERS
-
-from schemas import Session
+from repositories import user_repository
+import schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -42,16 +44,10 @@ def is_session_expired(expiry: datetime):
         
 
 def get_session_data(session_token):
-    session_data: Session = SESSIONS.get(session_token)
+    session_data: schemas.Session = SESSIONS.get(session_token)
     return session_data
 
-def get_current_user(user_id: int):
-     # get users as a list (from memory db)
-    db_users = list(USERS.values())
-
-    # find the user in the list
-    for user in db_users:
-        if user.id == user_id:
-            current_user = user
-
-    return current_user
+def get_current_user(db: Session, user_id: int) -> schemas.AppUser:
+    db_user = user_repository.get_user_by_id(db=db, user_id=user_id)
+    return db_user
+    
