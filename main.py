@@ -48,7 +48,19 @@ def index(
     
         return response
        
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    try:
+        current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    except AttributeError:
+        # TODO: figure out how to specify because may be other errors
+        # although this response may just be fine
+        # AttributeError: 'NoneType' object has no attribute 'user_id'
+        response = templates.TemplateResponse(
+        request=request,
+        name="signin.html",
+        headers={"HX-Redirect": "/signin"},
+    )
+        response.delete_cookie("session-id")
+        return response
 
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
@@ -309,21 +321,21 @@ def schedule_shift(
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
     request: Request,
-    search_email: Annotated[str, Form()] = ""
+    search_display_name: Annotated[str, Form()] = ""
     ):
     """ Returns a list of users that match the search string. """
-    if search_email == "":
+    if search_display_name == "":
         return templates.TemplateResponse(
             request=request,
             name="search-results.html",
             context={"request": request, "matching_users": []}
         )
     
-    search_email_lower = search_email.lower()
+    search_display_name_lower = search_display_name.lower()
     user_list = list(memory_db.USERS.values())
     matching_users = []
     for user in user_list:
-        if search_email_lower in user.email.lower():
+        if user.display_name and search_display_name_lower in user.display_name.lower():
            matching_users.append(user)
         
     context = {"request": request, "matching_users": matching_users}
