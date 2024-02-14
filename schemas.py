@@ -36,6 +36,15 @@ class User(BaseModel):
     password: str
     display_name: Optional[str] = None
 
+class CreateUser(BaseModel):
+    """Create user"""
+    email: str
+    password: str
+
+class CreateUserHashed(BaseModel):
+    email: str
+    hashed_password: str
+
 class Share(BaseModel):
     """Shares"""
     id: int
