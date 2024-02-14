@@ -11,6 +11,11 @@ class ShiftType(BaseModel):
     type: str
     user_id: int
 
+class CreateShiftType(BaseModel):
+    "Create shift type"
+    type: str
+    user_id: int
+
 
 class Shift(BaseModel):
     """Shift data class"""
