@@ -7,9 +7,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 
-from auth import auth_service, router as auth_router
-from admin import router as admin_router
-from user import router as user_router
+from auth import auth_router, auth_service
+from routers import admin_router, user_router
 import calendar_service
 import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
