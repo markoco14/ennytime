@@ -1,6 +1,14 @@
 {% for user in matching_users %}
-	<tr>
-	<td>{{user.display_name}}</td>
-	<td><button>Share</button></td>
-	</tr>
+<tr>
+  <td>{{user.display_name}}</td>
+  <td>
+    <button 
+	hx-get="/share-calendar/{{user.id}}" 
+	hx-target="#share-success"
+	hx-swap="outerHtml"
+	>
+      Share
+    </button>
+  </td>
+</tr>
 {% endfor %}
