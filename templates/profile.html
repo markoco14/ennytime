@@ -41,14 +41,12 @@
           <div class="rounded-md p-4 bg-pink-100 dark:bg-gray-800">
             <h2 class="text-3xl mb-4">Sharing</h2>
             <p>
-              Share your profile with your significant other. Search their email
-              and click share. They will be able to see your shifts in their
-              calendar.
+              Share your calendar with your significant other. Search their display name to share.
             </p>
             <input
               class="p-2 rounded-md text-black"
               type="search"
-              name="search_email"
+              name="search_display_name"
               placeholder="Begin Typing To Search Users..."
               hx-post="/search"
               hx-trigger="input changed delay:500ms, search"
@@ -58,7 +56,7 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th>Email</th>
+                  <th>Name</th>
                   <th>Share</th>
                 </tr>
               </thead>
