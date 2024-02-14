@@ -1,0 +1,11 @@
+<article class="py-2" hx-target="this" hx-swap="outerHTML">
+  <div class="flex gap-2 items-baseline">
+    <label class="text-xl text-gray-600">Display name</label>
+    {% if not user.display_name %}
+    <p class="p-2 bg-white rounded-md border">You don't have a display name.</p>
+    {% else %}
+    <p class="p-2 bg-white rounded-md border">{{user.display_name}}</p>
+    {% endif %}
+  </div>
+  <button hx-get="/contact/{{user.id}}/edit">Edit</button>
+</article>
