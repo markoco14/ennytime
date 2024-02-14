@@ -51,6 +51,7 @@ def get_profile_page(
         return response
         
     shift_types = shift_type_repository.list_user_shift_types(
+        db=db,
         user_id=current_user.id)
     
     context = {

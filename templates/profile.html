@@ -74,8 +74,9 @@
             </article>
             <form
               class="max-w-[400px] grid gap-4 rounded-md p-4 dark:bg-gray-800"
-              hx-post="register-shift-type"
+              hx-post="/register-shift-type"
               hx-target="#shift-list"
+              hx-swap="outerHTML"
             >
               <h3 class="text-xl dark:text-gray-300">Add new shift type</h3>
               <div class="flex flex-col gap-1">

@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from pprint import pprint
 from auth import auth_router, auth_service
 from core.database import get_db
-from routers import admin_router, user_router
+from routers import admin_router, user_router, shift_type_router
 from services import calendar_service
 import core.memory_db as memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
@@ -19,6 +19,7 @@ app = FastAPI()
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
 app.include_router(user_router.router)
+app.include_router(shift_type_router.router)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -83,6 +84,7 @@ def index(
     
     
     shift_types = ShiftTypeRepository.list_user_shift_types(
+        db=db,
         user_id=current_user.id)
     shift_type_dict = dict((str(shift_type.id), shift_type) for shift_type in shift_types)
 
@@ -161,7 +163,9 @@ def register_shift_type(
     memory_db.SHIFT_TYPES.update({new_shift_type.id:new_shift_type})
 
     shift_types = ShiftTypeRepository.list_user_shift_types(
-        user_id=current_user.id)
+        db=db,
+        user_id=current_user.id
+        )
     
     context={
         "request": request,
@@ -196,6 +200,7 @@ def get_calendar_day_form(
     current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
 
     shift_types = ShiftTypeRepository.list_user_shift_types(
+        db=db,
         user_id=current_user.id)
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
