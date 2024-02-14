@@ -8,6 +8,8 @@ from alembic import context
 from core.config import get_settings
 from core.database import Base
 
+from models.user_model import DBUser
+
 # import app settings
 settings = get_settings()
 
