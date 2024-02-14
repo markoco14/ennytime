@@ -82,7 +82,7 @@ def index(
             month_calendar_dict[str(shift.date.date())]['shifts'].append(shift)
 
     # handle shared shifts
-    shares = list(memory_db.SHARED_CALENDARS.values())
+    shares = list(memory_db.SHARES.values())
     shared_with_me = []
     for share in shares:
         if share.guest_id == current_user.id:
@@ -229,7 +229,7 @@ def get_calendar_day_card(request: Request, date_string: str):
 
 
     # handle shared shifts
-    shares = list(memory_db.SHARED_CALENDARS.values())
+    shares = list(memory_db.SHARES.values())
     shared_with_me = []
     for share in shares:
         if share.guest_id == current_user.id:
@@ -324,6 +324,38 @@ def search_users_to_share(
     search_display_name: Annotated[str, Form()] = ""
     ):
     """ Returns a list of users that match the search string. """
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html"
+        )
+
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+
+    if auth_service.is_session_expired(expiry=session_data.expires_at):
+        auth_service.destroy_db_session(session_token=session_data.session_id)
+        response = templates.TemplateResponse(
+            request=request,
+            name="landing-page.html"
+            )
+        response.delete_cookie("session-id")
+    
+        return response
+       
+    try:
+        current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    except AttributeError:
+        # TODO: figure out how to specify because may be other errors
+        # although this response may just be fine
+        # AttributeError: 'NoneType' object has no attribute 'user_id'
+        response = templates.TemplateResponse(
+        request=request,
+        name="signin.html",
+        headers={"HX-Redirect": "/signin"},
+    )
+        response.delete_cookie("session-id")
+        return response
+    
     if search_display_name == "":
         return templates.TemplateResponse(
             request=request,
@@ -335,7 +367,7 @@ def search_users_to_share(
     user_list = list(memory_db.USERS.values())
     matching_users = []
     for user in user_list:
-        if user.display_name and search_display_name_lower in user.display_name.lower():
+        if user.display_name and search_display_name_lower in user.display_name.lower() and user.id != current_user.id:
            matching_users.append(user)
         
     context = {"request": request, "matching_users": matching_users}
