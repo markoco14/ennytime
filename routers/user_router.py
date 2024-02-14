@@ -124,7 +124,11 @@ def update_user_contact(
         )
 
 @router.get("/contact/{user_id}/edit", response_class=HTMLResponse | Response)
-def get_edit_display_name_widget(request: Request, user_id: int):
+def get_edit_display_name_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+    ):
     """Edit contact page"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -133,9 +137,15 @@ def get_edit_display_name_widget(request: Request, user_id: int):
             headers={"HX-Redirect": "/"},
         )
 
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+        )
     
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    current_user: User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+        )
 
     if current_user.id != user_id:
         return Response(status_code=403)
