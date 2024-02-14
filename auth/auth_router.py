@@ -1,13 +1,15 @@
 """User authentication routes"""
 
 from typing import Annotated
-from fastapi import APIRouter, Form, Request, Response
+from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
+from core.database import get_db
 from core.memory_db import SESSIONS, USERS
-from schemas import Session, User
+from schemas import Session, User, CreateUserHashed
+from repositories import user_repository
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -18,11 +20,14 @@ def signup(
     request: Request,
     response: Response,
     email: Annotated[str, Form()],
-    password: Annotated[str, Form()]
+    password: Annotated[str, Form()],
+    db: Annotated[Session, Depends(get_db)],
     ):
     """Sign up a user"""
     # check if user exists
-    db_user: User = USERS.get(email)
+    # db_user: User = USERS.get(email)
+    db_user = user_repository.get_user_by_email(db=db, email=email)
+    # return db_user
     if db_user:
         return templates.TemplateResponse(
             request=request,
@@ -33,16 +38,17 @@ def signup(
     hashed_password = auth_service.get_password_hash(password)
     
     # create new user with encrypted password
-    new_user = User(id=len(USERS)+1, email=email, password=hashed_password)
+    new_user = CreateUserHashed(email=email, hashed_password=hashed_password)
     # add user to USERS
-    USERS.update({email: new_user})
+    app_user = user_repository.create_user(db=db, user=new_user)
+    # USERS.update({email: new_user})
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
     new_session = Session(
         id=len(SESSIONS) + 1,
         session_id=session_cookie,
-        user_id=new_user.id,
+        user_id=app_user.id,
         expires_at=auth_service.generate_session_expiry()
     )
     # add session to SESSIONS 

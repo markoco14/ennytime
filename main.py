@@ -2,17 +2,18 @@
 import datetime
 from typing import Annotated, Optional
 
-from fastapi import FastAPI, Request, Form, Response
+from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-
+from pprint import pprint
 from auth import auth_router, auth_service
+from core.database import get_db
 from routers import admin_router, user_router
 from services import calendar_service
 import core.memory_db as memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
-from schemas import Session, Shift, ShiftType, User
+from schemas import Session, Shift, ShiftType, User, AppUser
 
 app = FastAPI()
 app.include_router(auth_router.router)
@@ -25,6 +26,7 @@ templates = Jinja2Templates(directory="templates")
 def index(
     request: Request,
     response: Response,
+    db: Annotated[Session, Depends(get_db)],
     month: Optional[int] = None,
     year: Optional[int] = None,
     ):
@@ -59,7 +61,7 @@ def index(
         return response
        
     try:
-        current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+        current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine
@@ -135,7 +137,10 @@ def get_signin_page(request: Request):
 
 
 @app.post("/register-shift-type", response_class=HTMLResponse)
-def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
+def register_shift_type(
+    request: Request, 
+    shift_type: Annotated[str, Form()],
+    db: Annotated[Session, Depends(get_db)],):
     """Register shift type"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -146,7 +151,7 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
     
     session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
 
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
             
     new_shift_type = ShiftType(
         id=len(memory_db.SHIFT_TYPES) + 1,
@@ -172,9 +177,10 @@ def register_shift_type(request: Request, shift_type: Annotated[str, Form()]):
 
 @app.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
 def get_calendar_day_form(
-    request: Request, 
-    day_number: int, 
-    month: Optional[int] = None, 
+    request: Request,
+    day_number: int,
+    db: Annotated[Session, Depends(get_db)],
+    month: Optional[int] = None,
     year: Optional[int] = None
     ):
     """Get calendar day form"""
@@ -187,7 +193,7 @@ def get_calendar_day_form(
     
     session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
 
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
 
     shift_types = ShiftTypeRepository.list_user_shift_types(
         user_id=current_user.id)
@@ -217,7 +223,10 @@ def get_calendar_day_form(
 
 
 @app.get("/calendar-card/{date_string}", response_class=HTMLResponse)
-def get_calendar_day_card(request: Request, date_string: str):
+def get_calendar_day_card(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    date_string: str):
     """Get calendar day card"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -228,7 +237,7 @@ def get_calendar_day_card(request: Request, date_string: str):
     
     session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
 
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
 
     shifts = []
@@ -290,6 +299,7 @@ def modal(request: Request, day_number: int):
 @app.post("/register-shift", response_class=HTMLResponse)
 def schedule_shift(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
     shift_type: Annotated[str, Form()],
     date: Annotated[str, Form()],
     ):
@@ -303,7 +313,7 @@ def schedule_shift(
     
     session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
 
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
   
     date_segments = date.split("-")
     new_shift = Shift(
@@ -331,6 +341,7 @@ def schedule_shift(
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
     search_display_name: Annotated[str, Form()] = ""
     ):
     """ Returns a list of users that match the search string. """
@@ -353,7 +364,7 @@ def search_users_to_share(
         return response
        
     try:
-        current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+        current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine
