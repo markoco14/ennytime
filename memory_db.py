@@ -77,7 +77,7 @@ SHIFTS: list[Shift] = [
 ]
 
 
-SHARED_CALENDARS: dict[Share] = {
+SHARES: dict[Share] = {
 	"owner2guest3": Share(
 		id=1,
 		owner_id=2,
@@ -108,6 +108,12 @@ SESSIONS: dict[Session]= {
 		session_id="a-test-session",
 		user_id=2,
 		expires_at="2024-02-09 23:59:59"
+	),
+	"9bcfa936b809e312f6f3a0a13f9fba66": Session(
+		id=3,
+		session_id="9bcfa936b809e312f6f3a0a13f9fba66",
+		user_id=3,
+		expires_at="2024-02-14 23:59:59"
 	),
 }
 
