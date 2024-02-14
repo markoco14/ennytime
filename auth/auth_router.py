@@ -71,11 +71,12 @@ def signin(
     request: Request,
     response: Response,
     email: Annotated[str, Form()],
-    password: Annotated[str, Form()]
+    password: Annotated[str, Form()],
+    db: Annotated[Session, Depends(get_db)],
     ):
     """Sign in a user"""
     # check if user exists
-    db_user: User = USERS.get(email)
+    db_user = user_repository.get_user_by_email(db=db, email=email)
     if not db_user:
         return templates.TemplateResponse(
             request=request,
@@ -84,7 +85,10 @@ def signin(
             
         )
     # verify the password
-    if not auth_service.verify_password(password, db_user.password):
+    if not auth_service.verify_password(
+        plain_password=password,
+        hashed_password=db_user.hashed_password
+        ):
         return templates.TemplateResponse(
             request=request,
             name="/auth/form-error.html",
@@ -94,14 +98,15 @@ def signin(
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
-    new_session = Session(
-        id=len(SESSIONS) + 1,
+
+    new_session = CreateUserSession(
         session_id=session_cookie,
         user_id=db_user.id,
         expires_at=auth_service.generate_session_expiry()
     )
     # add session to SESSIONS 
-    SESSIONS.update({new_session.session_id: new_session})
+    session_repository.create_session(db=db, session=new_session)
+    
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
