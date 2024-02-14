@@ -216,9 +216,12 @@ def get_edit_display_name_widget(
 
 
 @router.get("/share-calendar/{user_id}", response_class=HTMLResponse | Response)
-def share_calendar(request: Request, user_id: int):
+def share_calendar(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+    ):
     """Share calendar page"""
-    print(user_id)
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
@@ -226,10 +229,10 @@ def share_calendar(request: Request, user_id: int):
             headers={"HX-Redirect": "/"},
         )
 
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     try:
-        current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+        current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine
