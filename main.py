@@ -35,9 +35,20 @@ def index(
             request=request,
             name="landing-page.html"
         )
-
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
-
+    try:
+        session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    except AttributeError:
+        # TODO: figure out how to specify because may be other errors
+        # although this response may just be fine
+        # AttributeError: 'NoneType' object has no attribute 'user_id'
+        response = templates.TemplateResponse(
+        request=request,
+        name="signin.html",
+        headers={"HX-Redirect": "/signin"},
+    )
+        response.delete_cookie("session-id")
+        return response
+    
     if auth_service.is_session_expired(expiry=session_data.expires_at):
         auth_service.destroy_db_session(session_token=session_data.session_id)
         response = templates.TemplateResponse(

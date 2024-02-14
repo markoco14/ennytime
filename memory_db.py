@@ -78,22 +78,22 @@ SHIFTS: list[Shift] = [
 
 
 SHARES: dict[Share] = {
-	"owner2guest3": Share(
-		id=1,
-		owner_id=2,
-		guest_id=3,
-	),
-	"owner1guest2": Share(
-		id=2,
-		owner_id=1,
-		guest_id=2,
-	),
-	"owner3guest4": Share(
-		id=3,
-		owner_id=3,
-		guest_id=4,
-	)
 }
+# "owner2guest3": Share(
+# 	id=1,
+# 	owner_id=2,
+# 	guest_id=3,
+# ),
+# "owner1guest2": Share(
+# 	id=2,
+# 	owner_id=1,
+# 	guest_id=2,
+# ),
+# "owner3guest4": Share(
+# 	id=3,
+# 	owner_id=3,
+# 	guest_id=4,
+# )
 
 
 SESSIONS: dict[Session]= {
@@ -109,13 +109,13 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 23:59:59"
 	),
-	"9bcfa936b809e312f6f3a0a13f9fba66": Session(
-		id=3,
-		session_id="9bcfa936b809e312f6f3a0a13f9fba66",
-		user_id=3,
-		expires_at="2024-02-14 23:59:59"
-	),
 }
+# "7354f63031ad3b519e731f9ee72350f7": Session(
+# 	id=3,
+# 	session_id="7354f63031ad3b519e731f9ee72350f7",
+# 	user_id=3,
+# 	expires_at="2024-02-14 23:59:59"
+# ),
 
 
 USERS: dict[User] = {
