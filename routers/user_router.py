@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.exc import IntegrityError
+
 from auth import auth_service
 from core.database import get_db
 import core.memory_db as memory_db
@@ -99,11 +101,22 @@ def get_display_name_widget(
         context=context
         )
 
+def update_entity(original_entity, update_data: dict[str, any]):
+    """
+    General function for updating an entity with the values available in input dictionary
+    """
+    for key, value in update_data.items():
+        setattr(original_entity, key, value)
+        
+    return original_entity
+
+
 @router.put("/contact/{user_id}", response_class=HTMLResponse | Response)
 def update_user_contact(
     request: Request, 
     user_id: int, 
-    display_name: Annotated[str, Form()] = None
+    db: Annotated[Session, Depends(get_db)],
+    display_name: Annotated[str, Form()] = None,
 ):
     """ update user attribute"""
     if not auth_service.get_session_cookie(request.cookies):
@@ -113,18 +126,47 @@ def update_user_contact(
             headers={"HX-Redirect": "/"},
         )
 
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+        )
     
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    current_user: User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+        )
 
     if current_user.id != user_id:
         return Response(status_code=403)
     
-    user_repository.patch_user(current_user, display_name=display_name)
+    update_data = {}
+    if display_name is not None:
+        update_data.update({"display_name": display_name})
+
+    updated_user = update_entity(
+        original_entity=current_user,
+        update_data=update_data
+    )
+
+    try:
+        user_repository.patch_user(
+            db=db, 
+            updated_user=updated_user)
+    except IntegrityError:
+        context = {
+            "request": request,
+            "user": current_user,
+        }
+
+        return templates.TemplateResponse(
+            request=request,
+            name="/contact/display-name.html",
+            context=context
+            )
 
     context = {
         "request": request,
-        "user": current_user,
+        "user": updated_user,
     }
 
     return templates.TemplateResponse(

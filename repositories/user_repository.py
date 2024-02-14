@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.memory_db import USERS
 from models.user_model import DBUser
 import schemas
+from typing import Optional
 
 
 
@@ -40,12 +41,12 @@ def list_users(db: Session):
     return db_users
 
 
-def patch_user(current_user: schemas.User, display_name: str = None):
+def patch_user(
+        db: Session,
+        updated_user: DBUser,
+        ):
     """ Updates a user """
-    if display_name is not None:
-        current_user.display_name = display_name
+    db.commit()
+    db.refresh(updated_user)
 
-    USERS.update({current_user.email: current_user})
-
-
-
+    return updated_user
