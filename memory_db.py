@@ -109,12 +109,6 @@ SESSIONS: dict[Session]= {
 		user_id=2,
 		expires_at="2024-02-09 23:59:59"
 	),
-	"e64f012ab62dd8ee8b251c856b7944fe": Session(
-		id=3,
-		session_id="e64f012ab62dd8ee8b251c856b7944fe",
-		user_id=3,
-		expires_at="2024-02-14 23:59:59"
-	),
 }
 
 
@@ -132,6 +126,13 @@ USERS: dict[User] = {
     "mark.oconnor14@gmail.com": User(
 		id=3,
         email="mark.oconnor14@gmail.com",
-        password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK"
+        password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
+		display_name="Mark O'Connor"
+        ),
+		"rose@rosemail.com": User(
+		id=4,
+        email="rose@rosemail.com",
+        password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
+		display_name="Rose"
         ),
 }

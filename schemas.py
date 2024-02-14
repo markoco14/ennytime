@@ -34,6 +34,7 @@ class User(BaseModel):
     id: int
     email: str
     password: str
+    display_name: Optional[str] = None
 
 class Share(BaseModel):
     """Shares"""
