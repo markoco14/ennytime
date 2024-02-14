@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import auth_service, router as auth_router
 from admin import router as admin_router
+from user import router as user_router
 import calendar_service
 import memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
@@ -17,6 +18,7 @@ from schemas import Session, Shift, ShiftType, User
 app = FastAPI()
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
+app.include_router(user_router.router)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -107,36 +109,6 @@ def get_signin_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="signin.html",
-        )
-
-
-@app.get("/profile", response_class=HTMLResponse | Response)
-def profile(request: Request):
-    """Profile page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="landing-page.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
-    
-    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
-
-    shift_types = ShiftTypeRepository.list_user_shift_types(
-        user_id=current_user.id)
-    
-    context = {
-        "request": request,
-        "shift_types": shift_types,
-        "user": current_user,
-    }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="profile.html",
-        context=context
         )
 
 
