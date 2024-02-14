@@ -9,6 +9,7 @@ from core.config import get_settings
 from core.database import Base
 
 from models.user_model import DBUser
+from models.user_session_model import DBUserSession
 
 # import app settings
 settings = get_settings()
