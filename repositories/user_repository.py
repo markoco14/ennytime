@@ -14,8 +14,15 @@ def get_user_by_email(db: Session, email: str):
     
     return db_user
 
+def get_user_by_id(db: Session, user_id: int):
+    db_user = db.query(DBUser).filter(
+        DBUser.id == user_id).first()
+    
+    return db_user
 
-def create_user(db: Session, user: schemas.CreateUserHashed):
+
+
+def create_user(db: Session, user: schemas.CreateUserHashed) -> schemas.AppUser:
     """ Creates a user """
     
     db_user = DBUser(**user.model_dump())
