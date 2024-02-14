@@ -2,7 +2,7 @@
   <div class="flex gap-2 items-baseline">
     <label class="text-xl text-gray-600">Display name</label>
     {% if not user.display_name %}
-    <p class="p-2 bg-white rounded-md border">You don't have a display name.</p>
+    <p class="p-2 bg-white rounded-md border">You haven't chosen your display name yet.</p>
     {% else %}
     <p class="p-2 bg-white rounded-md border">{{user.display_name}}</p>
     {% endif %}

@@ -1,10 +1,15 @@
-<form class="py-2" hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
+<form
+  class="py-2"
+  hx-put="/contact/{{user.id}}"
+  hx-target="this"
+  hx-swap="outerHTML"
+>
   <div class="flex gap-2 items-baseline">
     <label class="text-xl text-gray-600">Display name</label>
     <input
       class="p-2 bg-white rounded-md border"
       type="text"
-      name="firstName"
+      name="display_name"
       value="{{user.display_name}}"
     />
   </div>

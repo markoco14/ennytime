@@ -1,10 +1,11 @@
 
-from fastapi import APIRouter, Request, Response
+from typing import Annotated
+from fastapi import APIRouter, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
-from repositories import shift_type_repository
+from repositories import shift_type_repository, user_repository
 from schemas import Session, User
 
 router = APIRouter()
@@ -41,55 +42,88 @@ def get_profile_page(request: Request):
 
 @router.get("/contact/{user_id}", response_class=HTMLResponse | Response)
 def get_display_name_widget(request: Request, user_id: int):
-	if not auth_service.get_session_cookie(request.cookies):
-		return templates.TemplateResponse(
-			request=request,
-			name="landing-page.html",
-			headers={"HX-Redirect": "/"},
-		)
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
 
-	session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
-	
-	current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
 
-	if current_user.id != user_id:
-		return Response(status_code=403)
-	
-	context = {
-		"request": request,
-		"user": current_user,
-	}
-	return templates.TemplateResponse(
-		request=request,
-		name="/contact/display-name.html",
-		context=context
-		)
+    if current_user.id != user_id:
+        return Response(status_code=403)
+    
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="/contact/display-name.html",
+        context=context
+        )
+
+@router.put("/contact/{user_id}", response_class=HTMLResponse | Response)
+def update_user_contact(
+    request: Request, 
+    user_id: int, 
+    display_name: Annotated[str, Form()] = None
+):
+    """ update user attribute"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+    
+    user_repository.patch_user(current_user, display_name=display_name)
+
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="/contact/display-name.html",
+        context=context
+        )
 
 @router.get("/contact/{user_id}/edit", response_class=HTMLResponse | Response)
 def get_edit_display_name_widget(request: Request, user_id: int):
-	"""Edit contact page"""
-	print(user_id)
-	if not auth_service.get_session_cookie(request.cookies):
-		return templates.TemplateResponse(
-			request=request,
-			name="landing-page.html",
-			headers={"HX-Redirect": "/"},
-		)
+    """Edit contact page"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="landing-page.html",
+            headers={"HX-Redirect": "/"},
+        )
 
-	session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
-	
-	current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
+    session_data: Session = auth_service.get_session_data(request.cookies.get("session-id"))
+    
+    current_user: User = auth_service.get_current_user(user_id=session_data.user_id)
 
-	if current_user.id != user_id:
-		return Response(status_code=403)
+    if current_user.id != user_id:
+        return Response(status_code=403)
 
-	context = {
-		"request": request,
-		"user": current_user,
-	}
+    context = {
+        "request": request,
+        "user": current_user,
+    }
 
-	return templates.TemplateResponse(
-		request=request,
-		name="/contact/display-name-edit.html",
-		context=context
-		)
+    return templates.TemplateResponse(
+        request=request,
+        name="/contact/display-name-edit.html",
+        context=context
+        )
