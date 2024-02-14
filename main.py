@@ -138,47 +138,6 @@ def get_signin_page(request: Request):
         )
 
 
-@app.post("/register-shift-type", response_class=HTMLResponse)
-def register_shift_type(
-    request: Request, 
-    shift_type: Annotated[str, Form()],
-    db: Annotated[Session, Depends(get_db)],):
-    """Register shift type"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="landing-page.html",
-            headers={"HX-Redirect": "/"},
-        )
-    
-    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
-
-    current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
-            
-    new_shift_type = ShiftType(
-        id=len(memory_db.SHIFT_TYPES) + 1,
-        type=shift_type,
-        user_id=current_user.id
-    )
-    memory_db.SHIFT_TYPES.update({new_shift_type.id:new_shift_type})
-
-    shift_types = ShiftTypeRepository.list_user_shift_types(
-        db=db,
-        user_id=current_user.id
-        )
-    
-    context={
-        "request": request,
-        "shift_types": shift_types,
-          }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="shifts/shift-list.html", # change to list template
-        context=context
-    )
-
-
 @app.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
 def get_calendar_day_form(
     request: Request,
