@@ -1,6 +1,6 @@
 """CRUD functions for users table"""
 
-from memory_db import USERS
+from core.memory_db import USERS
 from schemas import User
 
 

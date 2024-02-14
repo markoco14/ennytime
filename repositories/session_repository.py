@@ -1,6 +1,6 @@
 """CRUD functions for sessions table"""
 
-from memory_db import SESSIONS
+from core.memory_db import SESSIONS
 
 
 def list_sessions():

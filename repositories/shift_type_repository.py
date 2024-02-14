@@ -2,7 +2,7 @@
 Functions for retrieving data from any table in the database
 """
 
-from memory_db import SHIFT_TYPES
+from core.memory_db import SHIFT_TYPES
 
 
 def list_user_shift_types(user_id: int):

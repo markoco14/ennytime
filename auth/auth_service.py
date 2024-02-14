@@ -4,7 +4,7 @@ import secrets
 from typing import Dict
 
 from passlib.context import CryptContext
-from memory_db import SESSIONS, USERS
+from core.memory_db import SESSIONS, USERS
 
 from schemas import Session
 

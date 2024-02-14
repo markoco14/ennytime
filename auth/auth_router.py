@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
-from memory_db import SESSIONS, USERS
+from core.memory_db import SESSIONS, USERS
 from schemas import Session, User
 
 router = APIRouter()

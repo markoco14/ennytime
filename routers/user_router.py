@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
-import memory_db
+import core.memory_db as memory_db
 from repositories import shift_type_repository, user_repository
 from schemas import Session, Share, User
 
