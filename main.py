@@ -51,7 +51,7 @@ def index(
         return response
     
     if auth_service.is_session_expired(expiry=session_data.expires_at):
-        auth_service.destroy_db_session(session_token=session_data.session_id)
+        auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
         response = templates.TemplateResponse(
             request=request,
             name="landing-page.html"
@@ -354,7 +354,7 @@ def search_users_to_share(
     session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     if auth_service.is_session_expired(expiry=session_data.expires_at):
-        auth_service.destroy_db_session(session_token=session_data.session_id)
+        auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
         response = templates.TemplateResponse(
             request=request,
             name="landing-page.html"
