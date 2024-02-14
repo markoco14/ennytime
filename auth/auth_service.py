@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from passlib.context import CryptContext
 from core.memory_db import SESSIONS, USERS
-from repositories import user_repository
+from repositories import user_repository, session_repository
 import schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -35,7 +35,8 @@ def get_session_cookie(cookies: Dict[str, str]):
     
     return True
 
-def destroy_db_session(session_token):
+def destroy_db_session(db: Session, session_token: str):
+    session_repository.destroy_session(db=db, session_id=session_token)
     SESSIONS.pop(session_token)
 
 def is_session_expired(expiry: datetime):
@@ -43,8 +44,8 @@ def is_session_expired(expiry: datetime):
         return True
         
 
-def get_session_data(session_token):
-    session_data: schemas.Session = SESSIONS.get(session_token)
+def get_session_data(db: Session, session_token: str):
+    session_data = session_repository.get_session_by_session_id(db=db, session_id=session_token)
     return session_data
 
 def get_current_user(db: Session, user_id: int) -> schemas.AppUser:
