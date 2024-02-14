@@ -11,6 +11,7 @@ from core.database import Base
 from models.user_model import DBUser
 from models.user_session_model import DBUserSession
 from models.db_shift_type import DbShiftType
+from models.db_shift import DbShift
 
 # import app settings
 settings = get_settings()
