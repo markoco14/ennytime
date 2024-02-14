@@ -96,26 +96,20 @@ SHARES: dict[Share] = {
 # )
 
 
-SESSIONS: dict[Session]= {
-	"first-test-session": Session(
-		id=1,
-		session_id="a-test-session",
-		user_id=1,
-		expires_at="2024-02-14 23:59:59"
-	),
-	"second-test-session": Session(
-		id=2,
-		session_id="a-test-session",
-		user_id=2,
-		expires_at="2024-02-09 23:59:59"
-	),
-}
-# "7354f63031ad3b519e731f9ee72350f7": Session(
-# 	id=3,
-# 	session_id="7354f63031ad3b519e731f9ee72350f7",
-# 	user_id=3,
-# 	expires_at="2024-02-14 23:59:59"
-# ),
+# SESSIONS: dict[Session]= {
+# 	"first-test-session": Session(
+# 		id=1,
+# 		session_id="a-test-session",
+# 		user_id=1,
+# 		expires_at="2024-02-14 23:59:59"
+# 	),
+# 	"second-test-session": Session(
+# 		id=2,
+# 		session_id="a-test-session",
+# 		user_id=2,
+# 		expires_at="2024-02-09 23:59:59"
+# 	),
+# }
 
 
 USERS: dict[User] = {

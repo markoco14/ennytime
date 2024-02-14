@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
 from core.database import get_db
-from core.memory_db import SESSIONS, USERS
+from core.memory_db import USERS
 from schemas import CreateUserSession, Session, User, CreateUserHashed
 from repositories import user_repository, session_repository
 
@@ -50,7 +50,7 @@ def signup(
         user_id=app_user.id,
         expires_at=auth_service.generate_session_expiry()
     )
-    # add session to SESSIONS 
+    # store user session
     session_repository.create_session(db=db, session=new_session)
     
     response = Response(status_code=200)
@@ -104,7 +104,7 @@ def signin(
         user_id=db_user.id,
         expires_at=auth_service.generate_session_expiry()
     )
-    # add session to SESSIONS 
+    # store user session
     session_repository.create_session(db=db, session=new_session)
     
     response = Response(status_code=200)

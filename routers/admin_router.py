@@ -1,12 +1,15 @@
 """ Admin routes """
-from fastapi import APIRouter, Request
+from typing import Annotated
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 
 from auth import auth_service
+from core.database import get_db
 
 from repositories import user_repository as UserRepository
-from repositories import session_repository as SessionRepository
+from repositories import session_repository
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -35,7 +38,10 @@ def list_users(request: Request):
     )
 
 @router.get("/sessions", response_class=HTMLResponse)
-def list_sessions(request: Request):
+def list_sessions(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)]
+    ):
     """List sessions"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -44,7 +50,7 @@ def list_sessions(request: Request):
             headers={"HX-Redirect": "/"},
         )
     
-    sessions = SessionRepository.list_sessions()
+    sessions = session_repository.list_sessions(db=db)
     context = {
         "request": request,
     "sessions": sessions,

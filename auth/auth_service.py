@@ -6,7 +6,7 @@ from typing import Dict
 from sqlalchemy.orm import Session
 
 from passlib.context import CryptContext
-from core.memory_db import SESSIONS, USERS
+from core.memory_db import USERS
 from repositories import user_repository, session_repository
 import schemas
 
@@ -37,7 +37,6 @@ def get_session_cookie(cookies: Dict[str, str]):
 
 def destroy_db_session(db: Session, session_token: str):
     session_repository.destroy_session(db=db, session_id=session_token)
-    SESSIONS.pop(session_token)
 
 def is_session_expired(expiry: datetime):
     if expiry < datetime.now():
