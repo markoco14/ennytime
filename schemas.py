@@ -28,6 +28,20 @@ class Session(BaseModel):
     user_id: int
     expires_at: datetime
 
+class AppUserSession(BaseModel):
+    """In App User Session"""
+    id: int
+    session_id: str
+    user_id: int
+    expires_at: datetime
+
+
+class CreateUserSession(BaseModel):
+    """Create user session"""
+    session_id: str
+    user_id: int
+    expires_at: datetime
+
 
 class User(BaseModel):
     """User"""
@@ -36,7 +50,7 @@ class User(BaseModel):
     password: str
     display_name: Optional[str] = None
 
-    
+
 class AppUser(BaseModel):
     """User"""
     id: int
