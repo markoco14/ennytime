@@ -84,37 +84,22 @@ def index(
     month_calendar_dict = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
     
     
-    shift_types = shift_type_repository.list_user_shift_types(
-        db=db,
-        user_id=current_user.id)
-    shift_type_dict = dict((str(shift_type.id), shift_type) for shift_type in shift_types)
+    # shift_types = shift_type_repository.list_user_shift_types(
+    #     db=db,
+    #     user_id=current_user.id)
+    # shift_type_dict = dict((str(shift_type.id), shift_type) for shift_type in shift_types)
 
     db_shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
     
-    # for shift in memory_db.SHIFTS:
-    #     if month_calendar_dict.get(str(shift.date.date())) and shift.user_id == current_user.id:
-    #         month_calendar_dict[str(shift.date.date())]['shift_type_id'] = shift.type_id
-    #         month_calendar_dict[str(shift.date.date())]['shift_type'] = shift_type_dict.get(str(shift.type_id))
-    #         month_calendar_dict[str(shift.date.date())]['shifts'].append(shift)
-    # pprint(db_shifts)
+    # get users detailed shift info for matching dates
     for shift in db_shifts:
         shift_date = str(shift.date.date())
-        print(shift_date)
         if month_calendar_dict.get(shift_date):
-            print('found a date')
-        # pprint(shift.id)
-        # pprint(shift.type_id)
-        # pprint(shift.user_id)
-        # pprint(str(shift.date.date()))
-        # if month_calendar_dict.get(str(shift.date.date())):
-        #     print('found a day')
-        #     print(month_calendar_dict[str(shift.date.date())])
-            # month_calendar_dict[shift.date.date()]['shift_type_id'] = shift.type_id
-    # for shift in db_shifts:
-    #     if month_calendar_dict.get(str(shift.date.date())):
-    #         month_calendar_dict[str(shift.date.date())]['shift_type_id'] = shift.type_id
-    #         # month_calendar_dict[str(shift.date.date())]['shift_type'] = shift_type_dict.get(str(shift.type_id))
-    #         month_calendar_dict[str(shift.date.date())]['shifts'].append(shift)
+            db_shift_type = shift_type_repository.get_user_shift_type(db=db, user_id=current_user.id, shift_type_id=shift.type_id)
+            # month_calendar_dict[shift_date]['shift_type_id'] = shift.type_id
+            # month_calendar_dict[shift_date]['shift_type'] = db_shift_type
+            month_calendar_dict[shift_date]['shifts'].append(db_shift_type)
+        
 
     # handle shared shifts
     shares = list(memory_db.SHARES.values())
@@ -228,7 +213,8 @@ def get_calendar_day_card(
     shifts = []
     for shift in memory_db.SHIFTS:
         if str(shift.date.date()) == date_string and shift.user_id == current_user.id:
-            shift.type = shift_type_repository.get_shift_type(shift_type_id=shift.type_id)
+            # shift.type = shift_type_repository.get_user_shift_type(shift_type_id=shift.type_id)
+            db_shift_type = shift_type_repository.get_user_shift_type(db=db, user_id=current_user.id, shift_type_id=shift.type_id)
             shifts.append(shift)
 
 
