@@ -27,9 +27,15 @@ def create_shift_type(db: Session, shift_type: schemas.CreateShiftType):
 	
 	return db_shift_type
 
-def get_shift_type(shift_type_id: int):
-	""" Returns a shift type for a given shift type id """
-	shift_type = SHIFT_TYPES.get(shift_type_id)
+def get_user_shift_type(db: Session, user_id: int, shift_type_id: int):
+	""" Returns shift type details for a given shift type id belonging to a user """
+	shift_type = db.query(
+		DbShiftType
+		).filter(
+			DbShiftType.id == shift_type_id,
+			DbShiftType.user_id == user_id
+		).first()
+
 	
 	return shift_type
 
