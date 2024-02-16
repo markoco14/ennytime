@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from pprint import pprint
 from auth import auth_router, auth_service
 from core.database import get_db
-from routers import admin_router, user_router, shift_type_router
+from routers import admin_router, user_router, shift_type_router, shift_router
 from services import calendar_service
 import core.memory_db as memory_db
 from repositories import shift_type_repository as ShiftTypeRepository
@@ -20,6 +20,7 @@ app.include_router(auth_router.router)
 app.include_router(admin_router.router)
 app.include_router(user_router.router)
 app.include_router(shift_type_router.router)
+app.include_router(shift_router.router)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -260,47 +261,6 @@ def modal(request: Request, day_number: int):
         )
 
 
-@app.post("/register-shift", response_class=HTMLResponse)
-def schedule_shift(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    shift_type: Annotated[str, Form()],
-    date: Annotated[str, Form()],
-    ):
-    """Add shift to calendar date"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="landing-page.html",
-            headers={"HX-Redirect": "/"},
-        )
-    
-    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
-
-    current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
-  
-    date_segments = date.split("-")
-    new_shift = Shift(
-        id=len(memory_db.SHIFTS) + 1,
-        type_id=shift_type,
-        user_id=current_user.id,
-        date=datetime.datetime(int(date_segments[0]), int(date_segments[1]), int(date_segments[2]))
-        )
-    
-    # REMOVED CHECK FOR SHIFT EXISTS/DAY HAS SHIFT
-    # TODO: check if day already has that shift type
-    # a day might have 2 shifts (for now, because might have 2 jobs)
-    memory_db.SHIFTS.append(new_shift)
-
-    context={"request": request,
-        "shifts": memory_db.SHIFTS,
-          }
-    
-    return templates.TemplateResponse(
-        request=request,
-        name="success.html",
-        context=context
-    )
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
