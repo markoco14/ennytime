@@ -209,13 +209,13 @@ def get_calendar_day_card(
 
     current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
-
+    db_shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
     shifts = []
-    for shift in memory_db.SHIFTS:
+    for shift in db_shifts:
         if str(shift.date.date()) == date_string and shift.user_id == current_user.id:
             # shift.type = shift_type_repository.get_user_shift_type(shift_type_id=shift.type_id)
             db_shift_type = shift_type_repository.get_user_shift_type(db=db, user_id=current_user.id, shift_type_id=shift.type_id)
-            shifts.append(shift)
+            shifts.append(db_shift_type)
 
 
     # handle shared shifts
