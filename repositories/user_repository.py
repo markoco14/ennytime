@@ -50,3 +50,10 @@ def patch_user(
     db.refresh(updated_user)
 
     return updated_user
+
+def list_users_by_display_name(db: Session, current_user_id: int, display_name: str):
+    """ Returns a list of users by display name """
+    db_users = db.query(DBUser).filter(
+        DBUser.display_name.contains(display_name)).filter(DBUser.id != current_user_id).all()
+    
+    return db_users

@@ -12,7 +12,7 @@ from core.database import get_db
 from routers import admin_router, user_router, shift_type_router, shift_router, calendar_router
 from services import calendar_service
 import core.memory_db as memory_db
-from repositories import shift_type_repository, shift_repository
+from repositories import shift_type_repository, shift_repository, user_repository
 from schemas import Session, Shift, ShiftType, User, AppUser
 
 app = FastAPI()
@@ -209,11 +209,8 @@ def search_users_to_share(
         )
     
     search_display_name_lower = search_display_name.lower()
-    user_list = list(memory_db.USERS.values())
-    matching_users = []
-    for user in user_list:
-        if user.display_name and search_display_name_lower in user.display_name.lower() and user.id != current_user.id:
-           matching_users.append(user)
+
+    matching_users = user_repository.list_users_by_display_name(db=db, current_user_id=current_user.id, display_name=search_display_name_lower)
         
     context = {"request": request, "matching_users": matching_users}
 
