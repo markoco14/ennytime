@@ -56,9 +56,11 @@ def list_sessions(
         )
     
     sessions = session_repository.list_sessions(db=db)
+    headings = ["ID", "Session Token", "User ID", "Expiry date", "Actions"]
     context = {
         "request": request,
     "sessions": sessions,
+    "headings": headings
     }
     return templates.TemplateResponse(
         request=request,

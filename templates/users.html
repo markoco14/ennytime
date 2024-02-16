@@ -1,3 +1,5 @@
+{% from '/macros/table.html' import heading_row%}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -20,15 +22,8 @@
           <div class="relative w-full overflow-auto">
             <table class="w-full caption-bottom text-sm">
               <thead class="[&amp;_tr]:border-b">
-                <tr>
-                  {% for heading in headings %}
-                  <th
-                    class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]"
-                  >
-                    {{heading}}
-                  </th>
-                  {% endfor %}
-                </tr>
+                {{heading_row(headings)}}
+                
               </thead>
               <tbody class="[&amp;_tr:last-child]:border-0">
                 {% for user in users %}
