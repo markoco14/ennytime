@@ -2,7 +2,6 @@
 Functions for retrieving data from any table in the database
 """
 from sqlalchemy.orm import Session
-from core.memory_db import SHIFT_TYPES
 from models.db_shift import DbShift
 import schemas
 

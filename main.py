@@ -250,21 +250,21 @@ def get_calendar_day_card(
     )
 
 
-@app.get("/modal/{day_number}", response_class=HTMLResponse)
-def modal(request: Request, day_number: int):
-    """Sends modal to client"""
+# @app.get("/modal/{day_number}", response_class=HTMLResponse)
+# def modal(request: Request, day_number: int):
+#     """Sends modal to client"""
 
-    context={
-        "request": request,
-        "shift_types": memory_db.SHIFT_TYPES,
-        "day_number": day_number,
-          }
+#     context={
+#         "request": request,
+#         "shift_types": memory_db.SHIFT_TYPES,
+#         "day_number": day_number,
+#           }
 
-    return templates.TemplateResponse(
-        request=request,
-        name="modal.html",
-        context=context
-        )
+#     return templates.TemplateResponse(
+#         request=request,
+#         name="modal.html",
+#         context=context
+#         )
 
 
 

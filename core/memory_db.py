@@ -7,74 +7,74 @@ import datetime
 from schemas import Session, Share, Shift, ShiftType, User
 
 
-SHIFT_TYPES: dict[ShiftType] = {
-	1: ShiftType(
-		id=1,
-		type="D",
-		user_id=2,
-	),
-	2: ShiftType(
-		id=2,
-		type="N",
-		user_id=3,
-	),
-	3: ShiftType(
-		id=3,
-		type="W",
-		user_id=3,
-	),
-	4: ShiftType(
-		id=4,
-		type="W",
-		user_id=4,
-	),
-}
+# SHIFT_TYPES: dict[ShiftType] = {
+# 	1: ShiftType(
+# 		id=1,
+# 		type="D",
+# 		user_id=2,
+# 	),
+# 	2: ShiftType(
+# 		id=2,
+# 		type="N",
+# 		user_id=3,
+# 	),
+# 	3: ShiftType(
+# 		id=3,
+# 		type="W",
+# 		user_id=3,
+# 	),
+# 	4: ShiftType(
+# 		id=4,
+# 		type="W",
+# 		user_id=4,
+# 	),
+# }
 
 
-SHIFTS: list[Shift] = [
-	Shift(
-		id=1,
-		type_id=2,
-		user_id=3,
-		date=datetime.datetime(2024, 2, 9),
-		type=SHIFT_TYPES[2],
-	),
-	Shift(
-		id=2,
-		type_id=3,
-		user_id=3,
-		date=datetime.datetime(2024, 2, 11),
-		type=SHIFT_TYPES[3],
-	),
-	Shift(
-		id=3,
-		type_id=1,
-		user_id=2,
-		date=datetime.datetime(2024, 2, 11),
-		type=SHIFT_TYPES[1],
-	),
-	Shift(
-		id=4,
-		type_id=2,
-		user_id=3,
-		date=datetime.datetime(2024, 2, 19),
-		type=SHIFT_TYPES[2],
-	),
-	Shift(
-		id=5,
-		type_id=2,
-		user_id=1,
-		date=datetime.datetime(2024, 2, 19),
-		type=SHIFT_TYPES[2],
-	),
-	Shift(
-		id=6,
-		type_id=3,
-		user_id=2,
-		date=datetime.datetime(2024, 2, 19),
-		type=SHIFT_TYPES[3],
-	),
-]
+# SHIFTS: list[Shift] = [
+# 	Shift(
+# 		id=1,
+# 		type_id=2,
+# 		user_id=3,
+# 		date=datetime.datetime(2024, 2, 9),
+# 		type=SHIFT_TYPES[2],
+# 	),
+# 	Shift(
+# 		id=2,
+# 		type_id=3,
+# 		user_id=3,
+# 		date=datetime.datetime(2024, 2, 11),
+# 		type=SHIFT_TYPES[3],
+# 	),
+# 	Shift(
+# 		id=3,
+# 		type_id=1,
+# 		user_id=2,
+# 		date=datetime.datetime(2024, 2, 11),
+# 		type=SHIFT_TYPES[1],
+# 	),
+# 	Shift(
+# 		id=4,
+# 		type_id=2,
+# 		user_id=3,
+# 		date=datetime.datetime(2024, 2, 19),
+# 		type=SHIFT_TYPES[2],
+# 	),
+# 	Shift(
+# 		id=5,
+# 		type_id=2,
+# 		user_id=1,
+# 		date=datetime.datetime(2024, 2, 19),
+# 		type=SHIFT_TYPES[2],
+# 	),
+# 	Shift(
+# 		id=6,
+# 		type_id=3,
+# 		user_id=2,
+# 		date=datetime.datetime(2024, 2, 19),
+# 		type=SHIFT_TYPES[3],
+# 	),
+# ]
 
 
 SHARES: dict[Share] = {
