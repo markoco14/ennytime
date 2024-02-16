@@ -25,6 +25,12 @@ class Shift(BaseModel):
     date: datetime
     type: Optional[ShiftType] = None
 
+class AppShift(BaseModel):
+    id: int
+    type_id: int
+    user_id: int
+    date: datetime
+
 class CreateShift(BaseModel):
     """Create shift"""
     type_id: int

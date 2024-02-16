@@ -16,6 +16,9 @@ def create_shift(db: Session, shift: schemas.CreateShift):
 	
 	return db_shift_type
 
-def get_user_shifts(db: Session, user_id: int):
+def get_user_shifts(db: Session, user_id: int) -> list[schemas.AppShift]:
 	""" Get shift by date """
 	return db.query(DbShift).filter(DbShift.user_id == user_id)
+
+
+
