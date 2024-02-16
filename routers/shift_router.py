@@ -40,18 +40,6 @@ def schedule_shift(
   
     date_segments = date.split("-")
     
-    new_shift = Shift(
-        id=len(memory_db.SHIFTS) + 1,
-        type_id=shift_type,
-        user_id=current_user.id,
-        date=datetime.datetime(int(date_segments[0]), int(date_segments[1]), int(date_segments[2]))
-        )
-    
-    # REMOVED CHECK FOR SHIFT EXISTS/DAY HAS SHIFT
-    # TODO: check if day already has that shift type
-    # a day might have 2 shifts (for now, because might have 2 jobs)
-    memory_db.SHIFTS.append(new_shift)
-    
 
     db_shift = CreateShift(
         type_id=shift_type,
