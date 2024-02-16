@@ -29,9 +29,11 @@ def list_users(
         )
     
     users = UserRepository.list_users(db=db)
+    headings = ["ID", "Display name", "Email", "Actions"]
     context = {
         "request": request,
         "users": users,
+        "headings": headings
     }
     
     return templates.TemplateResponse(
