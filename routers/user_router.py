@@ -55,12 +55,15 @@ def get_profile_page(
         user_id=current_user.id)
     
     shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
-    
+    share_headings = ["Name", "Share"]
+    shift_headings = ["ID", "Type ID", "User ID", "Date"]
     context = {
         "request": request,
         "shift_types": shift_types,
         "user": current_user,
         "shifts": shifts,
+        "share_headings": share_headings,
+        "shift_headings": shift_headings,
     }
 
     return templates.TemplateResponse(
