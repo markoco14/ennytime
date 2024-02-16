@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from auth import auth_service
 from core.database import get_db
 import core.memory_db as memory_db
-from repositories import shift_type_repository, user_repository
+from repositories import shift_type_repository, user_repository, shift_repository
 from schemas import Session, Share, User
 
 router = APIRouter()
@@ -54,10 +54,13 @@ def get_profile_page(
         db=db,
         user_id=current_user.id)
     
+    shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
+    
     context = {
         "request": request,
         "shift_types": shift_types,
         "user": current_user,
+        "shifts": shifts,
     }
 
     return templates.TemplateResponse(
