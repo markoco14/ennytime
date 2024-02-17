@@ -12,6 +12,7 @@ from models.user_model import DBUser
 from models.user_session_model import DBUserSession
 from models.db_shift_type import DbShiftType
 from models.db_shift import DbShift
+from models.share_model import DbShare
 
 # import app settings
 settings = get_settings()
