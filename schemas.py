@@ -88,3 +88,8 @@ class Share(BaseModel):
     id: int
     owner_id: int
     guest_id: int
+
+class CreateShare(BaseModel):
+    """Create share"""
+    owner_id: int
+    guest_id: int
