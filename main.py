@@ -10,8 +10,7 @@ from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.repositories import share_repository, shift_repository, shift_type_repository
 from app.repositories import user_repository
-from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router
-from app.routers import user_router
+from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router
 from app import schemas
 from services import calendar_service
 
