@@ -52,7 +52,12 @@ def patch_user(
     return updated_user
 
 def list_users_by_display_name(db: Session, current_user_id: int, display_name: str):
-    """ Returns a list of users by display name """
+    """ 
+    Returns a list of users by display name.
+    display_name: the name of the user to search for.
+    current_user_id: used to exclude the current user from the search results. The current user shouldn't be able to search for or share with themselves.
+    """
+    
     db_users = db.query(DBUser).filter(
         DBUser.display_name.contains(display_name)).filter(DBUser.id != current_user_id).all()
     
