@@ -8,9 +8,8 @@ from sqlalchemy.exc import IntegrityError
 
 from auth import auth_service
 from core.database import get_db
-import core.memory_db as memory_db
 from repositories import shift_type_repository, user_repository, shift_repository
-from schemas import Session, Share, User
+from schemas import Session, User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -221,45 +220,3 @@ def get_edit_display_name_widget(
         )
 
 
-@router.get("/share-calendar/{user_id}", response_class=HTMLResponse | Response)
-def share_calendar(
-    request: Request,
-    user_id: int,
-    db: Annotated[Session, Depends(get_db)]
-    ):
-    """Share calendar page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="signin.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
-
-    try:
-        current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-        request=request,
-        name="signin.html",
-        headers={"HX-Redirect": "/signin"},
-    )
-        response.delete_cookie("session-id")
-        return response
-
-    new_share = Share(
-        id=len(memory_db.SHARES) + 1,
-        owner_id=current_user.id,
-        guest_id=user_id
-    )
-
-    memory_db.SHARES.update({f"owner{current_user.id}guest{user_id}": new_share})
-    return templates.TemplateResponse(
-        request=request,
-        name="success.html",
-        context={"request": request, "new_share": new_share},
-    )
