@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import auth_service
+from app.auth import auth_service
 from core.database import get_db
 from app import schemas
 from repositories import share_repository, shift_repository, shift_type_repository

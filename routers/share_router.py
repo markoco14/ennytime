@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
-from auth import auth_service
+from app.auth import auth_service
 from core.database import get_db
 from repositories import share_repository
 
