@@ -1,19 +1,16 @@
 
 from typing import Annotated, Optional
 import datetime
-from fastapi import APIRouter, Depends, Form, Request
+
+from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from sqlalchemy.exc import IntegrityError
-
 from auth import auth_service
 from core.database import get_db
-import core.memory_db as memory_db
-
-from schemas import CreateShift, Session, Shift, User
 import schemas
-from repositories import shift_repository, shift_type_repository
+from repositories import share_repository, shift_repository, shift_type_repository
 from services import calendar_service
 
 router = APIRouter()
@@ -36,7 +33,7 @@ def get_calendar_day_form(
             headers={"HX-Redirect": "/"},
         )
     
-    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
+    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
 
@@ -83,7 +80,7 @@ def get_calendar_day_card(
             headers={"HX-Redirect": "/"},
         )
     
-    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
+    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
@@ -91,25 +88,20 @@ def get_calendar_day_card(
     shifts = []
     for shift in db_shifts:
         if str(shift.date.date()) == date_string and shift.user_id == current_user.id:
-            # shift.type = shift_type_repository.get_user_shift_type(shift_type_id=shift.type_id)
             db_shift_type = shift_type_repository.get_user_shift_type(db=db, user_id=current_user.id, shift_type_id=shift.type_id)
             shifts.append(db_shift_type)
 
-
-    # handle shared shifts
-    shares = list(memory_db.SHARES.values())
-    shared_with_me = []
-    for share in shares:
-        if share.guest_id == current_user.id:
-            shared_with_me.append(share)
+    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    bae_db_shifts = shift_repository.get_user_shifts(db=db, user_id=share.owner_id)
     bae_shifts = []
-    if len(shared_with_me) >= 1:
-        bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
-        # but could get list of just bae.owner_id and loop through that
-        # adding shifts to the 'shared with me' section of calendar card
-        for shift in memory_db.SHIFTS:
-            if str(shift.date.date()) == date_string and shift.user_id == bae_calendar.owner_id:
-                bae_shifts.append(shift)
+    for shift in bae_db_shifts:
+        if str(shift.date.date()) == date_string and shift.user_id == share.owner_id:
+            db_shift_type = shift_type_repository.get_user_shift_type(
+                db=db,
+                user_id=share.owner_id,
+                shift_type_id=shift.type_id
+                )
+            bae_shifts.append(db_shift_type)
 
     context = {
         "request": request,
