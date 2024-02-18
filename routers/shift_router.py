@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 
 from app.auth import auth_service
-from core.database import get_db
+from app.core.database import get_db
 
 from app import schemas
 from repositories import shift_repository

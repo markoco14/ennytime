@@ -1,7 +1,6 @@
 """CRUD functions for users table"""
 from sqlalchemy.orm import Session
 
-from core.memory_db import USERS
 from models.user_model import DBUser
 from app import schemas
 

@@ -5,8 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from core.config import get_settings
-from core.database import Base
+from app.core.config import get_settings
+from app.core.database import Base
 
 from models.user_model import DBUser
 from models.user_session_model import DBUserSession

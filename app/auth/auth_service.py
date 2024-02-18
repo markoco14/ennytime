@@ -6,7 +6,7 @@ from typing import Dict
 from sqlalchemy.orm import Session
 
 from passlib.context import CryptContext
-from core.memory_db import USERS
+
 from repositories import user_repository, session_repository
 from app import schemas
 

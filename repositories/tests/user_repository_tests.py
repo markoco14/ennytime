@@ -1,8 +1,8 @@
 # """CRUD functions for users table"""
 # from sqlalchemy.orm import Session
 # from sqlalchemy.exc import IntegrityError
-# from core.memory_db import USERS
-# from core.database import test_db
+# from app.core.memory_db import USERS
+# from app.core.database import test_db
 # import schemas
 # from repositories import user_repository
 
@@ -13,7 +13,7 @@
 
 
 # TESTS
-# import test_db ie; from core.database import test_db
+# import test_db ie; from app.core.database import test_db
 # and use it directly as the db variable ie; db=test_db
     
 # try:

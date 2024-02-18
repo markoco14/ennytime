@@ -4,7 +4,7 @@ DB model for users
 
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime
-from core.database import Base
+from app.core.database import Base
 
 
 class DBUserSession(Base):

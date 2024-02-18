@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from app.auth import auth_router, auth_service
-from core.database import get_db
+from app.core.database import get_db
 from repositories import shift_type_repository, shift_repository, user_repository, share_repository
 from routers import admin_router, user_router, shift_type_router, shift_router, calendar_router, share_router
 from app import schemas

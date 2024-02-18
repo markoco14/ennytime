@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.auth import auth_service
-from core.database import get_db
+from app.core.database import get_db
 from repositories import shift_type_repository, user_repository, shift_repository
 from app import schemas
 

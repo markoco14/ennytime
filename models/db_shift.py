@@ -1,7 +1,7 @@
 """Database model for shift types."""
 
 from sqlalchemy import Column, Integer, String, DateTime
-from core.database import Base  # Make sure this import points to your Base declarative base instance
+from app.core.database import Base  # Make sure this import points to your Base declarative base instance
 
 # change type to name later, easier to understand in the app
 
