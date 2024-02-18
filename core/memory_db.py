@@ -4,7 +4,7 @@ This is a temporary solution.
 """
 
 import datetime
-from schemas import Session, Share, Shift, ShiftType, User
+from app import schemas
 
 
 # SHIFT_TYPES: dict[ShiftType] = {
@@ -77,7 +77,7 @@ from schemas import Session, Share, Shift, ShiftType, User
 # ]
 
 
-SHARES: dict[Share] = {
+SHARES: dict[schemas.Share] = {
 }
 # "owner2guest3": Share(
 # 	id=1,
@@ -112,24 +112,24 @@ SHARES: dict[Share] = {
 # }
 
 
-USERS: dict[User] = {
-    "johndoe@example.com": User(
+USERS: dict[schemas.User] = {
+    "johndoe@example.com": schemas.User(
 		id=1,
         email="johndoe@example.com",
         password="fakehashedsecret"
 	),
-    "alice@example.com": User(
+    "alice@example.com": schemas.User(
 		id=2,
         email="alice@example.com",
         password="fakehashedsecret"
 	),
-    "mark.oconnor14@gmail.com": User(
+    "mark.oconnor14@gmail.com": schemas.User(
 		id=3,
         email="mark.oconnor14@gmail.com",
         password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
 		display_name="Mark O'Connor"
 	),
-	"rose@rosemail.com": User(
+	"rose@rosemail.com": schemas.User(
 		id=4,
         email="rose@rosemail.com",
         password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",

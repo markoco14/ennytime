@@ -5,14 +5,14 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from auth import auth_service
 from core.database import get_db
 import core.memory_db as memory_db
 
-from schemas import CreateShift, Session, Shift, User
-import schemas
+from app import schemas
 from repositories import shift_repository
 
 router = APIRouter()
@@ -36,12 +36,12 @@ def schedule_shift(
     
     session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
-    current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+    current_user: schemas.User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
   
     date_segments = date.split("-")
     
 
-    db_shift = CreateShift(
+    db_shift = schemas.CreateShift(
         type_id=shift_type,
         user_id=current_user.id,
         date=datetime.datetime(int(date_segments[0]), int(date_segments[1]), int(date_segments[2]))

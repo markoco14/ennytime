@@ -4,12 +4,13 @@ from typing import Annotated, Optional
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 
 from auth import auth_router, auth_service
 from core.database import get_db
 from repositories import shift_type_repository, shift_repository, user_repository, share_repository
 from routers import admin_router, user_router, shift_type_router, shift_router, calendar_router, share_router
-from schemas import Session, User, AppUser
+from app import schemas
 from services import calendar_service
 
 app = FastAPI()
@@ -38,7 +39,7 @@ def index(
             name="landing-page.html"
         )
     try:
-        session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
+        session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine
@@ -62,7 +63,7 @@ def index(
         return response
        
     try:
-        current_user: AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+        current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine
@@ -163,7 +164,7 @@ def search_users_to_share(
             name="landing-page.html"
         )
 
-    session_data: Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
+    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
     if auth_service.is_session_expired(expiry=session_data.expires_at):
         auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
@@ -176,7 +177,7 @@ def search_users_to_share(
         return response
        
     try:
-        current_user: User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+        current_user: schemas.User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     except AttributeError:
         # TODO: figure out how to specify because may be other errors
         # although this response may just be fine

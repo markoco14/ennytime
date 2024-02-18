@@ -10,7 +10,7 @@ from auth import auth_service
 from core.database import get_db
 from repositories import share_repository
 
-import schemas
+from app import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

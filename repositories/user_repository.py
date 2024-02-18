@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 
 from core.memory_db import USERS
 from models.user_model import DBUser
-import schemas
-from typing import Optional
+from app import schemas
 
 
 

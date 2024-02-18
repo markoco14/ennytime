@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from auth import auth_service
@@ -11,8 +11,7 @@ from core.database import get_db
 import core.memory_db as memory_db
 
 from repositories import shift_type_repository
-from schemas import Session
-import schemas
+from app import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

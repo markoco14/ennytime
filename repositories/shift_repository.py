@@ -3,7 +3,7 @@ Functions for retrieving data from any table in the database
 """
 from sqlalchemy.orm import Session
 from models.db_shift import DbShift
-import schemas
+from app import schemas
 
 def create_shift(db: Session, shift: schemas.CreateShift):
 	""" Creates a new shift type """

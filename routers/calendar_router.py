@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth import auth_service
 from core.database import get_db
-import schemas
+from app import schemas
 from repositories import share_repository, shift_repository, shift_type_repository
 from services import calendar_service
 

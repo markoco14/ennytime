@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 
 from models.user_session_model import DBUserSession
-import schemas
+from app import schemas
 
 def get_session_by_session_id(db: Session, session_id: str):
     """ Returns a user by email"""

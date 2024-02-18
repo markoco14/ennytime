@@ -4,11 +4,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 
 from auth import auth_service
 from core.database import get_db
 from core.memory_db import USERS
-from schemas import CreateUserSession, Session, User, CreateUserHashed
+from app import schemas
+
 from repositories import user_repository, session_repository
 
 router = APIRouter()
@@ -38,14 +40,14 @@ def signup(
     hashed_password = auth_service.get_password_hash(password)
     
     # create new user with encrypted password
-    new_user = CreateUserHashed(email=email, hashed_password=hashed_password)
+    new_user = schemas.CreateUserHashed(email=email, hashed_password=hashed_password)
     # add user to USERS
     app_user = user_repository.create_user(db=db, user=new_user)
     # USERS.update({email: new_user})
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
-    new_session = CreateUserSession(
+    new_session = schemas.CreateUserSession(
         session_id=session_cookie,
         user_id=app_user.id,
         expires_at=auth_service.generate_session_expiry()
@@ -99,7 +101,7 @@ def signin(
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
 
-    new_session = CreateUserSession(
+    new_session = schemas.CreateUserSession(
         session_id=session_cookie,
         user_id=db_user.id,
         expires_at=auth_service.generate_session_expiry()

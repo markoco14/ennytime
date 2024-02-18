@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session
 from models.share_model import DbShare
-import schemas
+from app import schemas
 
 def get_share_by_guest_id(db: Session, guest_id: int):
     """Get a share by guest id"""

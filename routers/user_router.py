@@ -4,12 +4,13 @@ from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from auth import auth_service
 from core.database import get_db
 from repositories import shift_type_repository, user_repository, shift_repository
-from schemas import Session, User
+from app import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -33,7 +34,7 @@ def get_profile_page(
         )
 
     try:
-        current_user: User = auth_service.get_current_user(
+        current_user: schemas.User = auth_service.get_current_user(
             db=db,
             user_id=session_data.user_id
             )
@@ -89,7 +90,7 @@ def get_display_name_widget(
         session_token=request.cookies.get("session-id")
         )
     
-    current_user: User = auth_service.get_current_user(
+    current_user: schemas.User = auth_service.get_current_user(
         db=db,
         user_id=session_data.user_id
         )
@@ -137,7 +138,7 @@ def update_user_contact(
         session_token=request.cookies.get("session-id")
         )
     
-    current_user: User = auth_service.get_current_user(
+    current_user: schemas.User = auth_service.get_current_user(
         db=db,
         user_id=session_data.user_id
         )
@@ -200,7 +201,7 @@ def get_edit_display_name_widget(
         session_token=request.cookies.get("session-id")
         )
     
-    current_user: User = auth_service.get_current_user(
+    current_user: schemas.User = auth_service.get_current_user(
         db=db,
         user_id=session_data.user_id
         )
