@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app import schemas
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
-from services import calendar_service
+from app.services import calendar_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
