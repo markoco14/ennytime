@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
-from repositories import shift_type_repository, shift_repository, user_repository, share_repository
+from app.repositories import share_repository, shift_repository, shift_type_repository
+from app.repositories import user_repository
 from routers import admin_router, user_router, shift_type_router, shift_router, calendar_router, share_router
 from app import schemas
 from services import calendar_service

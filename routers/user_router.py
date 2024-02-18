@@ -9,7 +9,8 @@ from sqlalchemy.exc import IntegrityError
 
 from app.auth import auth_service
 from app.core.database import get_db
-from repositories import shift_type_repository, user_repository, shift_repository
+from app.repositories import shift_repository, shift_type_repository
+from app.repositories import user_repository
 from app import schemas
 
 router = APIRouter()

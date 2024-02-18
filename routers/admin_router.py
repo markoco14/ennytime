@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 
-from repositories import user_repository as UserRepository
-from repositories import session_repository
+from app.repositories import user_repository as UserRepository
+from app.repositories import session_repository
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

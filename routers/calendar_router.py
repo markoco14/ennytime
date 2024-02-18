@@ -10,7 +10,8 @@ from fastapi.templating import Jinja2Templates
 from app.auth import auth_service
 from app.core.database import get_db
 from app import schemas
-from repositories import share_repository, shift_repository, shift_type_repository
+from app.repositories import share_repository, shift_repository
+from app.repositories import shift_type_repository
 from services import calendar_service
 
 router = APIRouter()

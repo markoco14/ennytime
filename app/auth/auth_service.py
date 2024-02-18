@@ -6,8 +6,9 @@ from typing import Dict
 from sqlalchemy.orm import Session
 
 from passlib.context import CryptContext
+from app.repositories import session_repository
 
-from repositories import user_repository, session_repository
+from app.repositories import user_repository
 from app import schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
