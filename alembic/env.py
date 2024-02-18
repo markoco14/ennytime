@@ -8,11 +8,11 @@ from alembic import context
 from app.core.config import get_settings
 from app.core.database import Base
 
-from models.user_model import DBUser
-from models.user_session_model import DBUserSession
-from models.db_shift_type import DbShiftType
-from models.db_shift import DbShift
-from models.share_model import DbShare
+from app.models.user_model import DBUser
+from app.models.user_session_model import DBUserSession
+from app.models.db_shift_type import DbShiftType
+from app.models.db_shift import DbShift
+from app.models.share_model import DbShare
 
 # import app settings
 settings = get_settings()

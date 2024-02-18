@@ -2,7 +2,7 @@
 Functions for retrieving data from any table in the database
 """
 from sqlalchemy.orm import Session
-from models.db_shift_type import DbShiftType
+from app.models.db_shift_type import DbShiftType
 from app import schemas
 def list_user_shift_types(db: Session, user_id: int):
     """ Returns a list of shift types for a given user """

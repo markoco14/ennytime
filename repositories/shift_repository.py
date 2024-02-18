@@ -2,7 +2,7 @@
 Functions for retrieving data from any table in the database
 """
 from sqlalchemy.orm import Session
-from models.db_shift import DbShift
+from app.models.db_shift import DbShift
 from app import schemas
 
 def create_shift(db: Session, shift: schemas.CreateShift):
