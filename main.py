@@ -1,19 +1,16 @@
 """Main file to hold app and api routes"""
-import datetime
 from typing import Annotated, Optional
 
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from pprint import pprint
 from auth import auth_router, auth_service
 from core.database import get_db
-from routers import admin_router, user_router, shift_type_router, shift_router, calendar_router
+from repositories import shift_type_repository, shift_repository, user_repository, share_repository
+from routers import admin_router, user_router, shift_type_router, shift_router, calendar_router, share_router
+from schemas import Session, User, AppUser
 from services import calendar_service
-import core.memory_db as memory_db
-from repositories import shift_type_repository, shift_repository, user_repository
-from schemas import Session, Shift, ShiftType, User, AppUser
 
 app = FastAPI()
 app.include_router(auth_router.router)
@@ -22,6 +19,7 @@ app.include_router(user_router.router)
 app.include_router(shift_type_router.router)
 app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
+app.include_router(share_router.router)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -84,12 +82,6 @@ def index(
     
     month_calendar_dict = dict((str(day), {"date": str(day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
     
-    
-    # shift_types = shift_type_repository.list_user_shift_types(
-    #     db=db,
-    #     user_id=current_user.id)
-    # shift_type_dict = dict((str(shift_type.id), shift_type) for shift_type in shift_types)
-
     db_shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
     
     # get users detailed shift info for matching dates
@@ -101,22 +93,18 @@ def index(
             # month_calendar_dict[shift_date]['shift_type'] = db_shift_type
             month_calendar_dict[shift_date]['shifts'].append(db_shift_type)
         
+    # just get a single share
+    # because a user can only share with 1 person for now
+    # and also be shared with 1 person
+    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    if share:
+        bae_shifts = shift_repository.get_user_shifts(db=db, user_id=share.owner_id)
+        for shift in bae_shifts:
+            shift_date = str(shift.date.date())
+            if month_calendar_dict.get(shift_date):
+                db_shift_type = shift_type_repository.get_user_shift_type(db=db, user_id=share.owner_id, shift_type_id=shift.type_id)
+                month_calendar_dict[shift_date]['bae_shifts'].append(db_shift_type)
 
-    # handle shared shifts
-    shares = list(memory_db.SHARES.values())
-    shared_with_me = []
-    for share in shares:
-        if share.guest_id == current_user.id:
-            shared_with_me.append(share)
-    if len(shared_with_me) >= 1:
-        bae_calendar = shared_with_me[0] # a user can only share with 1 person for now
-        # but could get list of just bae.owner_id and loop through that
-        # adding shifts to the 'shared with me' section of calendar card
-        
-        for shift in memory_db.SHIFTS:
-            if month_calendar_dict.get(str(shift.date.date())) and shift.user_id == bae_calendar.owner_id:
-                month_calendar_dict[str(shift.date.date())]['bae_shifts'].append(shift)
-        
 
     context = {
         "request": request,

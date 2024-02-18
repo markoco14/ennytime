@@ -9,15 +9,9 @@
   <div class="grid gap-2">
     <span> {{ date.day_number }} </span>
     {% if date.shifts|length > 0%}
-    {# render current user's shifts #}
+
     <ul>
-      {% for shift in date.shifts %} {#
-      <li
-        class="rounded-md bg-green-300 text-black dark:bg-green-700 dark:text-white"
-      >
-        {{shift.type.type}}
-      </li>
-      #}
+      {% for shift in date.shifts %}
       <li
         class="rounded-md bg-green-300 text-black dark:bg-green-700 dark:text-white"
       >
@@ -25,14 +19,14 @@
       </li>
       {% endfor %}
     </ul>
-    {# render shared shifts #}
-    {%endif%} {% if date.bae_shifts and date.bae_shifts|length > 0%}
+    {%endif%} 
+    {% if date.bae_shifts and date.bae_shifts|length > 0%}
     <ul>
       {% for shift in date.bae_shifts %}
       <li
         class="rounded-md bg-pink-300 text-black dark:bg-pink-700 dark:text-white"
       >
-        {{shift.type.type}}
+        {{shift.type}}
       </li>
       {% endfor %}
     </ul>
