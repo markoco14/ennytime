@@ -92,17 +92,18 @@ def get_calendar_day_card(
             db_shift_type = shift_type_repository.get_user_shift_type(db=db, user_id=current_user.id, shift_type_id=shift.type_id)
             shifts.append(db_shift_type)
 
-    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
-    bae_db_shifts = shift_repository.get_user_shifts(db=db, user_id=share.owner_id)
     bae_shifts = []
-    for shift in bae_db_shifts:
-        if str(shift.date.date()) == date_string and shift.user_id == share.owner_id:
-            db_shift_type = shift_type_repository.get_user_shift_type(
-                db=db,
-                user_id=share.owner_id,
-                shift_type_id=shift.type_id
-                )
-            bae_shifts.append(db_shift_type)
+    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    if share:
+        bae_db_shifts = shift_repository.get_user_shifts(db=db, user_id=share.owner_id)
+        for shift in bae_db_shifts:
+            if str(shift.date.date()) == date_string and shift.user_id == share.owner_id:
+                db_shift_type = shift_type_repository.get_user_shift_type(
+                    db=db,
+                    user_id=share.owner_id,
+                    shift_type_id=shift.type_id
+                    )
+                bae_shifts.append(db_shift_type)
 
     context = {
         "request": request,
