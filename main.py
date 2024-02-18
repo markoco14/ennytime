@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from mangum import Mangum
 from sqlalchemy.orm import Session
 
 from app.auth import auth_router, auth_service
@@ -24,6 +25,8 @@ app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 
 templates = Jinja2Templates(directory="templates")
+
+handler = Mangum(app)
 
 @app.get("/", response_class=HTMLResponse)
 def index(
