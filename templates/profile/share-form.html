@@ -1,20 +1,21 @@
 {% from '/macros/table.html' import heading_row%}
 
-<div id="share-section">
+<div id="share-section" class="flex flex-col gap-2">
   <p>
     Share your calendar with your significant other. Search their display name
     to share.
   </p>
-  <input
-    class="p-2 rounded-md text-black"
-    type="search"
-    name="search_display_name"
-    placeholder="Begin Typing To Search Users..."
-    hx-post="/search"
-    hx-trigger="input changed delay:500ms, search"
-    hx-target="#search-results"
-  />
-  <div id="share-success"></div>
+  <div class="w-full max-w-[400px]">
+    <input
+      class="w-full p-2 rounded-md text-black"
+      type="search"
+      name="search_display_name"
+      placeholder="Begin Typing To Search Users..."
+      hx-post="/search"
+      hx-trigger="input changed delay:500ms, search"
+      hx-target="#search-results"
+    />
+  </div>
   <table class="w-full">
     <thead>
       {{ heading_row(share_headings)}}
