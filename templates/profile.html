@@ -25,74 +25,79 @@
         </div>
       </section>
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-            <h2 class="text-3xl">Contact info</h2>
-            <div class="grid divide-y divide-gray-900">
-              {% include '/contact/display-name.html'%}
-              <div class="py-2">
-                <label class="text-xl text-gray-600">Primary email</label>
-                <p>Email: {{user.email}}</p>
-              </div>
+        <div
+          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
+        >
+          <h2 class="text-3xl">Contact info</h2>
+          <div class="grid divide-y divide-gray-900">
+            {% include '/contact/display-name.html'%}
+            <div class="py-2">
+              <label class="text-xl text-gray-600">Primary email</label>
+              <p>Email: {{user.email}}</p>
             </div>
+          </div>
         </div>
       </section>
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-            <h2 class="text-3xl mb-4">Sharing</h2>
-            {% if share %}
-            {% include '/profile/share-exists.html' %}
-            {% else %}
-            {% include '/profile/share-form.html' %}
-            {% endif %}
+        <div
+          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
+        >
+          <h2 class="text-3xl mb-4">Sharing</h2>
+          {% if share %} {% include '/profile/share-exists.html' %} {% else %}
+          {% include '/profile/share-form.html' %} {% endif %}
         </div>
       </section>
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div class="container md:flex md:gap-4 mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-            <article class="rounded-md bg-pink-100 dark:bg-gray-800">
-              <h2 class="text-3xl mb-4 text-pink-900">Your shift details</h2>
-              {% include 'shifts/shift-list.html' %}
-            </article>
-            <form
-              class="max-w-[400px] grid gap-4 rounded-md dark:bg-gray-800"
-              hx-post="/register-shift-type"
-              hx-target="#shift-list"
-              hx-swap="outerHTML"
-            >
-              <h3 class="text-xl dark:text-gray-300">Add new shift type</h3>
-              <div class="flex flex-col gap-1">
-                <label for="shift_type" class="dark:text-gray-100"
-                  >Shift type</label
-                >
-                <input
-                  type="text"
-                  id="shift_type"
-                  name="shift_type"
-                  required
-                  class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100"
-                />
-              </div>
-              <button class="bg-[#E22C7B] px-3 py-1 rounded-md">Save</button>
-            </form>
+        <div
+          class="container md:flex md:gap-4 mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
+        >
+          <article class="rounded-md bg-pink-100 dark:bg-gray-800">
+            <h2 class="text-3xl mb-4 text-pink-900">Your shift details</h2>
+            {% include 'shifts/shift-list.html' %}
+          </article>
+          <form
+            class="max-w-[400px] grid gap-4 rounded-md dark:bg-gray-800"
+            hx-post="/register-shift-type"
+            hx-target="#shift-list"
+            hx-swap="outerHTML"
+          >
+            <h3 class="text-xl dark:text-gray-300">Add new shift type</h3>
+            <div class="flex flex-col gap-1">
+              <label for="shift_type" class="dark:text-gray-100"
+                >Shift type</label
+              >
+              <input
+                type="text"
+                id="shift_type"
+                name="shift_type"
+                required
+                class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100"
+              />
+            </div>
+            <button class="bg-[#E22C7B] px-3 py-1 rounded-md">Save</button>
+          </form>
         </div>
       </section>
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-            <h2 class="text-3xl mb-4">Your shifts</h2>
-            <table class="w-full">
+        <div
+          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
+        >
+          <h2 class="text-3xl mb-4">Your shifts</h2>
+          <table class="w-full">
             <thead>
-                {{ heading_row(shift_headings)}}
-              </thead>
+              {{ heading_row(shift_headings)}}
+            </thead>
             <tbody>
               {% for shift in shifts %}
-                <tr>
-                  <td>{{shift.id}}</td>
-                  <td>{{shift.type_id}}</td>
-                  <td>{{shift.user_id}}</td>
-                  <td>{{shift.date}}</td>
-                </tr>
+              <tr>
+                <td>{{shift.id}}</td>
+                <td>{{shift.type_id}}</td>
+                <td>{{shift.user_id}}</td>
+                <td>{{shift.date}}</td>
+              </tr>
               {% endfor %}
             </tbody>
-            </table>
+          </table>
         </div>
       </section>
     </div>
