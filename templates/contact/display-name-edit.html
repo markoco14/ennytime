@@ -1,18 +1,24 @@
 <form
-  class="py-2"
+  class="py-2 flex flex-col gap-2"
   hx-put="/contact/{{user.id}}"
   hx-target="this"
   hx-swap="outerHTML"
 >
-  <div class="flex gap-2 items-baseline">
-    <label class="text-xl text-gray-600">Display name</label>
-    <input
-      class="p-2 bg-white rounded-md border"
-      type="text"
-      name="display_name"
-      value="{{user.display_name}}"
-    />
+  <label class="text-xl text-gray-800">Display name</label>
+  <p>
+    This is how people will see you in the app. It's also the name we will use
+    if we ever need to email you with important app information.
+  </p>
+  <input
+    class="w-full max-w-[400px] p-2 bg-white rounded-md border border-white"
+    type="text"
+    name="display_name"
+    value="{{user.display_name}}"
+  />
+  <div class="flex gap-2 pl-2">
+    <button type="button" hx-get="/contact/{{user.id}}">
+      Cancel
+    </button>
+    <button type="submit" >Save</button>
   </div>
-  <button class="btn">Submit</button>
-  <button class="btn" hx-get="/contact/{{user.id}}">Cancel</button>
 </form>
