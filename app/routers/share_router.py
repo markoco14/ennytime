@@ -57,7 +57,12 @@ def share_calendar(
     return templates.TemplateResponse(
         request=request,
         name="/profile/share-exists.html",
-        context={"request": request, "share": new_db_share, "share_user": share_user},
+        context={
+            "request": request, 
+            "share": new_db_share, 
+            "share_user": share_user,
+            "message": "Calendar shared!"
+            },
     )
 
 

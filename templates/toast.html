@@ -5,6 +5,6 @@
   const toast = document.getElementById("toast");
   const removeToastInterval = setTimeout(() => {
     toast.remove();
+	clearInterval(removeToastInterval);
   }, 2000);
-  clearInterval(removeToastInterval);
 </script>
