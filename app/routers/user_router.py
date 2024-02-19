@@ -56,7 +56,7 @@ def get_profile_page(
         user_id=current_user.id)
     
     shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
-    share_headings = ["Name", "Share"]
+    share_headings = ["Name", "Actions"]
     shift_headings = ["ID", "Type ID", "User ID", "Date"]
     context = {
         "request": request,

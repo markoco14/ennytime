@@ -76,7 +76,7 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
     except IntegrityError:
         return "IntegrityError"
     
-    share_headings = ["Name", "Share"]
+    share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
         name="/profile/share-form.html",
