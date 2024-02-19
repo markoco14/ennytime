@@ -40,30 +40,9 @@
         <div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
             <h2 class="text-3xl mb-4">Sharing</h2>
             {% if share %}
-            <p>You've shared your calendar with someone. Unshare the calendar if you want to share with someone else.</p>
-            {# <p>Shared with: {{share_user.id}}</p> #}
-            <p>Shared with: {{share_user.display_name}}</p>
-            <button >Unshare</button>
+            {% include '/profile/share-exists.html' %}
             {% else %}
-            <p>
-              Share your calendar with your significant other. Search their display name to share.
-            </p>
-            <input
-              class="p-2 rounded-md text-black"
-              type="search"
-              name="search_display_name"
-              placeholder="Begin Typing To Search Users..."
-              hx-post="/search"
-              hx-trigger="input changed delay:500ms, search"
-              hx-target="#search-results"
-            />
-            <div id="share-success"></div>
-            <table class="w-full">
-              <thead>
-                {{ heading_row(share_headings)}}
-              </thead>
-              <tbody id="search-results"></tbody>
-            </table>
+            {% include '/profile/share-form.html' %}
             {% endif %}
         </div>
       </section>

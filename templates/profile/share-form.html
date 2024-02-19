@@ -1,0 +1,24 @@
+{% from '/macros/table.html' import heading_row%}
+
+<div id="share-section">
+  <p>
+    Share your calendar with your significant other. Search their display name
+    to share.
+  </p>
+  <input
+    class="p-2 rounded-md text-black"
+    type="search"
+    name="search_display_name"
+    placeholder="Begin Typing To Search Users..."
+    hx-post="/search"
+    hx-trigger="input changed delay:500ms, search"
+    hx-target="#search-results"
+  />
+  <div id="share-success"></div>
+  <table class="w-full">
+    <thead>
+      {{ heading_row(share_headings)}}
+    </thead>
+    <tbody id="search-results"></tbody>
+  </table>
+</div>

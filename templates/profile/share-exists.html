@@ -1,0 +1,14 @@
+<div id="share-section">
+  <p>
+    You've shared your calendar with someone. Unshare the calendar if you want
+    to share with someone else.
+  </p>
+  <p>Shared with: {{share_user.display_name}}</p>
+  <button
+    hx-delete="/share-calendar/{{share.id}}"
+    hx-target="#share-section"
+    hx-swap="outerHTML"
+  >
+    Unshare
+  </button>
+</div>
