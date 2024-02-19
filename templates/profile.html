@@ -39,6 +39,12 @@
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
         <div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
             <h2 class="text-3xl mb-4">Sharing</h2>
+            {% if share %}
+            <p>You've shared your calendar with someone. Unshare the calendar if you want to share with someone else.</p>
+            {# <p>Shared with: {{share_user.id}}</p> #}
+            <p>Shared with: {{share_user.display_name}}</p>
+            <button >Unshare</button>
+            {% else %}
             <p>
               Share your calendar with your significant other. Search their display name to share.
             </p>
@@ -58,6 +64,7 @@
               </thead>
               <tbody id="search-results"></tbody>
             </table>
+            {% endif %}
         </div>
       </section>
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">

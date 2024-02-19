@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from app.auth import auth_service
 from app.core.database import get_db
 from app.repositories import shift_repository, shift_type_repository
-from app.repositories import user_repository
+from app.repositories import user_repository, share_repository
 from app import schemas
 
 router = APIRouter()
@@ -67,6 +67,20 @@ def get_profile_page(
         "shift_headings": shift_headings,
     }
 
+    # TODO: refactor this to use a service
+    # don't send the whole user db model to the front end
+    # hashed passwords are there
+    share_owner = share_repository.get_share_by_owner_id(db=db, user_id=current_user.id)
+
+    if not share_owner:
+        return templates.TemplateResponse(
+            request=request,
+            name="profile.html",
+            context=context
+            )
+
+    share_user = user_repository.get_user_by_id(db=db, user_id=share_owner.guest_id)
+    context.update({"share": share_owner, "share_user": share_user})
     return templates.TemplateResponse(
         request=request,
         name="profile.html",
