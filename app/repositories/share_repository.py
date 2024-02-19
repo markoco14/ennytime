@@ -23,3 +23,7 @@ def create_share(db: Session, new_share: schemas.CreateShare):
     db.refresh(share)
     return share
 
+def delete_share(db: Session, share_id: int):
+    """Delete a share from the database"""
+    db.query(DbShare).filter(DbShare.id == share_id).delete()
+    db.commit()
