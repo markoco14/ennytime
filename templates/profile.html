@@ -45,7 +45,7 @@
           <div class="grid divide-y divide-pink-200">
             {% include '/contact/display-name.html'%}
             <div class="py-2 flex flex-col gap-2">
-              <label class="text-xl text-gray-900">E-mail</label>
+              <label class="text-xl text-gray-900 dark:text-gray-100">E-mail</label>
               <p>This is how we'll contact you with app information.</p>
               <p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
                 {{user.email}}
@@ -91,6 +91,7 @@
                   id="shift_type"
                   name="shift_type"
                   required
+                  placeholder="Choose name for shift type..."
                   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
