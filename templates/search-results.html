@@ -2,11 +2,11 @@
 <tr>
   <td>{{user.display_name}}</td>
   <td>
-    <button 
-	hx-get="/share-calendar/{{user.id}}" 
-	hx-target="#share-success"
-	hx-swap="outerHtml"
-	>
+    <button
+      hx-get="/share-calendar/{{user.id}}"
+      hx-target="#share-section"
+      hx-swap="outerHTML"
+    >
       Share
     </button>
   </td>

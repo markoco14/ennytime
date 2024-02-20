@@ -1,0 +1,10 @@
+<div id="toast" class="fixed top-2 left-2 bg-white p-4 shadow">
+  <p>{{message}}</p>
+</div>
+<script>
+  const toast = document.getElementById("toast");
+  const removeToastInterval = setTimeout(() => {
+    toast.remove();
+	clearInterval(removeToastInterval);
+  }, 2000);
+</script>
