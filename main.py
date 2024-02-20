@@ -137,6 +137,14 @@ def get_signin_page(request: Request):
         name="signin.html",
         )
 
+@app.get("/signup", response_class=HTMLResponse)
+def get_signup_page(request: Request):
+    """Go to the sign up page"""
+    return templates.TemplateResponse(
+        request=request,
+        name="signup.html",
+    )
+
 
 # @app.get("/modal/{day_number}", response_class=HTMLResponse)
 # def modal(request: Request, day_number: int):
