@@ -12,6 +12,7 @@ from app.core.database import get_db
 from app.repositories import shift_repository, shift_type_repository
 from app.repositories import user_repository, share_repository
 from app import schemas
+from app.services import calendar_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -56,8 +57,11 @@ def get_profile_page(
         user_id=current_user.id)
     
     shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
+    for shift in shifts:
+        shift.date = f"{calendar_service.MONTHS[shift.date.month - 1]}  {calendar_service.get_current_day(shift.date.day)}, {shift.date.year}"
+        
     share_headings = ["Name", "Actions"]
-    shift_headings = ["ID", "Type ID", "User ID", "Date"]
+    shift_headings = ["Type", "Date"]
     context = {
         "request": request,
         "shift_types": shift_types,
