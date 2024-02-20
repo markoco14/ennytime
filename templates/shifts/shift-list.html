@@ -8,6 +8,11 @@
   <span>
   {{ shift.type }}
   </span>
+  <button 
+  hx-delete="/delete-shift-type/{{shift.id}}"
+  hx-target="closest li"
+  hx-swap="delete swap:0.5s"
+  >Delete</button>
   {# <span>
    {{ shift.user_id }}</li>
   </span> #}
