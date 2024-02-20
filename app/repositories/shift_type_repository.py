@@ -2,6 +2,7 @@
 Functions for retrieving data from any table in the database
 """
 from sqlalchemy.orm import Session
+from app.models.db_shift import DbShift
 from app.models.db_shift_type import DbShiftType
 from app import schemas
 def list_user_shift_types(db: Session, user_id: int):
@@ -37,3 +38,10 @@ def get_user_shift_type(db: Session, user_id: int, shift_type_id: int):
     
     return shift_type
 
+def delete_shift_type_and_relations(db: Session, shift_type_id: int):
+    """ Deletes a shift type and all associated shifts """
+    db.query(
+        DbShift).filter(DbShift.type_id == shift_type_id).delete()
+    db.query(
+        DbShiftType).filter(DbShiftType.id == shift_type_id).delete()
+    db.commit()
