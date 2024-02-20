@@ -66,7 +66,7 @@ def get_profile_page(
         shift.date = f"{calendar_service.MONTHS[shift.date.month - 1]}  {calendar_service.get_current_day(shift.date.day)}, {shift.date.year}"
         
     share_headings = ["Name", "Actions"]
-    shift_headings = ["Type", "Date"]
+    shift_headings = ["Type", "Date", "Actions"]
     context = {
         "request": request,
         "shift_types": shift_types,

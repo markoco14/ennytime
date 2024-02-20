@@ -15,7 +15,7 @@
       @layer utilities {
         tr.htmx-swapping {
           opacity: 0;
-          transition: opacity 1s ease-out;
+          transition: opacity 0.5s ease-out;
         }
       }
     </style>
@@ -114,7 +114,7 @@
                   <button
                     hx-delete="/delete-shift/{{shift.id}}"
                     hx-target="closest tr"
-                    hx-swap="delete swap:1s"
+                    hx-swap="delete swap:0.5s"
                   >
                     Delete
                   </button>
