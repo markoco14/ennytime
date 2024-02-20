@@ -110,23 +110,7 @@
             <thead>
               {{ heading_row(shift_headings)}}
             </thead>
-            <tbody>
-              {% for shift in shifts %}
-              <tr>
-                <td>{{shift.type.type}}</td>
-                <td>{{shift.date}}</td>
-                <td>
-                  <button
-                    hx-delete="/delete-shift/{{shift.id}}"
-                    hx-target="closest tr"
-                    hx-swap="delete swap:0.5s"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
+            {% include '/shifts/shift-table.html' %}
           </table>
         </div>
       </section>
