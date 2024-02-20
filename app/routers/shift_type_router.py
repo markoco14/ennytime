@@ -82,8 +82,12 @@ def delete_shift_type(
     shift_type_id: int
     ):
     """Delete shift type"""
+    response = Response(
+        status_code=200,
+        headers={"HX-Trigger": "getShiftTable"}
+        )
     shift_type_repository.delete_shift_type_and_relations(
         db=db,
         shift_type_id=shift_type_id
         )
-    return Response(status_code=200)
+    return response
