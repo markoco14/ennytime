@@ -58,6 +58,11 @@ def get_profile_page(
     
     shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
     for shift in shifts:
+        shift.type = shift_type_repository.get_user_shift_type(
+            db=db,
+            user_id=current_user.id,
+            shift_type_id=shift.type_id
+            )
         shift.date = f"{calendar_service.MONTHS[shift.date.month - 1]}  {calendar_service.get_current_day(shift.date.day)}, {shift.date.year}"
         
     share_headings = ["Name", "Actions"]
