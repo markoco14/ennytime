@@ -2,7 +2,7 @@
 from typing import Annotated
 import datetime
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -55,3 +55,12 @@ def schedule_shift(
         name="success.html",
         context=context
     )
+
+@router.delete("/delete-shift/{shift_id}", response_class=HTMLResponse | Response)
+def delete_shift(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    shift_id: int
+    ):
+    shift_repository.delete_user_shift(db=db, shift_id=shift_id)
+    return Response(status_code=200)
