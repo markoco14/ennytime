@@ -20,4 +20,8 @@ def get_user_shifts(db: Session, user_id: int) -> list[schemas.AppShift]:
 	return db.query(DbShift).filter(DbShift.user_id == user_id).order_by(DbShift.date)
 
 
+def delete_user_shift(db: Session, shift_id: int):
+	""" Delete shift """
+	db.query(DbShift).filter(DbShift.id == shift_id).delete()
+	db.commit()
 

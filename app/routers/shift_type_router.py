@@ -1,7 +1,7 @@
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -74,3 +74,20 @@ def register_shift_type(
         name="shifts/shift-list.html", # change to list template
         context=context
     )
+
+@router.delete("/delete-shift-type/{shift_type_id}", response_class=HTMLResponse | Response)
+def delete_shift_type(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    shift_type_id: int
+    ):
+    """Delete shift type"""
+    response = Response(
+        status_code=200,
+        headers={"HX-Trigger": "getShiftTable"}
+        )
+    shift_type_repository.delete_shift_type_and_relations(
+        db=db,
+        shift_type_id=shift_type_id
+        )
+    return response
