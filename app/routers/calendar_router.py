@@ -18,10 +18,10 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/add-shift-form/{day_number}", response_class=HTMLResponse)
+@router.get("/add-shift-form/{date_string}", response_class=HTMLResponse)
 def get_calendar_day_form(
     request: Request,
-    day_number: int,
+    date_string: str,
     db: Annotated[Session, Depends(get_db)],
     month: Optional[int] = None,
     year: Optional[int] = None
@@ -44,16 +44,11 @@ def get_calendar_day_form(
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
 
-    date_string = datetime.datetime(
-        current_year,
-        current_month,
-        day_number
-        ).date()
 
     context={
         "request": request,
         "shift_types": shift_types,
-        "day_number": day_number,
+        "day_number": int(date_string.split("-")[2]),
         "current_month": current_month,
         "current_year": current_year,
         "date_string": date_string
