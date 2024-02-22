@@ -112,6 +112,7 @@ def index(
 
 
     context = {
+        "month_number": month,
         "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
@@ -123,8 +124,10 @@ def index(
     response = templates.TemplateResponse(
         request=request,
         name="index.html",
-        context=context
+        context=context,
         )
+    
+    
     
     return response
 
