@@ -208,7 +208,7 @@ def search_users_to_share(
     if search_display_name == "":
         return templates.TemplateResponse(
             request=request,
-            name="search-results.html",
+            name="webapp/profile/search-results.html",
             context={"request": request, "matching_users": []}
         )
     
@@ -220,7 +220,7 @@ def search_users_to_share(
 
     return templates.TemplateResponse(
         request=request,
-        name="search-results.html",
+        name="webapp/profile/search-results.html",
         context=context
     )
 
