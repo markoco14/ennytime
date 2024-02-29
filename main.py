@@ -123,7 +123,7 @@ def index(
 
     response = templates.TemplateResponse(
         request=request,
-        name="index.html",
+        name="webapp/app-home.html",
         context=context,
         )
     
