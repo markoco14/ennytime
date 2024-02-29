@@ -64,6 +64,6 @@ def list_sessions(
     }
     return templates.TemplateResponse(
         request=request,
-        name="sessions.html",
+        name="admin/sessions.html",
         context=context
     )
