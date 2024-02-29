@@ -57,7 +57,7 @@ def share_calendar(
     share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
-        name="/profile/share-exists.html",
+        name="/webapp/profile/share-exists.html",
         context={
             "request": request, 
             "share": new_db_share, 
@@ -81,7 +81,7 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
     share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
-        name="/profile/share-form.html",
+        name="/webapp/profile/share-form.html",
         context={
             "request": request, 
             "share_headings": share_headings, 
