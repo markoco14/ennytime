@@ -38,7 +38,7 @@ def list_users(
     
     return templates.TemplateResponse(
         request=request,
-        name="users.html",
+        name="admin/users.html",
         context=context
     )
 
