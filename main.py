@@ -40,7 +40,7 @@ def index(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="website/landing-page.html"
+            name="website/web-home.html"
         )
     try:
         session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
@@ -60,7 +60,7 @@ def index(
         auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
         response = templates.TemplateResponse(
             request=request,
-            name="website/landing-page.html"
+            name="website/web-home.html"
             )
         response.delete_cookie("session-id")
     
@@ -176,7 +176,7 @@ def search_users_to_share(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="website/landing-page.html"
+            name="website/web-home.html"
         )
 
     session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
@@ -185,7 +185,7 @@ def search_users_to_share(
         auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
         response = templates.TemplateResponse(
             request=request,
-            name="website/landing-page.html"
+            name="website/web-home.html"
             )
         response.delete_cookie("session-id")
     

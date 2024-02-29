@@ -30,7 +30,7 @@ def get_calendar_day_form(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="website/landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
@@ -72,7 +72,7 @@ def get_calendar_day_card(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="website/landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
