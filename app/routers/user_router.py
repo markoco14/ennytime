@@ -105,7 +105,7 @@ def get_display_name_widget(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/landing-page.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -153,7 +153,7 @@ def update_user_contact(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/landing-page.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -216,7 +216,7 @@ def get_edit_display_name_widget(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/landing-page.html",
             headers={"HX-Redirect": "/"},
         )
 

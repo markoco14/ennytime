@@ -25,7 +25,7 @@ def register_shift_type(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/landing-page.html",
             headers={"HX-Redirect": "/"},
         )
     # get the session data
