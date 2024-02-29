@@ -145,7 +145,7 @@ def get_signup_page(request: Request):
     """Go to the sign up page"""
     return templates.TemplateResponse(
         request=request,
-        name="signup.html",
+        name="website/signup.html
     )
 
 
