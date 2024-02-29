@@ -1,13 +1,17 @@
 <tbody id="shift-table" hx-get="/shift-table" hx-target="this" hx-swap="outerHTML" hx-trigger="getShiftTable from:body delay:1s">
   {% for shift in shifts %}
   <tr>
-    <td>{{shift.type.type}}</td>
-    <td>{{shift.date}}</td>
+    <td>
+      <p>{{shift.type.type}}</p>
+      <p class="sm:hidden text-gray-700">{{shift.date}}</p>
+    </td>
+    <td class="hidden sm:block">{{shift.date}}</td>
     <td>
       <button
         hx-delete="/delete-shift/{{shift.id}}"
         hx-target="closest tr"
         hx-swap="delete swap:0.5s"
+        class="text-red-800 hover:text-red-600"
       >
         Delete
       </button>

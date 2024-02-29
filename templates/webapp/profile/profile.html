@@ -111,7 +111,12 @@
           <h2 class="text-3xl mb-4">Your shifts</h2>
           <table class="w-full">
             <thead>
-              {{ heading_row(shift_headings)}}
+              {# {{ heading_row(shift_headings)}} #}
+              <tr>
+                <th class="text-left">Type</th>
+                <th class="hidden sm:block text-left">Date</th>
+                <th class="text-left">Actions</th>
+              </tr>
             </thead>
             {% include 'webapp/profile/shift-table.html' %}
           </table>
