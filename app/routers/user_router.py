@@ -128,7 +128,7 @@ def get_display_name_widget(
     }
     return templates.TemplateResponse(
         request=request,
-        name="/contact/display-name.html",
+        name="webapp/profile/display-name.html",
         context=context
         )
 
@@ -191,7 +191,7 @@ def update_user_contact(
 
         return templates.TemplateResponse(
             request=request,
-            name="/contact/display-name.html",
+            name="webapp/profile/display-name.html",
             context=context
             )
 
@@ -202,7 +202,7 @@ def update_user_contact(
 
     return templates.TemplateResponse(
         request=request,
-        name="/contact/display-name.html",
+        name="webapp/profile/display-name.html",
         context=context
         )
 
@@ -240,7 +240,7 @@ def get_edit_display_name_widget(
 
     return templates.TemplateResponse(
         request=request,
-        name="/contact/display-name-edit.html",
+        name="webapp/profile/display-name-edit.html",
         context=context
         )
 
