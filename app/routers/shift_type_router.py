@@ -54,7 +54,7 @@ def register_shift_type(
     except IntegrityError:
         return templates.TemplateResponse(
             request=request,
-            name="shifts/shift-list.html",
+            name="webapp/profile/shift-list.html",
             context={"error": "Something went wrong."}
         )
 
@@ -71,7 +71,7 @@ def register_shift_type(
 
     return templates.TemplateResponse(
         request=request,
-        name="shifts/shift-list.html", # change to list template
+        name="webapp/profile/shift-list.html", # change to list template
         context=context
     )
 

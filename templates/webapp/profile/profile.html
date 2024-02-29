@@ -71,7 +71,7 @@
         >
           <h2 class="text-3xl mb-4">Shift details</h2>
           <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
-            {% include 'shifts/shift-list.html' %}
+            {% include 'webapp/profile/shift-list.html' %}
 
             <form
               class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
@@ -113,7 +113,7 @@
             <thead>
               {{ heading_row(shift_headings)}}
             </thead>
-            {% include '/shifts/shift-table.html' %}
+            {% include 'webapp/profile/shift-table.html' %}
           </table>
         </div>
       </section>

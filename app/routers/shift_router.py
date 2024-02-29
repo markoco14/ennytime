@@ -45,7 +45,7 @@ def get_shift_table(
 
     return templates.TemplateResponse(
         request=request, 
-        name="shifts/shift-table.html", 
+        name="webapp/profile/shift-table.html", 
         context={"request": request, "shifts": shifts}
         )
 
