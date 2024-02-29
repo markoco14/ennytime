@@ -4,7 +4,7 @@ This is a temporary solution.
 """
 
 import datetime
-from app import schemas
+from app.schemas import schemas
 
 
 # SHIFT_TYPES: dict[ShiftType] = {

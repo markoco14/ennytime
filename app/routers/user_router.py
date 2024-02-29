@@ -11,7 +11,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.repositories import shift_repository, shift_type_repository
 from app.repositories import user_repository, share_repository
-from app import schemas
+from app.schemas import schemas
 from app.services import calendar_service
 
 router = APIRouter()

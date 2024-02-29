@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.repositories import share_repository, shift_repository, shift_type_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router
-from app import schemas
+from app.schemas import schemas
 from app.services import calendar_service
 
 app = FastAPI()

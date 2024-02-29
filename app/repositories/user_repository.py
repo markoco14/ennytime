@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.user_model import DBUser
-from app import schemas
+from app.schemas import schemas
 
 
 

@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 
-from app import schemas
+from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository
 from app.services import calendar_service
 
