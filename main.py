@@ -50,7 +50,7 @@ def index(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -74,7 +74,7 @@ def index(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -137,7 +137,7 @@ def get_signin_page(request: Request):
     """Go to the sign in page"""
     return templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         )
 
 @app.get("/signup", response_class=HTMLResponse)
@@ -199,7 +199,7 @@ def search_users_to_share(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")

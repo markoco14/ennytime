@@ -26,7 +26,7 @@ def get_profile_page(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="signin.html",
+            name="website/signin.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -46,7 +46,7 @@ def get_profile_page(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
