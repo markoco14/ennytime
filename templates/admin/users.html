@@ -14,7 +14,7 @@
     <title>Ennytime Profile Page</title>
   </head>
   <body class="dark:bg-gray-900">
-    {% include 'header.html' %}
+    {% include 'webapp/header.html' %}
     <div class="py-8">
       <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
         <div class="container mx-auto p-2 md:px-0">
@@ -23,7 +23,6 @@
             <table class="w-full caption-bottom text-sm">
               <thead class="[&amp;_tr]:border-b">
                 {{heading_row(headings)}}
-                
               </thead>
               <tbody class="[&amp;_tr:last-child]:border-0">
                 {% for user in users %}

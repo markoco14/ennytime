@@ -29,7 +29,7 @@
     <title>Ennytime Couple's Calendar</title>
   </head>
   <body class="dark:bg-gray-900">
-    {% include 'header.html' %}
+    {% include 'webapp/header.html' %}
     <section class="dark:bg-gray-900 py-4 dark:text-gray-100">
       <div class="container mx-auto px-2">
         <div class="mb-4">
@@ -38,7 +38,12 @@
           </h1>
           <div class="flex gap-2 justify-center">
             {% if current_month_number == 1 %}
-            <button disabled class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">Previous</button>
+            <button
+              disabled
+              class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70"
+            >
+              Previous
+            </button>
             {% else %}
             <button
               hx-get="/?month={{current_month_number-1}}"
@@ -49,7 +54,12 @@
               Previous
             </button>
             {% endif%} {% if current_month_number == 12 %}
-            <button disabled class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">Next</button>
+            <button
+              disabled
+              class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70"
+            >
+              Next
+            </button>
             {% else %}
             <button
               hx-get="/?month={{current_month_number+1}}"
