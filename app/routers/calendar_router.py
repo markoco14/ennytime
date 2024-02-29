@@ -56,7 +56,7 @@ def get_calendar_day_form(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/add-shift-form.html",
+        name="/webapp/home/add-shift-form.html",
         context=context
         )
 
@@ -112,6 +112,6 @@ def get_calendar_day_card(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/calendar-day-card.html",
+        name="/webapp/home/calendar-day-card.html",
         context=context,
     )
