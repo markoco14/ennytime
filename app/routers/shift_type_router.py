@@ -10,7 +10,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 
 from app.repositories import shift_type_repository
-from app import schemas
+from app.schemas import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -25,7 +25,7 @@ def register_shift_type(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     # get the session data
@@ -54,7 +54,7 @@ def register_shift_type(
     except IntegrityError:
         return templates.TemplateResponse(
             request=request,
-            name="shifts/shift-list.html",
+            name="webapp/profile/shift-list.html",
             context={"error": "Something went wrong."}
         )
 
@@ -71,7 +71,7 @@ def register_shift_type(
 
     return templates.TemplateResponse(
         request=request,
-        name="shifts/shift-list.html", # change to list template
+        name="webapp/profile/shift-list.html", # change to list template
         context=context
     )
 

@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from app.repositories import session_repository
 
 from app.repositories import user_repository
-from app import schemas
+from app.schemas import schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

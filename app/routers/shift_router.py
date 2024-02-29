@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 
-from app import schemas
+from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository
 from app.services import calendar_service
 
@@ -27,7 +27,7 @@ def get_shift_table(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
@@ -45,7 +45,7 @@ def get_shift_table(
 
     return templates.TemplateResponse(
         request=request, 
-        name="shifts/shift-table.html", 
+        name="webapp/profile/shift-table.html", 
         context={"request": request, "shifts": shifts}
         )
 
@@ -62,7 +62,7 @@ def schedule_shift(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     

@@ -24,7 +24,7 @@ def list_users(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
@@ -38,7 +38,7 @@ def list_users(
     
     return templates.TemplateResponse(
         request=request,
-        name="users.html",
+        name="admin/users.html",
         context=context
     )
 
@@ -51,7 +51,7 @@ def list_sessions(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
@@ -64,6 +64,6 @@ def list_sessions(
     }
     return templates.TemplateResponse(
         request=request,
-        name="sessions.html",
+        name="admin/sessions.html",
         context=context
     )

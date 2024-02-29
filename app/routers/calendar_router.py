@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app import schemas
+from app.schemas import schemas
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
 from app.services import calendar_service
@@ -30,7 +30,7 @@ def get_calendar_day_form(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
@@ -56,7 +56,7 @@ def get_calendar_day_form(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/add-shift-form.html",
+        name="/webapp/home/add-shift-form.html",
         context=context
         )
 
@@ -72,7 +72,7 @@ def get_calendar_day_card(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
     
@@ -112,6 +112,6 @@ def get_calendar_day_card(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/calendar-day-card.html",
+        name="/webapp/home/calendar-day-card.html",
         context=context,
     )

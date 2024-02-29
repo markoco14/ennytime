@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.repositories import share_repository, shift_repository, shift_type_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router
-from app import schemas
+from app.schemas import schemas
 from app.services import calendar_service
 
 app = FastAPI()
@@ -40,7 +40,7 @@ def index(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html"
+            name="website/web-home.html"
         )
     try:
         session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
@@ -50,7 +50,7 @@ def index(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -60,7 +60,7 @@ def index(
         auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
         response = templates.TemplateResponse(
             request=request,
-            name="landing-page.html"
+            name="website/web-home.html"
             )
         response.delete_cookie("session-id")
     
@@ -74,7 +74,7 @@ def index(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -123,7 +123,7 @@ def index(
 
     response = templates.TemplateResponse(
         request=request,
-        name="index.html",
+        name="webapp/home/app-home.html",
         context=context,
         )
     
@@ -137,7 +137,7 @@ def get_signin_page(request: Request):
     """Go to the sign in page"""
     return templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         )
 
 @app.get("/signup", response_class=HTMLResponse)
@@ -145,25 +145,8 @@ def get_signup_page(request: Request):
     """Go to the sign up page"""
     return templates.TemplateResponse(
         request=request,
-        name="signup.html",
+        name="website/signup.html",
     )
-
-
-# @app.get("/modal/{day_number}", response_class=HTMLResponse)
-# def modal(request: Request, day_number: int):
-#     """Sends modal to client"""
-
-#     context={
-#         "request": request,
-#         "shift_types": memory_db.SHIFT_TYPES,
-#         "day_number": day_number,
-#           }
-
-#     return templates.TemplateResponse(
-#         request=request,
-#         name="modal.html",
-#         context=context
-#         )
 
 
 @app.post("/search", response_class=HTMLResponse)
@@ -176,7 +159,7 @@ def search_users_to_share(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html"
+            name="website/web-home.html"
         )
 
     session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
@@ -185,7 +168,7 @@ def search_users_to_share(
         auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
         response = templates.TemplateResponse(
             request=request,
-            name="landing-page.html"
+            name="website/web-home.html"
             )
         response.delete_cookie("session-id")
     
@@ -199,7 +182,7 @@ def search_users_to_share(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -208,7 +191,7 @@ def search_users_to_share(
     if search_display_name == "":
         return templates.TemplateResponse(
             request=request,
-            name="search-results.html",
+            name="webapp/profile/search-results.html",
             context={"request": request, "matching_users": []}
         )
     
@@ -220,7 +203,7 @@ def search_users_to_share(
 
     return templates.TemplateResponse(
         request=request,
-        name="search-results.html",
+        name="webapp/profile/search-results.html",
         context=context
     )
 

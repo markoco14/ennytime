@@ -11,7 +11,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.repositories import shift_repository, shift_type_repository
 from app.repositories import user_repository, share_repository
-from app import schemas
+from app.schemas import schemas
 from app.services import calendar_service
 
 router = APIRouter()
@@ -26,7 +26,7 @@ def get_profile_page(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="signin.html",
+            name="website/signin.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -46,7 +46,7 @@ def get_profile_page(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -84,7 +84,7 @@ def get_profile_page(
     if not share_owner:
         return templates.TemplateResponse(
             request=request,
-            name="profile.html",
+            name="webapp/profile/profile.html",
             context=context
             )
 
@@ -92,7 +92,7 @@ def get_profile_page(
     context.update({"share": share_owner, "share_user": share_user})
     return templates.TemplateResponse(
         request=request,
-        name="profile.html",
+        name="webapp/profile/profile.html",
         context=context
         )
 
@@ -105,7 +105,7 @@ def get_display_name_widget(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -128,7 +128,7 @@ def get_display_name_widget(
     }
     return templates.TemplateResponse(
         request=request,
-        name="/contact/display-name.html",
+        name="webapp/profile/display-name.html",
         context=context
         )
 
@@ -153,7 +153,7 @@ def update_user_contact(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -191,7 +191,7 @@ def update_user_contact(
 
         return templates.TemplateResponse(
             request=request,
-            name="/contact/display-name.html",
+            name="webapp/profile/display-name.html",
             context=context
             )
 
@@ -202,7 +202,7 @@ def update_user_contact(
 
     return templates.TemplateResponse(
         request=request,
-        name="/contact/display-name.html",
+        name="webapp/profile/display-name.html",
         context=context
         )
 
@@ -216,7 +216,7 @@ def get_edit_display_name_widget(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="landing-page.html",
+            name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -240,7 +240,7 @@ def get_edit_display_name_widget(
 
     return templates.TemplateResponse(
         request=request,
-        name="/contact/display-name-edit.html",
+        name="webapp/profile/display-name-edit.html",
         context=context
         )
 

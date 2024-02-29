@@ -10,7 +10,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.repositories import share_repository, user_repository
 
-from app import schemas
+from app.schemas import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -25,7 +25,7 @@ def share_calendar(
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
-            name="signin.html",
+            name="website/signin.html",
             headers={"HX-Redirect": "/"},
         )
 
@@ -39,7 +39,7 @@ def share_calendar(
         # AttributeError: 'NoneType' object has no attribute 'user_id'
         response = templates.TemplateResponse(
         request=request,
-        name="signin.html",
+        name="website/signin.html",
         headers={"HX-Redirect": "/signin"},
     )
         response.delete_cookie("session-id")
@@ -57,7 +57,7 @@ def share_calendar(
     share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
-        name="/profile/share-exists.html",
+        name="/webapp/profile/share-exists.html",
         context={
             "request": request, 
             "share": new_db_share, 
@@ -81,7 +81,7 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
     share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
-        name="/profile/share-form.html",
+        name="/webapp/profile/share-form.html",
         context={
             "request": request, 
             "share_headings": share_headings, 
