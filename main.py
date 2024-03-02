@@ -37,47 +37,16 @@ def index(
     year: Optional[int] = None,
     ):
     """Index page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-    try:
-        session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-        request=request,
-        name="website/signin.html",
-        headers={"HX-Redirect": "/signin"},
-    )
-        response.delete_cookie("session-id")
-        return response
-    
-    if auth_service.is_session_expired(expiry=session_data.expires_at):
-        auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies)
+    if not current_user:
         response = templates.TemplateResponse(
             request=request,
             name="website/web-home.html"
             )
         response.delete_cookie("session-id")
     
-        return response
-       
-    try:
-        current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-        request=request,
-        name="website/signin.html",
-        headers={"HX-Redirect": "/signin"},
-    )
-        response.delete_cookie("session-id")
         return response
 
     current_month = calendar_service.get_current_month(month)
@@ -156,36 +125,16 @@ def search_users_to_share(
     search_display_name: Annotated[str, Form()] = ""
     ):
     """ Returns a list of users that match the search string. """
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-
-    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
-
-    if auth_service.is_session_expired(expiry=session_data.expires_at):
-        auth_service.destroy_db_session(db=db, session_token=session_data.session_id)
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies)
+    if not current_user:
         response = templates.TemplateResponse(
             request=request,
             name="website/web-home.html"
             )
         response.delete_cookie("session-id")
     
-        return response
-       
-    try:
-        current_user: schemas.User = auth_service.get_current_user(db=db, user_id=session_data.user_id)
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-        request=request,
-        name="website/signin.html",
-        headers={"HX-Redirect": "/signin"},
-    )
-        response.delete_cookie("session-id")
         return response
     
     if search_display_name == "":
