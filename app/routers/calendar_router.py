@@ -102,8 +102,8 @@ def get_calendar_day_card(
 
     context = {
         "request": request,
-        "date_string": date_string,
         "date": {
+            "date": date_string,
             "shifts": shifts,
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
