@@ -1,6 +1,7 @@
 """Main file to hold app and api routes"""
 from typing import Annotated, Optional
 
+
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -9,10 +10,9 @@ from sqlalchemy.orm import Session
 
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
-from app.repositories import share_repository, shift_repository, shift_type_repository
+from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router
-from app.schemas import schemas
 from app.services import calendar_service
 
 app = FastAPI()
@@ -58,36 +58,7 @@ def index(
 
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
-
-    db_shifts = shift_repository.get_user_shifts(
-        db=db, user_id=current_user.id)
-
-    # get users detailed shift info for matching dates
-    for shift in db_shifts:
-        shift_date = str(shift.date.date())
-        if month_calendar_dict.get(shift_date):
-            db_shift_type = shift_type_repository.get_user_shift_type(
-                db=db, user_id=current_user.id, shift_type_id=shift.type_id)
-            # month_calendar_dict[shift_date]['shift_type_id'] = shift.type_id
-            # month_calendar_dict[shift_date]['shift_type'] = db_shift_type
-            month_calendar_dict[shift_date]['shifts'].append(db_shift_type)
-
-    # just get a single share
-    # because a user can only share with 1 person for now
-    # and also be shared with 1 person
-    share = share_repository.get_share_by_guest_id(
-        db=db, guest_id=current_user.id)
-    if share:
-        bae_shifts = shift_repository.get_user_shifts(
-            db=db, user_id=share.owner_id)
-        for shift in bae_shifts:
-            shift_date = str(shift.date.date())
-            if month_calendar_dict.get(shift_date):
-                db_shift_type = shift_type_repository.get_user_shift_type(
-                    db=db, user_id=share.owner_id, shift_type_id=shift.type_id)
-                month_calendar_dict[shift_date]['bae_shifts'].append(
-                    db_shift_type)
-
+    
     context = {
         "month_number": month,
         "request": request,
@@ -95,9 +66,40 @@ def index(
         "current_year": current_year,
         "current_month_number": current_month,
         "current_month": calendar_service.MONTHS[current_month - 1],
-        "month_calendar": list(month_calendar_dict.values()),
     }
 
+    # TODO: add month filters to shift query
+    # because right now we get all the shifts in the db belonging to the user
+    db_shifts = shift_repository.get_user_shifts_details(
+        db=db, user_id=current_user.id)
+    for shift in db_shifts:
+        shift_date = str(shift.date.date())
+        if month_calendar_dict.get(shift_date):
+            month_calendar_dict[shift_date]['shifts'].append(shift._asdict())
+
+    # TODO: improve 'share' naming to better reflect purpose
+    # we are checking to see if anyone has shared their calendar with the current user
+    share = share_repository.get_share_by_guest_id(
+        db=db, guest_id=current_user.id)
+    if not share:
+        context.update(month_calendar=list(month_calendar_dict.values()))
+        response = templates.TemplateResponse(
+            request=request,
+            name="webapp/home/app-home.html",
+            context=context,
+        )
+
+        return response
+
+    bae_shifts = shift_repository.get_user_shifts_details(
+        db=db, user_id=share.owner_id)
+    for shift in bae_shifts:
+        shift_date = str(shift.date.date())
+        if month_calendar_dict.get(shift_date):
+            month_calendar_dict[shift_date]['bae_shifts'].append(
+                shift._asdict())
+
+    context.update(month_calendar=list(month_calendar_dict.values()))
     response = templates.TemplateResponse(
         request=request,
         name="webapp/home/app-home.html",
