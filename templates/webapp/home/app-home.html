@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <script
       src="https://unpkg.com/htmx.org@1.9.10"
       integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
@@ -53,7 +56,9 @@
             >
               Previous
             </button>
-            {% endif%} {% if current_month_number == 12 %}
+            {% endif%}
+            <!-- if end of year -->
+            {% if current_month_number == 12 %}
             <button
               disabled
               class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70"
@@ -72,8 +77,14 @@
             {% endif %}
           </div>
         </div>
-        <div id="overlay" class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out">
-        <div id="modal" class="w-full max-w-[500px] aspect-square"></div>
+        <div
+          id="overlay"
+          class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out"
+        >
+          <div
+            id="modal"
+            class="w-full max-w-[500px] aspect-square"
+          ></div>
         </div>
         {% include '/webapp/home/calendar.html' %}
       </div>
@@ -85,7 +96,8 @@
         const overlay = document.getElementById("overlay");
         const calendarCard = document.getElementById(`day-${day_number}`);
         const calendarContainer = document.getElementById(
-          `container-${day_number}`);
+          `container-${day_number}`
+        );
         const modal = document.getElementById("modal");
         const state = Flip.getState(`#day-${day_number}`);
 
@@ -94,7 +106,7 @@
         } else {
           calendarContainer.append(calendarCard);
         }
-        changeClasses(day_number)
+        changeClasses(day_number);
         overlay.classList.toggle("hidden");
         Flip.from(state, {
           duration: 1,
@@ -107,7 +119,6 @@
         const selectedCard = document.getElementById(`day-${day_number}`);
         selectedCard.classList.toggle("rounded-md");
       }
-
     </script>
   </body>
 </html>
