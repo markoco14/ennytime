@@ -1,3 +1,4 @@
+<div class="relative">
 <form
   class="min-w-[300px] p-[40px]"
   hx-post="register-shift"
@@ -44,8 +45,9 @@
   hx-get="/calendar-card/{{date_string}}"
   hx-target="#day-{{day_number}}"
   hx-swap="innerHTML"
-  hx-trigger="click delay:300ms"
-  onclick="popOut(Number(`{{ day_number }}`))"
+  hx-trigger="click"
+  onclick="moveCalendarCard(Number(`{{ day_number }}`))"
 >
   Close
 </button>
+</div>
