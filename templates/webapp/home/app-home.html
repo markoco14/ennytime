@@ -116,8 +116,10 @@
       }
 
       function changeClasses(day_number) {
-        const selectedCard = document.getElementById(`day-${day_number}`);
-        selectedCard.classList.toggle("rounded-md");
+        selectedCard = htmx.find(`#day-${day_number}`)
+        htmx.toggleClass(selectedCard, "rounded-md", 1000);
+        htmx.toggleClass(selectedCard, "grid", 1000);
+        htmx.toggleClass(selectedCard, "grid-rows-3", 1000);
       }
     </script>
   </body>

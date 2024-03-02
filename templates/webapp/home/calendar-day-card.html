@@ -3,8 +3,8 @@
   hx-target="this"
   hx-swap="outerHTML"
   hx-trigger="click delay:300ms"
-  class="grid w-full h-full rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer md:p-2 bg-white dark:bg-gray-700"
-  onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
+  class="grid w-full h-full max-w-[300px] mx-auto rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer md:p-2 bg-white dark:bg-gray-700"
+  {# onclick="moveCalendarCard(Number(`{{date.day_number}}`))" #}
 >
   <div class="grid grid-rows-3 md:gap-2">
     <span> {{ date.day_number }} </span>
@@ -30,5 +30,11 @@
       {% endfor %}
     </ul>
     {%endif%}
+    <button 
+      id="modal-close-btn" 
+      class="hidden"
+      onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
+    >
+    Close</button>
   </div>
 </div>
