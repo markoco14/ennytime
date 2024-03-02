@@ -72,35 +72,42 @@
             {% endif %}
           </div>
         </div>
+        <div id="overlay" class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out">
+        <div id="modal" class="w-full max-w-[500px] aspect-square"></div>
+        </div>
         {% include '/webapp/home/calendar.html' %}
       </div>
     </section>
     <script>
       gsap.registerPlugin(Flip);
-      function changeClasses(day_number) {
-        const selectedCard = document.getElementById(`day-${day_number}`);
 
-        selectedCard.classList.toggle("absolute");
-        selectedCard.classList.toggle("top-[5%]");
-        selectedCard.classList.toggle("left-[5%]");
-        selectedCard.classList.toggle("w-[90%]");
-        selectedCard.classList.toggle("h-[90%]");
-        selectedCard.classList.toggle("md:w-[50%]");
-        selectedCard.classList.toggle("md:h-[50%]");
-        selectedCard.classList.toggle("md:top-[25%]");
-        selectedCard.classList.toggle("md:left-[25%]");
-      }
-
-      function popOut(day_number) {
+      function moveCalendarCard(day_number) {
+        const overlay = document.getElementById("overlay");
+        const calendarCard = document.getElementById(`day-${day_number}`);
+        const calendarContainer = document.getElementById(
+          `container-${day_number}`);
+        const modal = document.getElementById("modal");
         const state = Flip.getState(`#day-${day_number}`);
-        changeClasses(day_number);
+
+        if (calendarCard.parentNode !== modal) {
+          modal.append(calendarCard);
+        } else {
+          calendarContainer.append(calendarCard);
+        }
+        changeClasses(day_number)
+        overlay.classList.toggle("hidden");
         Flip.from(state, {
-          duration: 0.5,
+          duration: 1,
           ease: "power1.inOut",
           absolute: true,
-          fade: true,
         });
       }
+
+      function changeClasses(day_number) {
+        const selectedCard = document.getElementById(`day-${day_number}`);
+        selectedCard.classList.toggle("rounded-md");
+      }
+
     </script>
   </body>
 </html>
