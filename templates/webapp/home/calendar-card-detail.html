@@ -68,6 +68,9 @@
         >
             Close
         </button>
-        <button class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
+        <button 
+        hx-get="/add-shift-form/{{date.date}}"
+        hx-swap="outerHTML transition:true"
+        class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
     </div>
 </div>
