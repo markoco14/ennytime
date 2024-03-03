@@ -1,0 +1,57 @@
+<div
+    class="grid grid-rows-3 md:gap-2"
+    hx-target="this"
+>
+    <header>
+        {# Readable date (detailed view) #}
+        <h3>March 3, 2024</h3>
+        {# Readable day (detailed view) #}
+        <p>Thursday</p>
+    </header>
+
+    <main class="flex flex-col">
+        {% if date.shifts|length > 0%}
+        <ul
+            id="user-list"
+            class="bg-green-300 rounded-md"
+        >
+            {% for shift in date.shifts %} {# user name (detailed view) #}
+            <li>
+                <p>Mark</p>
+                {# user full shift name (detailed view)#}
+                <p>Day Shift (SA)</p>
+                {# Short shift type name(simplified view) #}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <br class="hidden" />
+        {% if date.bae_shifts and date.bae_shifts|length > 0%}
+        <ul
+            id="partner-list"
+            class="bg-pink-300 rounded-md"
+        >
+            {% for shift in date.bae_shifts %} {# partner name (detailed view)#}
+            <li>
+                <p>Enny</p>
+                {# partner full shift name (detailed view)#}
+                <p>Night Shift (N)</p>
+            </li>
+            {% endfor %}
+        </ul>
+        {%endif%}
+    </main>
+
+    <div class="flex gap-4">
+        <button
+            hx-get="/calendar-card/{{date.date}}"
+            hx-swap="outerHTML"
+            hx-trigger="click delay:700ms"
+            class="rounded bg-gray-300 px-4 py-1"
+            onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
+        >
+            Close
+        </button>
+        <button class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
+    </div>
+</div>
