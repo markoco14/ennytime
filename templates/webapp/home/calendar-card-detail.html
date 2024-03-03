@@ -4,22 +4,22 @@
 >
     <header>
         {# Readable date (detailed view) #}
-        <h3>March 3, 2024</h3>
+        <h3 class="text-3xl">March 3, 2024</h3>
         {# Readable day (detailed view) #}
-        <p>Thursday</p>
+        <p class="text-xl">Thursday</p>
     </header>
 
-    <main class="flex flex-col">
+    <main class="flex flex-col gap-8">
         {% if date.shifts|length > 0%}
         <ul
             id="user-list"
-            class="bg-green-300 rounded-md"
+            class="bg-green-300 p-4 rounded-md"
         >
             {% for shift in date.shifts %} {# user name (detailed view) #}
             <li>
-                <p>Mark</p>
+                <p>User</p>
                 {# user full shift name (detailed view)#}
-                <p>Day Shift (SA)</p>
+                <p>Long Shift Name</p>
                 {# Short shift type name(simplified view) #}
             </li>
             {% endfor %}
@@ -29,13 +29,13 @@
         {% if date.bae_shifts and date.bae_shifts|length > 0%}
         <ul
             id="partner-list"
-            class="bg-pink-300 rounded-md"
+            class="bg-pink-300 p-4 rounded-md"
         >
             {% for shift in date.bae_shifts %} {# partner name (detailed view)#}
             <li>
-                <p>Enny</p>
+                <p>Partner</p>
                 {# partner full shift name (detailed view)#}
-                <p>Night Shift (N)</p>
+                <p>Long Shift Name</p>
             </li>
             {% endfor %}
         </ul>
@@ -46,7 +46,7 @@
         <button
             hx-get="/calendar-card/{{date.date}}"
             hx-swap="outerHTML transition:true"
-            hx-trigger="click"
+            hx-trigger="click delay:800ms"
             class="rounded bg-gray-300 px-4 py-1"
             onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
         >
