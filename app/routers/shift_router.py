@@ -12,7 +12,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 
 from app.schemas import schemas
-from app.repositories import shift_repository, shift_type_repository
+from app.repositories import shift_repository, shift_type_repository, share_repository, user_repository
 from app.services import calendar_service
 
 router = APIRouter()
@@ -81,13 +81,45 @@ def schedule_shift(
     
     shift_repository.create_shift(db=db, shift=db_shift)
 
-    context={"request": request}
+    db_shifts = shift_repository.get_user_shifts_details(
+        db=db, user_id=current_user.id)
     
+    # only need to get an array of shifts
+    # becauase only for one day, not getting whole calendar
+    shifts = []
+    for shift in db_shifts:
+        if str(shift.date.date()) == date:
+            shifts.append(shift._asdict())
+
+    bae_shifts = []
+    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    if share:
+        bae_db_shifts = shift_repository.get_user_shifts_details(db=db, user_id=share.owner_id)
+        for shift in bae_db_shifts:
+            if str(shift.date.date()) == date:
+                bae_shifts.append(shift)
+
+    bae_user = user_repository.get_user_by_id(db=db, user_id=share.owner_id)
+
+    context = {
+        "request": request,
+        "bae_user": bae_user.display_name,
+        "current_user": current_user.display_name,
+        "date": {
+            "date": date,
+            "shifts": shifts,
+            "day_number": int(date_segments[2]),
+            "bae_shifts": bae_shifts,
+            },
+    }
+
+
     return templates.TemplateResponse(
         request=request,
-        name="success.html",
-        context=context
+        name="/webapp/home/calendar-card-detail.html",
+        context=context,
     )
+
 
 @router.delete("/delete-shift/{shift_id}", response_class=HTMLResponse | Response)
 def delete_shift(

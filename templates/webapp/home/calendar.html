@@ -4,32 +4,38 @@
     {# render calendar day headings #}
     {% for day_name in days_of_week %}
     <div class="text-center text-xl font-bold">{{ day_name }}</div>
-    {% endfor %} 
+    {% endfor %}
     {# render calendar cards #}
     {% for date in month_calendar %} 
-        {% if date.month_number != current_month_number %}
-            <div
-                class="min-h-[48px] md:border-gray-900 md:rounded-md bg-gray-200 dark:bg-gray-900 dark:border-gray-500"
-            >
-                <div
-                    class="border md:border-gray-900 grid justify-center h-full rounded-md"
-                >
-                    {{date.day_number}}
-                </div>
-            </div>
-            {% else %}
-            <div
-                id="container-{{date.day_number}}"
-                class="min-h-[48px] md:border-gray-900 md:rounded-md border-gray-900 bg-white dark:bg-gray-900"
-                onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
-            >
-                <div
-                    id="day-{{date.day_number}}"
-                    class="border md:border-gray-900 prop h-full dark:bg-gray-700 md:rounded-md bg-white dark:bg-gray-900"
-                >
-                    {% include '/webapp/home/calendar-day-card.html'%}
-                </div>
-            </div>
-        {%endif%} 
+    {% if date.month_number != current_month_number %}
+    <div
+        class="min-h-[48px] md:border-gray-900 md:rounded-md bg-gray-200 dark:bg-gray-900 dark:border-gray-500"
+    >
+        <div
+            class="border md:border-gray-900 grid justify-center h-full rounded-md"
+        >
+            {{date.day_number}}
+        </div>
+    </div>
+    {% else %}
+    <div
+        id="container-{{date.day_number}}"
+        class="min-h-[48px] md:border-gray-900 md:rounded-md border-gray-900 bg-white dark:bg-gray-900"
+        x-data="{showSimple:true}"
+        @click="showSimple = false;
+                moveCalendarCard(Number(`{{date.day_number}}`));
+                setTimeout(() => {
+                    showSimple = true;
+                }, 1100);"
+        {# onclick="moveCalendarCard(Number(`{{date.day_number}}`))" #}
+    >
+        <div
+            id="day-{{date.day_number}}"
+            class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white"
+        >
+            {% include '/webapp/home/calendar-card-simple.html'%}
+        </div>
+    </div>
+    {% endif %}
     {% endfor %}
 </div>
