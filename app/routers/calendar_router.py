@@ -17,6 +17,58 @@ from app.services import calendar_service
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+@router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
+def get_calendar_card_detailed(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    date_string: str):
+    """Get calendar day card"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+    
+    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
+
+    current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+    date_segments = date_string.split("-")
+    
+    db_shifts = shift_repository.get_user_shifts_details(
+        db=db, user_id=current_user.id)
+    
+    # only need to get an array of shifts
+    # becauase only for one day, not getting whole calendar
+    shifts = []
+    for shift in db_shifts:
+        if str(shift.date.date()) == date_string:
+            shifts.append(shift._asdict())
+
+    bae_shifts = []
+    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    if share:
+        bae_db_shifts = shift_repository.get_user_shifts_details(db=db, user_id=share.owner_id)
+        for shift in bae_db_shifts:
+            if str(shift.date.date()) == date_string:
+                bae_shifts.append(shift)
+
+    context = {
+        "request": request,
+        "date": {
+            "date": date_string,
+            "shifts": shifts,
+            "day_number": int(date_segments[2]),
+            "bae_shifts": bae_shifts,
+            },
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="/webapp/home/calendar-card-detail.html",
+        context=context,
+    )
+
 
 @router.get("/add-shift-form/{date_string}", response_class=HTMLResponse)
 def get_calendar_day_form(
@@ -111,6 +163,6 @@ def get_calendar_day_card(
 
     return templates.TemplateResponse(
         request=request,
-        name="/webapp/home/calendar-day-card.html",
+        name="/webapp/home/calendar-card-simple.html",
         context=context,
     )
