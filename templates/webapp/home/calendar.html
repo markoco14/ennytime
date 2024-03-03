@@ -21,7 +21,13 @@
     <div
         id="container-{{date.day_number}}"
         class="min-h-[48px] md:border-gray-900 md:rounded-md border-gray-900 bg-white dark:bg-gray-900"
-        onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
+        x-data="{showSimple:true}"
+        @click="showSimple = false;
+                moveCalendarCard(Number(`{{date.day_number}}`));
+                setTimeout(() => {
+                    showSimple = true;
+                }, 1100);"
+        {# onclick="moveCalendarCard(Number(`{{date.day_number}}`))" #}
     >
         <div
             id="day-{{date.day_number}}"
