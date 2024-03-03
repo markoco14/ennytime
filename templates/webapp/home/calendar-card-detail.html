@@ -22,7 +22,7 @@
         >
             {% for shift in date.shifts %}
             <li>
-                <p>{{date.current_user.display_name}}</p>
+                <p>{{current_user}}</p>
                 <p>{{shift.type_name}}</p>
             </li>
             {% endfor %}
@@ -36,7 +36,7 @@
         >
             {% for shift in date.bae_shifts %}
             <li>
-                <p>{{date.bae_user.display_name}}</p>
+                <p>{{bae_user}}</p>
                 <p>{{shift.type_name}}</p>
             </li>
             {% endfor %}

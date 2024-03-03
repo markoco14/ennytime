@@ -58,13 +58,13 @@ def get_calendar_card_detailed(
 
     context = {
         "request": request,
+        "bae_user": bae_user.display_name,
+        "current_user": current_user.display_name,
         "date": {
             "date": date_string,
             "shifts": shifts,
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
-            "current_user": current_user,
-            "bae_user": bae_user
             },
     }
 

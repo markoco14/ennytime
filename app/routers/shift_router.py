@@ -103,15 +103,16 @@ def schedule_shift(
 
     context = {
         "request": request,
+        "bae_user": bae_user.display_name,
+        "current_user": current_user.display_name,
         "date": {
             "date": date,
             "shifts": shifts,
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
-            "current_user": current_user,
-            "bae_user": bae_user
             },
     }
+
 
     return templates.TemplateResponse(
         request=request,
