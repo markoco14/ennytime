@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from app.auth import auth_service
 from app.core.database import get_db
 from app.schemas import schemas
-from app.repositories import share_repository, shift_repository
+from app.repositories import share_repository, shift_repository, user_repository
 from app.repositories import shift_type_repository
 from app.services import calendar_service
 
@@ -53,6 +53,9 @@ def get_calendar_card_detailed(
             if str(shift.date.date()) == date_string:
                 bae_shifts.append(shift)
 
+
+    bae_user = user_repository.get_user_by_id(db=db, user_id=share.owner_id)
+
     context = {
         "request": request,
         "date": {
@@ -60,6 +63,8 @@ def get_calendar_card_detailed(
             "shifts": shifts,
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
+            "current_user": current_user,
+            "bae_user": bae_user
             },
     }
 

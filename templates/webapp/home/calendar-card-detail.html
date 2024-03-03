@@ -10,9 +10,7 @@
     x-transition:leave-end="opacity-0 scale-90"
 >
     <header>
-        {# Readable date (detailed view) #}
         <h3 class="text-3xl">March 3, 2024</h3>
-        {# Readable day (detailed view) #}
         <p class="text-xl">Thursday</p>
     </header>
 
@@ -22,12 +20,10 @@
             id="user-list"
             class="bg-green-300 p-4 rounded-md"
         >
-            {% for shift in date.shifts %} {# user name (detailed view) #}
+            {% for shift in date.shifts %}
             <li>
-                <p>User</p>
-                {# user full shift name (detailed view)#}
-                <p>Long Shift Name</p>
-                {# Short shift type name(simplified view) #}
+                <p>{{date.current_user.display_name}}</p>
+                <p>{{shift.type_name}}</p>
             </li>
             {% endfor %}
         </ul>
@@ -38,11 +34,10 @@
             id="partner-list"
             class="bg-pink-300 p-4 rounded-md"
         >
-            {% for shift in date.bae_shifts %} {# partner name (detailed view)#}
+            {% for shift in date.bae_shifts %}
             <li>
-                <p>Partner</p>
-                {# partner full shift name (detailed view)#}
-                <p>Long Shift Name</p>
+                <p>{{date.bae_user.display_name}}</p>
+                <p>{{shift.type_name}}</p>
             </li>
             {% endfor %}
         </ul>
