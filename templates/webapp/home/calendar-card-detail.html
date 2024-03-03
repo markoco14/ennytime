@@ -1,5 +1,5 @@
 <div
-    class="grid grid-rows-3 md:gap-2"
+    class="slide-it grid grid-rows-3 md:gap-2"
     hx-target="this"
 >
     <header>
@@ -45,8 +45,8 @@
     <div class="flex gap-4">
         <button
             hx-get="/calendar-card/{{date.date}}"
-            hx-swap="outerHTML"
-            hx-trigger="click delay:700ms"
+            hx-swap="outerHTML transition:true"
+            hx-trigger="click delay:800ms"
             class="rounded bg-gray-300 px-4 py-1"
             onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
         >
