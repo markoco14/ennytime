@@ -1,10 +1,11 @@
 
     <form
-        class="min-w-[300px] h-full flex flex-col justify-between p-8"
+        class="w-full h-full flex flex-col justify-between p-8"
         hx-post="register-shift"
         hx-target="this"
         hx-swap="outerHTML"
     >
+        <h3 class="text-3xl">Shift Types</h3>
         <div class="sr-only">
             <label>Date</label>
             <input
@@ -39,7 +40,7 @@
         <div class="flex gap-4">
         <button
         type="button"
-        class="rounded bg-gray-300 px-4 py-1"
+        class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
         hx-get="/calendar-card-detail/{{date_string}}"
         hx-target="#day-{{day_number}}"
         hx-swap="innerHTML"
@@ -49,7 +50,7 @@
     </button>
         <button
             type="submit"
-            class="dark:bg-[#E22C7B] px-3 py-1 rounded-md"
+            class="bg-blue-500 text-white px-4 py-1 rounded"
         >
             Save shift
         </button>
