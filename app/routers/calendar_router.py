@@ -34,10 +34,15 @@ def get_calendar_card_detailed(
 
     current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
-    
     db_shifts = shift_repository.get_user_shifts_details(
         db=db, user_id=current_user.id)
-    
+
+    year = date_segments[0]
+    month = date_segments[1]
+    day = date_segments[2]
+    date = datetime.date(int(year), int(month), int(day))
+    month = date.strftime("%B %d, %Y")
+    day = date.strftime("%A")
     # only need to get an array of shifts
     # becauase only for one day, not getting whole calendar
     shifts = []
@@ -60,6 +65,8 @@ def get_calendar_card_detailed(
         "request": request,
         "bae_user": bae_user.display_name,
         "current_user": current_user.display_name,
+        "month": month,
+        "day": day,
         "date": {
             "date": date_string,
             "shifts": shifts,
