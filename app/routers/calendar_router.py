@@ -1,6 +1,10 @@
+"""
+Calendar related routes
+"""
 from typing import Annotated, Optional
 import datetime
 
+from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
@@ -16,11 +20,12 @@ from app.services import calendar_service
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+
 @router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
 def get_calendar_card_detailed(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    date_string: str):
+        request: Request,
+        db: Annotated[Session, Depends(get_db)],
+        date_string: str):
     """Get calendar day card"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -28,10 +33,12 @@ def get_calendar_card_detailed(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
-    
-    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
-    current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+    session_data: schemas.Session = auth_service.get_session_data(
+        db=db, session_token=request.cookies.get("session-id"))
+
+    current_user: schemas.AppUser = auth_service.get_current_user(
+        db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
     db_shifts = shift_repository.get_user_shifts_details(
         db=db, user_id=current_user.id)
@@ -49,18 +56,66 @@ def get_calendar_card_detailed(
         if str(shift.date.date()) == date_string:
             shifts.append(shift._asdict())
 
-    bae_shifts = []
-    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    # TODO: I need to change the way I get the shared shifts
+    # there are too many trips to the DB
+    # one trip to get the share (with no relationship)
+    # one trip to get the bae shifts (with no relationship)
 
-    if share:
-        bae_db_shifts = shift_repository.get_user_shifts_details(db=db, user_id=share.owner_id)
-        for shift in bae_db_shifts:
-            if str(shift.date.date()) == date_string:
-                bae_shifts.append(shift)
+    share_query = text("""
+        SELECT etime_shares.*,
+            etime_users.display_name as bae_name
+        FROM etime_shares
+        LEFT JOIN etime_users ON etime_shares.owner_id = etime_users.id 
+        WHERE etime_shares.guest_id = :guest_id
+    """)
+
+    share_result = db.execute(
+        share_query, {"guest_id": current_user.id}).fetchone()
+
+    if not share_result:
+        context = {
+            "request": request,
+            "current_user": current_user.display_name,
+            "month": month,
+            "day": day,
+            "date": {
+                "date": date_string,
+                "shifts": shifts,
+                "day_number": int(date_segments[2]),
+                "bae_shifts": [],
+            },
+        }
+
+        return templates.TemplateResponse(
+            request=request,
+            name="/webapp/home/calendar-card-detail.html",
+            context=context,
+        )
+
+    shifts_query = text("""
+        SELECT etime_shifts.*, etime_shift_types.type as type_name
+        FROM etime_shifts
+        LEFT JOIN etime_shift_types
+        ON etime_shifts.type_id = etime_shift_types.id
+        WHERE etime_shifts.user_id = :owner_id
+        """)
+
+    shifts_result = db.execute(
+        shifts_query, {"owner_id": share_result.owner_id}).fetchall()
+
+    # TEMP fix, filter shifts for selected day
+    # held in date_string
+    # change to do this with query later
+    bae_shifts = []
+
+    for shift in shifts_result:
+        if str(shift.date.date()) == date_string:
+            bae_shifts.append(shift)
 
     context = {
         "request": request,
         "current_user": current_user.display_name,
+        "bae_user": share_result.bae_name,
         "month": month,
         "day": day,
         "date": {
@@ -68,13 +123,8 @@ def get_calendar_card_detailed(
             "shifts": shifts,
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
-            },
+        },
     }
-
-    if share:
-        bae_user = user_repository.get_user_by_id(db=db, user_id=share.owner_id)
-        if bae_user:
-            context.update({"bae_user": bae_user.display_name})
 
     return templates.TemplateResponse(
         request=request,
@@ -90,7 +140,7 @@ def get_calendar_day_form(
     db: Annotated[Session, Depends(get_db)],
     month: Optional[int] = None,
     year: Optional[int] = None
-    ):
+):
     """Get calendar day form"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -98,10 +148,12 @@ def get_calendar_day_form(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
-    
-    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
-    current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+    session_data: schemas.Session = auth_service.get_session_data(
+        db=db, session_token=request.cookies.get("session-id"))
+
+    current_user: schemas.AppUser = auth_service.get_current_user(
+        db=db, user_id=session_data.user_id)
 
     shift_types = shift_type_repository.list_user_shift_types(
         db=db,
@@ -109,30 +161,27 @@ def get_calendar_day_form(
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
 
-
-    context={
+    context = {
         "request": request,
         "shift_types": shift_types,
         "day_number": int(date_string.split("-")[2]),
         "current_month": current_month,
         "current_year": current_year,
         "date_string": date_string
-          }
+    }
 
     return templates.TemplateResponse(
         request=request,
         name="/webapp/home/add-shift-form.html",
         context=context
-        )
-
-
+    )
 
 
 @router.get("/calendar-card/{date_string}", response_class=HTMLResponse)
 def get_calendar_day_card(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    date_string: str):
+        request: Request,
+        db: Annotated[Session, Depends(get_db)],
+        date_string: str):
     """Get calendar day card"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -140,15 +189,17 @@ def get_calendar_day_card(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
-    
-    session_data: schemas.Session = auth_service.get_session_data(db=db, session_token=request.cookies.get("session-id"))
 
-    current_user: schemas.AppUser = auth_service.get_current_user(db=db, user_id=session_data.user_id)
+    session_data: schemas.Session = auth_service.get_session_data(
+        db=db, session_token=request.cookies.get("session-id"))
+
+    current_user: schemas.AppUser = auth_service.get_current_user(
+        db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
-    
+
     db_shifts = shift_repository.get_user_shifts_details(
         db=db, user_id=current_user.id)
-    
+
     # only need to get an array of shifts
     # becauase only for one day, not getting whole calendar
     shifts = []
@@ -157,9 +208,11 @@ def get_calendar_day_card(
             shifts.append(shift._asdict())
 
     bae_shifts = []
-    share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+    share = share_repository.get_share_by_guest_id(
+        db=db, guest_id=current_user.id)
     if share:
-        bae_db_shifts = shift_repository.get_user_shifts_details(db=db, user_id=share.owner_id)
+        bae_db_shifts = shift_repository.get_user_shifts_details(
+            db=db, user_id=share.owner_id)
         for shift in bae_db_shifts:
             if str(shift.date.date()) == date_string:
                 bae_shifts.append(shift)
@@ -171,7 +224,7 @@ def get_calendar_day_card(
             "shifts": shifts,
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
-            },
+        },
     }
 
     return templates.TemplateResponse(
