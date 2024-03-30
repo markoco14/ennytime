@@ -98,19 +98,11 @@ def get_calendar_card_detailed(
         LEFT JOIN etime_shift_types
         ON etime_shifts.type_id = etime_shift_types.id
         WHERE etime_shifts.user_id = :owner_id
+        AND DATE(etime_shifts.date) = :date_string
         """)
 
     shifts_result = db.execute(
-        shifts_query, {"owner_id": share_result.owner_id}).fetchall()
-
-    # TEMP fix, filter shifts for selected day
-    # held in date_string
-    # change to do this with query later
-    bae_shifts = []
-
-    for shift in shifts_result:
-        if str(shift.date.date()) == date_string:
-            bae_shifts.append(shift)
+        shifts_query, {"owner_id": share_result.owner_id, "date_string": date_string}).fetchall()
 
     context = {
         "request": request,
@@ -122,7 +114,7 @@ def get_calendar_card_detailed(
             "date": date_string,
             "shifts": shifts,
             "day_number": int(date_segments[2]),
-            "bae_shifts": bae_shifts,
+            "bae_shifts": shifts_result,
         },
     }
 
