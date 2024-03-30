@@ -1,4 +1,3 @@
-
 from typing import Annotated, Optional
 import datetime
 
@@ -52,18 +51,15 @@ def get_calendar_card_detailed(
 
     bae_shifts = []
     share = share_repository.get_share_by_guest_id(db=db, guest_id=current_user.id)
+
     if share:
         bae_db_shifts = shift_repository.get_user_shifts_details(db=db, user_id=share.owner_id)
         for shift in bae_db_shifts:
             if str(shift.date.date()) == date_string:
                 bae_shifts.append(shift)
 
-
-    bae_user = user_repository.get_user_by_id(db=db, user_id=share.owner_id)
-
     context = {
         "request": request,
-        "bae_user": bae_user.display_name,
         "current_user": current_user.display_name,
         "month": month,
         "day": day,
@@ -74,6 +70,11 @@ def get_calendar_card_detailed(
             "bae_shifts": bae_shifts,
             },
     }
+
+    if share:
+        bae_user = user_repository.get_user_by_id(db=db, user_id=share.owner_id)
+        if bae_user:
+            context.update({"bae_user": bae_user.display_name})
 
     return templates.TemplateResponse(
         request=request,
