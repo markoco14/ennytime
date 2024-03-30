@@ -13,7 +13,7 @@ from fastapi.templating import Jinja2Templates
 from app.auth import auth_service
 from app.core.database import get_db
 from app.schemas import schemas
-from app.repositories import share_repository, shift_repository, user_repository
+from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
 from app.services import calendar_service
 
@@ -40,27 +40,28 @@ def get_calendar_card_detailed(
     current_user: schemas.AppUser = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
-    db_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=current_user.id)
-
+    
+    # get the user's shifts
+    user_shifts_query = text("""
+        SELECT etime_shifts.*, etime_shift_types.type as type_name
+        FROM etime_shifts
+        LEFT JOIN etime_shift_types
+        ON etime_shifts.type_id = etime_shift_types.id
+        WHERE etime_shifts.user_id = :owner_id
+        AND DATE(etime_shifts.date) = :date_string
+        """)
+    
+    user_shifts_result = db.execute(
+        user_shifts_query, {"owner_id": current_user.id, "date_string": date_string}).fetchall()
+    
     year = date_segments[0]
     month = date_segments[1]
     day = date_segments[2]
     date = datetime.date(int(year), int(month), int(day))
     month = date.strftime("%B %d, %Y")
     day = date.strftime("%A")
-    # only need to get an array of shifts
-    # becauase only for one day, not getting whole calendar
-    shifts = []
-    for shift in db_shifts:
-        if str(shift.date.date()) == date_string:
-            shifts.append(shift._asdict())
-
-    # TODO: I need to change the way I get the shared shifts
-    # there are too many trips to the DB
-    # one trip to get the share (with no relationship)
-    # one trip to get the bae shifts (with no relationship)
-
+    
+    # check if anyone has shared their calendar with the current user
     share_query = text("""
         SELECT etime_shares.*,
             etime_users.display_name as bae_name
@@ -80,7 +81,7 @@ def get_calendar_card_detailed(
             "day": day,
             "date": {
                 "date": date_string,
-                "shifts": shifts,
+                "shifts": user_shifts_result,
                 "day_number": int(date_segments[2]),
                 "bae_shifts": [],
             },
@@ -92,6 +93,7 @@ def get_calendar_card_detailed(
             context=context,
         )
 
+    # if there is a share, get the sharing user's (bae's) shifts
     shifts_query = text("""
         SELECT etime_shifts.*, etime_shift_types.type as type_name
         FROM etime_shifts
@@ -112,7 +114,7 @@ def get_calendar_card_detailed(
         "day": day,
         "date": {
             "date": date_string,
-            "shifts": shifts,
+            "shifts": user_shifts_result,
             "day_number": int(date_segments[2]),
             "bae_shifts": shifts_result,
         },
