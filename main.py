@@ -1,21 +1,36 @@
 """Main file to hold app and api routes"""
 from typing import Annotated, Optional
 
-
+import asyncio
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from mangum import Mangum
 from sqlalchemy.orm import Session
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
+from app.core.config import get_settings
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router
 from app.services import calendar_service
 
+SETTINGS = get_settings()
+class DelayMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        await asyncio.sleep(0.4)  # Non-blocking delay for 1 second
+        response = await call_next(request)
+        return response
+
+    
+
 app = FastAPI()
+
+if SETTINGS.ENVIRONMENT == "dev":
+    app.add_middleware(DelayMiddleware)
+
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
 app.include_router(user_router.router)
