@@ -43,7 +43,7 @@
 	<div class="flex gap-4">
 		<button hx-get="/calendar-card/{{date.date}}"
 				hx-swap="outerHTML transition:true"
-				hx-trigger="click delay:800ms"
+				hx-trigger="click"
 				class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
 				@click="() => {
                 showDetail = false;
