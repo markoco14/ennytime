@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 import asyncio
 from fastapi import Depends, FastAPI, Request, Form, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from mangum import Mangum
 from sqlalchemy.orm import Session
@@ -18,13 +18,14 @@ from app.routers import admin_router, calendar_router, share_router, shift_route
 from app.services import calendar_service
 
 SETTINGS = get_settings()
+
+
 class DelayMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         await asyncio.sleep(0.4)  # Non-blocking delay for 1 second
         response = await call_next(request)
         return response
 
-    
 
 app = FastAPI()
 
@@ -78,12 +79,12 @@ def index(
 
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
-    
+
     user_page_data = {
         "display_name": current_user.display_name.split(" ")[0],
         "is_admin": current_user.is_admin
     }
-    
+
     context = {
         "user_data": user_page_data,
         "month_number": month,

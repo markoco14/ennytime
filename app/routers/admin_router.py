@@ -1,7 +1,7 @@
 """ Admin routes """
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -83,7 +83,7 @@ def list_users(
 
     
     users = UserRepository.list_users(db=db)
-    headings = ["Display name", "Actions"]
+    headings = ["Display name", "Email", "Actions"]
 
     user_page_data = {
         "display_name": current_user.display_name.split(" ")[0],
@@ -102,6 +102,30 @@ def list_users(
         name="admin/users.html",
         context=context
     )
+
+@router.delete("/users/{user_id}", response_class=JSONResponse)
+def delete_user(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+    ):
+    if not auth_service.get_session_cookie(request.cookies):
+        return JSONResponse(status_code=401, content="Unauthorized")
+
+    current_user = auth_service.get_current_session_user(
+        db=db, cookies=request.cookies)
+
+    if not current_user.is_admin:
+        return JSONResponse(status_code=401, content="Unauthorized")
+    
+    db_user = UserRepository.get_user_by_id(
+        db=db, user_id=user_id)
+    
+    db.delete(db_user)
+    db.commit()
+    
+    
+    return Response(status_code=200)
 
 # @router.get("/sessions", response_class=HTMLResponse)
 # def list_sessions(

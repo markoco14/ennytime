@@ -16,15 +16,19 @@ Ennytime Profile Page
 					<thead class="[&amp;_tr]:border-b">
 						{{heading_row(headings)}}
 					</thead>
-					<tbody class="[&amp;_tr:last-child]:border-0">
+					<tbody class="[&amp;_tr:last-child]:border-0"
+						   hx-confirm="Are you sure?"
+						   hx-target="closest tr"
+						   hx-swap="outerHTML swap:1s">
 						{% for user in users %}
 						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-							<td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
+							<td class="p-4 align-middle">
 								{{user.display_name}}
 							</td>
-							<td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0 flex justify-end gap-2">
-								{% include '/svg/edit-svg.html'%} {% include
-                    '/svg/delete-svg.html'%}
+							<td>
+							{{user.email}}</td>
+							<td class="p-4 align-middle flex justify-end gap-2">
+								<button hx-delete="/admin/users/{{user.id}}">delete</button>
 							</td>
 						</tr>
 						{% endfor %}
