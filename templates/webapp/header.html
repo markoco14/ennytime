@@ -13,6 +13,7 @@
 					   class="cursor-pointer select-none flex gap-2">
 						Display Name
 						<img class="w-4"
+							 x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
 							 src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
 					</a>
 					<div x-show="dropdownOpen"
