@@ -75,6 +75,7 @@ def index(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
     
     context = {
+        "display_name": current_user.display_name.split(" ")[0],
         "month_number": month,
         "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
