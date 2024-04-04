@@ -84,7 +84,14 @@ def list_users(
     
     users = UserRepository.list_users(db=db)
     headings = ["Display name", "Actions"]
+
+    user_page_data = {
+        "display_name": current_user.display_name.split(" ")[0],
+        "is_admin": current_user.is_admin
+    }
+    
     context = {
+        "user_data": user_page_data,
         "request": request,
         "users": users,
         "headings": headings

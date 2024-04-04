@@ -1,133 +1,90 @@
 {% from '/macros/table.html' import heading_row%}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script
-      src="https://unpkg.com/htmx.org@1.9.10"
-      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-	<script defer
-			src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style type="text/tailwindcss">
-      @layer utilities {
-		[x-cloak] {
-					display: none;
-				}
+{% block title %}
+Ennytime Profile Page
+{% endblock title%}
 
-        tr.htmx-swapping {
-          opacity: 0;
-          transition: opacity 0.5s ease-out;
-        }
-
-        li.htmx-swapping {
-          opacity: 0;
-          transition: opacity 0.5s ease-out;
-        }
-      }
-    </style>
-    <title>Ennytime Profile Page</title>
-  </head>
-  <body class="dark:bg-gray-900">
-    {% include 'webapp/header.html' %}
-    <div class="grid gap-4 py-8">
-      <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div class="container mx-auto p-4">
-          <h1 class="text-3xl text-[#D31D6C] dark:text-pink-100">
-            Your profile
-          </h1>
-          <p>Manage all your personal details and shift information here.</p>
-        </div>
-      </section>
-      <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div
-          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
-        >
-          <h2 class="text-3xl mb-4">Contact info</h2>
-          <div class="grid divide-y divide-pink-200">
-            {% include 'webapp/profile/display-name.html'%}
-            <div class="py-2 flex flex-col gap-2">
-              <label class="text-xl text-gray-900 dark:text-gray-100"
-                >E-mail</label
-              >
-              <p>This is how we'll contact you with app information.</p>
-              <p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
-                {{user.email}}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div
-          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
-        >
-          <h2 class="text-3xl mb-4">Sharing</h2>
-          {% if share %} {% include '/webapp/profile/share-exists.html' %} {%
+{% block content %}
+<div class="grid gap-4 py-8">
+	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div class="container mx-auto p-4">
+			<h1 class="text-3xl text-[#D31D6C] dark:text-pink-100">
+				Your profile
+			</h1>
+			<p>Manage all your personal details and shift information here.</p>
+		</div>
+	</section>
+	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
+			<h2 class="text-3xl mb-4">Contact info</h2>
+			<div class="grid divide-y divide-pink-200">
+				{% include 'webapp/profile/display-name.html'%}
+				<div class="py-2 flex flex-col gap-2">
+					<label class="text-xl text-gray-900 dark:text-gray-100">E-mail</label>
+					<p>This is how we'll contact you with app information.</p>
+					<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
+						{{user.email}}
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
+			<h2 class="text-3xl mb-4">Sharing</h2>
+			{% if share %} {% include '/webapp/profile/share-exists.html' %} {%
           else %} {% include '/webapp/profile/share-form.html' %} {% endif %}
-        </div>
-      </section>
-      <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div
-          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
-        >
-          <h2 class="text-3xl mb-4">Shift details</h2>
-          <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
-            {% include 'webapp/profile/shift-list.html' %}
+		</div>
+	</section>
+	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
+			<h2 class="text-3xl mb-4">Shift details</h2>
+			<div class="flex flex-col md:grid md:grid-cols-2 gap-4">
+				{% include 'webapp/profile/shift-list.html' %}
 
-            <form
-              class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
-              hx-post="/register-shift-type"
-              hx-target="#shift-list"
-              hx-swap="outerHTML"
-            >
-              <h3 class="text-xl">New Type Form</h3>
-              <p>
-                Make your shift types here. Then you can add shifts to your
-                calendar.
-              </p>
-              <div class="flex flex-col gap-2">
-                <label for="shift_type" class="dark:text-gray-100"
-                  >Shift type</label
-                >
-                <input
-                  type="text"
-                  id="shift_type"
-                  name="shift_type"
-                  required
-                  placeholder="Choose name for shift type..."
-                  class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100"
-                />
-              </div>
-              <button class="bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
-                Save
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
-      <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-        <div
-          class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800"
-        >
-          <h2 class="text-3xl mb-4">Your shifts</h2>
-          <table class="w-full">
-            <thead>
-              {# {{ heading_row(shift_headings)}} #}
-              <tr>
-                <th class="text-left">Type</th>
-                <th class="hidden sm:block text-left">Date</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            {% include 'webapp/profile/shift-table.html' %}
-          </table>
-        </div>
-      </section>
-    </div>
-  </body>
-</html>
+				<form class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
+					  hx-post="/register-shift-type"
+					  hx-target="#shift-list"
+					  hx-swap="outerHTML">
+					<h3 class="text-xl">New Type Form</h3>
+					<p>
+						Make your shift types here. Then you can add shifts to your
+						calendar.
+					</p>
+					<div class="flex flex-col gap-2">
+						<label for="shift_type"
+							   class="dark:text-gray-100">Shift type</label>
+						<input type="text"
+							   id="shift_type"
+							   name="shift_type"
+							   required
+							   placeholder="Choose name for shift type..."
+							   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+					</div>
+					<button class="bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
+						Save
+					</button>
+				</form>
+			</div>
+		</div>
+	</section>
+	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
+			<h2 class="text-3xl mb-4">Your shifts</h2>
+			<table class="w-full">
+				<thead>
+					{# {{ heading_row(shift_headings)}} #}
+					<tr>
+						<th class="text-left">Type</th>
+						<th class="hidden sm:block text-left">Date</th>
+						<th class="text-left">Actions</th>
+					</tr>
+				</thead>
+				{% include 'webapp/profile/shift-table.html' %}
+			</table>
+		</div>
+	</section>
+</div>
+{% endblock content %}
+
