@@ -40,7 +40,7 @@ def get_calendar_card_detailed(
     current_user: schemas.AppUser = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
     date_segments = date_string.split("-")
-    
+
     # get the user's shifts
     user_shifts_query = text("""
         SELECT etime_shifts.*,
@@ -53,17 +53,17 @@ def get_calendar_card_detailed(
         WHERE etime_shifts.user_id = :owner_id
         AND DATE(etime_shifts.date) = :date_string
         """)
-    
+
     user_shifts_result = db.execute(
         user_shifts_query, {"owner_id": current_user.id, "date_string": date_string}).fetchall()
-    
+
     year = date_segments[0]
     month = date_segments[1]
     day = date_segments[2]
     date = datetime.date(int(year), int(month), int(day))
     month = date.strftime("%B %d, %Y")
     day = date.strftime("%A")
-    
+
     # check if anyone has shared their calendar with the current user
     share_query = text("""
         SELECT etime_shares.*,
@@ -98,7 +98,10 @@ def get_calendar_card_detailed(
 
     # if there is a share, get the sharing user's (bae's) shifts
     shifts_query = text("""
-        SELECT etime_shifts.*, etime_shift_types.type as type_name
+        SELECT etime_shifts.*,
+            etime_shift_types.type as type_name,
+            etime_shift_types.long_name as long_name,
+            etime_shift_types.short_name as short_name
         FROM etime_shifts
         LEFT JOIN etime_shift_types
         ON etime_shifts.type_id = etime_shift_types.id
