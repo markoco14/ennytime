@@ -44,6 +44,11 @@ templates = Jinja2Templates(directory="templates")
 handler = Mangum(app)
 
 
+@app.exception_handler(404)
+async def custom_404_handler(request, __):
+    return templates.TemplateResponse("not-found.html", {"request": request})
+
+
 @app.get("/", response_class=HTMLResponse)
 def index(
     request: Request,
