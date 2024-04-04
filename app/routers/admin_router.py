@@ -11,8 +11,14 @@ from app.core.database import get_db
 from app.repositories import user_repository as UserRepository
 from app.repositories import session_repository
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/admin",
+    tags=["admin"],
+
+)
 templates = Jinja2Templates(directory="templates")
+
+
 
 
 @router.get("/users", response_class=HTMLResponse)
@@ -27,6 +33,16 @@ def list_users(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
+    
+    current_user = auth_service.get_current_session_user(db=db, cookies=request.cookies)
+
+    if not current_user.is_admin:
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
     
     users = UserRepository.list_users(db=db)
     headings = ["ID", "Display name", "Email", "Actions"]
@@ -49,6 +65,16 @@ def list_sessions(
     ):
     """List sessions"""
     if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+    
+    current_user = auth_service.get_current_session_user(
+        db=db, cookies=request.cookies)
+
+    if not current_user.is_admin:
         return templates.TemplateResponse(
             request=request,
             name="website/web-home.html",
