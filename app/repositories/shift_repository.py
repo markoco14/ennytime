@@ -26,7 +26,11 @@ def get_user_shifts(db: Session, user_id: int):
 def get_user_shifts_details(db: Session, user_id: int):
     """ Get shifts by User with shift type details """
     query = text("""
-        SELECT etime_shifts.*, etime_shift_types.type as type_name
+        SELECT 
+            etime_shifts.*,
+            etime_shift_types.type as type_name,
+            etime_shift_types.long_name as long_name,
+            etime_shift_types.short_name as short_name
         FROM etime_shifts
         JOIN etime_shift_types ON etime_shifts.type_id = etime_shift_types.id
         WHERE etime_shifts.user_id = :user_id

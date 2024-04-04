@@ -11,6 +11,8 @@ class DbShiftType(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String(255), nullable=False)
+    long_name = Column(String(255), nullable=False)
+    short_name = Column(String(255), nullable=False)
     user_id = Column(Integer, nullable=False)
 
     # If you want to use ORM relationships to automatically fetch the associated user
