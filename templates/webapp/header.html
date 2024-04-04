@@ -2,23 +2,32 @@
 	<div class="py-4 px-2 md:px-0 container mx-auto flex justify-between align-center">
 		<span class="text-3xl">Ennytime</span>
 		<nav class="flex gap-2 items-center">
-			<ul class="flex items-center">
+			<ul class="flex items-center gap-4">
 				<li>
 					<a href="/">Home</a>
 				</li>
-				<li class="relative">
-					<a href="/profile" class="flex gap-2">
+				<li x-data="{dropdownOpen: false}"
+					class="relative">
+					<a @click="dropdownOpen = !dropdownOpen"
+					   @click.away="dropdownOpen = false"
+					   class="cursor-pointer select-none flex gap-2">
 						Display Name
 						<img class="w-4"
 							 src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
 					</a>
-					<div class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20">
+					<div x-show="dropdownOpen"
+						 x-cloak
+						 class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
+						 x-transition:enter="duration-300 ease-out"
+						 x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
 						<ul>
 							<li class="text-right rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
-								<a href="/profile" class="w-full">Profile</a>
+								<a href="/profile"
+								   class="w-full">Profile</a>
 							</li>
 							<li class="rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
-								<button hx-get="/signout" class="w-full text-end">Sign out</button>
+								<button hx-get="/signout"
+										class="w-full text-end">Sign out</button>
 							</li>
 						</ul>
 					</div>

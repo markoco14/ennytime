@@ -22,6 +22,10 @@
         ></script>
         <style type="text/tailwindcss">
             @layer utilities {
+				[x-cloak] {
+					display: none;
+				}
+
                 tr.htmx-swapping {
                     opacity: 0;
                     transition: opacity 0.5s ease-out;
