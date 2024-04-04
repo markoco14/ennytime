@@ -67,8 +67,13 @@ def get_profile_page(
         
     share_headings = ["Name", "Actions"]
     shift_headings = ["Type", "Date", "Actions"]
-    context = {
+    user_page_data = {
         "display_name": current_user.display_name.split(" ")[0],
+        "is_admin": current_user.is_admin
+    }
+
+    context = {
+        "user_data": user_page_data,
         "request": request,
         "shift_types": shift_types,
         "user": current_user,

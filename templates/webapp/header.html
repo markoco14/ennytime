@@ -62,9 +62,13 @@
 				<a href="/">Home</a>
 			</li>
 			<li class="block md:hidden">
-				<a href="/profile"
-				   >Profile</a>
+				<a href="/profile">Profile</a>
 			</li>
+			{% if user_data.is_admin %}
+			<li class="block md:hidden">
+				<a href="/admin">Admin</a>
+			</li>
+			{% endif %}
 			<li class="block md:hidden">
 				<button hx-get="/signout"
 						class="w-full text-end">Sign out</button>
@@ -76,7 +80,7 @@
 				   class="whitespace-nowrap cursor-pointer select-none flex items-center gap-2">
 
 					<p>
-					{% if display_name %}
+						{% if display_name %}
 						{{display_name}}
 						{% else %}
 						NewUser001
@@ -94,11 +98,17 @@
 					 x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
 					{# Dropdown on large screens #}
 					<ul>
-						<li class="text-right rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
 							<a href="/profile"
-							   class="w-full">Profile</a>
+							   class="w-full text-right">Profile</a>
 						</li>
-						<li class="rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+						{% if user_data.is_admin %}
+						<li class="grid text-right rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<a href="/admin"
+							   class="w-full">Admin</a>
+						</li>
+						{% endif%}
+						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
 							<button hx-get="/signout"
 									class="w-full text-end">Sign out</button>
 						</li>
