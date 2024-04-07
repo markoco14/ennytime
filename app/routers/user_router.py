@@ -68,8 +68,14 @@ def get_profile_page(
 
     share_headings = ["Name", "Actions"]
     shift_headings = ["Type", "Date", "Actions"]
+    
+    if current_user.display_name is not None:
+        display_name = current_user.display_name.split(" ")[0]
+    else:
+        display_name = "NewUser00001"
+
     user_page_data = {
-        "display_name": current_user.display_name.split(" ")[0],
+        "display_name": display_name,
         "is_admin": current_user.is_admin
     }
 

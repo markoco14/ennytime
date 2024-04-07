@@ -31,8 +31,7 @@ class Settings(BaseSettings):
         DB_HOST: str = os.environ.get('DB_HOST')
         DB_PORT: str = os.environ.get('DB_PORT')
         DB_NAME: str = os.environ.get('DB_NAME')
-        MYSQL_ATTR_SSL_CA: str = os.environ.get('MYSQL_ATTR_SSL_CA')
-        DATABASE_URL: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl_ca={MYSQL_ATTR_SSL_CA}"
+        DATABASE_URL: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
 

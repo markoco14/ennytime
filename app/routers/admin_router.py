@@ -41,8 +41,13 @@ def read_admin_home_page(
             headers={"HX-Redirect": "/"},
         )
     
+    if current_user.display_name is not None:
+        display_name = current_user.display_name.split(" ")[0]
+    else:
+        display_name = "NewUser00001"
+
     user_page_data = {
-        "display_name": current_user.display_name.split(" ")[0],
+        "display_name": display_name,
         "is_admin": current_user.is_admin
     }
 
@@ -85,8 +90,13 @@ def list_users(
     users = UserRepository.list_users(db=db)
     headings = ["Display name", "Email", "Actions"]
 
+    if current_user.display_name is not None:
+        display_name = current_user.display_name.split(" ")[0]
+    else:
+        display_name = "NewUser00001"
+
     user_page_data = {
-        "display_name": current_user.display_name.split(" ")[0],
+        "display_name": display_name,
         "is_admin": current_user.is_admin
     }
     
