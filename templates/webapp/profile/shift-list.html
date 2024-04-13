@@ -1,21 +1,16 @@
-<ul id="shift-list" class="flex flex-col gap-2 w-full max-w-[400px]">
-  <p class="text-xl">Shift type list</p>
-  {% for shift in shift_types %}
-  <li class="flex justify-between p-2 rounded-md border border-pink-300">
-  {# <span>
-  {{ shift.id }} 
-  </span> #}
-  <span>
-  {{ shift.type }}
-  </span>
-  <button 
-  hx-delete="/delete-shift-type/{{shift.id}}"
-  hx-target="closest li"
-  hx-swap="delete swap:0.5s"
-  hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
-  >Delete</button>
-  {# <span>
-   {{ shift.user_id }}</li>
-  </span> #}
-  {% endfor %}
+<ul id="shift-list"
+	class="flex flex-col gap-2 w-full max-w-[400px]">
+	{% for shift in shift_types %}
+	<li class="flex justify-between p-2 rounded-md border border-pink-300">
+		<span>
+			{{ shift.long_name }} ({{ shift.short_name }})
+		</span>
+		<button hx-delete="/delete-shift-type/{{shift.id}}"
+				hx-target="closest li"
+				hx-swap="delete swap:0.5s"
+				hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar.">
+			Delete
+		</button>
+	</li>
+	{% endfor %}
 </ul>
