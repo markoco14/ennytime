@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script
-      src="https://unpkg.com/htmx.org@1.9.10"
-      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Ennytime Sign Up</title>
-  </head>
-  <body class="min-h-screen dark:bg-gray-900">
-    {% include 'website/landing-header.html' %}
+
+{% from '/macros/spinner.html' import spinner%}
+{% extends "base.html" %}
+
+{% block title %}
+Ennytime Sign Up
+{% endblock title %}
+
+{% block header %}
+{% include 'website/landing-header.html' %}
+{% endblock header %}
+
+{% block content %}
     <section
       class="bg-white dark:bg-gray-900 dark:text-gray-100 grid place-items-center p-2 py-8 md:py-16 bg-pink-700"
     >
@@ -48,9 +46,10 @@
             />
           </div>
           <button
-            class="px-2 py-1 bg-[#D31D6C] dark:bg-[#E22C7B] text-white rounded"
+            class="flex gap-2 justify-center items-center px-2 py-1 bg-[#D31D6C] dark:bg-[#E22C7B] text-white rounded"
           >
             Find the time
+			{{spinner('h-10', 'h-10', 'text-white')}}
           </button>
         </form>
         <p class="text-gray-700 dark:text-gray-300">
@@ -61,5 +60,4 @@
         </p>
       </article>
     </section>
-  </body>
-</html>
+{% endblock content %}

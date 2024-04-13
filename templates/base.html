@@ -108,7 +108,11 @@
 	</head>
 
 	<body class="dark:bg-gray-900">
+	<header>
+		{% block header %}
 		{% include 'webapp/header.html' %}
+		{% endblock header%}
+	</header>
 		<main>
 			{% block content %}{% endblock content %}
 		</main>
