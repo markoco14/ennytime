@@ -20,6 +20,8 @@ templates = Jinja2Templates(directory="templates")
 def register_shift_type(
     request: Request,
     shift_type: Annotated[str, Form()],
+    long_name: Annotated[str, Form()],
+    short_name: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],):
     """Register shift type"""
     if not auth_service.get_session_cookie(request.cookies):
@@ -42,6 +44,8 @@ def register_shift_type(
     # get new shift type data ready
     new_shift_type = schemas.CreateShiftType(
         type=shift_type,
+        long_name=long_name,
+        short_name=short_name,
         user_id=current_user.id
     )
 

@@ -38,8 +38,33 @@
 						   placeholder="Choose name for shift type..."
 						   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
 				</div>
-				<button class="bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
+				<div class="flex flex-col gap-2">
+					<label for="long_name"
+						   class="dark:text-gray-100">Full Shift Name</label>
+					<span>Give your shift type a descriptive name.</span>
+					<input type="text"
+						   id="long_name"
+						   name="long_name"
+						   required
+						   placeholder="Choose name for shift type..."
+						   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+				</div>
+				<div class="flex flex-col gap-2">
+					<label for="short_name"
+						   class="dark:text-gray-100">Short Shift Name</label>
+					<span>Give your shift type a short name to show in <strong>calendar view</strong></span>
+					<input type="text"
+						   id="short_name"
+						   name="short_name"
+						   required
+						   placeholder="Choose name for shift type..."
+						   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+				</div>
+				<button class="flex gap-2 justify-center items-center bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
 					Save
+					<div>
+						{% include "ui/spinner.html" %}
+					</div>
 				</button>
 			</form>
 		</div>
