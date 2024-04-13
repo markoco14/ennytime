@@ -1,14 +1,15 @@
+{% from '/macros/spinner.html' import spinner%}
 {% for user in matching_users %}
 <tr>
-  <td>{{user.display_name}}</td>
-  <td>
-    <button
-      hx-get="/share-calendar/{{user.id}}"
-      hx-target="#share-section"
-      hx-swap="outerHTML"
-    >
-      Share
-    </button>
-  </td>
+	<td>{{user.display_name}}</td>
+	<td>
+		<button hx-get="/share-calendar/{{user.id}}"
+				hx-target="#share-section"
+				hx-swap="outerHTML"
+				class="flex gap-2  justify-center items-center bg-pink-700 text-white px-3 py-2 rounded">
+			Share
+			{{spinner('h-10', 'h-10', 'text-white')}}
+		</button>
+	</td>
 </tr>
 {% endfor %}

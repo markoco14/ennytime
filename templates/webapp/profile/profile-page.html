@@ -30,45 +30,9 @@ Ennytime Profile Page
 			</div>
 		</div>
 	</section>
-	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-			<h2 class="text-3xl mb-4">Sharing</h2>
-			{% if share %} {% include '/webapp/profile/share-exists.html' %} {%
-          else %} {% include '/webapp/profile/share-form.html' %} {% endif %}
-		</div>
-	</section>
-	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-			<h2 class="text-3xl mb-4">Shift details</h2>
-			<div class="flex flex-col md:grid md:grid-cols-2 gap-4">
-				{% include 'webapp/profile/shift-list.html' %}
+	{% include "webapp/profile/sections/share-section.html" %}
+	{% include "webapp/profile/sections/shift-type-section.html" %}
 
-				<form class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
-					  hx-post="/register-shift-type"
-					  hx-target="#shift-list"
-					  hx-swap="outerHTML">
-					<h3 class="text-xl">New Type Form</h3>
-					<p>
-						Make your shift types here. Then you can add shifts to your
-						calendar.
-					</p>
-					<div class="flex flex-col gap-2">
-						<label for="shift_type"
-							   class="dark:text-gray-100">Shift type</label>
-						<input type="text"
-							   id="shift_type"
-							   name="shift_type"
-							   required
-							   placeholder="Choose name for shift type..."
-							   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
-					</div>
-					<button class="bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
-						Save
-					</button>
-				</form>
-			</div>
-		</div>
-	</section>
 	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
 			<h2 class="text-3xl mb-4">Your shifts</h2>

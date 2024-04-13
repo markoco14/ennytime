@@ -1,6 +1,7 @@
 """Main file to hold app and api routes"""
 from typing import Annotated, Optional
 
+import time
 import asyncio
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
@@ -20,17 +21,26 @@ from app.services import calendar_service
 SETTINGS = get_settings()
 
 
-class DelayMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        await asyncio.sleep(0.4)  # Non-blocking delay for 1 second
-        response = await call_next(request)
-        return response
+
+class SleepMiddleware:
+    """Middleware to sleep for 3 seconds in development environment
+    used when developing and testing loading states"""
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if SETTINGS.ENVIRONMENT == "dev":
+            print("development environment detecting, sleeping for 3 seconds")
+            time.sleep(3)  # Delay for 3000ms (3 seconds)
+        await self.app(scope, receive, send)
+
+
 
 
 app = FastAPI()
 
-if SETTINGS.ENVIRONMENT == "dev":
-    app.add_middleware(DelayMiddleware)
+app.add_middleware(SleepMiddleware)
+
 
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)

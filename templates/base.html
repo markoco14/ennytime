@@ -18,11 +18,27 @@
 				src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 		<style type="text/tailwindcss">
 			@layer utilities {
-
-			
-				
 				[x-cloak] {
 					display: none;
+				}
+
+				.htmx-request .htmx-indicator-content {
+					display: none;
+				}
+				.htmx-request.htmx-indicator-content {
+					display: none;
+				}
+
+				.htmx-indicator {
+					display: none;
+				}
+
+				.htmx-request .htmx-indicator{
+					display:inline;
+				}
+
+				.htmx-request.htmx-indicator{
+					display:inline;
 				}
 
 				tr.htmx-swapping {
