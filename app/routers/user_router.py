@@ -98,7 +98,7 @@ def get_profile_page(
     if not share_owner:
         return templates.TemplateResponse(
             request=request,
-            name="webapp/profile/profile.html",
+            name="webapp/profile/profile-page.html",
             context=context
         )
 
@@ -107,7 +107,7 @@ def get_profile_page(
     context.update({"share": share_owner, "share_user": share_user})
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/profile.html",
+        name="webapp/profile/profile-page.html",
         context=context
     )
 
