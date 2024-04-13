@@ -30,16 +30,7 @@ Ennytime Profile Page
 			</div>
 		</div>
 	</section>
-	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-			<h2 class="text-3xl mb-4">Sharing</h2>
-			{% if share %}
-			{% include '/webapp/profile/share-exists.html' %}
-			{% else %}
-			{% include '/webapp/profile/share-form.html' %}
-			{% endif %}
-		</div>
-	</section>
+	{% include "webapp/profile/sections/share-section.html" %}
 	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
 			<h2 class="text-3xl mb-4">Shift details</h2>
