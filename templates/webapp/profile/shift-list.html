@@ -8,8 +8,11 @@
 		<button hx-delete="/delete-shift-type/{{shift.id}}"
 				hx-target="closest li"
 				hx-swap="delete swap:0.5s"
-				hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar.">
-			Delete
+				hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
+				class="flex gap-2 justify-center items-center text-red-500">
+			{# Delete #}
+			<span class="htmx-indicator-content">Delete</span>
+			<span class="htmx-indicator">Deleting...</span>
 		</button>
 	</li>
 	{% endfor %}
