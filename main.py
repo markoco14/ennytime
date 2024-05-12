@@ -2,13 +2,13 @@
 from typing import Annotated, Optional
 
 import time
-import asyncio
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from jinja2_fragments.fastapi import Jinja2Blocks
 from mangum import Mangum
 from sqlalchemy.orm import Session
-from starlette.middleware.base import BaseHTTPMiddleware
+
 
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
@@ -21,20 +21,18 @@ from app.services import calendar_service
 SETTINGS = get_settings()
 
 
-
 class SleepMiddleware:
     """Middleware to sleep for 3 seconds in development environment
     used when developing and testing loading states"""
+
     def __init__(self, app):
         self.app = app
 
     async def __call__(self, scope, receive, send):
         if SETTINGS.ENVIRONMENT == "dev":
             print("development environment detecting, sleeping for 3 seconds")
-            time.sleep(3)  # Delay for 3000ms (3 seconds)
+            time.sleep(0.5)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
-
-
 
 
 app = FastAPI()
@@ -51,6 +49,7 @@ app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 
 templates = Jinja2Templates(directory="templates")
+block_templates = Jinja2Blocks(directory="templates")
 
 handler = Mangum(app)
 
@@ -80,16 +79,32 @@ def index(
         response.delete_cookie("session-id")
 
         return response
+    if not month:
+        current_month = calendar_service.get_current_month(month)
+    else:
+        current_month = month
 
-    current_month = calendar_service.get_current_month(month)
-    current_year = calendar_service.get_current_year(year)
+    if not year:
+        current_year = calendar_service.get_current_year(year)
+    else:
+        current_year = year
+
+    if current_month == 1:
+        prev_month_name = calendar_service.MONTHS[11]
+    else:
+        prev_month_name = calendar_service.MONTHS[current_month - 2]
+
+    if current_month == 12:
+        next_month_name = calendar_service.MONTHS[0]
+    else:
+        next_month_name = calendar_service.MONTHS[current_month]
 
     month_calendar = calendar_service.get_month_calendar(
         current_year, current_month)
 
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
-    
+
     if current_user.display_name is not None:
         display_name = current_user.display_name.split(" ")[0]
     else:
@@ -101,13 +116,15 @@ def index(
     }
 
     context = {
+        "request": request,
         "user_data": user_page_data,
         "month_number": month,
-        "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
         "current_month_number": current_month,
         "current_month": calendar_service.MONTHS[current_month - 1],
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
     }
 
     # TODO: add month filters to shift query
@@ -142,11 +159,18 @@ def index(
                 shift._asdict())
 
     context.update(month_calendar=list(month_calendar_dict.values()))
-    response = templates.TemplateResponse(
-        request=request,
-        name="webapp/home/app-home.html",
-        context=context,
-    )
+
+    if "hx-request" in request.headers:
+        response = block_templates.TemplateResponse(
+            name="webapp/home/app-home.html",
+            block_name="calendar",
+            context=context,
+        )
+    else:
+        response = templates.TemplateResponse(
+            name="webapp/home/app-home.html",
+            context=context,
+        )
 
     return response
 

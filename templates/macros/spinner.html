@@ -1,5 +1,10 @@
-{% macro spinner(height='h-5', width='w-5', color='text-white') %}
-<svg class="htmx-indicator animate-spin {{ height }} {{ width }} {{ color }} inline"
+{% macro spinner(
+	id='spinner',
+	height='h-5',
+	width='w-5',
+	color='text-white') %}
+<svg id="{{id}}"
+class="htmx-indicator animate-spin {{ height }} {{ width }} {{ color }} inline"
 	 viewBox="0 0 50 50"
 	 xmlns="http://www.w3.org/2000/svg">
 	{# outer circle #}
