@@ -21,10 +21,10 @@ from app.services import calendar_service
 SETTINGS = get_settings()
 
 
-
 class SleepMiddleware:
     """Middleware to sleep for 3 seconds in development environment
     used when developing and testing loading states"""
+
     def __init__(self, app):
         self.app = app
 
@@ -33,8 +33,6 @@ class SleepMiddleware:
             print("development environment detecting, sleeping for 3 seconds")
             time.sleep(3)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
-
-
 
 
 app = FastAPI()
@@ -89,7 +87,7 @@ def index(
 
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
-    
+
     if current_user.display_name is not None:
         display_name = current_user.display_name.split(" ")[0]
     else:
