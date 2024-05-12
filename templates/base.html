@@ -25,6 +25,7 @@
 				.htmx-request .htmx-indicator-content {
 					display: none;
 				}
+
 				.htmx-request.htmx-indicator-content {
 					display: none;
 				}
@@ -74,6 +75,7 @@
 						transform: scale(0.7);
 					}
 				}
+
 				@keyframes slide-from-right {
 					from {
 						transform: translateX(90px);
@@ -94,6 +96,7 @@
 					animation: 300ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
 						600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
 				}
+				
 				::view-transition-new(slide-it) {
 					animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both
 							fade-in,
@@ -108,15 +111,14 @@
 	</head>
 
 	<body class="dark:bg-gray-900">
-	<header>
-		{% block header %}
-		{% include 'webapp/header.html' %}
-		{% endblock header%}
-	</header>
+		<header>
+			{% block header %}
+			{% include 'webapp/header.html' %}
+			{% endblock header%}
+		</header>
 		<main>
 			{% block content %}{% endblock content %}
 		</main>
-
 	</body>
 
 </html>

@@ -1,12 +1,17 @@
 {% extends "base.html" %}
+
 {% block title %}
 Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
 <section class="slide-it dark:bg-gray-900 py-4 dark:text-gray-100">
 	{% block calendar %}
+	{% from '/macros/spinner.html' import spinner%}
 	<div class="container mx-auto px-2">
 		<div class="mb-4">
+			<p class="min-h-8 text-center">
+				{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+			</p>
 			<h1 class="text-4xl mb-2 md:mb-4 md:text-5xl text-center col-span-2">
 				{{current_month}} {{current_year}}
 			</h1>
@@ -20,6 +25,7 @@ Ennytime Couple's Calendar
 				<button hx-get="/?month={{current_month_number-1}}"
 						hx-target="closest section"
 						hx-swap="innerHTML transition:true"
+						hx-indicator="#spinner"
 						hx-push-url="true"
 						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
 					Previous
@@ -35,6 +41,7 @@ Ennytime Couple's Calendar
 				<button hx-get="/?month={{current_month_number+1}}"
 						hx-target="closest section"
 						hx-swap="innerHTML transition:true"
+						hx-indicator="#spinner"
 						hx-push-url="true"
 						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
 					Next
