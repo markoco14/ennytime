@@ -1,192 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-        />
-        <script
-            src="https://unpkg.com/htmx.org@1.9.10"
-            integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-            crossorigin="anonymous"
-        ></script>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+{% extends "base.html" %}
+{% block title %}
+Ennytime Couple's Calendar
+{% endblock title %}
+{% block content %}
+<section class="slide-it dark:bg-gray-900 py-4 dark:text-gray-100">
+	{% block calendar %}
+	<div class="container mx-auto px-2">
+		<div class="mb-4">
+			<h1 class="text-4xl mb-2 md:mb-4 md:text-5xl text-center col-span-2">
+				{{current_month}} {{current_year}}
+			</h1>
+			<div class="flex gap-2 justify-center">
+				{% if current_month_number == 1 %}
+				<button disabled
+						class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">
+					Previous
+				</button>
+				{% else %}
+				<button hx-get="/?month={{current_month_number-1}}"
+						hx-target="closest section"
+						hx-swap="innerHTML transition:true"
+						hx-push-url="true"
+						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
+					Previous
+				</button>
+				{% endif%}
+				<!-- if end of year -->
+				{% if current_month_number == 12 %}
+				<button disabled
+						class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">
+					Next
+				</button>
+				{% else %}
+				<button hx-get="/?month={{current_month_number+1}}"
+						hx-target="closest section"
+						hx-swap="innerHTML transition:true"
+						hx-push-url="true"
+						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
+					Next
+				</button>
+				{% endif %}
+			</div>
+		</div>
+		<div id="overlay"
+			 class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out">
+			<div id="modal"
+				 class="w-full max-w-[500px] aspect-square"
+				 x-data="{showDetail: true}"></div>
+		</div>
+		{% include '/webapp/home/calendar.html' %}
+	</div>
+	{% endblock calendar %}
+</section>
+<script>
+	gsap.registerPlugin(Flip);
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
-        <script
-            defer
-            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-        ></script>
-        <style type="text/tailwindcss">
-            @layer utilities {
-				[x-cloak] {
-					display: none;
-				}
+	function moveCalendarCard(day_number) {
+		const calendarCard = document.getElementById(
+			`day-${day_number}`
+		);
+		const calendarContainer = document.getElementById(
+			`container-${day_number}`
+		);
+		const modal = document.getElementById("modal");
+		const state = Flip.getState(`#day-${day_number}`);
 
-                tr.htmx-swapping {
-                    opacity: 0;
-                    transition: opacity 0.5s ease-out;
-                }
+		if (calendarCard.parentNode !== modal) {
+			modal.append(calendarCard);
+		} else {
+			calendarContainer.append(calendarCard);
+		}
+		changeClasses(day_number);
 
-                li.htmx-swapping {
-                    opacity: 0;
-                    transition: opacity 0.5s ease-out;
-                }
+		Flip.from(state, {
+			duration: 0.4,
+			ease: "power1.inOut",
+			absolute: true,
+		});
+	}
 
-                @keyframes fade-in {
-                    from {
-                        opacity: 0;
-                    }
-                }
+	function changeClasses(day_number) {
+		const overlay = document.getElementById("overlay");
+		overlay.classList.toggle("hidden");
+		const modal = document.getElementById("modal");
 
-                @keyframes fade-out {
-                    to {
-                        opacity: 0;
-                    }
-                }
+		let selectedCard = htmx.find(`#day-${day_number}`);
+		htmx.toggleClass(selectedCard, "rounded-md", 250);
+		htmx.toggleClass(selectedCard, "border", 250);
 
-                @keyframes scale-up {
-                    from {
-                        transform: scale(0.7);
-                    }
-                }
-
-                @keyframes scale-down {
-                    to {
-                        transform: scale(0.7);
-                    }
-                }
-                @keyframes slide-from-right {
-                    from {
-                        transform: translateX(90px);
-                    }
-                }
-
-                @keyframes slide-to-left {
-                    to {
-                        transform: translateX(-90px);
-                    }
-                }
-
-                .slide-it {
-                    view-transition-name: slide-it;
-                }
-
-                ::view-transition-old(slide-it) {
-                    animation: 300ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
-                        600ms cubic-bezier(0.4, 0, 0.2, 1) both scale-down;
-                }
-                ::view-transition-new(slide-it) {
-                    animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both
-                            fade-in,
-                        600ms cubic-bezier(0.4, 0, 0.2, 1) both scale-up;
-                }
-            }
-        </style>
-        <title>Ennytime Couple's Calendar</title>
-    </head>
-
-    <body class="dark:bg-gray-900">
-        {% include 'webapp/header.html' %}
-        <section class="dark:bg-gray-900 py-4 dark:text-gray-100">
-            <div class="container mx-auto px-2">
-                <div class="mb-4">
-                    <h1
-                        class="text-4xl mb-2 md:mb-4 md:text-5xl text-center col-span-2"
-                    >
-                        {{current_month}} {{current_year}}
-                    </h1>
-                    <div class="flex gap-2 justify-center">
-                        {% if current_month_number == 1 %}
-                        <button
-                            disabled
-                            class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70"
-                        >
-                            Previous
-                        </button>
-                        {% else %}
-                        <button
-                            hx-get="/?month={{current_month_number-1}}"
-                            hx-target="closest body"
-                            hx-push-url="true"
-                            class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700"
-                        >
-                            Previous
-                        </button>
-                        {% endif%}
-                        <!-- if end of year -->
-                        {% if current_month_number == 12 %}
-                        <button
-                            disabled
-                            class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70"
-                        >
-                            Next
-                        </button>
-                        {% else %}
-                        <button
-                            hx-get="/?month={{current_month_number+1}}"
-                            hx-target="closest body"
-                            hx-push-url="true"
-                            class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700"
-                        >
-                            Next
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
-                <div
-                    id="overlay"
-                    class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out"
-                >
-                    <div
-                        id="modal"
-                        class="w-full max-w-[500px] aspect-square"
-                        x-data="{showDetail: true}"
-                    ></div>
-                </div>
-                {% include '/webapp/home/calendar.html' %}
-            </div>
-        </section>
-        <script>
-            gsap.registerPlugin(Flip);
-
-            function moveCalendarCard(day_number) {
-                const calendarCard = document.getElementById(
-                    `day-${day_number}`
-                );
-                const calendarContainer = document.getElementById(
-                    `container-${day_number}`
-                );
-                const modal = document.getElementById("modal");
-                const state = Flip.getState(`#day-${day_number}`);
-
-                if (calendarCard.parentNode !== modal) {
-                    modal.append(calendarCard);
-                } else {
-                    calendarContainer.append(calendarCard);
-                }
-                changeClasses(day_number);
-
-                Flip.from(state, {
-                    duration: 0.4,
-                    ease: "power1.inOut",
-                    absolute: true,
-                });
-            }
-
-            function changeClasses(day_number) {
-                const overlay = document.getElementById("overlay");
-                overlay.classList.toggle("hidden");
-                const modal = document.getElementById("modal");
-
-                let selectedCard = htmx.find(`#day-${day_number}`);
-                htmx.toggleClass(selectedCard, "rounded-md", 250);
-                htmx.toggleClass(selectedCard, "border", 250);
-                
-            }
-        </script>
-    </body>
-</html>
+	}
+</script>
+{% endblock content %}

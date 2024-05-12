@@ -6,6 +6,7 @@ import asyncio
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from jinja2_fragments.fastapi import Jinja2Blocks
 from mangum import Mangum
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -31,7 +32,7 @@ class SleepMiddleware:
     async def __call__(self, scope, receive, send):
         if SETTINGS.ENVIRONMENT == "dev":
             print("development environment detecting, sleeping for 3 seconds")
-            time.sleep(3)  # Delay for 3000ms (3 seconds)
+            time.sleep(0)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
 
 
@@ -49,6 +50,7 @@ app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 
 templates = Jinja2Templates(directory="templates")
+block_templates = Jinja2Blocks(directory="templates")
 
 handler = Mangum(app)
 
@@ -99,6 +101,7 @@ def index(
     }
 
     context = {
+        "request": request,
         "user_data": user_page_data,
         "month_number": month,
         "request": request,
@@ -140,11 +143,18 @@ def index(
                 shift._asdict())
 
     context.update(month_calendar=list(month_calendar_dict.values()))
-    response = templates.TemplateResponse(
-        request=request,
-        name="webapp/home/app-home.html",
-        context=context,
-    )
+
+    if "hx-request" in request.headers:
+        response = block_templates.TemplateResponse(
+            name="webapp/home/app-home.html",
+            block_name="calendar",
+            context=context,
+        )
+    else:
+        response = templates.TemplateResponse(
+            name="webapp/home/app-home.html",
+            context=context,
+        )
 
     return response
 
