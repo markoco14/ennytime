@@ -19,7 +19,7 @@ Ennytime Couple's Calendar
 				{% if current_month_number == 1 %}
 				<button disabled
 						class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">
-					Previous
+					{{prev_month_name}}
 				</button>
 				{% else %}
 				<button hx-get="/?month={{current_month_number-1}}"
@@ -28,14 +28,14 @@ Ennytime Couple's Calendar
 						hx-indicator="#spinner"
 						hx-push-url="true"
 						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
-					Previous
+					{{prev_month_name}}
 				</button>
 				{% endif%}
 				<!-- if end of year -->
 				{% if current_month_number == 12 %}
 				<button disabled
 						class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">
-					Next
+					{{next_month_name}}
 				</button>
 				{% else %}
 				<button hx-get="/?month={{current_month_number+1}}"
@@ -44,7 +44,7 @@ Ennytime Couple's Calendar
 						hx-indicator="#spinner"
 						hx-push-url="true"
 						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
-					Next
+					{{next_month_name}}
 				</button>
 				{% endif %}
 			</div>

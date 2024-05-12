@@ -2,14 +2,13 @@
 from typing import Annotated, Optional
 
 import time
-import asyncio
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from mangum import Mangum
 from sqlalchemy.orm import Session
-from starlette.middleware.base import BaseHTTPMiddleware
+
 
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
@@ -80,9 +79,25 @@ def index(
         response.delete_cookie("session-id")
 
         return response
+    if not month:
+        current_month = calendar_service.get_current_month(month)
+    else:
+        current_month = month
 
-    current_month = calendar_service.get_current_month(month)
-    current_year = calendar_service.get_current_year(year)
+    if not year:
+        current_year = calendar_service.get_current_year(year)
+    else:
+        current_year = year
+
+    if current_month == 1:
+        prev_month_name = calendar_service.MONTHS[11]
+    else:
+        prev_month_name = calendar_service.MONTHS[current_month - 2]
+
+    if current_month == 12:
+        next_month_name = calendar_service.MONTHS[0]
+    else:
+        next_month_name = calendar_service.MONTHS[current_month]
 
     month_calendar = calendar_service.get_month_calendar(
         current_year, current_month)
@@ -104,11 +119,12 @@ def index(
         "request": request,
         "user_data": user_page_data,
         "month_number": month,
-        "request": request,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
         "current_month_number": current_month,
         "current_month": calendar_service.MONTHS[current_month - 1],
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
     }
 
     # TODO: add month filters to shift query
