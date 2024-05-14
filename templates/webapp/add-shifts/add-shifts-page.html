@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}
+Ennytime Add Shifts
+{% endblock title %}
+{% block content %}
+<h1>Add your shifts</h1>
+<p>Current month: {{current_month}}</p>
+<ul>
+	{% for date in month_calendar if date[1] == current_month %}
+	<li><strong>({{date[3]}})</strong> {{date[0]}}-{{date[1]}}-{{date[2]}}</li>
+	{% endfor %}
+</ul>
+{% endblock content %}
