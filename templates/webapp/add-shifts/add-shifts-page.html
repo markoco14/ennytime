@@ -5,8 +5,9 @@ Ennytime Add Shifts
 {% block content %}
 <section>
 	<div class="max-w-[800px] mx-auto">
-		<h1>Add your shifts</h1>
-		<p>Current month: {{current_month}}</p>
+		<h1 class="text-3xl">Add Shifts</h1>
+		<p class="mb-8">Click the buttons to quickly add shifts to your calendar. Clicking the blue buttons will delete your shifts.
+		</p>
 		<ul class="divide-y">
 			{% for date in month_calendar.values() %}
 			<li class="py-2 flex justify-between grid grid-cols-2 md:grid-cols-3">
