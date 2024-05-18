@@ -1,6 +1,9 @@
 """
 Functions for retrieving data from any table in the database
 """
+import datetime
+
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.models.db_shift import DbShift
@@ -21,6 +24,15 @@ def create_shift(db: Session, shift: schemas.CreateShift):
 def get_user_shifts(db: Session, user_id: int):
     """ Get shift by date """
     return db.query(DbShift).filter(DbShift.user_id == user_id).order_by(DbShift.date).all()
+
+
+def get_user_shift(
+        db: Session, 
+        user_id: int, 
+        type_id: int, 
+        date_object: datetime.datetime):
+    """ Get shift by date """
+    return db.query(DbShift).filter(DbShift.user_id == user_id, DbShift.type_id == type_id, DbShift.date == date_object).first()
 
 
 def get_user_shifts_details(db: Session, user_id: int):

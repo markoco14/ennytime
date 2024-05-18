@@ -44,3 +44,7 @@ def get_month_calendar(year, month):
     """ Returns the month calendar for the current month/year
     or the user's selected month/year"""
     return MONTH_CALENDAR.itermonthdates(year, month)
+
+def get_month_date_list(year, month):
+    """Returns a list of dates for the given month/year"""
+    return MONTH_CALENDAR.itermonthdays4(year, month)
