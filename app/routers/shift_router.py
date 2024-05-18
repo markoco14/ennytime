@@ -20,7 +20,7 @@ templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
 
 
-@router.get("/add-shifts", response_class=HTMLResponse)
+@router.get("/shifts", response_class=HTMLResponse)
 def get_add_shifts_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -118,12 +118,12 @@ def get_add_shifts_page(
     }
 
     return block_templates.TemplateResponse(
-        name="webapp/add-shifts/add-shifts-page.html",
+        name="webapp/shifts/add-shifts-page.html",
         context=context
     )
 
 
-@router.post("/add-shifts/{date}/{type_id}", response_class=HTMLResponse)
+@router.post("/shifts/{date}/{type_id}", response_class=HTMLResponse)
 async def add_shift_to_date(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -164,13 +164,13 @@ async def add_shift_to_date(
     }
 
     return block_templates.TemplateResponse(
-        name="webapp/add-shifts/add-shifts-page.html",
+        name="webapp/shifts/add-shifts-page.html",
         context=context,
         block_name="shift_exists_button"
     )
 
 
-@router.delete("/add-shifts/{date}/{type_id}", response_class=HTMLResponse)
+@router.delete("/shifts/{date}/{type_id}", response_class=HTMLResponse)
 async def delete_shift_for_date(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -210,7 +210,7 @@ async def delete_shift_for_date(
     }
 
     return block_templates.TemplateResponse(
-        name="webapp/add-shifts/add-shifts-page.html",
+        name="webapp/shifts/add-shifts-page.html",
         context=context,
         block_name="no_shift_button"
     )
