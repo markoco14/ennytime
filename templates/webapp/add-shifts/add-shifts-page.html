@@ -7,72 +7,24 @@ Ennytime Add Shifts
 	<div class="max-w-[800px] mx-auto">
 		<h1>Add your shifts</h1>
 		<p>Current month: {{current_month}}</p>
-		{# start debug bar #}
-		{# <div>
-			{% for shift in user_shifts  %}
-			<p>{{shift}}</p>
-			<p>id: {{shift.id}}</p>
-			<p>type id: {{shift.type_id}}</p>
-			<p>user id: {{shift.user_id}}</p>
-			<p>id: {{shift.id}}</p>
-			<p>year: {{shift.date.year}}</p>
-			<p>month: {{shift.date.month}}</p>
-			<p>day: {{shift.date.day}}</p>
-			{% endfor %}
-		</div> #}
-		{# end debug bar #}
 		<ul class="divide-y">
-			{% for date in month_calendar %}
-			<li class="py-2 flex justify-between">
-				<span>{{date}}</span>
-				<span>{{date[0].date()}}</span>
-				<span>{{date[1]}}</span>
-				{# <span>
-					<strong>({{date[1]}})</strong>
-					{{date.date()}}
-				</span>
-					<p>{{user_shifts[0].date.date()}}</p>
-				<div>
-					{% for shift_type in shift_types  %}
-					<button>{{shift_type.id}} - {{shift_type.long_name}}</button>
-					{% endfor %}
-				</div> #}
-			</li>
-			{% endfor %}
-			{# {% for date in month_calendar if date[0].month == current_month  %}
-			<li class="py-2 flex justify-between">
-				<span>
-					<strong>({{date[1]}})</strong>
-					{{date.date()}}
-				</span>
-					<p>{{user_shifts[0].date.date()}}</p>
-				<div>
-					{% for shift_type in shift_types  %}
-					<button>{{shift_type.id}} - {{shift_type.long_name}}</button>
+			{% for date in month_calendar.values() %}
+			<li class="py-2 flex justify-between grid grid-cols-2 md:grid-cols-3">
+				<span>{{date.date_string}}</span>
+				<span>{{date.day_of_week}}</span>
+				<div class="col-span-2 md:col-span-1">
+					{% for type in shift_types %}
+					{% if date.shift and type.id == date.shift.type_id %}
+					<button class="bg-blue-300">{{type.long_name}}</button>
+					{% else %}
+					<button class="bg-gray-300">{{type.long_name}}</button>
+					{% endif %}
 					{% endfor %}
 				</div>
 			</li>
-			{% endfor %} #}
+			{% endfor %}
+
 		</ul>
-		{# <ul>
-	{% for date in month_calendar if date[1] == current_month %}
-	<li class="flex justify-between">
-		<span><strong>({{date[3]}})</strong> {{date[0]}}-{{date[1]}}-{{date[2]}}</span>
-		<span>
-			{% block list_form %}
-			<form class="flex gap-2"
-				  hx-post="/add-shift-to-date">
-				{% for type in shift_types %}
-				<label>{{type.long_name}}</label>
-				<input type="checkbox" />
-				{% endfor %}
-				<button>Save</button>
-			</form>
-			{% endblock list_form %}
-		</span>
-	</li>
-	{% endfor %}
-</ul> #}
 	</div>
 </section>
 {% endblock content %}
