@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
 
     if ENVIRONMENT == 'dev':
+        SLEEP_TIME: float = 0.5
         DB_USER: str = os.environ.get('DEV_DB_USER')
         DB_PASSWORD: str = os.environ.get('DEV_DB_PASSWORD')
         DB_HOST: str = os.environ.get('DEV_DB_HOST')
@@ -26,6 +27,7 @@ class Settings(BaseSettings):
         DB_NAME: str = os.environ.get('DEV_DB_NAME')
         DATABASE_URL: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     else:
+        SLEEP_TIME: float = 0.0
         DB_USER: str = os.environ.get('DB_USER')
         DB_PASSWORD: str = os.environ.get('DB_PASSWORD')
         DB_HOST: str = os.environ.get('DB_HOST')
