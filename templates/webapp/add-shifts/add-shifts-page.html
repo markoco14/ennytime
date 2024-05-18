@@ -15,9 +15,16 @@ Ennytime Add Shifts
 				<div class="col-span-2 md:col-span-1">
 					{% for type in shift_types %}
 					{% if date.shift and type.id == date.shift.type_id %}
-					<button class="bg-blue-300">{{type.long_name}}</button>
+					{% block shift_exists_button scoped %}
+
+					<button hx-post="/add-shifts/{{date.date_string}}/{{type.id}}"
+							hx-swap="outerHTML"
+							class="bg-blue-300">{{type.long_name}}</button>
+					{% endblock shift_exists_button %}
 					{% else %}
-					<button class="bg-gray-300">{{type.long_name}}</button>
+					<button hx-post="/add-shifts/{{date.date_string}}/{{type.id}}"
+							hx-swap="outerHTML"
+							class="bg-gray-300">{{type.long_name}}</button>
 					{% endif %}
 					{% endfor %}
 				</div>

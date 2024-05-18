@@ -50,7 +50,6 @@ def get_add_shifts_page(
         month=month
     )
 
-    
     # calendar_date_list is a list of dictionaries
     # the keys are date_strings to make matching shifts easier
     # ie; "2021-09-01": {"more keys": "more values"}
@@ -75,7 +74,6 @@ def get_add_shifts_page(
         }
         calendar_date_list.update(date_dict)
 
-
     shift_types = shift_type_repository.list_user_shift_types(
         db=db, user_id=current_user.id)
 
@@ -85,7 +83,7 @@ def get_add_shifts_page(
         year, month + 1, 1) + datetime.timedelta(seconds=-1)
 
     query = text("""
-        SELECT 
+        SELECT
             etime_shifts.*
         FROM etime_shifts
         WHERE etime_shifts.user_id = :user_id
@@ -101,7 +99,7 @@ def get_add_shifts_page(
          "end_of_month": end_of_month}
     ).fetchall()
     user_shifts = []
-    for row in result:        
+    for row in result:
         user_shifts.append(row._asdict())
 
     for shift in user_shifts:
@@ -124,10 +122,12 @@ def get_add_shifts_page(
     )
 
 
-@router.post("/add-shift-to-date", response_class=HTMLResponse)
+@router.post("/add-shifts/{date}/{type_id}", response_class=HTMLResponse)
 async def add_shift_to_date(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    date: str,
+    type_id: int
 ):
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -139,17 +139,30 @@ async def add_shift_to_date(
     current_user = auth_service.get_current_session_user(
         db=db,
         cookies=request.cookies)
-    # pprint(await request.form())
 
-    shift_types = shift_type_repository.list_user_shift_types(
-        db=db, user_id=current_user.id)
+    date_segments = date.split("-")
+    db_shift = schemas.CreateShift(
+        type_id=type_id,
+        user_id=current_user.id,
+        date=datetime.datetime(int(date_segments[0]), int(
+            date_segments[1]), int(date_segments[2]))
+    )
 
-    context = {"request": request, "user_data": current_user,
-               "shift_types": shift_types}
+    shift_repository.create_shift(db=db, shift=db_shift)
+
+    shift_type = shift_type_repository.get_user_shift_type(
+        db=db, user_id=current_user.id, shift_type_id=type_id)
+
+    context = {
+        "request": request,
+        "date": {"date_string": date},
+        "type": {"id": type_id, "long_name": shift_type.long_name, }
+    }
+
     return block_templates.TemplateResponse(
         name="webapp/add-shifts/add-shifts-page.html",
         context=context,
-        block_name="list_form"
+        block_name="shift_exists_button"
     )
 
 
