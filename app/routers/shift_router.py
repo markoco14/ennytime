@@ -69,7 +69,7 @@ def get_add_shifts_page(
         date_dict = {
             f"{year_string}-{month_string}-{day_string}": {
                 "date_string": f"{year_string}-{month_string}-{day_string}",
-                "day_of_week": calendar_service.DAYS_OF_WEEK[date[3]]
+                "day_of_week": str(calendar_service.Weekday(date[3])),
             }
         }
         if date[1] == month:
