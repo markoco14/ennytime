@@ -72,7 +72,8 @@ def get_add_shifts_page(
                 "day_of_week": calendar_service.DAYS_OF_WEEK[date[3]]
             }
         }
-        calendar_date_list.update(date_dict)
+        if date[1] == month:
+            calendar_date_list.update(date_dict)
 
     shift_types = shift_type_repository.list_user_shift_types(
         db=db, user_id=current_user.id)

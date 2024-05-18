@@ -30,7 +30,7 @@ class SleepMiddleware:
 
     async def __call__(self, scope, receive, send):
         if SETTINGS.ENVIRONMENT == "dev":
-            print("development environment detecting, sleeping for 3 seconds")
+            print(f"development environment detecting, sleeping for {SETTINGS.SLEEP_TIME} seconds")
             time.sleep(SETTINGS.SLEEP_TIME)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
 

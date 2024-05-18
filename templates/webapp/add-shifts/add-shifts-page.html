@@ -10,22 +10,23 @@ Ennytime Add Shifts
 		<ul class="divide-y">
 			{% for date in month_calendar.values() %}
 			<li class="py-2 flex justify-between grid grid-cols-2 md:grid-cols-3">
-				<span>{{date.date_string}}</span>
-				<span>{{date.day_of_week}}</span>
-				<div class="col-span-2 md:col-span-1">
+				<span class=" text-xl text-center md:text-left">{{date.date_string}}</span>
+				<span class=" text-xl text-center md:text-left">{{date.day_of_week}}</span>
+				<div class="flex justify-center gap-1 col-span-2 md:col-span-1">
 					{% for type in shift_types %}
 					{% if date.shift and type.id == date.shift.type_id %}
 					{% block shift_exists_button scoped %}
 					<button hx-delete="/add-shifts/{{date.date_string}}/{{type.id}}"
 							hx-confirm="Are you sure you want to delete this shift?"
 							hx-swap="outerHTML"
-							class="bg-blue-300">{{type.long_name}}</button>
+							class="border border-blue-300 bg-blue-300 py-1 px-2 rounded-md">{{type.long_name}}</button>
 					{% endblock shift_exists_button %}
 					{% else %}
 					{% block no_shift_button scoped %}
 					<button hx-post="/add-shifts/{{date.date_string}}/{{type.id}}"
 							hx-swap="outerHTML"
-							class="bg-gray-300">{{type.long_name}}</button>
+							class="border py-1 px-2 rounded-md">
+						{{type.long_name}}</button>
 					{% endblock no_shift_button %}
 					{% endif %}
 					{% endfor %}
