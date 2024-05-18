@@ -3,11 +3,76 @@
 Ennytime Add Shifts
 {% endblock title %}
 {% block content %}
-<h1>Add your shifts</h1>
-<p>Current month: {{current_month}}</p>
-<ul>
+<section>
+	<div class="max-w-[800px] mx-auto">
+		<h1>Add your shifts</h1>
+		<p>Current month: {{current_month}}</p>
+		{# start debug bar #}
+		{# <div>
+			{% for shift in user_shifts  %}
+			<p>{{shift}}</p>
+			<p>id: {{shift.id}}</p>
+			<p>type id: {{shift.type_id}}</p>
+			<p>user id: {{shift.user_id}}</p>
+			<p>id: {{shift.id}}</p>
+			<p>year: {{shift.date.year}}</p>
+			<p>month: {{shift.date.month}}</p>
+			<p>day: {{shift.date.day}}</p>
+			{% endfor %}
+		</div> #}
+		{# end debug bar #}
+		<ul class="divide-y">
+			{% for date in month_calendar %}
+			<li class="py-2 flex justify-between">
+				<span>{{date}}</span>
+				<span>{{date[0].date()}}</span>
+				<span>{{date[1]}}</span>
+				{# <span>
+					<strong>({{date[1]}})</strong>
+					{{date.date()}}
+				</span>
+					<p>{{user_shifts[0].date.date()}}</p>
+				<div>
+					{% for shift_type in shift_types  %}
+					<button>{{shift_type.id}} - {{shift_type.long_name}}</button>
+					{% endfor %}
+				</div> #}
+			</li>
+			{% endfor %}
+			{# {% for date in month_calendar if date[0].month == current_month  %}
+			<li class="py-2 flex justify-between">
+				<span>
+					<strong>({{date[1]}})</strong>
+					{{date.date()}}
+				</span>
+					<p>{{user_shifts[0].date.date()}}</p>
+				<div>
+					{% for shift_type in shift_types  %}
+					<button>{{shift_type.id}} - {{shift_type.long_name}}</button>
+					{% endfor %}
+				</div>
+			</li>
+			{% endfor %} #}
+		</ul>
+		{# <ul>
 	{% for date in month_calendar if date[1] == current_month %}
-	<li><strong>({{date[3]}})</strong> {{date[0]}}-{{date[1]}}-{{date[2]}}</li>
+	<li class="flex justify-between">
+		<span><strong>({{date[3]}})</strong> {{date[0]}}-{{date[1]}}-{{date[2]}}</span>
+		<span>
+			{% block list_form %}
+			<form class="flex gap-2"
+				  hx-post="/add-shift-to-date">
+				{% for type in shift_types %}
+				<label>{{type.long_name}}</label>
+				<input type="checkbox" />
+				{% endfor %}
+				<button>Save</button>
+			</form>
+			{% endblock list_form %}
+		</span>
+	</li>
 	{% endfor %}
-</ul>
+</ul> #}
+	</div>
+</section>
 {% endblock content %}

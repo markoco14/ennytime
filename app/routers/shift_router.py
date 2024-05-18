@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 
 from app.auth import auth_service
@@ -24,7 +25,9 @@ block_templates = Jinja2Blocks(directory="templates")
 @router.get("/add-shifts", response_class=HTMLResponse)
 def get_add_shifts_page(
     request: Request,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    year: int = None,
+    month: int = None,
 ):
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -37,22 +40,59 @@ def get_add_shifts_page(
         db=db,
         cookies=request.cookies)
 
+    # temporary month and year hard coded
+    current_time = datetime.datetime.now()
+    if not year:
+        year = current_time.year
+    if not month:
+        month = current_time.month
+
     # get the month calendar
     month_calendar = calendar_service.get_month_date_list(
-        year=datetime.datetime.now().year,
-        month=datetime.datetime.now().month
+        year=year,
+        month=month
     )
-    # calendar_date_list = []
-
+    # I think I can make this a date
     calendar_date_list = [(
-        date[0],
-        date[1],
-        date[2],
+        datetime.datetime(date[0], date[1], date[2]),
+        # date[0],
+        # date[1],
+        # date[2],
         calendar_service.DAYS_OF_WEEK[date[3]]
     ) for date in month_calendar]
-    # calendar_date_list = list(month_calendar)
+    # print(calendar_date_list)
     # for date in calendar_date_list:
-    #     date[3] = calendar_service.DAYS_OF_WEEK[date[3]]
+    #     print(date[0].date())
+    # get existing shift types
+    shift_types = shift_type_repository.list_user_shift_types(
+        db=db, user_id=current_user.id)
+
+    # get the start and end of the month for query filters
+    start_of_month = datetime.datetime(year, month, 1)
+    end_of_month = datetime.datetime(
+        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+
+    query = text("""
+        SELECT 
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date >= :start_of_month
+        AND etime_shifts.date <= :end_of_month
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "start_of_month": start_of_month,
+         "end_of_month": end_of_month}
+    ).fetchall()
+    user_shifts = []
+    for row in result:
+        # pprint(row._asdict())
+        user_shifts.append(row._asdict())
+
     # need to be able to navigate months
     # days of month should simply be listed
     # don't need to group by week
@@ -63,8 +103,10 @@ def get_add_shifts_page(
     context = {
         "request": request,
         "user_data": current_user,
-        "current_month": datetime.datetime.now().month,
+        "current_month": month,
         "month_calendar": calendar_date_list,
+        "shift_types": shift_types,
+        "user_shifts": user_shifts
     }
 
     return block_templates.TemplateResponse(
