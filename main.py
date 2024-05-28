@@ -15,7 +15,7 @@ from app.core.database import get_db
 from app.core.config import get_settings
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
-from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router
+from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router, chat_router
 from app.services import calendar_service
 
 SETTINGS = get_settings()
@@ -47,6 +47,7 @@ app.include_router(shift_type_router.router)
 app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
+app.include_router(chat_router.router)
 
 templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")

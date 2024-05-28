@@ -4,11 +4,15 @@
 Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
-<section class="slide-it dark:bg-gray-900 py-4 dark:text-gray-100">
-	<div class="max-w-[1200px] mx-auto flex justify-end">
+<section>
+	<div class="container mx-auto flex justify-end gap-4">
+		<a href="/chat"
+		   class="underline underline-offset-2">Chat</a>
 		<a href="/shifts"
 		   class="underline underline-offset-2">Add Shifts</a>
 	</div>
+</section>
+<section class="slide-it dark:bg-gray-900 py-4 dark:text-gray-100">
 	{% block calendar %}
 	{% from '/macros/spinner.html' import spinner%}
 	<div class="container mx-auto px-2">
