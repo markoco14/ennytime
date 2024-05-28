@@ -47,7 +47,7 @@ app.include_router(shift_type_router.router)
 app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
-app.include_router(chat_router.router)
+# app.include_router(chat_router.router)
 
 templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
