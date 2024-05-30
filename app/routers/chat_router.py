@@ -10,14 +10,15 @@ from sqlalchemy import text
 
 from app.auth import auth_service
 from app.core.database import get_db
-
+from app.repositories import share_repository
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
 
+CHATS = []
 
-messages = [
+MESSAGES = [
     {
         "message": "Hey there! How are you doing today?",
         "time": "3:45 PM",
@@ -145,20 +146,15 @@ def get_chat(
     # we get the current user's current chat and all related messages
     # even if they are the other user
 
-    related_messages = []
-    for message in messages:
-        if message["sender_id"] == current_user.id or message["recipient_id"] == current_user.id:
-            related_messages.append(message)
-
-    chats = []
-    shares = []
+    chats = CHATS
+    share = share_repository.get_share_by_owner_id(
+        db=db, user_id=current_user.id)
 
     context = {
         "request": request,
         "user_data": current_user,
-        # "messages": related_messages
         "chats": chats,
-        "shares": shares,
+        "share": share,
     }
 
     return block_templates.TemplateResponse(
@@ -193,27 +189,24 @@ def get_user_chat(
     # even if they are the other user
 
     related_messages = []
-    for message in messages:
+    for message in MESSAGES:
         if message["sender_id"] == current_user.id or message["recipient_id"] == current_user.id:
             related_messages.append(message)
-
-    chats = []
-    shares = []
 
     context = {
         "request": request,
         "user_data": current_user,
-        # "messages": related_messages
-        "chats": chats,
-        "shares": shares,
+        "messages": related_messages
+        # "chats": chats,
+        # "shares": shares,
     }
 
     return block_templates.TemplateResponse(
-        name="chat/chat.html",
+        name="chat/chat_room.html",
         context=context
     )
 
-@router.post("/chat", response_class=HTMLResponse)
+@router.post("/chat/{chat_id}", response_class=HTMLResponse)
 def post_new_message(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -233,7 +226,7 @@ def post_new_message(
         db=db,
         cookies=request.cookies)
 
-    messages.append({
+    MESSAGES.append({
         "message": message,
         "time": "3:52 PM",
         "sender_id": current_user.id
