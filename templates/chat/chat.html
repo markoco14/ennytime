@@ -5,16 +5,22 @@ Ennytime Chat
 {% endblock title %}
 
 {% block content %}
-<p>Choose your chat</p>
-{% if not chats %}
-<p>You have no chats, start one below.</p>
-{% else %}
-<p>You have a chat with someone!</p>
-{% endif %}
-{% if not share %}
-<p>You haven't shared your calendar with anyone yet. Share your calendar before you start to chat.</p>
-{% else %}
-<p>You've shared your calendar with this person:</p>
-<p>{{ share.owner_id }}</p>
+<div class="max-w-[1000px] mx-auto">
+	<p>Choose your chat</p>
+	{% if not chats %}
+	<p>You have no chats, start one below.</p>
+	{% else %}
+	<p>You have a chat with someone!</p>
+	{% endif %}
+	{% if not share %}
+	<p>You haven't shared your calendar with anyone yet. Share your calendar before you start to chat.</p>
+	{% else %}
+	<p>You've shared your calendar with this person:</p>
+	<div class="p-4 border rounded-md">
+		<p>{{ share.owner_id }}</p>
+		<a hx-post="/create-chat/{{share.owner_id}}/{{share.guest_id}}"
+		   class="cursor-pointer">Create Chat</a>
+	</div>
+</div>
 {% endif %}
 {% endblock content %}

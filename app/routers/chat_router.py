@@ -162,6 +162,27 @@ def get_chat(
         context=context
     )
 
+@router.post("/create-chat/{owner_id}/{guest_id}", response_class=HTMLResponse)
+def create_new_chat(
+    request: Request,
+    owner_id: int,
+    guest_id: int,
+    db: Annotated[Session, Depends(get_db)],
+):
+    """Create a new chat room for the couple"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies)
+    
+    return "Enter Chat  "
+
 
 @router.get("/chat/{chat_id}", response_class=HTMLResponse)
 def get_user_chat(
