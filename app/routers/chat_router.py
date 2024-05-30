@@ -124,7 +124,7 @@ messages = [
 
 
 @router.get("/chat", response_class=HTMLResponse)
-def get_add_shifts_page(
+def get_chat(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
 ):
@@ -150,10 +150,15 @@ def get_add_shifts_page(
         if message["sender_id"] == current_user.id or message["recipient_id"] == current_user.id:
             related_messages.append(message)
 
+    chats = []
+    shares = []
+
     context = {
         "request": request,
         "user_data": current_user,
-        "messages": related_messages
+        # "messages": related_messages
+        "chats": chats,
+        "shares": shares,
     }
 
     return block_templates.TemplateResponse(
@@ -161,6 +166,52 @@ def get_add_shifts_page(
         context=context
     )
 
+
+@router.get("/chat/{chat_id}", response_class=HTMLResponse)
+def get_user_chat(
+    request: Request,
+    chat_id: int,
+    db: Annotated[Session, Depends(get_db)],
+):
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies)
+    
+    print("chat id", chat_id)
+
+    # we get the current user from the request cookie
+    # we get the share id from the current user's shares
+    # but maybe we don't need the share ID
+    # we get the current user's current chat and all related messages
+    # even if they are the other user
+
+    related_messages = []
+    for message in messages:
+        if message["sender_id"] == current_user.id or message["recipient_id"] == current_user.id:
+            related_messages.append(message)
+
+    chats = []
+    shares = []
+
+    context = {
+        "request": request,
+        "user_data": current_user,
+        # "messages": related_messages
+        "chats": chats,
+        "shares": shares,
+    }
+
+    return block_templates.TemplateResponse(
+        name="chat/chat.html",
+        context=context
+    )
 
 @router.post("/chat", response_class=HTMLResponse)
 def post_new_message(
