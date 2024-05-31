@@ -1,4 +1,3 @@
-import random
 import string
 import uuid
 from typing import Annotated
@@ -8,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+
 
 from app.auth import auth_service
 from app.core.database import get_db
@@ -18,113 +17,6 @@ from app.models.chat_models import DBChatRoom, DBChatMessage
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
-
-CHATS = []
-
-MESSAGES = [
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "Hey there! How are you doing today?",
-        "created_at": "3:45 PM",
-        "sender_id": 30,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "I'm doing great, thanks for asking!",
-        "created_at": "3:46 PM",
-        "sender_id": 31,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "Awesome, I'm glad to hear that. Do you have any plans for the weekend?",
-        "created_at": "3:47 PM",
-        "sender_id": 30,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "I'm actually going to the beach with some friends. Should be a lot of fun!",
-        "created_at": "3:48 PM",
-        "sender_id": 31,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "Oooh, sounds like a blast! I hope you have a great time.",
-        "created_at": "3:49 PM",
-        "sender_id": 30,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "Thanks! What are your plans?",
-        "created_at": "3:49 PM",
-        "sender_id": 31,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "I'm going hiking with my family. Pretty excited, but also kind of dreading it!",
-        "created_at": "3:50 PM",
-        "sender_id": 30,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "That sounds amazing! I hope you have a wonderful time.",
-        "created_at": "3:51 PM",
-        "sender_id": 31,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": "Thank you! I'm sure it will be a lot of fun.",
-        "created_at": "3:52 PM",
-        "sender_id": 30,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat a",
-        "created_at": "3:51 PM",
-        "sender_id": 64,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat b",
-        "created_at": "3:52 PM",
-        "sender_id": 65,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat a",
-        "created_at": "3:51 PM",
-        "sender_id": 64,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat b",
-        "created_at": "3:52 PM",
-        "sender_id": 65,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat a",
-        "created_at": "3:51 PM",
-        "sender_id": 64,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat b",
-        "created_at": "3:52 PM",
-        "sender_id": 65,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat a",
-        "created_at": "3:51 PM",
-        "sender_id": 64,
-    },
-    {
-        "room_id": "3f75798b8fe54715b8b85857c148957f123",
-        "message": "other chat b",
-        "created_at": "3:52 PM",
-        "sender_id": 65,
-    },
-]
 
 
 @router.get("/chat", response_class=HTMLResponse)
@@ -177,7 +69,6 @@ def generate_room_id():
     characters = string.ascii_letters + string.digits
 
     return uuid.uuid4().hex
-    return ''.join(random.choice(characters) for _ in range(length))
 
 
 @router.post("/create-chat/{owner_id}/{guest_id}", response_class=HTMLResponse)
@@ -233,8 +124,6 @@ def get_user_chat(
         db=db,
         cookies=request.cookies)
 
-    print("chat id", room_id)
-
     # we get the current user from the request cookie
     # we get the share id from the current user's shares
     # but maybe we don't need the share ID
@@ -258,12 +147,42 @@ def get_user_chat(
         "chat": chat_room,
         "user_data": current_user,
         "messages": messages
-        # "chats": chats,
-        # "shares": shares,
     }
 
     return block_templates.TemplateResponse(
         name="chat/chat_room.html",
+        context=context
+    )
+
+
+@router.get("/chat/{room_id}/messages", response_class=HTMLResponse)
+def get_chat_room_messages(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    room_id: str
+):
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies)
+
+    messages = db.query(DBChatMessage).filter(
+        DBChatMessage.room_id == room_id).all()
+    
+    context = {
+        "request": request,
+        "user_data": current_user,
+        "messages": messages
+    }
+    
+    return block_templates.TemplateResponse(
+        name="chat/chat-room-messages.html",
         context=context
     )
 
