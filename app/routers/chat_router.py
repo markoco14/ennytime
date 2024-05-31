@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 
 from app.auth import auth_service
@@ -47,14 +48,21 @@ def get_chat(
     ).first()
     # if chat:
     #     print(chat.__dict__)
-    share = share_repository.get_share_by_owner_id(
-        db=db, user_id=current_user.id)
+
+    query = text("""
+        SELECT etime_shares.*,
+            etime_users.display_name as guest_first_name
+        FROM etime_shares
+        LEFT JOIN etime_users ON etime_users.id = etime_shares.guest_id
+        WHERE etime_shares.owner_id = :user_id
+    """)
+    share_result = db.execute(query, {"user_id": current_user.id}).fetchone()
 
     context = {
         "request": request,
         "user_data": current_user,
         "chat": chat,
-        "share": share,
+        "share": share_result,
     }
 
     return block_templates.TemplateResponse(
@@ -85,6 +93,7 @@ def create_new_chat(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
+
     current_user = auth_service.get_current_session_user(
         db=db,
         cookies=request.cookies)
@@ -174,13 +183,13 @@ def get_chat_room_messages(
 
     messages = db.query(DBChatMessage).filter(
         DBChatMessage.room_id == room_id).all()
-    
+
     context = {
         "request": request,
         "user_data": current_user,
         "messages": messages
     }
-    
+
     return block_templates.TemplateResponse(
         name="chat/chat-room-messages.html",
         context=context
