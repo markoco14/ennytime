@@ -214,7 +214,6 @@ def create_new_chat(
             "room_id": chat_room_id
         }
     )
-    
 
 
 @router.get("/chat/{room_id}", response_class=HTMLResponse)
@@ -248,7 +247,8 @@ def get_user_chat(
         DBChatRoom.room_id == room_id
     ).first()
 
-    messages = db.query(DBChatMessage).filter(DBChatMessage.room_id == room_id).all()
+    messages = db.query(DBChatMessage).filter(
+        DBChatMessage.room_id == room_id).all()
     # print(messages)
     # for message in messages:
     #     print(message)
@@ -268,10 +268,11 @@ def get_user_chat(
     )
 
 
-@router.post("/chat/{chat_id}", response_class=HTMLResponse)
+@router.post("/chat/{room_id}", response_class=HTMLResponse)
 def post_new_message(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    room_id: str,
     message: Annotated[str, Form()]
 ):
     """
@@ -288,11 +289,13 @@ def post_new_message(
         db=db,
         cookies=request.cookies)
 
-    MESSAGES.append({
-        "room_id": "3f75798b8fe54715b8b85857c148957f",
-        "message": message,
-        "created_at": "3:52 PM",
-        "sender_id": current_user.id
-    })
+    db_message = DBChatMessage(
+        room_id=room_id,
+        message=message,
+        sender_id=current_user.id
+    )
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
 
     return Response(status_code=200)
