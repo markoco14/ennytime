@@ -1,7 +1,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, DateTime, String, JSON
+from sqlalchemy import Column, Integer, Boolean, DateTime, String, JSON
 from app.core.database import Base
 
 class DBChatRoom(Base):
@@ -13,6 +13,11 @@ class DBChatRoom(Base):
         String(length=255),
         nullable=False,
         index=True,
+    )
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=1
     )
     chat_users = Column(JSON, nullable=False)
     created_at = Column(
