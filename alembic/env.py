@@ -13,6 +13,7 @@ from app.models.user_session_model import DBUserSession
 from app.models.db_shift_type import DbShiftType
 from app.models.db_shift import DbShift
 from app.models.share_model import DbShare
+from app.models.chat_models import DBChatRoom, DBChatMessage
 
 # import app settings
 settings = get_settings()
@@ -82,7 +83,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, 
+            connection=connection,
             target_metadata=target_metadata,
             version_table='etime_alembic_version'
         )
