@@ -214,7 +214,7 @@ def create_new_chat(
             "room_id": chat_room_id
         }
     )
-    return f"Enter Chat {chat_room_id}"
+    
 
 
 @router.get("/chat/{room_id}", response_class=HTMLResponse)
@@ -254,6 +254,7 @@ def get_user_chat(
 
     context = {
         "request": request,
+        "chat": chat_room,
         "user_data": current_user,
         "messages": related_messages
         # "chats": chats,
@@ -287,6 +288,7 @@ def post_new_message(
         cookies=request.cookies)
 
     MESSAGES.append({
+        "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": message,
         "time": "3:52 PM",
         "sender_id": current_user.id

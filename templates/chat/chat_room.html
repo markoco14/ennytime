@@ -41,7 +41,7 @@ Couple's Chat
 		{% endif %}
 		{% endfor %}
 	</div>
-	<form hx-post="/chat"
+	<form hx-post="/chat/{{chat.room_id}}"
 		  hx-target="this"
 		  hx-swap="none"
 		  class="bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
