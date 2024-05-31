@@ -7,7 +7,7 @@ Ennytime Chat
 {% block content %}
 <div class="max-w-[1000px] mx-auto">
 	<p>Choose your chat</p>
-	{% if not chats %}
+	{% if not chat %}
 	<p>You have no chats, start one below.</p>
 	{% else %}
 	<p>You have a chat with someone!</p>
@@ -18,8 +18,13 @@ Ennytime Chat
 	<p>You've shared your calendar with this person:</p>
 	<div class="p-4 border rounded-md">
 		<p>{{ share.owner_id }}</p>
+		{% if not chat %}
 		<a hx-post="/create-chat/{{share.owner_id}}/{{share.guest_id}}"
 		   class="cursor-pointer">Create Chat</a>
+		
+		{% else %}
+		<a href="/chat/{{chat.room_id}}">Enter Chat</a>
+		{% endif %}
 	</div>
 </div>
 {% endif %}
