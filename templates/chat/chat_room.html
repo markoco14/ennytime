@@ -47,7 +47,7 @@ Couple's Chat
 	</div>
 	<form hx-post="/chat/{{chat.room_id}}"
 		  hx-target="this"
-		  hx-swap="none"
+		  hx-swap="outerHTML"
 		  class="bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
 		<label class="sr-only"
 			   for="message">Message</label>

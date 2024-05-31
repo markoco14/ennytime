@@ -226,4 +226,14 @@ def post_new_message(
     db.commit()
     db.refresh(db_message)
 
-    return Response(status_code=200)
+    return templates.TemplateResponse(
+        name="chat/chat-form.html",
+        context={
+            "request": request,
+            "chat": {
+                "room_id": room_id
+            }
+        }
+    )
+
+    
