@@ -13,7 +13,7 @@ from sqlalchemy import text
 from app.auth import auth_service
 from app.core.database import get_db
 from app.repositories import share_repository
-from app.models.chat_models import DBChatRoom
+from app.models.chat_models import DBChatRoom, DBChatMessage
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -25,103 +25,103 @@ MESSAGES = [
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "Hey there! How are you doing today?",
-        "time": "3:45 PM",
+        "created_at": "3:45 PM",
         "sender_id": 30,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "I'm doing great, thanks for asking!",
-        "time": "3:46 PM",
+        "created_at": "3:46 PM",
         "sender_id": 31,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "Awesome, I'm glad to hear that. Do you have any plans for the weekend?",
-        "time": "3:47 PM",
+        "created_at": "3:47 PM",
         "sender_id": 30,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "I'm actually going to the beach with some friends. Should be a lot of fun!",
-        "time": "3:48 PM",
+        "created_at": "3:48 PM",
         "sender_id": 31,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "Oooh, sounds like a blast! I hope you have a great time.",
-        "time": "3:49 PM",
+        "created_at": "3:49 PM",
         "sender_id": 30,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "Thanks! What are your plans?",
-        "time": "3:49 PM",
+        "created_at": "3:49 PM",
         "sender_id": 31,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "I'm going hiking with my family. Pretty excited, but also kind of dreading it!",
-        "time": "3:50 PM",
+        "created_at": "3:50 PM",
         "sender_id": 30,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "That sounds amazing! I hope you have a wonderful time.",
-        "time": "3:51 PM",
+        "created_at": "3:51 PM",
         "sender_id": 31,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": "Thank you! I'm sure it will be a lot of fun.",
-        "time": "3:52 PM",
+        "created_at": "3:52 PM",
         "sender_id": 30,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat a",
-        "time": "3:51 PM",
+        "created_at": "3:51 PM",
         "sender_id": 64,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat b",
-        "time": "3:52 PM",
+        "created_at": "3:52 PM",
         "sender_id": 65,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat a",
-        "time": "3:51 PM",
+        "created_at": "3:51 PM",
         "sender_id": 64,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat b",
-        "time": "3:52 PM",
+        "created_at": "3:52 PM",
         "sender_id": 65,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat a",
-        "time": "3:51 PM",
+        "created_at": "3:51 PM",
         "sender_id": 64,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat b",
-        "time": "3:52 PM",
+        "created_at": "3:52 PM",
         "sender_id": 65,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat a",
-        "time": "3:51 PM",
+        "created_at": "3:51 PM",
         "sender_id": 64,
     },
     {
         "room_id": "3f75798b8fe54715b8b85857c148957f123",
         "message": "other chat b",
-        "time": "3:52 PM",
+        "created_at": "3:52 PM",
         "sender_id": 65,
     },
 ]
@@ -247,16 +247,17 @@ def get_user_chat(
     chat_room = db.query(DBChatRoom).filter(
         DBChatRoom.room_id == room_id
     ).first()
-    related_messages = []
-    for message in MESSAGES:
-        if message["room_id"] == room_id:
-            related_messages.append(message)
+
+    messages = db.query(DBChatMessage).filter(DBChatMessage.room_id == room_id).all()
+    # print(messages)
+    # for message in messages:
+    #     print(message)
 
     context = {
         "request": request,
         "chat": chat_room,
         "user_data": current_user,
-        "messages": related_messages
+        "messages": messages
         # "chats": chats,
         # "shares": shares,
     }
@@ -290,7 +291,7 @@ def post_new_message(
     MESSAGES.append({
         "room_id": "3f75798b8fe54715b8b85857c148957f",
         "message": message,
-        "time": "3:52 PM",
+        "created_at": "3:52 PM",
         "sender_id": current_user.id
     })
 
