@@ -62,6 +62,9 @@
 				<a href="/">Home</a>
 			</li>
 			<li class="block md:hidden">
+				<a href="/chat">Chat</a>
+			</li>
+			<li class="block md:hidden">
 				<a href="/profile">Profile</a>
 			</li>
 			{% if user_data.is_admin %}
@@ -73,6 +76,7 @@
 				<button hx-get="/signout"
 						class="w-full text-end">Sign out</button>
 			</li>
+			<li><a href="/chat">Chat</a></li>
 			<li x-data="{dropdownOpen: false}"
 				class="relative hidden md:block">
 				<a @click="dropdownOpen = !dropdownOpen"
@@ -98,6 +102,10 @@
 					 x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
 					{# Dropdown on large screens #}
 					<ul>
+						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<a href="/chat"
+							   class="w-full text-right">Chat</a>
+						</li>
 						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
 							<a href="/profile"
 							   class="w-full text-right">Profile</a>
