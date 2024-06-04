@@ -42,19 +42,12 @@
 
 	<div class="flex gap-4">
 		<button hx-get="/calendar-card/{{date.date}}"
-				hx-swap="outerHTML transition:true"
-				hx-trigger="click delay:400ms"
+				hx-swap="outerHTML"
+				hx-trigger="click"
 				class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
 				@click="() => {
-                showDetail = false;
                 moveCalendarCard(Number(`{{date.day_number}}`));
-                setTimeout(() => {
-                    showDetail = true;
-                }, 1100);
-            }"
-				{#
-            onclick="moveCalendarCard(Number(`{{date.day_number}}`))"
-            #}>
+				}">
 			Close
 		</button>
 		<button hx-get="/add-shift-form/{{date.date}}"
