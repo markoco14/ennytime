@@ -1,3 +1,4 @@
+{% from '/macros/spinner.html' import spinner%}
 <div x-show="showSimple"
 	 x-transition:enter="transition ease-out duration-200"
 	 x-transition:enter-start="opacity-0 scale-90"
@@ -8,9 +9,12 @@
 	 hx-get="/calendar-card-detail/{{date.date}}"
 	 hx-target="this"
 	 hx-swap="outerHTML transition:true"
-	 hx-trigger="click delay:400ms"
+	 hx-trigger="click"
 	 class="grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer md:p-2 bg-white dark:bg-gray-700">
-	<div class="grid grid-rows-3 md:gap-2 max-h-[200px]">
+	<div class="htmx-indicator w-full h-full grid place-content-center">
+		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+	</div>
+	<div class="htmx-indicator-content grid grid-rows-3 md:gap-2 max-h-[200px]">
 		<span>{{ date.day_number }}</span>
 		{% if date.shifts|length == 1%}
 		<ul>
