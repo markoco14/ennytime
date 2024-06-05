@@ -1,57 +1,56 @@
-<div class="p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-scroll"
+{% from '/macros/spinner.html' import spinner%}
+<div class="relative p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2"
 	 hx-target="this"
-	 x-show="showDetail"
-	 x-transition:enter="transition ease-out duration-200"
-	 x-transition:enter-start="opacity-0 scale-90"
-	 x-transition:enter-end="opacity-100 scale-100"
-	 x-transition:leave="transition ease-in duration-200"
-	 x-transition:leave-start="opacity-100 scale-100"
-	 x-transition:leave-end="opacity-0 scale-90">
-	<header>
-		<h3 class="text-3xl">{{month}}</h3>
-		<p class="text-xl">{{day}}</p>
-	</header>
+	 hx-get="/calendar-card/{{date.date}}"
+	 hx-swap="outerHTML">
+	<div class="htmx-indicator text-center w-full grid place-content-center">
+		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+	</div>
+	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
+		<header>
+			<h3 class="text-3xl">{{month}}</h3>
+			<p class="text-xl">{{day}}</p>
+		</header>
 
-	<main class="grid gap-4">
-		{% if date.shifts|length > 0%}
-		<ul id="user-list"
-			class="bg-green-300 dark:bg-green-700 p-4 rounded-md">
-			{% for shift in date.shifts %}
-			<li>
-				<p>{{current_user}}</p>
-				<p>{{shift.long_name}}</p>
-			</li>
-			{% endfor %}
-		</ul>
-		{% else %}
-		<p class="border p-4 rounded-md">No shifts for today. Go have fun!</p>
-		{% endif %}
-		<br class="hidden" />
-		{% if date.bae_shifts and date.bae_shifts|length > 0%}
-		<ul id="partner-list"
-			class="bg-pink-300 dark:bg-pink-700 p-4 rounded-md">
-			{% for shift in date.bae_shifts %}
-			<li>
-				<p>{{bae_user}}</p>
-				<p>{{shift.long_name}}</p>
-			</li>
-			{% endfor %}
-		</ul>
-		{%endif%}
-	</main>
+		<main class="grid gap-4">
+			{% if date.shifts|length > 0%}
+			<ul id="user-list"
+				class="bg-green-300 dark:bg-green-700 p-4 rounded-md">
+				{% for shift in date.shifts %}
+				<li>
+					<p>{{current_user}}</p>
+					<p>{{shift.long_name}}</p>
+				</li>
+				{% endfor %}
+			</ul>
+			{% else %}
+			<p class="border p-4 rounded-md">No shifts for today. Go have fun!</p>
+			{% endif %}
+			<br class="hidden" />
+			{% if date.bae_shifts and date.bae_shifts|length > 0%}
+			<ul id="partner-list"
+				class="bg-pink-300 dark:bg-pink-700 p-4 rounded-md">
+				{% for shift in date.bae_shifts %}
+				<li>
+					<p>{{bae_user}}</p>
+					<p>{{shift.long_name}}</p>
+				</li>
+				{% endfor %}
+			</ul>
+			{%endif%}
+		</main>
 
-	<div class="flex gap-4">
-		<button hx-get="/calendar-card/{{date.date}}"
-				hx-swap="outerHTML"
-				hx-trigger="click"
-				class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
-				@click="() => {
+		<div class="flex gap-4">
+			<button hx-trigger="click"
+					class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
+					@click="() => {
                 moveCalendarCard(Number(`{{date.day_number}}`));
 				}">
-			Close
-		</button>
-		<button hx-get="/add-shift-form/{{date.date}}"
-				hx-swap="outerHTML transition:true"
-				class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
+				Close
+			</button>
+			<button hx-get="/add-shift-form/{{date.date}}"
+					hx-swap="outerHTML transition:true"
+					class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
+		</div>
 	</div>
 </div>
