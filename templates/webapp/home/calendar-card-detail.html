@@ -1,5 +1,5 @@
 {% from '/macros/spinner.html' import spinner%}
-<div class="relative p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2"
+<div class="relative p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-auto"
 	 hx-target="this"
 	 hx-get="/calendar-card/{{date.date}}"
 	 hx-swap="outerHTML">
