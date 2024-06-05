@@ -111,11 +111,9 @@
 	</head>
 
 	<body class="dark:bg-gray-900">
-		<header>
-			{% block header %}
-			{% include 'webapp/header.html' %}
-			{% endblock header%}
-		</header>
+		{% block header %}
+		{% include 'webapp/header.html' %}
+		{% endblock header%}
 		<main>
 			{% block content %}{% endblock content %}
 		</main>
