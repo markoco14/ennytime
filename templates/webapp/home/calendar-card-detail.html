@@ -3,7 +3,7 @@
 	 hx-target="this"
 	 hx-get="/calendar-card/{{date.date}}"
 	 hx-swap="outerHTML">
-	<div class="htmx-indicator text-center w-full grid place-content-center">
+	<div class="htmx-indicator absolute top-0 left-0 h-full w-full text-center  grid place-content-center">
 		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
 	</div>
 	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">

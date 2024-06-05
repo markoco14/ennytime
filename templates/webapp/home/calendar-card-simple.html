@@ -1,7 +1,7 @@
 {% from '/macros/spinner.html' import spinner%}
 <div hx-get="/calendar-card-detail/{{date.date}}"
 	 hx-target="this"
-	 hx-swap="outerHTML transition:true"
+	 hx-swap="outerHTML"
 	 hx-trigger="click"
 	 class="grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer md:p-2 bg-white dark:bg-gray-700">
 	<div class="htmx-indicator w-full h-full grid place-content-center">
