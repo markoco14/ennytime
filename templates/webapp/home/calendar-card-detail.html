@@ -2,7 +2,8 @@
 <div class="relative p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-auto"
 	 hx-target="this"
 	 hx-sync="this"
-	 hx-swap="outerHTML">
+	 hx-swap="outerHTML"
+	 hx-indicator="this">
 	<div class="htmx-indicator absolute top-0 left-0 h-full w-full text-center  grid place-content-center">
 		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
 	</div>
