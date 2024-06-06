@@ -1,8 +1,9 @@
 {% from '/macros/spinner.html' import spinner%}
 <div class="relative p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-auto"
 	 hx-target="this"
-	 hx-get="/calendar-card/{{date.date}}"
-	 hx-swap="outerHTML">
+	 hx-sync="this"
+	 hx-swap="outerHTML"
+	 hx-indicator="this">
 	<div class="htmx-indicator absolute top-0 left-0 h-full w-full text-center  grid place-content-center">
 		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
 	</div>
@@ -41,7 +42,7 @@
 		</main>
 
 		<div class="flex gap-4">
-			<button hx-trigger="click"
+			<button hx-get="/calendar-card/{{date.date}}"
 					class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
 					@click="() => {
                 moveCalendarCard(Number(`{{date.day_number}}`));
@@ -49,7 +50,6 @@
 				Close
 			</button>
 			<button hx-get="/add-shift-form/{{date.date}}"
-					hx-swap="outerHTML transition:true"
 					class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
 		</div>
 	</div>
