@@ -30,7 +30,7 @@
 					   value="{{type.id}}" />
 				<span
 					  class="border border-pink-900 hover:bg-pink-300 active:bg-pink-400 cursor-pointer ease-in-out duration-200 w-full p-2 rounded-md peer-checked:bg-pink-700 peer-checked:text-pink-100">
-					{{type.type}}
+					{{type.long_name}} ({{type.short_name}})
 				</span>
 			</label>
 			{% endfor %}
@@ -42,7 +42,7 @@
 					hx-target="#day-{{day_number}}"
 					hx-swap="innerHTML"
 					hx-trigger="click">
-				Cancel
+				Back
 			</button>
 			<button type="submit"
 					class="bg-blue-500 text-white px-4 py-1 rounded">
