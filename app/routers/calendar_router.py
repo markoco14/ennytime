@@ -3,6 +3,7 @@ Calendar related routes
 """
 from typing import Annotated, Optional
 import datetime
+from pprint import pprint
 
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
@@ -19,6 +20,16 @@ from app.services import calendar_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+
+# Custom filter to check if a shift type is in user shifts
+
+
+def is_user_shift(shift_type_id, shifts):
+    return any(shift['type_id'] == shift_type_id for shift in shifts)
+
+
+# Add the custom filter to Jinja2 environment
+templates.env.filters['is_user_shift'] = is_user_shift
 
 
 @router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
@@ -160,6 +171,39 @@ def get_calendar_day_form(
         user_id=current_user.id)
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
+    year_string = date_string.split("-")[0]
+    month_string = date_string.split("-")[1]
+    day_string = date_string.split("-")[2]
+
+    # TODO: Get the day of the week
+
+    # TODO: Get the current user shifts for this day
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date = :date_string
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "date_string": date_string
+         }
+    ).fetchall()
+
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
+
+    date_dict = {
+        "date_string": f"{year_string}-{month_string}-{day_string}",
+        "day_of_week": "Monday",
+        # "day_of_week": str(calendar_service.Weekday(date[3])),
+        "shifts": user_shifts,
+    }
 
     context = {
         "request": request,
@@ -167,7 +211,8 @@ def get_calendar_day_form(
         "day_number": int(date_string.split("-")[2]),
         "current_month": current_month,
         "current_year": current_year,
-        "date_string": date_string
+        "date_string": date_string,
+        "date": date_dict,
     }
 
     return templates.TemplateResponse(
