@@ -16,7 +16,7 @@
 		<main class="grid gap-4">
 			{% if date.shifts|length > 0%}
 			<ul id="user-list"
-				class="bg-green-300 dark:bg-green-700 p-4 rounded-md">
+				class="bg-pink-500 dark:bg-pink-700 p-4 rounded-md">
 				{% for shift in date.shifts %}
 				<li>
 					<p>{{current_user}}</p>
@@ -30,7 +30,7 @@
 			<br class="hidden" />
 			{% if date.bae_shifts and date.bae_shifts|length > 0%}
 			<ul id="partner-list"
-				class="bg-pink-300 dark:bg-pink-700 p-4 rounded-md">
+				class="bg-pink-300 dark:bg-pink-500 p-4 rounded-md">
 				{% for shift in date.bae_shifts %}
 				<li>
 					<p>{{bae_user}}</p>
