@@ -205,7 +205,7 @@ def get_calendar_day_form(
     day = date.strftime("%A")
 
     date_dict = {
-        "date_string": f"{month}",
+        "date_string": f"{year_string}-{month_string}-{day_string}",
         "day_of_week": str(calendar_service.get_weekday(date_string)),
         "shifts": user_shifts,
     }
@@ -217,6 +217,7 @@ def get_calendar_day_form(
         "current_month": current_month,
         "current_year": current_year,
         "date_string": date_string,
+        "readable_month": month,
         "date": date_dict,
     }
 

@@ -6,7 +6,7 @@
 	</div>
 	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
 		<header>
-			<h3 class="text-3xl">{{date.date_string}}</h3>
+			<h3 class="text-3xl">{{readable_month}}</h3>
 			<p class="text-xl">{{date.day_of_week}}</p>
 		</header>
 		{% for shift in date.shifts %}
