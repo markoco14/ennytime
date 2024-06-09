@@ -19,6 +19,17 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
 
+# Custom filter to check if a shift type is in user shifts
+
+
+def is_user_shift(shift_type_id, shifts):
+    return any(shift['type_id'] == shift_type_id for shift in shifts)
+
+
+# Add the custom filter to Jinja2 environment
+templates.env.filters['is_user_shift'] = is_user_shift
+block_templates.env.filters['is_user_shift'] = is_user_shift
+
 
 @router.get("/shifts", response_class=HTMLResponse)
 def get_add_shifts_page(
@@ -103,10 +114,19 @@ def get_add_shifts_page(
     for row in result:
         user_shifts.append(row._asdict())
 
+
+    # here is the problem
+    # overwriting the previous shift when there are 2
+    # only 1 being packed and sent
     for shift in user_shifts:
         key_to_find = f"{shift['date'].date()}"
         if key_to_find in calendar_date_list:
-            calendar_date_list[f"{key_to_find}"]["shift"] = shift
+            if not calendar_date_list[f"{key_to_find}"].get("shifts"):
+                calendar_date_list[f"{key_to_find}"]["shifts"] = []
+            
+            calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
+
+    
 
     context = {
         "request": request,
@@ -152,14 +172,16 @@ async def add_shift_to_date(
             date_segments[1]), int(date_segments[2]))
     )
 
-    shift_repository.create_shift(db=db, shift=db_shift)
+    new_shift = shift_repository.create_shift(db=db, shift=db_shift)
 
     shift_type = shift_type_repository.get_user_shift_type(
         db=db, user_id=current_user.id, shift_type_id=type_id)
+    
 
     context = {
         "request": request,
         "date": {"date_string": date},
+        "shifts": [new_shift],
         "type": {"id": type_id, "long_name": shift_type.long_name, }
     }
 

@@ -11,13 +11,13 @@
 		<span>{{ date.day_number }}</span>
 		{% if date.shifts|length == 1%}
 		<ul>
-			<li class="rounded-md bg-green-300 text-black dark:bg-green-700 dark:text-white">
+			<li class="rounded-md bg-pink-500 text-black dark:bg-pink-700 dark:text-white">
 				{{date.shifts[0].short_name}}
 			</li>
 		</ul>
 		{% elif date.shifts|length > 1%}
 		<ul>
-			<li class="rounded-md bg-green-300 text-black dark:bg-green-700 dark:text-white">
+			<li class="rounded-md bg-pink-500 text-black dark:bg-pink-700 dark:text-white">
 				{{date.shifts|length}} shifts
 			</li>
 		</ul>
