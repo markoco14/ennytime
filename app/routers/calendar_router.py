@@ -200,8 +200,7 @@ def get_calendar_day_form(
 
     date_dict = {
         "date_string": f"{year_string}-{month_string}-{day_string}",
-        "day_of_week": "Monday",
-        # "day_of_week": str(calendar_service.Weekday(date[3])),
+        "day_of_week": str(calendar_service.get_weekday(date_string)),
         "shifts": user_shifts,
     }
 

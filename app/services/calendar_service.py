@@ -4,6 +4,7 @@ import calendar
 import datetime
 from enum import Enum
 
+
 class Weekday(Enum):
     MONDAY = 0
     TUESDAY = 1
@@ -28,7 +29,7 @@ class Weekday(Enum):
             return "Saturday"
         elif self.value == 6:
             return "Sunday"
-        
+
 
 DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -36,6 +37,14 @@ MONTHS = ["January", "February", "March", "April", "May", "June",
           "July", "August", "September", "October", "November", "December"]
 
 MONTH_CALENDAR = calendar.Calendar(firstweekday=6)
+
+
+def get_weekday(date):
+    """ Returns the day of the week for a given date"""
+    day = calendar.weekday(
+        int(date.split("-")[0]), int(date.split("-")[1]), int(date.split("-")[2]))
+
+    return Weekday(day)
 
 
 def get_current_day(day):
@@ -71,6 +80,7 @@ def get_month_calendar(year, month):
     """ Returns the month calendar for the current month/year
     or the user's selected month/year"""
     return MONTH_CALENDAR.itermonthdates(year, month)
+
 
 def get_month_date_list(year, month):
     """Returns a list of dates for the given month/year"""
