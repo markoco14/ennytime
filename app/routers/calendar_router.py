@@ -197,9 +197,15 @@ def get_calendar_day_form(
     user_shifts = []
     for row in result:
         user_shifts.append(row._asdict())
+    year = date_string.split("-")[0]
+    month = date_string.split("-")[1]
+    day = date_string.split("-")[2]
+    date = datetime.date(int(year), int(month), int(day))
+    month = date.strftime("%B %d, %Y")
+    day = date.strftime("%A")
 
     date_dict = {
-        "date_string": f"{year_string}-{month_string}-{day_string}",
+        "date_string": f"{month}",
         "day_of_week": str(calendar_service.get_weekday(date_string)),
         "shifts": user_shifts,
     }
