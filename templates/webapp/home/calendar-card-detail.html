@@ -4,8 +4,10 @@
 	 hx-sync="this"
 	 hx-swap="outerHTML"
 	 hx-indicator="this">
-	<div class="htmx-indicator absolute top-0 left-0 h-full w-full text-center  grid place-content-center">
-		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+	<div class="htmx-indicator h-full w-full grid">
+		<div class="w-full h-full flex justify-center items-center">
+			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+		</div>
 	</div>
 	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
 		<header>

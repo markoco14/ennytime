@@ -60,7 +60,7 @@ Ennytime Couple's Calendar
 		<div id="overlay"
 			 class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out">
 			<div id="modal"
-				 class="w-full max-w-[500px] aspect-square"
+				 class="hidden w-full max-w-[500px] aspect-square"
 				 x-data="{showDetail: true}"></div>
 		</div>
 		{% include '/webapp/home/calendar.html' %}
@@ -91,6 +91,11 @@ Ennytime Couple's Calendar
 			duration: 0.4,
 			ease: "power1.inOut",
 			absolute: true,
+			onComplete: () => {
+				calendarCard.offsetHeight;
+				calendarContainer.offsetHeight;
+				modal.offsetHeight;
+			},
 		});
 	}
 
@@ -98,7 +103,8 @@ Ennytime Couple's Calendar
 		const overlay = document.getElementById("overlay");
 		overlay.classList.toggle("hidden");
 		const modal = document.getElementById("modal");
-
+		modal.classList.toggle("hidden");
+		
 		let selectedCard = htmx.find(`#day-${day_number}`);
 		htmx.toggleClass(selectedCard, "rounded-md", 250);
 		htmx.toggleClass(selectedCard, "border", 250);
