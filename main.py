@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 import time
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from mangum import Mangum
@@ -53,7 +54,7 @@ templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
 
 handler = Mangum(app)
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.exception_handler(404)
 async def custom_404_handler(request, __):

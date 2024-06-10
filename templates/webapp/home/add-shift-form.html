@@ -1,8 +1,10 @@
 {% from '/macros/spinner.html' import spinner%}
-<div class="relative p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-auto"
+<div class="relative p-4 md:p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-auto"
 	 hx-indicator="this">
-	<div class="htmx-indicator absolute top-0 left-0 h-full w-full text-center  grid place-content-center">
-		{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+	<div class="htmx-indicator h-full w-full grid place-content-center">
+		<div class="w-full h-full flex justify-center items-center">
+			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+		</div>
 	</div>
 	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
 		<header>
