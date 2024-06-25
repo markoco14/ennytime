@@ -236,4 +236,18 @@ def post_new_message(
         }
     )
 
-    
+
+@router.get("/read-status/{message_id}", response_class=HTMLResponse)
+def set_message_to_read(
+    request: Request,
+    message_id: int,
+    db: Annotated[Session, Depends(get_db)],
+):
+    db_message = db.query(DBChatMessage).filter(
+        DBChatMessage.id == message_id).first()
+
+    if not db_message.is_read:
+        db_message.is_read = 1
+        db.commit()
+
+    return Response(status_code=200)
