@@ -4,6 +4,11 @@
 	<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
 		<p>{{message.message}}</p>
 		<p class="text-xs text-gray-200 mt-1">{{message.created_at}}</p>
+		{% if message.is_read %}
+		<p class="text-xs text-gray-200 mt-1">Read</p>
+		{% else %}
+		<p class="text-xs text-gray-200">Unread</p>
+		{% endif %}
 	</div>
 </div>
 {% else %}
