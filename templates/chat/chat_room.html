@@ -22,28 +22,11 @@ Couple's Chat
 		   class="text-5xl">&larr;</a>
 		<h1 class="text-xl font-bold">Chat Ennytime</h1>
 	</header>
-	<div 
-	hx-get="/chat/{{chat.room_id}}/messages"
-	hx-trigger="every 2s"
-	hx-swap="innerHTML"
-	class="flex-1 overflow-y-auto p-4 space-y-4">
-		{% for message in messages  %}
-		{% if message.sender_id == user_data.id %}
-		<div class="flex justify-end">
-			<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
-				<p>{{message.message}}</p>
-				<p class="text-xs text-gray-200 mt-1">{{message.created_at}}</p>
-			</div>
-		</div>
-		{% else %}
-		<div class="flex">
-			<div class="bg-pink-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
-				<p>{{message.message}}</p>
-				<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{message.created_at}}</p>
-			</div>
-		</div>
-		{% endif %}
-		{% endfor %}
+	<div hx-get="/chat/{{chat.room_id}}/messages"
+		 hx-trigger="every 3s"
+		 hx-swap="innerHTML"
+		 class="flex-1 overflow-y-auto p-4 space-y-4">
+		{% include "/chat/chat-room-messages.html" %}
 	</div>
 	<form hx-post="/chat/{{chat.room_id}}"
 		  hx-target="this"

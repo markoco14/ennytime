@@ -236,4 +236,59 @@ def post_new_message(
         }
     )
 
+
+@router.get("/read-status/{message_id}", response_class=HTMLResponse)
+def set_message_to_read(
+    request: Request,
+    message_id: int,
+    db: Annotated[Session, Depends(get_db)],
+):
+    db_message = db.query(DBChatMessage).filter(
+        DBChatMessage.id == message_id).first()
+
+    if not db_message.is_read:
+        db_message.is_read = 1
+        db.commit()
+
+    return Response(status_code=200)
+
+
+@router.get("/unread", response_class=HTMLResponse)
+def get_unread_messages(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+):
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies)
+    
+    # get user's active chat room
+    db_chat_room = db.query(DBChatRoom).filter(
+        DBChatRoom.is_active == 1,
+        DBChatRoom.chat_users.contains(current_user.id)
+    ).first()
+
+    db_chat_messages = db.query(DBChatMessage).filter(
+        DBChatMessage.room_id == db_chat_room.room_id,
+        DBChatMessage.is_read == 0,
+        DBChatMessage.sender_id != current_user.id
+    ).all()
+
+    context = {
+        
+        "request": request,
+        "message_count": len(db_chat_messages)
+    }
+
+    return block_templates.TemplateResponse(
+        name="chat/unread-counter.html",
+        context=context
+    )
     
