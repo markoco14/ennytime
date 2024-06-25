@@ -4,7 +4,18 @@
 	<div class="flex items-center justify-between h-20">
 		<span class="text-3xl">Ennytime</span>
 		{# mobile icon #}
-		<div class="md:hidden z-50">
+		<div class="md:hidden flex z-50">
+			<li hx-get="/unread"
+				hx-target="find div"
+				hx-swap="outerHTML"
+				hx-trigger="every 3s"
+				class="flex flex-col justify-center block md:hidden relative p-1">
+				<a href="/chat"><img width="26"
+						 height="26"
+						 src="https://img.icons8.com/metro/26/chat.png"
+						 alt="chat" /></a>
+				<div></div>
+			</li>
 			<a @click="mobilenavOpen = !mobilenavOpen"
 			   class="h-12 w-12 flex justify-center items-center">
 				<svg x-show="!mobilenavOpen"
@@ -79,7 +90,17 @@
 				<button hx-get="/signout"
 						class="w-full text-end">Sign out</button>
 			</li>
-			<li class="hidden md:block"><a href="/chat">Chat</a></li>
+			<li hx-get="/unread"
+				hx-target="find div"
+				hx-swap="outerHTML"
+				hx-trigger="every 5s"
+				class="hidden md:block relative p-1">
+				<a href="/chat"><img width="26"
+						 height="26"
+						 src="https://img.icons8.com/metro/26/chat.png"
+						 alt="chat" /></a>
+				<div></div>
+			</li>
 			<li x-data="{dropdownOpen: false}"
 				class="relative hidden md:block">
 				<a @click="dropdownOpen = !dropdownOpen"
