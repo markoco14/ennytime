@@ -7,15 +7,17 @@ Couple's Chat
 {% block content %}
 
 <div class="flex flex-col h-screen max-w-[800px] mx-auto">
-	<header class="fixed w-full top-0 left-0 h-[48px] bg-gray-900 text-white p-4 flex items-center gap-4">
-		{# <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full mr-4">
+	<header class="fixed w-full top-0 left-0 h-[48px] bg-gray-900 text-white">
+		<div class="w-full max-w-[1000px] mx-auto flex items-center gap-4">
+			{# <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full mr-4">
 			<img class="aspect-square h-full w-full"
 				 alt="Chat Avatar"
 				 src="/placeholder-user.jpg" />
 		</span> #}
-		<a href="/"
-		   class="text-5xl">&larr;</a>
-		<h1 class="text-xl font-bold">Chat Ennytime</h1>
+			<a href="/"
+			   class="text-5xl">&larr;</a>
+			<h1 class="text-xl font-bold">Chat Ennytime</h1>
+		</div>
 	</header>
 
 	<div hx-get="/chat/{{chat.room_id}}/messages"
@@ -37,7 +39,7 @@ Couple's Chat
 			</div>
 		</div>
 		{% else %}
-		<div class="flex">
+		<div class="flex max-w-[800px]">
 			{% if not message.is_read %}
 			<div hx-get="/read-status/{{message.id}}"
 				 hx-trigger="intersect once threshold:0.2"
@@ -60,30 +62,32 @@ Couple's Chat
 			  hx-target="this"
 			  hx-swap="outerHTML"
 			  class="h-[72px] fixed w-full bottom-0 left-0 bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
-			<label class="sr-only"
-				   for="message">Message</label>
-			<textarea class="flex h-10 w-full bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1 rounded-lg px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-					  id="message"
-					  name="message"
-					  placeholder="Type your message..."
-					  type="text"></textarea>
-			<button
-					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 ml-4">
-				<svg xmlns="http://www.w3.org/2000/svg"
-					 width="24"
-					 height="24"
-					 viewBox="0 0 24 24"
-					 fill="none"
-					 stroke="currentColor"
-					 stroke-width="2"
-					 stroke-linecap="round"
-					 stroke-linejoin="round"
-					 class="w-5 h-5">
-					<path d="m22 2-7 20-4-9-9-4Z"></path>
-					<path d="M22 2 11 13"></path>
-				</svg>
-				<span class="sr-only">Send</span>
-			</button>
+			<div class="w-full max-w-[800px] mx-auto flex items-center gap-4">
+				<label class="sr-only"
+					   for="message">Message</label>
+				<textarea class="flex h-10 w-full bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1 rounded-lg px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+						  id="message"
+						  name="message"
+						  placeholder="Type your message..."
+						  type="text"></textarea>
+				<button
+						class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 ml-4">
+					<svg xmlns="http://www.w3.org/2000/svg"
+						 width="24"
+						 height="24"
+						 viewBox="0 0 24 24"
+						 fill="none"
+						 stroke="currentColor"
+						 stroke-width="2"
+						 stroke-linecap="round"
+						 stroke-linejoin="round"
+						 class="w-5 h-5">
+						<path d="m22 2-7 20-4-9-9-4Z"></path>
+						<path d="M22 2 11 13"></path>
+					</svg>
+					<span class="sr-only">Send</span>
+				</button>
+			</div>
 		</form>
 	</div>
 	{% endblock content %}
