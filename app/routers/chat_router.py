@@ -191,8 +191,9 @@ def get_chat_room_messages(
     }
 
     return block_templates.TemplateResponse(
-        name="chat/chat-room-messages.html",
-        context=context
+        name="chat/chat_room.html",
+        context=context,
+        block_name="messages"
     )
 
 
