@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
 
     if ENVIRONMENT == 'dev':
-        SLEEP_TIME: float = 0.5
+        SLEEP_TIME: float = 0.0
         DB_USER: str = os.environ.get('DEV_DB_USER')
         DB_PASSWORD: str = os.environ.get('DEV_DB_PASSWORD')
         DB_HOST: str = os.environ.get('DEV_DB_HOST')
