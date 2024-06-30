@@ -12,8 +12,8 @@ from sqlalchemy.sql import text
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app.repositories import share_repository
 from app.models.chat_models import DBChatRoom, DBChatMessage
+from app.services import chat_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -269,27 +269,19 @@ def get_unread_messages(
     current_user = auth_service.get_current_session_user(
         db=db,
         cookies=request.cookies)
-    
-    # get user's active chat room
-    db_chat_room = db.query(DBChatRoom).filter(
-        DBChatRoom.is_active == 1,
-        DBChatRoom.chat_users.contains(current_user.id)
-    ).first()
 
-    db_chat_messages = db.query(DBChatMessage).filter(
-        DBChatMessage.room_id == db_chat_room.room_id,
-        DBChatMessage.is_read == 0,
-        DBChatMessage.sender_id != current_user.id
-    ).all()
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
 
     context = {
-        
+
         "request": request,
-        "message_count": len(db_chat_messages)
+        "message_count": message_count
     }
 
     return block_templates.TemplateResponse(
         name="chat/unread-counter.html",
         context=context
     )
-    
