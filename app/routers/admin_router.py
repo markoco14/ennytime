@@ -9,6 +9,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 
 from app.repositories import user_repository as UserRepository
+from app.services import chat_service
 
 router = APIRouter(
     prefix="/admin",
@@ -51,9 +52,16 @@ def read_admin_home_page(
         "is_admin": current_user.is_admin
     }
 
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
     context = {
         "user_data": user_page_data,
         "request": request,
+        "message_count": message_count
     }
 
     return templates.TemplateResponse(
@@ -100,11 +108,18 @@ def list_users(
         "is_admin": current_user.is_admin
     }
     
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
     context = {
         "user_data": user_page_data,
         "request": request,
         "users": users,
-        "headings": headings
+        "headings": headings,
+        "message_count": message_count
     }
     
     return templates.TemplateResponse(

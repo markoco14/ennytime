@@ -13,7 +13,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository, share_repository, user_repository
-from app.services import calendar_service
+from app.services import calendar_service, chat_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -126,7 +126,11 @@ def get_add_shifts_page(
             
             calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
 
-    
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
 
     context = {
         "request": request,
@@ -134,7 +138,8 @@ def get_add_shifts_page(
         "current_month": month,
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
-        "user_shifts": user_shifts
+        "user_shifts": user_shifts,
+        "message_count": message_count 
     }
 
     return block_templates.TemplateResponse(
