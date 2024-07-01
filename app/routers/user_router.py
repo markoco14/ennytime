@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.repositories import shift_repository, shift_type_repository
 from app.repositories import user_repository, share_repository
 from app.schemas import schemas
-from app.services import calendar_service
+from app.services import calendar_service, chat_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -79,6 +79,12 @@ def get_profile_page(
         "is_admin": current_user.is_admin
     }
 
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
     context = {
         "user_data": user_page_data,
         "request": request,
@@ -87,6 +93,7 @@ def get_profile_page(
         # "shifts": shifts,
         "share_headings": share_headings,
         "shift_headings": shift_headings,
+        "message_count": message_count
     }
 
     # TODO: refactor this to use a service
