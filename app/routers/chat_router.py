@@ -58,11 +58,18 @@ def get_chat(
     """)
     share_result = db.execute(query, {"user_id": current_user.id}).fetchone()
 
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
     context = {
         "request": request,
         "user_data": current_user,
         "chat": chat,
         "share": share_result,
+        "message_count": message_count
     }
 
     return block_templates.TemplateResponse(
