@@ -17,7 +17,7 @@ from app.core.config import get_settings
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router, chat_router
-from app.services import calendar_service
+from app.services import calendar_service, chat_service
 
 SETTINGS = get_settings()
 
@@ -31,7 +31,8 @@ class SleepMiddleware:
 
     async def __call__(self, scope, receive, send):
         if SETTINGS.ENVIRONMENT == "dev":
-            print(f"development environment detecting, sleeping for {SETTINGS.SLEEP_TIME} seconds")
+            print(
+                f"development environment detecting, sleeping for {SETTINGS.SLEEP_TIME} seconds")
             time.sleep(SETTINGS.SLEEP_TIME)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
 
@@ -55,6 +56,7 @@ block_templates = Jinja2Blocks(directory="templates")
 
 handler = Mangum(app)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 @app.exception_handler(404)
 async def custom_404_handler(request, __):
@@ -117,6 +119,12 @@ def index(
         "is_admin": current_user.is_admin
     }
 
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
     context = {
         "request": request,
         "user_data": user_page_data,
@@ -127,6 +135,7 @@ def index(
         "current_month": calendar_service.MONTHS[current_month - 1],
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
+        "message_count": message_count
     }
 
     # TODO: add month filters to shift query

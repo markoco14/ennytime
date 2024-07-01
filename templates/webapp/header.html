@@ -14,7 +14,7 @@
 						 height="26"
 						 src="https://img.icons8.com/metro/26/chat.png"
 						 alt="chat" /></a>
-				<div></div>
+				{% include "/chat/unread-counter.html" %}
 			</li>
 			<a @click="mobilenavOpen = !mobilenavOpen"
 			   class="h-12 w-12 flex justify-center items-center">
@@ -76,7 +76,7 @@
 				<a href="/chat">Chat</a>
 			</li>
 			<li class="block md:hidden">
-				<a href="/shifts">Manage Shifts</a>
+				<a href="/shifts">Schedule</a>
 			</li>
 			<li class="block md:hidden">
 				<a href="/profile">Profile</a>
@@ -99,7 +99,7 @@
 						 height="26"
 						 src="https://img.icons8.com/metro/26/chat.png"
 						 alt="chat" /></a>
-				<div></div>
+				{% include "/chat/unread-counter.html"%}
 			</li>
 			<li x-data="{dropdownOpen: false}"
 				class="relative hidden md:block">
@@ -132,7 +132,7 @@
 						</li>
 						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
 							<a href="/shifts"
-							   class="w-full text-right">Manage Shifts</a>
+							   class="w-full text-right">Schedule</a>
 						</li>
 						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
 							<a href="/profile"
