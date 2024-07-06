@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # Database
 
     ENVIRONMENT: str = os.environ.get('ENVIRONMENT')
+    CLOSED_DOWN: str = os.environ.get('CLOSED_DOWN')
 
 
     if ENVIRONMENT == 'dev':

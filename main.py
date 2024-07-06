@@ -7,9 +7,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from mangum import Mangum
 from sqlalchemy.orm import Session
-
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import RequestResponseEndpoint
 
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
@@ -20,6 +22,34 @@ from app.routers import admin_router, calendar_router, share_router, shift_route
 from app.services import calendar_service, chat_service
 
 SETTINGS = get_settings()
+
+env = Environment(
+    loader=FileSystemLoader("templates"),
+    autoescape=select_autoescape(['html', 'xml'])
+)
+
+
+app = FastAPI()
+
+
+class ClosingDownMiddleware(BaseHTTPMiddleware):
+    async def dispatch(
+            self,
+            request: Request,
+            call_next: RequestResponseEndpoint
+    ):
+        if SETTINGS.CLOSED_DOWN == "true":
+            template = env.get_template("closed-down.html")
+            context = {"request": request}
+            return templates.TemplateResponse(
+                request=request,
+                name="closed-down.html",
+                context=context
+            )
+
+        else:
+            response = await call_next(request)
+            return response
 
 
 class SleepMiddleware:
@@ -37,10 +67,11 @@ class SleepMiddleware:
         await self.app(scope, receive, send)
 
 
-app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+block_templates = Jinja2Blocks(directory="templates")
 
 app.add_middleware(SleepMiddleware)
-
+app.add_middleware(ClosingDownMiddleware)
 
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
@@ -51,11 +82,9 @@ app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 app.include_router(chat_router.router)
 
-templates = Jinja2Templates(directory="templates")
-block_templates = Jinja2Blocks(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 handler = Mangum(app)
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.exception_handler(404)
