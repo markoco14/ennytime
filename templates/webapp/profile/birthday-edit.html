@@ -1,0 +1,20 @@
+{% from "macros/spinner.html" import spinner %}
+<form class="py-2 flex flex-col gap-2"
+	  hx-target="this"
+	  hx-swap="outerHTML">
+	<label class="text-xl text-gray-900 dark:text-gray-100">Birthday</label>
+	<p>Share your birthday and it will appear on your calendar. If you share your calendar with your
+		special someone, your birthday will also appear on their calendar. </p>
+	<input class="w-full max-w-[400px] p-2 bg-white rounded-md border border-white dark:text-gray-900"
+		   type="text"
+		   name="birthday"
+		   value="{{user.birthday}}" />
+	<div class="flex gap-2 pl-2">
+		<button type="button"
+				hx-get="/birthday/{{user.id}}">
+			Cancel
+		</button>
+		<button type="submit">Save
+			{{spinner('h-5', 'h-5', 'text-black')}}</button>
+	</div>
+</form>
