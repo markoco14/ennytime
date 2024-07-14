@@ -68,7 +68,7 @@ def get_profile_page(
 
     share_headings = ["Name", "Actions"]
     shift_headings = ["Type", "Date", "Actions"]
-    
+
     if current_user.display_name is not None:
         display_name = current_user.display_name.split(" ")[0]
     else:
@@ -309,13 +309,14 @@ def get_birthday_widget(
     )
 
 
-@router.get("/birthday/{user_id}/edit", response_class=HTMLResponse | Response)
-def get_edit_birthday_widget(
+@router.put("/birthday/{user_id}", response_class=HTMLResponse | Response)
+def update_user_birthday(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    birthday: Annotated[str, Form()] = None,
 ):
-    """Edit birthday page"""
+    """Updates the user's birthday and returns success to front end"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
             request=request,
@@ -336,6 +337,46 @@ def get_edit_birthday_widget(
     if current_user.id != user_id:
         return Response(status_code=403)
     
+    if not birthday:
+        print("No birthday selected")
+        return Response(status_code=200)
+    print(birthday)
+
+    current_user.birthday = birthday
+    user_repository.patch_user(
+        db=db,
+        updated_user=current_user
+    )
+    return Response(status_code=200)
+
+
+@router.get("/birthday/{user_id}/edit", response_class=HTMLResponse | Response)
+def get_edit_birthday_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+):
+    """Edit birthday widget"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+    )
+
+    current_user: schemas.User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+    )
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+
     context = {
         "request": request,
         "user": current_user,
