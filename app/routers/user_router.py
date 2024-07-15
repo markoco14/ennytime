@@ -338,16 +338,24 @@ def update_user_birthday(
         return Response(status_code=403)
     
     if not birthday:
-        print("No birthday selected")
         return Response(status_code=200)
-    print(birthday)
 
     current_user.birthday = birthday
     user_repository.patch_user(
         db=db,
         updated_user=current_user
     )
-    return Response(status_code=200)
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="webapp/profile/birthday.html",
+        context=context
+    )
+
 
 
 @router.get("/birthday/{user_id}/edit", response_class=HTMLResponse | Response)
