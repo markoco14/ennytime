@@ -39,7 +39,6 @@ class ClosingDownMiddleware(BaseHTTPMiddleware):
             call_next: RequestResponseEndpoint
     ):
         if SETTINGS.CLOSED_DOWN == "true":
-            template = env.get_template("closed-down.html")
             context = {"request": request}
             return templates.TemplateResponse(
                 request=request,

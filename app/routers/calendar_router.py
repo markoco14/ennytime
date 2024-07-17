@@ -3,33 +3,24 @@ Calendar related routes
 """
 from typing import Annotated, Optional
 import datetime
-from pprint import pprint
+
 
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+
 
 from app.auth import auth_service
 from app.core.database import get_db
+from app.core.template_utils import templates
 from app.schemas import schemas
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
 from app.services import calendar_service
 
+
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
-
-# Custom filter to check if a shift type is in user shifts
-
-
-def is_user_shift(shift_type_id, shifts):
-    return any(shift['type_id'] == shift_type_id for shift in shifts)
-
-
-# Add the custom filter to Jinja2 environment
-templates.env.filters['is_user_shift'] = is_user_shift
 
 
 @router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
