@@ -1,13 +1,11 @@
 """Main file to hold app and api routes"""
 from typing import Annotated, Optional
-
+from pprint import pprint
 import time
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from jinja2_fragments.fastapi import Jinja2Blocks
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+
 from mangum import Mangum
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -16,17 +14,13 @@ from starlette.middleware.base import RequestResponseEndpoint
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
+from app.core.template_utils import templates, block_templates
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router, chat_router
 from app.services import calendar_service, chat_service
 
 SETTINGS = get_settings()
-
-env = Environment(
-    loader=FileSystemLoader("templates"),
-    autoescape=select_autoescape(['html', 'xml'])
-)
 
 
 app = FastAPI()
@@ -65,9 +59,6 @@ class SleepMiddleware:
             time.sleep(SETTINGS.SLEEP_TIME)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
 
-
-templates = Jinja2Templates(directory="templates")
-block_templates = Jinja2Blocks(directory="templates")
 
 app.add_middleware(SleepMiddleware)
 app.add_middleware(ClosingDownMiddleware)
@@ -111,10 +102,20 @@ def index(
         response.delete_cookie("session-id")
 
         return response
+    
+    birthdays = []
     if not month:
         current_month = calendar_service.get_current_month(month)
     else:
         current_month = month
+
+    if month == current_user.__dict__["birthday"].month:
+        birthdays.append({
+            "name": current_user.display_name,
+            "day": current_user.__dict__["birthday"].day
+        })
+
+
 
     if not year:
         current_year = calendar_service.get_current_year(year)
@@ -155,6 +156,7 @@ def index(
 
     context = {
         "request": request,
+        "birthdays": birthdays,
         "user_data": user_page_data,
         "month_number": month,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
@@ -188,6 +190,7 @@ def index(
         )
 
         return response
+    
 
     bae_shifts = shift_repository.get_user_shifts_details(
         db=db, user_id=share.owner_id)
