@@ -109,7 +109,7 @@ def index(
     else:
         current_month = month
 
-    if month == current_user.__dict__["birthday"].month:
+    if current_user.__dict__["birthday"] and month == current_user.__dict__["birthday"].month:
         birthdays.append({
             "name": current_user.display_name,
             "day": current_user.__dict__["birthday"].day
@@ -181,6 +181,8 @@ def index(
     # we are checking to see if anyone has shared their calendar with the current user
     share = share_repository.get_share_by_guest_id(
         db=db, guest_id=current_user.id)
+    
+    pprint(share.__dict__)
     if not share:
         context.update(month_calendar=list(month_calendar_dict.values()))
         response = templates.TemplateResponse(
