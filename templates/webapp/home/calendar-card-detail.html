@@ -4,11 +4,6 @@
 	 hx-sync="this"
 	 hx-swap="outerHTML"
 	 hx-indicator="this">
-	<div class="htmx-indicator h-full w-full grid">
-		<div class="w-full h-full flex justify-center items-center">
-			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
-		</div>
-	</div>
 	{# birthdays #}
 	<div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
@@ -20,6 +15,12 @@
 		</div>
 		{% endif %}
 		{% endfor %}
+	</div>
+	{# loading spinner #}
+	<div class="htmx-indicator h-full w-full grid">
+		<div class="w-full h-full flex justify-center items-center">
+			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+		</div>
 	</div>
 	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
 		<header>

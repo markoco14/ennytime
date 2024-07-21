@@ -36,6 +36,9 @@ def get_simple_calendar_day_card(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
+    
+    date_segments = date_string.split("-")
+    month = date_segments[1]
 
     session_data: schemas.Session = auth_service.get_session_data(
         db=db, session_token=request.cookies.get("session-id"))
@@ -64,6 +67,21 @@ def get_simple_calendar_day_card(
             if str(shift.date.date()) == date_string:
                 bae_shifts.append(shift)
 
+    birthdays = []
+    if current_user.__dict__["birthday"] and int(month) == current_user.__dict__["birthday"].month:
+        birthdays.append({
+            "name": current_user.display_name,
+            "day": current_user.__dict__["birthday"].day
+        })
+    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        db=db, share_user_id=shared_with_me.owner_id)
+
+    if bae_user.birthday and int(month) == bae_user.birthday.month:
+        birthdays.append({
+            "name": bae_user.display_name,
+            "day": bae_user.birthday.day
+        })
+
     context = {
         "request": request,
         "date": {
@@ -72,6 +90,7 @@ def get_simple_calendar_day_card(
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
         },
+        "birthdays": birthdays
     }
 
     return templates.TemplateResponse(
@@ -121,7 +140,6 @@ def get_calendar_card_detailed(
 
     year = date_segments[0]
     month = date_segments[1]
-    print(month)
     day = date_segments[2]
     date = datetime.date(int(year), int(month), int(day))
     written_month = date.strftime("%B %d, %Y")
@@ -139,7 +157,6 @@ def get_calendar_card_detailed(
     share_result = db.execute(
         share_query, {"guest_id": current_user.id}).fetchone()
 
-    share_with_me_user = None
     # organize birthdays
     birthdays = []
     if current_user.__dict__["birthday"] and int(month) == current_user.__dict__["birthday"].month:
