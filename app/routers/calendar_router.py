@@ -90,6 +90,8 @@ def get_simple_calendar_day_card(
             "day_number": int(date_segments[2]),
             "bae_shifts": bae_shifts,
         },
+        "current_user": current_user.display_name,
+        "bae_user": bae_user.display_name,
         "birthdays": birthdays
     }
 

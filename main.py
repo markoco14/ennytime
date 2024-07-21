@@ -152,19 +152,7 @@ def index(
         current_user_id=current_user.id
     )
 
-    context = {
-        "request": request,
-        "birthdays": birthdays,
-        "user_data": user_page_data,
-        "month_number": month,
-        "days_of_week": calendar_service.DAYS_OF_WEEK,
-        "current_year": current_year,
-        "current_month_number": current_month,
-        "current_month": calendar_service.MONTHS[current_month - 1],
-        "prev_month_name": prev_month_name,
-        "next_month_name": next_month_name,
-        "message_count": message_count
-    }
+    
 
     # TODO: add month filters to shift query
     # because right now we get all the shifts in the db belonging to the user
@@ -207,6 +195,22 @@ def index(
         if month_calendar_dict.get(shift_date):
             month_calendar_dict[shift_date]['bae_shifts'].append(
                 shift._asdict())
+            
+    context = {
+        "request": request,
+        "birthdays": birthdays,
+        "user_data": user_page_data,
+        "month_number": month,
+        "days_of_week": calendar_service.DAYS_OF_WEEK,
+        "current_year": current_year,
+        "current_month_number": current_month,
+        "current_month": calendar_service.MONTHS[current_month - 1],
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
+        "message_count": message_count,
+        "current_user": current_user.display_name,
+        "bae_user": bae_user.display_name,
+    }
 
     context.update(month_calendar=list(month_calendar_dict.values()))
 
