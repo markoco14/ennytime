@@ -28,7 +28,19 @@
 			<p class="text-xl">{{day}}</p>
 		</header>
 
-		<main class="grid gap-4">
+		<main class="flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
+			{# birthday details #}
+			{% if birthdays %}
+			<div class="flex justify-between gap-2">
+				{% for birthday in birthdays %}
+				{% if birthday.name == current_user and birthday.day == date.day_number %}
+				<p class="bg-pink-500 dark:bg-pink-700 p-4 rounded-md">It is your birthday today!</p>
+				{% elif birthday.name != current_user and birthday.day == date.day_number %}
+				<p class="bg-pink-300 dark:bg-pink-500 p-4 rounded-md">It is {{birthday.name}}'s birthday today!</p>
+				{% endif %}
+				{% endfor %}
+			</div>
+			{% endif %}
 			{% if date.shifts|length > 0%}
 			<ul id="user-list"
 				class="bg-pink-500 dark:bg-pink-700 p-4 rounded-md">
