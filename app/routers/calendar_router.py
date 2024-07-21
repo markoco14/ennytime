@@ -2,6 +2,7 @@
 Calendar related routes
 """
 from typing import Annotated, Optional
+from pprint import pprint
 import datetime
 
 
@@ -41,6 +42,7 @@ def get_calendar_card_detailed(
 
     current_user: schemas.AppUser = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
+
     date_segments = date_string.split("-")
 
     # get the user's shifts
@@ -61,9 +63,10 @@ def get_calendar_card_detailed(
 
     year = date_segments[0]
     month = date_segments[1]
+    print(month)
     day = date_segments[2]
     date = datetime.date(int(year), int(month), int(day))
-    month = date.strftime("%B %d, %Y")
+    written_month = date.strftime("%B %d, %Y")
     day = date.strftime("%A")
 
     # check if anyone has shared their calendar with the current user
@@ -78,11 +81,29 @@ def get_calendar_card_detailed(
     share_result = db.execute(
         share_query, {"guest_id": current_user.id}).fetchone()
 
+    share_with_me_user = None
+    # organize birthdays
+    birthdays = []
+    if current_user.__dict__["birthday"] and int(month) == current_user.__dict__["birthday"].month:
+        birthdays.append({
+            "name": current_user.display_name,
+            "day": current_user.__dict__["birthday"].day
+        })
+    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        db=db, share_user_id=share_result.owner_id)
+
+    if bae_user.birthday and int(month) == bae_user.birthday.month:
+        birthdays.append({
+            "name": bae_user.display_name,
+            "day": bae_user.birthday.day
+        })
+
     if not share_result:
         context = {
             "request": request,
             "current_user": current_user.display_name,
             "month": month,
+            "written_month": written_month,
             "day": day,
             "date": {
                 "date": date_string,
@@ -90,6 +111,7 @@ def get_calendar_card_detailed(
                 "day_number": int(date_segments[2]),
                 "bae_shifts": [],
             },
+            "birthdays": birthdays
         }
 
         return templates.TemplateResponse(
@@ -119,6 +141,7 @@ def get_calendar_card_detailed(
         "current_user": current_user.display_name,
         "bae_user": share_result.bae_name,
         "month": month,
+        "written_month": written_month,
         "day": day,
         "date": {
             "date": date_string,
@@ -126,6 +149,7 @@ def get_calendar_card_detailed(
             "day_number": int(date_segments[2]),
             "bae_shifts": shifts_result,
         },
+        "birthdays": birthdays
     }
 
     return templates.TemplateResponse(

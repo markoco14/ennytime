@@ -103,12 +103,12 @@ def index(
 
         return response
 
-    birthdays = []
     if not month:
         current_month = calendar_service.get_current_month(month)
     else:
         current_month = month
 
+    birthdays = []
     if current_user.__dict__["birthday"] and month == current_user.__dict__["birthday"].month:
         birthdays.append({
             "name": current_user.display_name,
