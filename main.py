@@ -102,7 +102,7 @@ def index(
         response.delete_cookie("session-id")
 
         return response
-    
+
     birthdays = []
     if not month:
         current_month = calendar_service.get_current_month(month)
@@ -114,8 +114,6 @@ def index(
             "name": current_user.display_name,
             "day": current_user.__dict__["birthday"].day
         })
-
-
 
     if not year:
         current_year = calendar_service.get_current_year(year)
@@ -177,13 +175,12 @@ def index(
         if month_calendar_dict.get(shift_date):
             month_calendar_dict[shift_date]['shifts'].append(shift._asdict())
 
-    # TODO: improve 'share' naming to better reflect purpose
-    # we are checking to see if anyone has shared their calendar with the current user
-    share = share_repository.get_share_by_guest_id(
+    # check if any other users have shared their calendars with the current user
+    # so we can get that calendar data and show on the screen
+    shared_with_me = share_repository.get_share_from_other_user(
         db=db, guest_id=current_user.id)
-    
-    pprint(share.__dict__)
-    if not share:
+
+    if not shared_with_me:
         context.update(month_calendar=list(month_calendar_dict.values()))
         response = templates.TemplateResponse(
             request=request,
@@ -192,10 +189,19 @@ def index(
         )
 
         return response
-    
+
+    # ... ok let's get the share first
+    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        db=db, share_user_id=shared_with_me.owner_id)
+
+    if bae_user.birthday and month == bae_user.birthday.month:
+        birthdays.append({
+            "name": bae_user.display_name,
+            "day": bae_user.birthday.day
+        })
 
     bae_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=share.owner_id)
+        db=db, user_id=shared_with_me.owner_id)
     for shift in bae_shifts:
         shift_date = str(shift.date.date())
         if month_calendar_dict.get(shift_date):
