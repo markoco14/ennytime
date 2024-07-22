@@ -345,7 +345,7 @@ def schedule_shift(
 
     return templates.TemplateResponse(
         request=request,
-        name="/webapp/home/calendar-card-detail.html",
+        name="/calendar/calendar-card-detail.html",
         context=context,
     )
 

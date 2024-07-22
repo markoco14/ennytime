@@ -169,6 +169,20 @@ def index(
         db=db, guest_id=current_user.id)
 
     if not shared_with_me:
+        context = {
+            "request": request,
+            "birthdays": birthdays,
+            "user_data": user_page_data,
+            "month_number": month,
+            "days_of_week": calendar_service.DAYS_OF_WEEK,
+            "current_year": current_year,
+            "current_month_number": current_month,
+            "current_month": calendar_service.MONTHS[current_month - 1],
+            "prev_month_name": prev_month_name,
+            "next_month_name": next_month_name,
+            "message_count": message_count,
+            "current_user": current_user.display_name,
+        }
         context.update(month_calendar=list(month_calendar_dict.values()))
         response = templates.TemplateResponse(
             request=request,

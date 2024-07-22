@@ -97,7 +97,7 @@ def get_simple_calendar_day_card(
 
     return templates.TemplateResponse(
         request=request,
-        name="/webapp/home/calendar-card-simple.html",
+        name="/calendar/calendar-card-simple.html",
         context=context,
     )
 
@@ -193,7 +193,7 @@ def get_calendar_card_detailed(
 
         return templates.TemplateResponse(
             request=request,
-            name="/webapp/home/calendar-card-detail.html",
+            name="/calendar/calendar-card-detail.html",
             context=context,
         )
 
@@ -231,7 +231,7 @@ def get_calendar_card_detailed(
 
     return templates.TemplateResponse(
         request=request,
-        name="/webapp/home/calendar-card-detail.html",
+        name="/calendar/calendar-card-detail.html",
         context=context,
     )
 
@@ -315,7 +315,7 @@ def get_calendar_day_form(
 
     return templates.TemplateResponse(
         request=request,
-        name="/webapp/home/add-shift-form.html",
+        name="/calendar/add-shift-form.html",
         context=context
     )
 
