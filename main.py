@@ -172,7 +172,7 @@ def index(
         context.update(month_calendar=list(month_calendar_dict.values()))
         response = templates.TemplateResponse(
             request=request,
-            name="webapp/home/app-home.html",
+            name="app-home.html",
             context=context,
         )
 
@@ -216,13 +216,13 @@ def index(
 
     if "hx-request" in request.headers:
         response = block_templates.TemplateResponse(
-            name="webapp/home/app-home.html",
+            name="app-home.html",
             block_name="calendar",
             context=context,
         )
     else:
         response = templates.TemplateResponse(
-            name="webapp/home/app-home.html",
+            name="app-home.html",
             context=context,
         )
 
