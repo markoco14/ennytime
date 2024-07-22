@@ -1,16 +1,41 @@
-{% from '/macros/spinner.html' import spinner%}
+{% from '/macros/spinner.html' import spinner %}
+
 <div hx-get="/calendar-card-detail/{{date.date}}"
 	 hx-target="this"
 	 hx-swap="outerHTML"
 	 hx-trigger="click"
-	 class="grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer md:p-2 bg-white dark:bg-gray-700">
+	 class="relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900 dark:text-gray-100 text-center cursor-pointer md:p-2 bg-white dark:bg-gray-700">
+	{# birthdays #}
+	<div class="absolute -top-2 sm:-top-5 w-full flex justify-center gap-2">
+		{% for birthday in birthdays %}
+		{% if birthday.name == current_user and birthday.day == date.day_number %}
+		<div class="rounded-full bg-pink-500 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/birthday-cake.png"
+				 alt="HBD"
+				 class="h-3 w-3 sm:h-5 sm:w-5">
+		</div>
+		{% elif birthday.name != current_user and birthday.day == date.day_number %}
+		<div class="rounded-full bg-pink-300 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/birthday-cake.png"
+				 alt="HBD"
+				 class="h-3 w-3 sm:h-5 sm:w-5">
+		</div>
+		{% endif %}
+		{% endfor %}
+	</div>
+	{# loading spinner #}
 	<div class="htmx-indicator w-full h-full grid place-content-center">
 		<div class="w-full h-full flex justify-center items-center">
 			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
 		</div>
 	</div>
+	{# day number #}
+	{# shifts #}
 	<div class="htmx-indicator-content grid grid-rows-3 md:gap-2 max-h-[200px]">
 		<span>{{ date.day_number }}</span>
+		{# user shifts #}
 		{% if date.shifts|length == 1%}
 		<ul>
 			<li class="rounded-md bg-pink-500 text-black dark:bg-pink-700 dark:text-white">
@@ -24,6 +49,7 @@
 			</li>
 		</ul>
 		{%endif%}
+		{# bae shifts #}
 		{% if date.bae_shifts and date.bae_shifts|length == 1%}
 		<ul class="row-start-3">
 

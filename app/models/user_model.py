@@ -3,7 +3,7 @@ DB model for users
 """
 
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, Boolean, DateTime
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, Date
 from app.core.database import Base
 
 
@@ -29,3 +29,5 @@ class DBUser(Base):
                         nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=True,
                         default=None, onupdate=datetime.utcnow)
+
+    birthday = Column(Date, nullable=True, default=None)

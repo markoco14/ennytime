@@ -1,13 +1,11 @@
 """Main file to hold app and api routes"""
 from typing import Annotated, Optional
-
+from pprint import pprint
 import time
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from jinja2_fragments.fastapi import Jinja2Blocks
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+
 from mangum import Mangum
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -16,17 +14,13 @@ from starlette.middleware.base import RequestResponseEndpoint
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
+from app.core.template_utils import templates, block_templates
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router, chat_router
 from app.services import calendar_service, chat_service
 
 SETTINGS = get_settings()
-
-env = Environment(
-    loader=FileSystemLoader("templates"),
-    autoescape=select_autoescape(['html', 'xml'])
-)
 
 
 app = FastAPI()
@@ -39,7 +33,6 @@ class ClosingDownMiddleware(BaseHTTPMiddleware):
             call_next: RequestResponseEndpoint
     ):
         if SETTINGS.CLOSED_DOWN == "true":
-            template = env.get_template("closed-down.html")
             context = {"request": request}
             return templates.TemplateResponse(
                 request=request,
@@ -66,9 +59,6 @@ class SleepMiddleware:
             time.sleep(SETTINGS.SLEEP_TIME)  # Delay for 3000ms (3 seconds)
         await self.app(scope, receive, send)
 
-
-templates = Jinja2Templates(directory="templates")
-block_templates = Jinja2Blocks(directory="templates")
 
 app.add_middleware(SleepMiddleware)
 app.add_middleware(ClosingDownMiddleware)
@@ -112,10 +102,18 @@ def index(
         response.delete_cookie("session-id")
 
         return response
+
     if not month:
         current_month = calendar_service.get_current_month(month)
     else:
         current_month = month
+
+    birthdays = []
+    if current_user.__dict__["birthday"] and month == current_user.__dict__["birthday"].month:
+        birthdays.append({
+            "name": current_user.display_name,
+            "day": current_user.__dict__["birthday"].day
+        })
 
     if not year:
         current_year = calendar_service.get_current_year(year)
@@ -154,18 +152,7 @@ def index(
         current_user_id=current_user.id
     )
 
-    context = {
-        "request": request,
-        "user_data": user_page_data,
-        "month_number": month,
-        "days_of_week": calendar_service.DAYS_OF_WEEK,
-        "current_year": current_year,
-        "current_month_number": current_month,
-        "current_month": calendar_service.MONTHS[current_month - 1],
-        "prev_month_name": prev_month_name,
-        "next_month_name": next_month_name,
-        "message_count": message_count
-    }
+    
 
     # TODO: add month filters to shift query
     # because right now we get all the shifts in the db belonging to the user
@@ -176,39 +163,80 @@ def index(
         if month_calendar_dict.get(shift_date):
             month_calendar_dict[shift_date]['shifts'].append(shift._asdict())
 
-    # TODO: improve 'share' naming to better reflect purpose
-    # we are checking to see if anyone has shared their calendar with the current user
-    share = share_repository.get_share_by_guest_id(
+    # check if any other users have shared their calendars with the current user
+    # so we can get that calendar data and show on the screen
+    shared_with_me = share_repository.get_share_from_other_user(
         db=db, guest_id=current_user.id)
-    if not share:
+
+    if not shared_with_me:
+        context = {
+            "request": request,
+            "birthdays": birthdays,
+            "user_data": user_page_data,
+            "month_number": month,
+            "days_of_week": calendar_service.DAYS_OF_WEEK,
+            "current_year": current_year,
+            "current_month_number": current_month,
+            "current_month": calendar_service.MONTHS[current_month - 1],
+            "prev_month_name": prev_month_name,
+            "next_month_name": next_month_name,
+            "message_count": message_count,
+            "current_user": current_user.display_name,
+        }
         context.update(month_calendar=list(month_calendar_dict.values()))
         response = templates.TemplateResponse(
             request=request,
-            name="webapp/home/app-home.html",
+            name="app-home.html",
             context=context,
         )
 
         return response
 
+    # ... ok let's get the share first
+    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        db=db, share_user_id=shared_with_me.owner_id)
+
+    if bae_user.birthday and month == bae_user.birthday.month:
+        birthdays.append({
+            "name": bae_user.display_name,
+            "day": bae_user.birthday.day
+        })
+
     bae_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=share.owner_id)
+        db=db, user_id=shared_with_me.owner_id)
     for shift in bae_shifts:
         shift_date = str(shift.date.date())
         if month_calendar_dict.get(shift_date):
             month_calendar_dict[shift_date]['bae_shifts'].append(
                 shift._asdict())
+            
+    context = {
+        "request": request,
+        "birthdays": birthdays,
+        "user_data": user_page_data,
+        "month_number": month,
+        "days_of_week": calendar_service.DAYS_OF_WEEK,
+        "current_year": current_year,
+        "current_month_number": current_month,
+        "current_month": calendar_service.MONTHS[current_month - 1],
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
+        "message_count": message_count,
+        "current_user": current_user.display_name,
+        "bae_user": bae_user.display_name,
+    }
 
     context.update(month_calendar=list(month_calendar_dict.values()))
 
     if "hx-request" in request.headers:
         response = block_templates.TemplateResponse(
-            name="webapp/home/app-home.html",
+            name="app-home.html",
             block_name="calendar",
             context=context,
         )
     else:
         response = templates.TemplateResponse(
-            name="webapp/home/app-home.html",
+            name="app-home.html",
             context=context,
         )
 

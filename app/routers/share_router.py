@@ -71,7 +71,6 @@ def share_calendar(
 @router.delete("/share-calendar/{share_id}", response_class=HTMLResponse)
 def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id: int):
     """Unshare calendar page"""
-    print(share_id)
     # return "Unshared"
     try:
         share_repository.delete_share(db=db, share_id=share_id)
