@@ -39,6 +39,15 @@ MONTHS = ["January", "February", "March", "April", "May", "June",
 MONTH_CALENDAR = calendar.Calendar(firstweekday=6)
 
 
+def extract_date_string(date_string: str):
+    """ Returns the year, month, and day from a date string in integer format """
+    year = int(date_string.split("-")[0])
+    month = int(date_string.split("-")[1])
+    day = int(date_string.split("-")[2])
+
+    return year, month, day
+
+
 def get_weekday(date):
     """ Returns the day of the week for a given date"""
     day = calendar.weekday(
