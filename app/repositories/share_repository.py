@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from app.models.share_model import DbShare
+from app.models.user_model import DBUser
 from app.schemas import schemas
 
 
@@ -49,6 +50,8 @@ def get_share_user_with_shifts_by_guest_id(db: Session, share_user_id: int):
             etime_users.id
         FROM etime_users WHERE id = :share_user_id
     """)
-    result = db.execute(query, {"share_user_id": share_user_id})
+    result = db.execute(
+        query, {"share_user_id": share_user_id}
+    ).fetchone()._asdict()
 
-    return result.fetchone()
+    return DBUser(**result)
