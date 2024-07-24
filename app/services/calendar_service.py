@@ -39,7 +39,7 @@ MONTHS = ["January", "February", "March", "April", "May", "June",
 MONTH_CALENDAR = calendar.Calendar(firstweekday=6)
 
 
-def extract_date_string(date_string: str):
+def extract_date_string_numbers(date_string: str):
     """ Returns the year, month, and day from a date string in integer format """
     year = int(date_string.split("-")[0])
     month = int(date_string.split("-")[1])

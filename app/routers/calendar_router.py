@@ -43,7 +43,7 @@ def get_simple_calendar_day_card(
     current_user: schemas.AppUser = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
 
-    year_number, month_number, day_number = calendar_service.extract_date_string(
+    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
         date_string=date_string)
 
     db_shifts = shift_repository.get_user_shifts_details(
@@ -53,7 +53,6 @@ def get_simple_calendar_day_card(
     # becauase only for one day, not getting whole calendar
     shifts = []
     for shift in db_shifts:
-        print(shift.date.date())
         if str(shift.date.date()) == date_string:
             shifts.append(shift._asdict())
 
@@ -68,15 +67,15 @@ def get_simple_calendar_day_card(
                 bae_shifts.append(shift)
 
     birthdays = []
-    if current_user.__dict__["birthday"] and month_number == current_user.__dict__["birthday"].month:
+    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=month_number):
         birthdays.append({
             "name": current_user.display_name,
-            "day": current_user.__dict__["birthday"].day
+            "day": current_user.birthday.day
         })
     bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
         db=db, share_user_id=shared_with_me.owner_id)
 
-    if bae_user.birthday and month_number == bae_user.birthday.month:
+    if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
         birthdays.append({
             "name": bae_user.display_name,
             "day": bae_user.birthday.day
@@ -137,7 +136,7 @@ def get_calendar_card_detailed(
     user_shifts_result = db.execute(
         user_shifts_query, {"owner_id": current_user.id, "date_string": date_string}).fetchall()
 
-    year_number, month_number, day_number = calendar_service.extract_date_string(
+    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
         date_string)
     date = datetime.date(year_number, month_number, day_number)
     written_month = date.strftime("%B %d, %Y")
