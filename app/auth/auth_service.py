@@ -48,7 +48,7 @@ def get_session_data(db: Session, session_token: str):
     session_data = session_repository.get_session_by_session_id(db=db, session_id=session_token)
     return session_data
 
-def get_current_user(db: Session, user_id: int) -> schemas.AppUser:
+def get_current_user(db: Session, user_id: int):
     db_user = user_repository.get_user_by_id(db=db, user_id=user_id)
     return db_user
     
