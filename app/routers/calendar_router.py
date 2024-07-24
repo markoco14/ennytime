@@ -236,9 +236,7 @@ def get_calendar_card_detailed(
 def get_calendar_day_form(
     request: Request,
     date_string: str,
-    db: Annotated[Session, Depends(get_db)],
-    month: Optional[int] = None,
-    year: Optional[int] = None
+    db: Annotated[Session, Depends(get_db)]
 ):
     """Get calendar day form"""
     if not auth_service.get_session_cookie(request.cookies):
@@ -257,11 +255,7 @@ def get_calendar_day_form(
     shift_types = shift_type_repository.list_user_shift_types(
         db=db,
         user_id=current_user.id)
-    current_month = calendar_service.get_current_month(month)
-    current_year = calendar_service.get_current_year(year)
-    year_string = date_string.split("-")[0]
-    month_string = date_string.split("-")[1]
-    day_string = date_string.split("-")[2]
+
 
     # TODO: Get the day of the week
 
@@ -285,15 +279,15 @@ def get_calendar_day_form(
     user_shifts = []
     for row in result:
         user_shifts.append(row._asdict())
-    year = date_string.split("-")[0]
-    month = date_string.split("-")[1]
-    day = date_string.split("-")[2]
-    date = datetime.date(int(year), int(month), int(day))
-    month = date.strftime("%B %d, %Y")
-    day = date.strftime("%A")
+ 
+    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
+        date_string=date_string)
+    date = datetime.date(year_number, month_number, day_number)
+    written_month = date.strftime("%B %d, %Y")
+    written_day = date.strftime("%A")
 
     date_dict = {
-        "date_string": f"{year_string}-{month_string}-{day_string}",
+        "date_string": date_string,
         "day_of_week": str(calendar_service.get_weekday(date_string)),
         "shifts": user_shifts,
     }
@@ -301,12 +295,11 @@ def get_calendar_day_form(
     context = {
         "request": request,
         "shift_types": shift_types,
-        "day_number": int(date_string.split("-")[2]),
-        "current_month": current_month,
-        "current_year": current_year,
+        "day_number": day_number,
         "date_string": date_string,
-        "readable_month": month,
-        "date": date_dict,
+        "written_month": written_month,
+        "written_day": written_day,
+        "date_dict": date_dict,
     }
 
     return templates.TemplateResponse(
