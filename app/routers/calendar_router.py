@@ -121,8 +121,6 @@ def get_calendar_card_detailed(
     current_user: schemas.AppUser = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
 
-    date_segments = date_string.split("-")
-
     # get the user's shifts
     user_shifts_query = text("""
         SELECT etime_shifts.*,
@@ -159,11 +157,12 @@ def get_calendar_card_detailed(
 
     # organize birthdays
     birthdays = []
-    if current_user.__dict__["birthday"] and month_number == current_user.__dict__["birthday"].month:
+    if current_user.birthday and month_number == current_user.birthday.month:
         birthdays.append({
             "name": current_user.display_name,
-            "day": current_user.__dict__["birthday"].day
+            "day": current_user.birthday.day
         })
+
     bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
         db=db, share_user_id=share_result.owner_id)
 
@@ -221,7 +220,7 @@ def get_calendar_card_detailed(
         "date": {
             "date": date_string,
             "shifts": user_shifts_result,
-            "day_number": int(date_segments[2]),
+            "day_number": day_number,
             "bae_shifts": shifts_result,
         },
         "birthdays": birthdays
