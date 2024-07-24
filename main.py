@@ -113,26 +113,16 @@ def index(
             "day": current_user.birthday.day
         })
 
+    # get previous and next month names for month navigation
+    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
+        current_month=current_month)
     
-
-
-    if current_month == 1:
-        prev_month_name = calendar_service.MONTHS[11]
-    else:
-        prev_month_name = calendar_service.MONTHS[current_month - 2]
-
-    if current_month == 12:
-        next_month_name = calendar_service.MONTHS[0]
-    else:
-        next_month_name = calendar_service.MONTHS[current_month]
 
     month_calendar = calendar_service.get_month_calendar(
         current_year, current_month)
 
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
-
-
 
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -176,11 +166,11 @@ def index(
         )
 
         return response
-
+    
     # ... ok let's get the share first
     bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
         db=db, share_user_id=shared_with_me.owner_id)
-    
+
     if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
         birthdays.append({
             "name": bae_user.display_name,
@@ -194,7 +184,7 @@ def index(
         if month_calendar_dict.get(shift_date):
             month_calendar_dict[shift_date]['bae_shifts'].append(
                 shift._asdict())
-            
+
     context = {
         "request": request,
         "birthdays": birthdays,
