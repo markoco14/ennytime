@@ -144,46 +144,26 @@ def index(
     shared_with_me = share_repository.get_share_from_other_user(
         db=db, guest_id=current_user.id)
 
-    if not shared_with_me:
-        context = {
-            "request": request,
-            "birthdays": birthdays,
-            "month_number": month,
-            "days_of_week": calendar_service.DAYS_OF_WEEK,
-            "current_year": current_year,
-            "current_month_number": current_month,
-            "current_month": calendar_service.MONTHS[current_month - 1],
-            "prev_month_name": prev_month_name,
-            "next_month_name": next_month_name,
-            "message_count": message_count,
-            "current_user": current_user,
-        }
-        context.update(month_calendar=list(month_calendar_dict.values()))
-        response = templates.TemplateResponse(
-            request=request,
-            name="app-home.html",
-            context=context,
-        )
-
-        return response
     
-    # ... ok let's get the share first
-    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
-        db=db, share_user_id=shared_with_me.owner_id)
+    # only get bae user data if someone has shared calendar with current user
+    if shared_with_me:
+        bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+            db=db, share_user_id=shared_with_me.owner_id)
 
-    if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
-        birthdays.append({
-            "name": bae_user.display_name,
-            "day": bae_user.birthday.day
-        })
+        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
+            birthdays.append({
+                "name": bae_user.display_name,
+                "day": bae_user.birthday.day
+            })
 
-    bae_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=shared_with_me.owner_id)
-    for shift in bae_shifts:
-        shift_date = str(shift.date.date())
-        if month_calendar_dict.get(shift_date):
-            month_calendar_dict[shift_date]['bae_shifts'].append(
-                shift._asdict())
+        bae_shifts = shift_repository.get_user_shifts_details(
+            db=db, user_id=shared_with_me.owner_id)
+        
+        for shift in bae_shifts:
+            shift_date = str(shift.date.date())
+            if month_calendar_dict.get(shift_date):
+                month_calendar_dict[shift_date]['bae_shifts'].append(
+                    shift._asdict())
 
     context = {
         "request": request,
@@ -198,9 +178,9 @@ def index(
         "message_count": message_count,
         "current_user": current_user,
         "bae_user": bae_user,
+        "month_calendar": list(month_calendar_dict.values())
     }
 
-    context.update(month_calendar=list(month_calendar_dict.values()))
 
     if "hx-request" in request.headers:
         response = block_templates.TemplateResponse(
