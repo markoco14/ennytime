@@ -1,6 +1,9 @@
 """User authentication routes"""
 
+import random
 from typing import Annotated
+
+
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -16,6 +19,8 @@ from app.repositories import user_repository
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+
+
 
 
 @router.post("/signup", response_class=Response)
@@ -40,8 +45,12 @@ def signup(
     # Hash password
     hashed_password = auth_service.get_password_hash(password)
     
+    # give the user a display name
+    display_name = f"NewUser{random.randint(1, 10000)}"
+    
     # create new user with encrypted password
-    new_user = schemas.CreateUserHashed(email=email, hashed_password=hashed_password)
+    new_user = schemas.CreateUserHashed(email=email, hashed_password=hashed_password, display_name=display_name)
+
     # add user to USERS
     app_user = user_repository.create_user(db=db, user=new_user)
     # USERS.update({email: new_user})

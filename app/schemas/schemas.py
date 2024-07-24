@@ -84,6 +84,7 @@ class CreateUser(BaseModel):
 class CreateUserHashed(BaseModel):
     email: str
     hashed_password: str
+    display_name: str
 
 class Share(BaseModel):
     """Shares"""
