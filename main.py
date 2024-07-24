@@ -103,10 +103,8 @@ def index(
 
         return response
 
-    if not month:
-        current_month = calendar_service.get_current_month(month)
-    else:
-        current_month = month
+    current_month = calendar_service.get_current_month(month)
+    current_year = calendar_service.get_current_year(year)
 
     birthdays = []
     if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=current_month):
@@ -115,10 +113,8 @@ def index(
             "day": current_user.birthday.day
         })
 
-    if not year:
-        current_year = calendar_service.get_current_year(year)
-    else:
-        current_year = year
+    
+
 
     if current_month == 1:
         prev_month_name = calendar_service.MONTHS[11]
