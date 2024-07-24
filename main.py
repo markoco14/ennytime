@@ -133,10 +133,6 @@ def index(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
 
 
-    user_page_data = {
-        "display_name": current_user.display_name,
-        "is_admin": current_user.is_admin
-    }
 
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -162,7 +158,6 @@ def index(
         context = {
             "request": request,
             "birthdays": birthdays,
-            "user_data": user_page_data,
             "month_number": month,
             "days_of_week": calendar_service.DAYS_OF_WEEK,
             "current_year": current_year,
@@ -171,7 +166,7 @@ def index(
             "prev_month_name": prev_month_name,
             "next_month_name": next_month_name,
             "message_count": message_count,
-            "current_user": current_user.display_name,
+            "current_user": current_user,
         }
         context.update(month_calendar=list(month_calendar_dict.values()))
         response = templates.TemplateResponse(
@@ -203,7 +198,6 @@ def index(
     context = {
         "request": request,
         "birthdays": birthdays,
-        "user_data": user_page_data,
         "month_number": month,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
@@ -212,8 +206,8 @@ def index(
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
         "message_count": message_count,
-        "current_user": current_user.display_name,
-        "bae_user": bae_user.display_name,
+        "current_user": current_user,
+        "bae_user": bae_user,
     }
 
     context.update(month_calendar=list(month_calendar_dict.values()))

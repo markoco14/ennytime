@@ -17,7 +17,7 @@ Ennytime Chat
 	{% else %}
 	<p>You've shared your calendar with this person:</p>
 	<div class="p-4 border rounded-md">
-		<p class="mb-4">{{user_data.display_name}} and {{ share.guest_first_name }}</p>
+		<p class="mb-4">{{current_user.display_name}} and {{ share.guest_first_name }}</p>
 		{% if not chat %}
 		<a hx-post="/create-chat/{{share.owner_id}}/{{share.guest_id}}"
 		   class="cursor-pointer" class="bg-gray-900 text-white px-3 py-1 rounded-md">Create Chat</a>

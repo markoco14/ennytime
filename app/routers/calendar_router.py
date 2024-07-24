@@ -89,8 +89,8 @@ def get_simple_calendar_day_card(
             "day_number": day_number,
             "bae_shifts": bae_shifts,
         },
-        "current_user": current_user.display_name,
-        "bae_user": bae_user.display_name,
+        "current_user": current_user,
+        "bae_user": bae_user,
         "birthdays": birthdays
     }
 
@@ -174,7 +174,7 @@ def get_calendar_card_detailed(
     if not share_result:
         context = {
             "request": request,
-            "current_user": current_user.display_name,
+            "current_user": current_user,
             "month": month_number,
             "written_month": written_month,
             "written_day": written_day,
@@ -211,7 +211,7 @@ def get_calendar_card_detailed(
 
     context = {
         "request": request,
-        "current_user": current_user.display_name,
+        "current_user": current_user,
         "bae_user": share_result.bae_name,
         "month": month_number,
         "written_month": written_month,
@@ -293,6 +293,7 @@ def get_calendar_day_form(
     }
 
     context = {
+        "current_user": current_user,
         "request": request,
         "shift_types": shift_types,
         "day_number": day_number,

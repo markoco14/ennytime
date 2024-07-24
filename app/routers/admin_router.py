@@ -41,16 +41,6 @@ def read_admin_home_page(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
-    
-    if current_user.display_name is not None:
-        display_name = current_user.display_name.split(" ")[0]
-    else:
-        display_name = "NewUser00001"
-
-    user_page_data = {
-        "display_name": display_name,
-        "is_admin": current_user.is_admin
-    }
 
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -59,7 +49,7 @@ def read_admin_home_page(
     )
 
     context = {
-        "user_data": user_page_data,
+        "current_user": current_user,
         "request": request,
         "message_count": message_count
     }
@@ -97,16 +87,7 @@ def list_users(
     
     users = UserRepository.list_users(db=db)
     headings = ["Display name", "Email", "Actions"]
-
-    if current_user.display_name is not None:
-        display_name = current_user.display_name.split(" ")[0]
-    else:
-        display_name = "NewUser00001"
-
-    user_page_data = {
-        "display_name": display_name,
-        "is_admin": current_user.is_admin
-    }
+    
     
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -115,7 +96,7 @@ def list_users(
     )
 
     context = {
-        "user_data": user_page_data,
+        "current_user": current_user,
         "request": request,
         "users": users,
         "headings": headings,
