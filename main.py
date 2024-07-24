@@ -109,10 +109,10 @@ def index(
         current_month = month
 
     birthdays = []
-    if current_user.__dict__["birthday"] and month == current_user.__dict__["birthday"].month:
+    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=current_month):
         birthdays.append({
             "name": current_user.display_name,
-            "day": current_user.__dict__["birthday"].day
+            "day": current_user.birthday.day
         })
 
     if not year:
@@ -195,8 +195,8 @@ def index(
     # ... ok let's get the share first
     bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
         db=db, share_user_id=shared_with_me.owner_id)
-
-    if bae_user.birthday and month == bae_user.birthday.month:
+    
+    if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
         birthdays.append({
             "name": bae_user.display_name,
             "day": bae_user.birthday.day
