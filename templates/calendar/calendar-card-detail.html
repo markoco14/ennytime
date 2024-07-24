@@ -7,13 +7,13 @@
 	{# birthdays #}
 	<div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
-		{% if birthday.name == current_user and birthday.day == date.day_number %}
+		{% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
 		<div class="rounded-full bg-pink-500 h-8 w-8 flex justify-center items-center">
 			<img src="../../../static/birthday-cake.png"
 				 alt="HBD"
 				 class="h-5 w-5">
 		</div>
-		{% elif birthday.name != current_user and birthday.day == date.day_number %}
+		{% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
 		<div class="rounded-full bg-pink-300 h-8 w-8 flex justify-center items-center">
 			<img src="../../../static/birthday-cake.png"
 				 alt="HBD"
@@ -39,9 +39,9 @@
 			{% if birthdays %}
 			<div class="flex justify-between gap-2">
 				{% for birthday in birthdays %}
-				{% if birthday.name == current_user and birthday.day == date.day_number %}
+				{% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
 				<p class="bg-pink-500 dark:bg-pink-700 p-4 rounded-md">It is your birthday today!</p>
-				{% elif birthday.name != current_user and birthday.day == date.day_number %}
+				{% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
 				<p class="bg-pink-300 dark:bg-pink-500 p-4 rounded-md">It is {{birthday.name}}'s birthday today!</p>
 				{% endif %}
 				{% endfor %}
@@ -52,7 +52,7 @@
 				class="bg-pink-500 dark:bg-pink-700 p-4 rounded-md">
 				{% for shift in date.shifts %}
 				<li>
-					<p>{{current_user}}</p>
+					<p>{{current_user.display_name}}</p>
 					<p>{{shift.long_name}}</p>
 				</li>
 				{% endfor %}
@@ -66,7 +66,7 @@
 				class="bg-pink-300 dark:bg-pink-500 p-4 rounded-md">
 				{% for shift in date.bae_shifts %}
 				<li>
-					<p>{{bae_user}}</p>
+					<p>{{bae_user.display_name}}</p>
 					<p>{{shift.long_name}}</p>
 				</li>
 				{% endfor %}

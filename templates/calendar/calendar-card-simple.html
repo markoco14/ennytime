@@ -8,14 +8,14 @@
 	{# birthdays #}
 	<div class="absolute -top-2 sm:-top-5 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
-		{% if birthday.name == current_user and birthday.day == date.day_number %}
+		{% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
 		<div class="rounded-full bg-pink-500 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
 			<img 
 				 src="../../../static/birthday-cake.png"
 				 alt="HBD"
 				 class="h-3 w-3 sm:h-5 sm:w-5">
 		</div>
-		{% elif birthday.name != current_user and birthday.day == date.day_number %}
+		{% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
 		<div class="rounded-full bg-pink-300 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
 			<img 
 				 src="../../../static/birthday-cake.png"

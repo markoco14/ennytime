@@ -212,7 +212,7 @@ def get_calendar_card_detailed(
     context = {
         "request": request,
         "current_user": current_user,
-        "bae_user": share_result.bae_name,
+        "bae_user": bae_user,
         "month": month_number,
         "written_month": written_month,
         "written_day": written_day,
