@@ -1,0 +1,30 @@
+{% from '/macros/table.html' import heading_row%}
+
+<div id="share-section"
+	 class="flex flex-col gap-2">
+	<p>
+		You've shared your calendar with someone. Unshare the calendar if you want
+		to share with someone else.
+	</p>
+	<table class="w-full">
+		<thead>
+			{{ heading_row(share_headings)}}
+		</thead>
+		<tbody>
+			<tr>
+				<td>{{share_user.display_name}}</td>
+				<td>
+					<button hx-delete="/share-calendar/{{share.id}}"
+							hx-target="#share-section"
+							hx-swap="outerHTML"
+							class="flex gap-2  justify-center items-center bg-gray-700 text-white px-3 py-2 rounded">
+						Unshare
+						<div>
+							{% include "ui/spinner.html" %}
+						</div>
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

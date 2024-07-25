@@ -69,7 +69,6 @@ def get_profile_page(
     share_headings = ["Name", "Actions"]
     shift_headings = ["Type", "Date", "Actions"]
 
-    
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
         db=db,
@@ -96,7 +95,7 @@ def get_profile_page(
     if not share_owner:
         return templates.TemplateResponse(
             request=request,
-            name="webapp/profile/profile-page.html",
+            name="profile/profile-page.html",
             context=context
         )
 
@@ -105,7 +104,7 @@ def get_profile_page(
     context.update({"share": share_owner, "share_user": share_user})
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/profile-page.html",
+        name="profile/profile-page.html",
         context=context
     )
 
@@ -143,7 +142,7 @@ def get_display_name_widget(
     }
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/display-name.html",
+        name="profile/display-name.html",
         context=context
     )
 
@@ -208,7 +207,7 @@ def update_user_contact(
 
         return templates.TemplateResponse(
             request=request,
-            name="webapp/profile/display-name.html",
+            name="profile/display-name.html",
             context=context
         )
 
@@ -220,7 +219,7 @@ def update_user_contact(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/display-name.html",
+        name="profile/display-name.html",
         context=context
     )
 
@@ -260,7 +259,7 @@ def get_edit_display_name_widget(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/display-name-edit.html",
+        name="profile/display-name-edit.html",
         context=context
     )
 
@@ -300,7 +299,7 @@ def get_birthday_widget(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/birthday.html",
+        name="profile/birthday.html",
         context=context
     )
 
@@ -332,7 +331,7 @@ def update_user_birthday(
 
     if current_user.id != user_id:
         return Response(status_code=403)
-    
+
     if not birthday:
         return Response(status_code=200)
 
@@ -349,10 +348,9 @@ def update_user_birthday(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/birthday.html",
+        name="profile/birthday.html",
         context=context
     )
-
 
 
 @router.get("/birthday/{user_id}/edit", response_class=HTMLResponse | Response)
@@ -390,6 +388,6 @@ def get_edit_birthday_widget(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/birthday-edit.html",
+        name="profile/birthday-edit.html",
         context=context
     )
