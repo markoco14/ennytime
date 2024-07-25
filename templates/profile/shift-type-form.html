@@ -1,0 +1,47 @@
+{% from "macros/spinner.html" import spinner %}
+<form class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
+	  hx-post="/shift-types/new"
+	  hx-target="#type-list"
+	  hx-swap="outerHTML">
+	<h3 class="text-xl">New Type Form</h3>
+	<p>
+		Make your shift types here. Then you can add shifts to your
+		calendar.
+	</p>
+	<div class="flex flex-col gap-2">
+		<label for="shift_type"
+			   class="dark:text-gray-100">Shift type</label>
+		<input type="text"
+			   id="shift_type"
+			   name="shift_type"
+			   required
+			   placeholder="Choose name for shift type..."
+			   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+	</div>
+	<div class="flex flex-col gap-2">
+		<label for="long_name"
+			   class="dark:text-gray-100">Full Shift Name</label>
+		<span>Give your shift type a descriptive name.</span>
+		<input type="text"
+			   id="long_name"
+			   name="long_name"
+			   required
+			   placeholder="Choose name for shift type..."
+			   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+	</div>
+	<div class="flex flex-col gap-2">
+		<label for="short_name"
+			   class="dark:text-gray-100">Short Shift Name</label>
+		<span>Give your shift type a short name to show in <strong>calendar view</strong></span>
+		<input type="text"
+			   id="short_name"
+			   name="short_name"
+			   required
+			   placeholder="Choose name for shift type..."
+			   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+	</div>
+	<button class="flex gap-2 justify-center items-center bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
+		Save
+		{{spinner('h-10', 'h-10', 'text-black')}}
+	</button>
+</form>

@@ -16,7 +16,31 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.post("/register-shift-type", response_class=HTMLResponse)
+@router.get("/shift-types/new", response_class=HTMLResponse)
+def get_new_shift_type_form(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)]
+):
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies
+    )
+    if not current_user:
+        return Response(status_code=401)
+
+    context = {
+        "request": request,
+        "current_user": current_user
+    }
+
+    return templates.TemplateResponse(
+        "profile/shift-type-form.html",
+        context=context
+    )
+    
+
+
+@router.post("/shift-types/new", response_class=HTMLResponse)
 def register_shift_type(
         request: Request,
         shift_type: Annotated[str, Form()],
