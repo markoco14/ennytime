@@ -114,7 +114,6 @@ def get_add_shifts_page(
     for row in result:
         user_shifts.append(row._asdict())
 
-
     # here is the problem
     # overwriting the previous shift when there are 2
     # only 1 being packed and sent
@@ -123,7 +122,7 @@ def get_add_shifts_page(
         if key_to_find in calendar_date_list:
             if not calendar_date_list[f"{key_to_find}"].get("shifts"):
                 calendar_date_list[f"{key_to_find}"]["shifts"] = []
-            
+
             calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
 
     # get unread message count so chat icon can display the count on page load
@@ -139,7 +138,7 @@ def get_add_shifts_page(
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
         "user_shifts": user_shifts,
-        "message_count": message_count 
+        "message_count": message_count
     }
 
     return block_templates.TemplateResponse(
@@ -181,7 +180,6 @@ async def add_shift_to_date(
 
     shift_type = shift_type_repository.get_user_shift_type(
         db=db, user_id=current_user.id, shift_type_id=type_id)
-    
 
     context = {
         "current_user": current_user,
@@ -274,7 +272,7 @@ def get_shift_table(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/shift-table.html",
+        name="profile/shift-table.html",
         context={"request": request, "shifts": shifts}
     )
 
@@ -331,7 +329,8 @@ def schedule_shift(
             if str(shift.date.date()) == date:
                 bae_shifts.append(shift)
 
-    bae_user = user_repository.get_user_by_id(db=db, user_id=shared_with_me.owner_id)
+    bae_user = user_repository.get_user_by_id(
+        db=db, user_id=shared_with_me.owner_id)
 
     context = {
         "request": request,

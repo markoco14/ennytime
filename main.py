@@ -116,7 +116,6 @@ def index(
     # get previous and next month names for month navigation
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
         current_month=current_month)
-    
 
     month_calendar = calendar_service.get_month_calendar(
         current_year, current_month)
@@ -144,7 +143,6 @@ def index(
     shared_with_me = share_repository.get_share_from_other_user(
         db=db, guest_id=current_user.id)
 
-    
     # only get bae user data if someone has shared calendar with current user
     if shared_with_me:
         bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
@@ -158,7 +156,7 @@ def index(
 
         bae_shifts = shift_repository.get_user_shifts_details(
             db=db, user_id=shared_with_me.owner_id)
-        
+
         for shift in bae_shifts:
             shift_date = str(shift.date.date())
             if month_calendar_dict.get(shift_date):
@@ -180,7 +178,6 @@ def index(
         "bae_user": bae_user,
         "month_calendar": list(month_calendar_dict.values())
     }
-
 
     if "hx-request" in request.headers:
         response = block_templates.TemplateResponse(
@@ -237,7 +234,7 @@ def search_users_to_share(
     if search_display_name == "":
         return templates.TemplateResponse(
             request=request,
-            name="webapp/profile/search-results.html",
+            name="profile/search-results.html",
             context={"request": request, "matching_users": []}
         )
 
@@ -250,7 +247,7 @@ def search_users_to_share(
 
     return templates.TemplateResponse(
         request=request,
-        name="webapp/profile/search-results.html",
+        name="profile/search-results.html",
         context=context
     )
 

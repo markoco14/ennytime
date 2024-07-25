@@ -123,7 +123,6 @@ def get_calendar_card_detailed(
     # get the user's shifts
     user_shifts_query = text("""
         SELECT etime_shifts.*,
-            etime_shift_types.type as type_name,
             etime_shift_types.long_name as long_name,
             etime_shift_types.short_name as short_name
         FROM etime_shifts
@@ -196,7 +195,6 @@ def get_calendar_card_detailed(
     # if there is a share, get the sharing user's (bae's) shifts
     shifts_query = text("""
         SELECT etime_shifts.*,
-            etime_shift_types.type as type_name,
             etime_shift_types.long_name as long_name,
             etime_shift_types.short_name as short_name
         FROM etime_shifts
