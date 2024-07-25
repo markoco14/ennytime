@@ -2,11 +2,14 @@
 <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 	<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
 		{% block shift_type_list %}
-		<div id="type-list">
-			<h2 class="text-3xl mb-2">Shift Types</h2>
-			<button hx-get="/shift-types/new"
-					hx-target="#type-list"
-					hx-swap="outerHTML show:body:bottom">New Type</button>
+		<div id="type-list"
+			 class="max-w-[400px]">
+			<div class="flex justify-between mb-4">
+				<h2 class="text-3xl">Shift Types</h2>
+				<button hx-get="/shift-types/new"
+						hx-target="#type-list"
+						hx-swap="outerHTML show:body:bottom">New Type</button>
+			</div>
 			<ul class="flex flex-col gap-2 w-full max-w-[400px]">
 				{% for shift in shift_types %}
 				<li class="flex justify-between p-2 rounded-md border border-pink-300">
