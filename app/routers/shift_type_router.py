@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from jinja2_fragments.fastapi import Jinja2Blocks
 
 from app.auth import auth_service
 from app.core.database import get_db
@@ -14,6 +15,7 @@ from app.schemas import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+block_templates = Jinja2Blocks(directory="templates")
 
 
 @router.get("/shift-types/new", response_class=HTMLResponse)
@@ -78,10 +80,11 @@ def register_shift_type(
             shift_type=new_shift_type
         )
     except IntegrityError:
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/shift-list.html",
-            context={"error": "Something went wrong."}
+
+        return block_templates.TemplateResponse(
+            name="profile/sections/shift-type-section.html",
+            context={"request": request, "error": "Something went wrong."},
+            block_name="shift_type_list"
         )
 
     # get the new shift type list
@@ -95,10 +98,10 @@ def register_shift_type(
         "shift_types": shift_types,
     }
 
-    return templates.TemplateResponse(
-        request=request,
-        name="profile/shift-list.html",  # change to list template
-        context=context
+    return block_templates.TemplateResponse(
+        name="profile/sections/shift-type-section.html",
+        context=context,
+        block_name="shift_type_list"
     )
 
 
