@@ -1,30 +1,30 @@
 {% from "macros/spinner.html" import spinner %}
 <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 	<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-		<h2 class="text-3xl mb-4">Shift Types</h2>
-		<button hx-get="/shift-types/new"
-				hx-target="#type-list"
-				hx-swap="outerHTML">New Type</button>
 		{% block shift_type_list %}
-		<ul id="type-list"
-			class="flex flex-col gap-2 w-full max-w-[400px]">
-			{% for shift in shift_types %}
-			<li class="flex justify-between p-2 rounded-md border border-pink-300">
-				<span>
-					{{ shift.long_name }} ({{ shift.short_name }})
-				</span>
-				<button hx-delete="/delete-shift-type/{{shift.id}}"
-						hx-target="closest li"
-						hx-swap="delete swap:0.5s"
-						hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
-						class="flex gap-2 justify-center items-center text-red-500">
-					{# Delete #}
-					<span class="htmx-indicator-content">Delete</span>
-					<span class="htmx-indicator">Deleting...</span>
-				</button>
-			</li>
-			{% endfor %}
-		</ul>
+		<div id="type-list">
+			<h2 class="text-3xl mb-2">Shift Types</h2>
+			<button hx-get="/shift-types/new"
+					hx-target="#type-list"
+					hx-swap="outerHTML show:body:bottom">New Type</button>
+			<ul class="flex flex-col gap-2 w-full max-w-[400px]">
+				{% for shift in shift_types %}
+				<li class="flex justify-between p-2 rounded-md border border-pink-300">
+					<span>
+						{{ shift.long_name }} ({{ shift.short_name }})
+					</span>
+					<button hx-delete="/delete-shift-type/{{shift.id}}"
+							hx-target="closest li"
+							hx-swap="delete swap:0.5s"
+							hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
+							class="flex gap-2 justify-center items-center underline underline-offset-2 hover:text-red-500">
+						<span class="htmx-indicator-content">Delete</span>
+						<span class="htmx-indicator text-red-500 decoration-red-500">Deleting...</span>
+					</button>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
 		{% endblock shift_type_list %}
 	</div>
 </section>

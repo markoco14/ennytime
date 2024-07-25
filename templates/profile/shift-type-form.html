@@ -4,7 +4,11 @@ class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
 	  hx-post="/shift-types/new"
 	  hx-target="#type-form"
 	  hx-swap="outerHTML">
-	<h3 class="text-xl">New Type Form</h3>
+	<h3 class="text-3xl mb-2">New Type Form</h3>
+	<button hx-get="/shift-types" 
+	hx-target="#type-form"
+	hx-swap="outerHTML"
+	type="button">Cancel</button>
 	<p>
 		Make your shift types here. Then you can add shifts to your
 		calendar.
@@ -31,7 +35,7 @@ class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
 			   placeholder="Choose name for shift type..."
 			   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
 	</div>
-	<button class="flex gap-2 justify-center items-center bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
+	<button type="submit" class="flex gap-2 justify-center items-center bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
 		Save
 		{{spinner('h-10', 'h-10', 'text-black')}}
 	</button>

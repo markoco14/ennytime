@@ -18,6 +18,35 @@ templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
 
 
+@router.get("/shift-types", response_class=HTMLResponse)
+def get_shift_type_list(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)]
+):
+    current_user = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies
+    )
+    if not current_user:
+        return Response(status_code=401)
+    
+    db_shift_types = shift_type_repository.list_user_shift_types(
+        db=db,
+        user_id=current_user.id
+    )
+
+    context = {
+        "request": request,
+        "shift_types": db_shift_types,
+        "current_user": current_user
+    }
+
+    return block_templates.TemplateResponse(
+        name="profile/sections/shift-type-section.html",
+        context=context,
+        block_name="shift_type_list"
+    )
+    
 @router.get("/shift-types/new", response_class=HTMLResponse)
 def get_new_shift_type_form(
     request: Request,

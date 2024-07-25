@@ -6,7 +6,7 @@ Ennytime Profile Page
 {% endblock title%}
 
 {% block content %}
-<div class="grid gap-4 py-8">
+<div class="grid gap-4 py-8 max-w-[800px] mx-auto">
 	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 		<div class="container mx-auto p-4">
 			<h1 class="text-3xl text-[#D31D6C] dark:text-pink-100">
@@ -33,49 +33,5 @@ Ennytime Profile Page
 	</section>
 	{% include "profile/sections/share-section.html" %}
 	{% include "profile/sections/shift-type-section.html" %}
-
-	{# <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
-		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-			<h2 class="text-3xl mb-4">Your shifts</h2>
-			<div class="max-w-[1200px] mx-auto flex justify-end">
-				<a href="/shifts"
-				   class="underline underline-offset-2">Add Shifts</a>
-			</div>
-			<table class="w-full">
-				<thead>
-					<tr>
-						<th class="text-left">Type</th>
-						<th class="hidden sm:block text-left">Date</th>
-						<th class="text-left">Actions</th>
-					</tr>
-				</thead>
-				<tbody id="shift-table"
-					   hx-get="/shift-table"
-					   hx-target="this"
-					   hx-swap="outerHTML"
-					   hx-trigger="getShiftTable from:body delay:1s">
-					{% for shift in shifts %}
-					<tr>
-						<td>
-							<p>{{shift.type.type}}</p>
-							<p class="sm:hidden text-gray-700 dark:text-gray-300">{{shift.date}}</p>
-						</td>
-						<td class="hidden sm:block">{{shift.date}}</td>
-						<td class="text-right">
-							<button hx-delete="/delete-shift/{{shift.id}}"
-									hx-target="closest tr"
-									hx-swap="delete swap:0.5s"
-									hx-confirm="Are you sure you want to delete this shift?"
-									class="text-red-500 dark:text-red-500 hover:text-red-600">
-								<span class="htmx-indicator-content">Delete</span>
-								<span class="htmx-indicator">Deleting...</span>
-							</button>
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-	</section> #}
 </div>
 {% endblock content %}
