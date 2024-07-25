@@ -266,16 +266,12 @@ def get_unread_messages(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
 ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
     current_user = auth_service.get_current_session_user(
         db=db,
         cookies=request.cookies)
+    
+    if not current_user:
+        return Response(status_code=401)
 
     message_count = chat_service.get_user_unread_message_count(
         db=db,
