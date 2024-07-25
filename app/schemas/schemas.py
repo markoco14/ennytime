@@ -8,12 +8,10 @@ from pydantic import BaseModel
 class ShiftType(BaseModel):
     """Shift type"""
     id: int
-    type: str
     user_id: int
 
 class CreateShiftType(BaseModel):
     "Create shift type"
-    type: str
     long_name: str
     short_name: str
     user_id: int

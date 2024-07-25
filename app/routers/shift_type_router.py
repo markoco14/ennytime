@@ -43,7 +43,6 @@ def get_new_shift_type_form(
 @router.post("/shift-types/new", response_class=HTMLResponse)
 def register_shift_type(
         request: Request,
-        shift_type: Annotated[str, Form()],
         long_name: Annotated[str, Form()],
         short_name: Annotated[str, Form()],
         db: Annotated[Session, Depends(get_db)],):
@@ -67,7 +66,6 @@ def register_shift_type(
 
     # get new shift type data ready
     new_shift_type = schemas.CreateShiftType(
-        type=shift_type,
         long_name=long_name,
         short_name=short_name,
         user_id=current_user.id
