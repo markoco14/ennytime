@@ -103,32 +103,20 @@ def index(
 
         return response
 
-    if not month:
-        current_month = calendar_service.get_current_month(month)
-    else:
-        current_month = month
+    current_month = calendar_service.get_current_month(month)
+    current_year = calendar_service.get_current_year(year)
 
     birthdays = []
-    if current_user.__dict__["birthday"] and month == current_user.__dict__["birthday"].month:
+    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=current_month):
         birthdays.append({
             "name": current_user.display_name,
-            "day": current_user.__dict__["birthday"].day
+            "day": current_user.birthday.day
         })
 
-    if not year:
-        current_year = calendar_service.get_current_year(year)
-    else:
-        current_year = year
-
-    if current_month == 1:
-        prev_month_name = calendar_service.MONTHS[11]
-    else:
-        prev_month_name = calendar_service.MONTHS[current_month - 2]
-
-    if current_month == 12:
-        next_month_name = calendar_service.MONTHS[0]
-    else:
-        next_month_name = calendar_service.MONTHS[current_month]
+    # get previous and next month names for month navigation
+    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
+        current_month=current_month)
+    
 
     month_calendar = calendar_service.get_month_calendar(
         current_year, current_month)
@@ -136,23 +124,11 @@ def index(
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
 
-    if current_user.display_name is not None:
-        display_name = current_user.display_name.split(" ")[0]
-    else:
-        display_name = "NewUser00001"
-
-    user_page_data = {
-        "display_name": display_name,
-        "is_admin": current_user.is_admin
-    }
-
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
         db=db,
         current_user_id=current_user.id
     )
-
-    
 
     # TODO: add month filters to shift query
     # because right now we get all the shifts in the db belonging to the user
@@ -168,52 +144,30 @@ def index(
     shared_with_me = share_repository.get_share_from_other_user(
         db=db, guest_id=current_user.id)
 
-    if not shared_with_me:
-        context = {
-            "request": request,
-            "birthdays": birthdays,
-            "user_data": user_page_data,
-            "month_number": month,
-            "days_of_week": calendar_service.DAYS_OF_WEEK,
-            "current_year": current_year,
-            "current_month_number": current_month,
-            "current_month": calendar_service.MONTHS[current_month - 1],
-            "prev_month_name": prev_month_name,
-            "next_month_name": next_month_name,
-            "message_count": message_count,
-            "current_user": current_user.display_name,
-        }
-        context.update(month_calendar=list(month_calendar_dict.values()))
-        response = templates.TemplateResponse(
-            request=request,
-            name="app-home.html",
-            context=context,
-        )
+    
+    # only get bae user data if someone has shared calendar with current user
+    if shared_with_me:
+        bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+            db=db, share_user_id=shared_with_me.owner_id)
 
-        return response
+        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
+            birthdays.append({
+                "name": bae_user.display_name,
+                "day": bae_user.birthday.day
+            })
 
-    # ... ok let's get the share first
-    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
-        db=db, share_user_id=shared_with_me.owner_id)
+        bae_shifts = shift_repository.get_user_shifts_details(
+            db=db, user_id=shared_with_me.owner_id)
+        
+        for shift in bae_shifts:
+            shift_date = str(shift.date.date())
+            if month_calendar_dict.get(shift_date):
+                month_calendar_dict[shift_date]['bae_shifts'].append(
+                    shift._asdict())
 
-    if bae_user.birthday and month == bae_user.birthday.month:
-        birthdays.append({
-            "name": bae_user.display_name,
-            "day": bae_user.birthday.day
-        })
-
-    bae_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=shared_with_me.owner_id)
-    for shift in bae_shifts:
-        shift_date = str(shift.date.date())
-        if month_calendar_dict.get(shift_date):
-            month_calendar_dict[shift_date]['bae_shifts'].append(
-                shift._asdict())
-            
     context = {
         "request": request,
         "birthdays": birthdays,
-        "user_data": user_page_data,
         "month_number": month,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
@@ -222,11 +176,11 @@ def index(
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
         "message_count": message_count,
-        "current_user": current_user.display_name,
-        "bae_user": bae_user.display_name,
+        "current_user": current_user,
+        "bae_user": bae_user,
+        "month_calendar": list(month_calendar_dict.values())
     }
 
-    context.update(month_calendar=list(month_calendar_dict.values()))
 
     if "hx-request" in request.headers:
         response = block_templates.TemplateResponse(

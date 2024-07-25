@@ -1,6 +1,5 @@
 <header x-data="{ mobilenavOpen: false }"
 		class="md:flex items-center justify-between dark:bg-gray-900 dark:text-gray-100 border-b border-gray-500 px-4 bg-white">
-	{# <div class="py-4 px-2 md:px-0 container mx-auto"> #}
 	<div class="flex items-center justify-between h-20">
 		<span class="text-3xl">Ennytime</span>
 		{# mobile icon #}
@@ -81,7 +80,7 @@
 			<li class="block md:hidden">
 				<a href="/profile">Profile</a>
 			</li>
-			{% if user_data.is_admin %}
+			{% if current_user.is_admin %}
 			<li class="block md:hidden">
 				<a href="/admin">Admin</a>
 			</li>
@@ -107,13 +106,7 @@
 				   @click.away="dropdownOpen = false"
 				   class="whitespace-nowrap cursor-pointer select-none flex items-center gap-2">
 
-					<p>
-						{% if user_data.display_name %}
-						{{user_data.display_name}}
-						{% else %}
-						NewUser001
-						{% endif %}
-					</p>
+					<p>{{current_user.display_name}}</p>
 
 					<img class="w-4"
 						 x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
@@ -138,7 +131,7 @@
 							<a href="/profile"
 							   class="w-full text-right">Profile</a>
 						</li>
-						{% if user_data.is_admin %}
+						{% if current_user.is_admin %}
 						<li class="grid text-right rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
 							<a href="/admin"
 							   class="w-full">Admin</a>
@@ -152,9 +145,7 @@
 				</div>
 			</li>
 		</ul>
-		{# <a href="/development">Development</a> #}
-		{# <a href="/users">Users</a> #}
-		{# <a href="/sessions">Sessions</a> #}
+
 	</nav>
-	{# </div> #}
+
 </header>

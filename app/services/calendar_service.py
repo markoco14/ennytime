@@ -39,6 +39,30 @@ MONTHS = ["January", "February", "March", "April", "May", "June",
 MONTH_CALENDAR = calendar.Calendar(firstweekday=6)
 
 
+def extract_date_string_numbers(date_string: str):
+    """ Returns the year, month, and day from a date string in integer format """
+    year = int(date_string.split("-")[0])
+    month = int(date_string.split("-")[1])
+    day = int(date_string.split("-")[2])
+
+    return year, month, day
+
+
+def get_prev_and_next_month_names(current_month: int):
+    """ Takes the current month and returns the names of the next month and previous month. Corrects for December and January """
+    if current_month == 1:
+        prev_month_name = MONTHS[11]
+    else:
+        prev_month_name = MONTHS[current_month - 2]
+
+    if current_month == 12:
+        next_month_name = MONTHS[0]
+    else:
+        next_month_name = MONTHS[current_month]
+    
+    return prev_month_name, next_month_name
+
+
 def get_weekday(date):
     """ Returns the day of the week for a given date"""
     day = calendar.weekday(

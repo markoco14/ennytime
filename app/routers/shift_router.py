@@ -134,7 +134,7 @@ def get_add_shifts_page(
 
     context = {
         "request": request,
-        "user_data": current_user,
+        "current_user": current_user,
         "current_month": month,
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
@@ -184,6 +184,7 @@ async def add_shift_to_date(
     
 
     context = {
+        "current_user": current_user,
         "request": request,
         "date": {"date_string": date},
         "shifts": [new_shift],
@@ -231,6 +232,7 @@ async def delete_shift_for_date(
     shift_type = shift_type_repository.get_user_shift_type(
         db=db, user_id=current_user.id, shift_type_id=type_id)
     context = {
+        "current_user": current_user,
         "request": request,
         "date": {"date_string": date},
         "type": {"id": type_id, "long_name": shift_type.long_name}
@@ -334,7 +336,7 @@ def schedule_shift(
     context = {
         "request": request,
         "bae_user": bae_user.display_name,
-        "current_user": current_user.display_name,
+        "current_user": current_user,
         "date": {
             "date": date,
             "shifts": shifts,

@@ -31,3 +31,9 @@ class DBUser(Base):
                         default=None, onupdate=datetime.utcnow)
 
     birthday = Column(Date, nullable=True, default=None)
+
+    def has_birthday(self):
+        return self.birthday is not None
+    
+    def birthday_in_current_month(self, current_month):
+        return self.birthday.month == current_month

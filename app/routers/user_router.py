@@ -69,16 +69,7 @@ def get_profile_page(
     share_headings = ["Name", "Actions"]
     shift_headings = ["Type", "Date", "Actions"]
 
-    if current_user.display_name is not None:
-        display_name = current_user.display_name.split(" ")[0]
-    else:
-        display_name = "NewUser00001"
-
-    user_page_data = {
-        "display_name": display_name,
-        "is_admin": current_user.is_admin
-    }
-
+    
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
         db=db,
@@ -86,7 +77,7 @@ def get_profile_page(
     )
 
     context = {
-        "user_data": user_page_data,
+        "current_user": current_user,
         "request": request,
         "shift_types": shift_types,
         "user": current_user,
@@ -146,6 +137,7 @@ def get_display_name_widget(
         return Response(status_code=403)
 
     context = {
+        "current_user": current_user,
         "request": request,
         "user": current_user,
     }
@@ -209,6 +201,7 @@ def update_user_contact(
             updated_user=updated_user)
     except IntegrityError:
         context = {
+            "current_user": current_user,
             "request": request,
             "user": current_user,
         }
@@ -220,6 +213,7 @@ def update_user_contact(
         )
 
     context = {
+        "current_user": current_user,
         "request": request,
         "user": updated_user,
     }
@@ -259,6 +253,7 @@ def get_edit_display_name_widget(
         return Response(status_code=403)
 
     context = {
+        "current_user": current_user,
         "request": request,
         "user": current_user,
     }
@@ -298,6 +293,7 @@ def get_birthday_widget(
         return Response(status_code=403)
 
     context = {
+        "current_user": current_user,
         "request": request,
         "user": current_user,
     }
@@ -346,6 +342,7 @@ def update_user_birthday(
         updated_user=current_user
     )
     context = {
+        "current_user": current_user,
         "request": request,
         "user": current_user,
     }
@@ -386,6 +383,7 @@ def get_edit_birthday_widget(
         return Response(status_code=403)
 
     context = {
+        "current_user": current_user,
         "request": request,
         "user": current_user,
     }

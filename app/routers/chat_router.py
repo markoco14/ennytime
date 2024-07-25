@@ -66,7 +66,7 @@ def get_chat(
 
     context = {
         "request": request,
-        "user_data": current_user,
+        "current_user": current_user,
         "chat": chat,
         "share": share_result,
         "message_count": message_count
@@ -161,7 +161,7 @@ def get_user_chat(
     context = {
         "request": request,
         "chat": chat_room,
-        "user_data": current_user,
+        "current_user": current_user,
         "messages": messages
     }
 
@@ -193,7 +193,7 @@ def get_chat_room_messages(
 
     context = {
         "request": request,
-        "user_data": current_user,
+        "current_user": current_user,
         "messages": messages
     }
 
@@ -283,7 +283,7 @@ def get_unread_messages(
     )
 
     context = {
-
+        "current_user": current_user,
         "request": request,
         "message_count": message_count
     }

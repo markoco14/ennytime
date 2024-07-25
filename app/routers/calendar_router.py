@@ -36,16 +36,15 @@ def get_simple_calendar_day_card(
             name="website/web-home.html",
             headers={"HX-Redirect": "/"},
         )
-    
-    date_segments = date_string.split("-")
-    month = date_segments[1]
 
     session_data: schemas.Session = auth_service.get_session_data(
         db=db, session_token=request.cookies.get("session-id"))
 
     current_user: schemas.AppUser = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
-    date_segments = date_string.split("-")
+
+    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
+        date_string=date_string)
 
     db_shifts = shift_repository.get_user_shifts_details(
         db=db, user_id=current_user.id)
@@ -68,15 +67,15 @@ def get_simple_calendar_day_card(
                 bae_shifts.append(shift)
 
     birthdays = []
-    if current_user.__dict__["birthday"] and int(month) == current_user.__dict__["birthday"].month:
+    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=month_number):
         birthdays.append({
             "name": current_user.display_name,
-            "day": current_user.__dict__["birthday"].day
+            "day": current_user.birthday.day
         })
     bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
         db=db, share_user_id=shared_with_me.owner_id)
 
-    if bae_user.birthday and int(month) == bae_user.birthday.month:
+    if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
         birthdays.append({
             "name": bae_user.display_name,
             "day": bae_user.birthday.day
@@ -87,11 +86,11 @@ def get_simple_calendar_day_card(
         "date": {
             "date": date_string,
             "shifts": shifts,
-            "day_number": int(date_segments[2]),
+            "day_number": day_number,
             "bae_shifts": bae_shifts,
         },
-        "current_user": current_user.display_name,
-        "bae_user": bae_user.display_name,
+        "current_user": current_user,
+        "bae_user": bae_user,
         "birthdays": birthdays
     }
 
@@ -100,7 +99,6 @@ def get_simple_calendar_day_card(
         name="/calendar/calendar-card-simple.html",
         context=context,
     )
-
 
 
 @router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
@@ -119,10 +117,8 @@ def get_calendar_card_detailed(
     session_data: schemas.Session = auth_service.get_session_data(
         db=db, session_token=request.cookies.get("session-id"))
 
-    current_user: schemas.AppUser = auth_service.get_current_user(
+    current_user = auth_service.get_current_user(
         db=db, user_id=session_data.user_id)
-
-    date_segments = date_string.split("-")
 
     # get the user's shifts
     user_shifts_query = text("""
@@ -140,12 +136,11 @@ def get_calendar_card_detailed(
     user_shifts_result = db.execute(
         user_shifts_query, {"owner_id": current_user.id, "date_string": date_string}).fetchall()
 
-    year = date_segments[0]
-    month = date_segments[1]
-    day = date_segments[2]
-    date = datetime.date(int(year), int(month), int(day))
+    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
+        date_string)
+    date = datetime.date(year_number, month_number, day_number)
     written_month = date.strftime("%B %d, %Y")
-    day = date.strftime("%A")
+    written_day = date.strftime("%A")
 
     # check if anyone has shared their calendar with the current user
     share_query = text("""
@@ -161,15 +156,16 @@ def get_calendar_card_detailed(
 
     # organize birthdays
     birthdays = []
-    if current_user.__dict__["birthday"] and int(month) == current_user.__dict__["birthday"].month:
+    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=month_number):
         birthdays.append({
             "name": current_user.display_name,
-            "day": current_user.__dict__["birthday"].day
+            "day": current_user.birthday.day
         })
+
     bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
         db=db, share_user_id=share_result.owner_id)
 
-    if bae_user.birthday and int(month) == bae_user.birthday.month:
+    if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
         birthdays.append({
             "name": bae_user.display_name,
             "day": bae_user.birthday.day
@@ -178,14 +174,14 @@ def get_calendar_card_detailed(
     if not share_result:
         context = {
             "request": request,
-            "current_user": current_user.display_name,
-            "month": month,
+            "current_user": current_user,
+            "month": month_number,
             "written_month": written_month,
-            "day": day,
+            "written_day": written_day,
             "date": {
                 "date": date_string,
                 "shifts": user_shifts_result,
-                "day_number": int(date_segments[2]),
+                "day_number": day_number,
                 "bae_shifts": [],
             },
             "birthdays": birthdays
@@ -215,15 +211,15 @@ def get_calendar_card_detailed(
 
     context = {
         "request": request,
-        "current_user": current_user.display_name,
-        "bae_user": share_result.bae_name,
-        "month": month,
+        "current_user": current_user,
+        "bae_user": bae_user,
+        "month": month_number,
         "written_month": written_month,
-        "day": day,
+        "written_day": written_day,
         "date": {
             "date": date_string,
             "shifts": user_shifts_result,
-            "day_number": int(date_segments[2]),
+            "day_number": day_number,
             "bae_shifts": shifts_result,
         },
         "birthdays": birthdays
@@ -240,9 +236,7 @@ def get_calendar_card_detailed(
 def get_calendar_day_form(
     request: Request,
     date_string: str,
-    db: Annotated[Session, Depends(get_db)],
-    month: Optional[int] = None,
-    year: Optional[int] = None
+    db: Annotated[Session, Depends(get_db)]
 ):
     """Get calendar day form"""
     if not auth_service.get_session_cookie(request.cookies):
@@ -261,11 +255,7 @@ def get_calendar_day_form(
     shift_types = shift_type_repository.list_user_shift_types(
         db=db,
         user_id=current_user.id)
-    current_month = calendar_service.get_current_month(month)
-    current_year = calendar_service.get_current_year(year)
-    year_string = date_string.split("-")[0]
-    month_string = date_string.split("-")[1]
-    day_string = date_string.split("-")[2]
+
 
     # TODO: Get the day of the week
 
@@ -289,28 +279,28 @@ def get_calendar_day_form(
     user_shifts = []
     for row in result:
         user_shifts.append(row._asdict())
-    year = date_string.split("-")[0]
-    month = date_string.split("-")[1]
-    day = date_string.split("-")[2]
-    date = datetime.date(int(year), int(month), int(day))
-    month = date.strftime("%B %d, %Y")
-    day = date.strftime("%A")
+ 
+    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
+        date_string=date_string)
+    date = datetime.date(year_number, month_number, day_number)
+    written_month = date.strftime("%B %d, %Y")
+    written_day = date.strftime("%A")
 
     date_dict = {
-        "date_string": f"{year_string}-{month_string}-{day_string}",
+        "date_string": date_string,
         "day_of_week": str(calendar_service.get_weekday(date_string)),
         "shifts": user_shifts,
     }
 
     context = {
+        "current_user": current_user,
         "request": request,
         "shift_types": shift_types,
-        "day_number": int(date_string.split("-")[2]),
-        "current_month": current_month,
-        "current_year": current_year,
+        "day_number": day_number,
         "date_string": date_string,
-        "readable_month": month,
-        "date": date_dict,
+        "written_month": written_month,
+        "written_day": written_day,
+        "date_dict": date_dict,
     }
 
     return templates.TemplateResponse(
@@ -318,4 +308,3 @@ def get_calendar_day_form(
         name="/calendar/add-shift-form.html",
         context=context
     )
-

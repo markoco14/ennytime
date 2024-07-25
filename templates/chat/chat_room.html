@@ -26,7 +26,7 @@ Couple's Chat
 		 class="h-full w-full flex-1 overflow-y-auto p-4 pt-[54px] pb-[78px] h-full space-y-4">
 		{% block messages %}
 		{% for message in messages  %}
-		{% if message.sender_id == user_data.id %}
+		{% if message.sender_id == current_user.id %}
 		<div class="flex justify-end">
 			<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
 				<p>{{message.message}}</p>
