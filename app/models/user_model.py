@@ -32,6 +32,8 @@ class DBUser(Base):
 
     birthday = Column(Date, nullable=True, default=None)
 
+    username = Column(String(25), nullable=True, default=None)
+
     def has_birthday(self):
         return self.birthday is not None
     
