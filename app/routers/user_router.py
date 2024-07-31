@@ -391,3 +391,42 @@ def get_edit_birthday_widget(
         name="profile/birthday-edit.html",
         context=context
     )
+
+
+@router.get("/username/{user_id}/edit", response_class=HTMLResponse | Response)
+def get_edit_username_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+):
+    """Returns HTML to let the user edit their username"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+    )
+
+    current_user: schemas.User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+    )
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/username-edit.html",
+        context=context
+    )
