@@ -10,9 +10,16 @@
 	<input class="w-full max-w-[400px] p-2 bg-white rounded-md border border-white dark:text-gray-900"
 		   type="text"
 		   name="username"
-		   value="{{user.username}}"
+		   value="{{username}}"
 		   hx-post="/username-unique"
 		   hx-trigger="change delay:300ms" />
+		   {% if username_taken and username != user.username %}
+		   <span class="bg-white p-2 rounded-md max-w-[400px] text-red-600">This username is already taken</span>
+		   {% elif username_taken and username == user.username %}
+		   <span class="bg-white p-2 rounded-md max-w-[400px] text-red-600">This is already your username</span>
+		   {% else %}
+		   <span class="bg-white p-2 rounded-md max-w-[400px] text-green-600">This username is available</span>
+		   {% endif %}
 	<div class="flex gap-2 pl-2">
 		<button type="button"
 				hx-get="/username/{{user.id}}">
