@@ -12,7 +12,9 @@
 		   name="username"
 		   value="{{user.username}}"
 		   hx-post="/username-unique"
-		   hx-trigger="change delay:300ms" />
+		   hx-trigger="keyup changed delay:500ms"
+		   autofocus
+		   onfocus="this.setSelectionRange(this.value.length,this.value.length);" />
 	<div class="flex gap-2 pl-2">
 		<button type="button"
 				hx-get="/username/{{user.id}}">
