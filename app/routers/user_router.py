@@ -9,10 +9,11 @@ from sqlalchemy.exc import IntegrityError
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app.repositories import shift_repository, shift_type_repository
+from app.repositories import shift_type_repository
 from app.repositories import user_repository, share_repository
 from app.schemas import schemas
-from app.services import calendar_service, chat_service
+from app.services import chat_service
+from app.models.user_model import DBUser
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -389,5 +390,176 @@ def get_edit_birthday_widget(
     return templates.TemplateResponse(
         request=request,
         name="profile/birthday-edit.html",
+        context=context
+    )
+
+
+@router.get("/username/{user_id}", response_class=HTMLResponse | Response)
+def get_username_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+):
+    """Returns HTML to let the user edit their username"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+    )
+
+    current_user: schemas.User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+    )
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/username.html",
+        context=context
+    )
+
+
+@router.put("/username/{user_id}", response_class=HTMLResponse | Response)
+def update_username_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    username: Annotated[str, Form()] = None,
+):
+    """Returns HTML to let the user edit their username"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+    )
+
+    current_user: schemas.User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+    )
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+
+    current_user.username = username
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/username.html",
+        context=context
+    )
+
+
+@router.get("/username/{user_id}/edit", response_class=HTMLResponse | Response)
+def get_edit_username_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)]
+):
+    """Returns HTML to let the user edit their username"""
+    if not auth_service.get_session_cookie(request.cookies):
+        return templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html",
+            headers={"HX-Redirect": "/"},
+        )
+
+    session_data: Session = auth_service.get_session_data(
+        db=db,
+        session_token=request.cookies.get("session-id")
+    )
+
+    current_user: schemas.User = auth_service.get_current_user(
+        db=db,
+        user_id=session_data.user_id
+    )
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/username-edit.html",
+        context=context
+    )
+
+
+@router.post("/username-unique", response_class=HTMLResponse)
+def validate_username(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    username: Annotated[str, Form()] = ""
+):
+    current_user: schemas.User = auth_service.get_current_session_user(
+        db=db,
+        cookies=request.cookies
+    )
+
+    if current_user == None:
+        return Response(status_code=403)
+    
+
+    if username == "":
+        context = {"request": request,
+                "user": current_user,
+                "username": username,
+                "username_taken": True
+                }
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/username-edit.html",
+            context=context
+        )
+
+    db_username = db.query(DBUser).filter(
+        DBUser.username == username).first()
+
+    if db_username == None:
+        username_taken = False
+    else:
+        username_taken = True
+
+    context = {"request": request,
+               "user": current_user,
+               "username": username,
+               "username_taken": username_taken
+               }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/username-edit-errors.html",
         context=context
     )
