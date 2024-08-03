@@ -1,8 +1,8 @@
 {% from '/macros/spinner.html' import spinner%}
 {% if matched_user %}
-<p>{{matched_user.display_name}} @ {{matched_user.username}}</p>
+<p class="bg-white p-2 rounded-md">{{matched_user.display_name}} @ {{matched_user.username}}</p>
 {% elif matched_user == ""%}
 <p></p>
 {% else %}
-<p>No users found with that username.</p>
+<p class="bg-white p-2 rounded-md">No users found with that username.</p>
 {% endif %}
