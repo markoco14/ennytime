@@ -235,15 +235,18 @@ def search_users_to_share(
         return templates.TemplateResponse(
             request=request,
             name="profile/search-results.html",
-            context={"request": request, "matching_users": []}
+            context={"request": request, "matched_user": None}
         )
-
-    search_display_name_lower = search_display_name.lower()
-
-    matching_users = user_repository.list_users_by_display_name(
-        db=db, current_user_id=current_user.id, display_name=search_display_name_lower)
-
-    context = {"request": request, "matching_users": matching_users}
+    
+    matched_user = user_repository.get_user_by_username(
+        db=db,
+        username=search_display_name
+    )
+    
+    context = {
+        "request": request,
+        "matched_user": matched_user
+    }
 
     return templates.TemplateResponse(
         request=request,
