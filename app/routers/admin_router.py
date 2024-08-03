@@ -86,7 +86,7 @@ def list_users(
 
     
     users = UserRepository.list_users(db=db)
-    headings = ["Display name", "Email", "Actions"]
+    headings = ["Display name", "Email", "Username", "Actions"]
     
     
     # get unread message count so chat icon can display the count on page load
