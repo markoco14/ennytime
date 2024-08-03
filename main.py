@@ -216,7 +216,7 @@ def get_signup_page(request: Request):
 def search_users_to_share(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    search_display_name: Annotated[str, Form()] = ""
+    search_username: Annotated[str, Form()] = ""
 ):
     """ Returns a list of users that match the search string. """
     current_user = auth_service.get_current_session_user(
@@ -231,16 +231,16 @@ def search_users_to_share(
 
         return response
 
-    if search_display_name == "":
+    if search_username == "":
         return templates.TemplateResponse(
             request=request,
             name="profile/search-results.html",
-            context={"request": request, "matched_user": None}
+            context={"request": request, "matched_user": ""}
         )
     
     matched_user = user_repository.get_user_by_username(
         db=db,
-        username=search_display_name
+        username=search_username
     )
     
     context = {
