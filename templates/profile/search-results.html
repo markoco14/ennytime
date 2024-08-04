@@ -1,6 +1,17 @@
 {% from '/macros/spinner.html' import spinner%}
 {% if matched_user %}
-<p class="bg-white p-2 rounded-md">{{matched_user.display_name}} @ {{matched_user.username}}</p>
+<p class="flex gap-2 items-center bg-white p-2 rounded-md">{{matched_user.display_name}} @ {{matched_user.username}} <button
+			hx-get="/share-calendar/{{matched_user.id}}"
+			hx-target="#share-section"
+			hx-swap="outerHTML"
+			class="flex gap-2 justify-center items-center text-pink-700">
+			<span class="htmx-indicator-content">
+		Share
+			</span>
+			<span class="htmx-indicator">
+		Sharing
+			</span>
+	</button></p>
 {% elif matched_user == ""%}
 <p></p>
 {% else %}
