@@ -102,7 +102,7 @@ def get_profile_page(
 
     share_user = user_repository.get_user_by_id(
         db=db, user_id=share_owner.guest_id)
-    context.update({"share": share_owner, "share_user": share_user})
+    context.update({"share": share_owner, "share_user": share_user, "matched_user": share_user})
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",

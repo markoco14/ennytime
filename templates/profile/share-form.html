@@ -1,25 +1,19 @@
-{% from '/macros/table.html' import heading_row%}
-
-<div id="share-section" class="flex flex-col gap-2">
-  <p>
-    Share your calendar with your significant other. Search their display name
-    to share.
-  </p>
-  <div class="w-full max-w-[400px]">
-    <input
-      class="w-full p-2 rounded-md text-black"
-      type="search"
-      name="search_display_name"
-      placeholder="Begin Typing To Search Users..."
-      hx-post="/search"
-      hx-trigger="input changed delay:500ms, search"
-      hx-target="#search-results"
-    />
-  </div>
-  <table class="w-full">
-    <thead>
-      {{ heading_row(share_headings)}}
-    </thead>
-    <tbody id="search-results"></tbody>
-  </table>
+<div id="share-section"
+	 class="flex flex-col gap-2">
+	<p>
+		Share your calendar with someone. Enter their username below to search for them.
+	</p>
+	<div class="flex items-center gap-2 w-full">
+		<input class="w-[50%] p-2 rounded-md text-black"
+			   type="search"
+			   name="search_username"
+			   placeholder="Begin Typing To Search Users..."
+			   hx-post="/search"
+			   hx-trigger="keyup changed delay:500ms, search"
+			   hx-target="#search-results"
+			   hx-swap="innerHTML"
+			   hx-indicator="next span" />
+		<span class="htmx-indicator">Searching...</span>
+	</div>
+	<div id="search-results"></div>
 </div>
