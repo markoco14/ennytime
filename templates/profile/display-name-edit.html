@@ -2,7 +2,8 @@
 <form class="py-2 flex flex-col gap-2"
 	  hx-put="/contact/{{user.id}}"
 	  hx-target="this"
-	  hx-swap="outerHTML">
+	  hx-swap="outerHTML"
+	  hx-indicator="#save-button">
 	<label class="text-xl text-gray-900 dark:text-gray-100">Display name</label>
 	<p>
 		This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other
@@ -12,12 +13,33 @@
 		   type="text"
 		   name="display_name"
 		   value="{{user.display_name}}" />
-	<div class="flex gap-2 pl-2">
-		<button type="button"
-				hx-get="/contact/{{user.id}}">
-			Cancel
+	<div class="flex gap-2">
+		<button id="close-button"
+				type="button"
+				hx-get="/contact/{{user.id}}"
+				hx-indicator="#close-button"
+				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
+			<img width="16"
+				 height="16"
+				 src="../../../static/img/icons8-close-50.png"
+				 alt="Close"
+				 class="htmx-indicator-content" />
+			<img src="../../../static/img/spinner-48.png"
+				 alt="Closing..."
+				 class="htmx-indicator animate-spin-slow w-4 h-4" />
 		</button>
-		<button type="submit">Save
-			{{spinner('h-5', 'h-5', 'text-black')}}</button>
+		<button id="save-button"
+				type="submit"
+				class="grow-0 flex justify-center items-center p-2 border rounded-md bg-pink-500 hover:bg-pink-600 active:bg-pink-700 border-pink-600 active:border-pink-800">
+			<img width="16"
+				 height="16"
+				 src="../../../static/img/icons8-check-50.png"
+				 alt="Save"
+				 class="htmx-indicator-content" />
+			<img id="save-indicator"
+				 src="../../../static/img/spinner-48.png"
+				 alt="Saving..."
+				 class="htmx-indicator animate-spin-slow w-4 h-4" />
+		</button>
 	</div>
 </form>
