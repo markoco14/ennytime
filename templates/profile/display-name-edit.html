@@ -12,10 +12,18 @@
 		   type="text"
 		   name="display_name"
 		   value="{{user.display_name}}" />
-	<div class="flex gap-2 pl-2">
+	<div class="flex gap-2">
 		<button type="button"
-				hx-get="/contact/{{user.id}}">
-			Cancel
+				hx-get="/contact/{{user.id}}"
+				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
+			<img width="16"
+				 height="16"
+				 src="../../../static/img/icons8-close-50.png"
+				 alt="Close"
+				 class="htmx-indicator-content" />
+			<img src="../../../static/img/spinner-48.png"
+				 alt="Loading..."
+				 class="htmx-indicator animate-spin-slow w-4 h-4" />
 		</button>
 		<button type="submit">Save
 			{{spinner('h-5', 'h-5', 'text-black')}}</button>
