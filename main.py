@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from pprint import pprint
 import time
 from fastapi import Depends, FastAPI, Request, Form, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from mangum import Mangum
@@ -19,6 +19,7 @@ from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router, chat_router
 from app.services import calendar_service, chat_service
+
 
 SETTINGS = get_settings()
 
@@ -89,11 +90,9 @@ def index(
     db: Annotated[Session, Depends(get_db)],
     month: Optional[int] = None,
     year: Optional[int] = None,
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Index page"""
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
     if not current_user:
         response = templates.TemplateResponse(
             request=request,
@@ -195,33 +194,49 @@ def index(
 
 
 @app.get("/signin", response_class=HTMLResponse)
-def get_signin_page(request: Request):
+def get_signin_page(
+    request: Request,
+    current_user=Depends(auth_service.user_dependency)
+):
     """Go to the sign in page"""
-    return templates.TemplateResponse(
-        request=request,
-        name="website/signin.html",
-    )
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/signin.html"
+        )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+
+    return RedirectResponse(url="/")
 
 
 @app.get("/signup", response_class=HTMLResponse)
-def get_signup_page(request: Request):
+def get_signup_page(
+    request: Request,
+    current_user=Depends(auth_service.user_dependency)
+):
     """Go to the sign up page"""
-    return templates.TemplateResponse(
-        request=request,
-        name="website/signup.html",
-    )
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/signin.html"
+        )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+
+    return RedirectResponse(url="/")
 
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    search_username: Annotated[str, Form()] = ""
+    search_username: Annotated[str, Form()] = "",
+    current_user=Depends(auth_service.user_dependency)
 ):
     """ Returns a list of users that match the search string. """
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
     if not current_user:
         response = templates.TemplateResponse(
             request=request,
@@ -237,12 +252,12 @@ def search_users_to_share(
             name="profile/search-results.html",
             context={"request": request, "matched_user": ""}
         )
-    
+
     matched_user = user_repository.get_user_by_username(
         db=db,
         username=search_username
     )
-    
+
     context = {
         "request": request,
         "matched_user": matched_user
