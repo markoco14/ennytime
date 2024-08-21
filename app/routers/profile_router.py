@@ -1,7 +1,7 @@
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -22,38 +22,16 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/profile", response_class=HTMLResponse | Response)
 def get_profile_page(
     request: Request,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Profile page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/signin.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    try:
-        current_user: schemas.User = auth_service.get_current_user(
-            db=db,
-            user_id=session_data.user_id
-        )
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/signin.html",
-            headers={"HX-Redirect": "/signin"},
-        )
-        response.delete_cookie("session-id")
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
         return response
-
+    
     shift_types = shift_type_repository.list_user_shift_types(
         db=db,
         user_id=current_user.id)
