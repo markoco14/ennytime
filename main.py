@@ -17,7 +17,7 @@ from app.core.config import get_settings
 from app.core.template_utils import templates, block_templates
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
-from app.routers import admin_router, calendar_router, share_router, shift_router, shift_type_router, user_router, chat_router
+from app.routers import admin_router, calendar_router, profile_router, share_router, shift_router, shift_type_router, chat_router
 from app.services import calendar_service, chat_service
 
 
@@ -66,7 +66,7 @@ app.add_middleware(ClosingDownMiddleware)
 
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
-app.include_router(user_router.router)
+app.include_router(profile_router.router)
 app.include_router(shift_type_router.router)
 app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
