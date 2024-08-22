@@ -131,6 +131,11 @@
 		<main>
 			{% block content %}{% endblock content %}
 		</main>
+		<script>
+			document.body.addEventListener('unauthorizedRedirect', function () {
+					window.location.href = '/signin';
+				});
+		</script>
 	</body>
 
 </html>
