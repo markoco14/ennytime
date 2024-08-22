@@ -36,7 +36,6 @@ def get_profile_page(
         db=db,
         user_id=current_user.id)
 
-
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
         db=db,
@@ -75,7 +74,7 @@ def get_profile_page(
     )
 
 
-@router.get("/contact/{user_id}", response_class=HTMLResponse | Response)
+@router.get("/profile/display-name/{user_id}", response_class=HTMLResponse | Response)
 def get_display_name_widget(
     request: Request,
     user_id: int,
@@ -116,7 +115,7 @@ def update_entity(original_entity, update_data: dict[str, any]):
     return original_entity
 
 
-@router.put("/contact/{user_id}", response_class=HTMLResponse | Response)
+@router.put("/profile/display-name/edit/{user_id}", response_class=HTMLResponse | Response)
 def update_user_contact(
     request: Request,
     user_id: int,
@@ -177,7 +176,7 @@ def update_user_contact(
     )
 
 
-@router.get("/contact/{user_id}/edit", response_class=HTMLResponse | Response)
+@router.get("/profile/display-name/edit/{user_id}", response_class=HTMLResponse | Response)
 def get_edit_display_name_widget(
     request: Request,
     user_id: int,

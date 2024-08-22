@@ -1,6 +1,6 @@
 {% from "macros/spinner.html" import spinner %}
 <form class="py-2 flex flex-col gap-2"
-	  hx-put="/contact/{{user.id}}"
+	  hx-put="/profile/display-name/edit/{{user.id}}"
 	  hx-target="this"
 	  hx-swap="outerHTML"
 	  hx-indicator="#save-button">
@@ -16,7 +16,7 @@
 	<div class="flex gap-2">
 		<button id="close-button"
 				type="button"
-				hx-get="/contact/{{user.id}}"
+				hx-get="/profile/display-name/{{user.id}}"
 				hx-indicator="#close-button"
 				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
 			<img width="16"
