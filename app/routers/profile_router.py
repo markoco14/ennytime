@@ -36,8 +36,6 @@ def get_profile_page(
         db=db,
         user_id=current_user.id)
 
-    share_headings = ["Name", "Actions"]
-    shift_headings = ["Type", "Date", "Actions"]
 
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -50,9 +48,6 @@ def get_profile_page(
         "request": request,
         "shift_types": shift_types,
         "user": current_user,
-        # "shifts": shifts,
-        "share_headings": share_headings,
-        "shift_headings": shift_headings,
         "message_count": message_count
     }
 
