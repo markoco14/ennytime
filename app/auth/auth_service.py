@@ -94,10 +94,10 @@ def user_dependency(request: Request, db: Session = Depends(get_db)):
             db.delete(session_data)
             db.commit()
             logging.info("Expired session deleted: %s", session_id)
-        except Exception as e:
+        except Exception as error:
             db.rollback()
             logging.error(
-                "Failed to delete expired session: %s, error: %s", session_id, e)
+                "Failed to delete expired session: %s, error: %s", session_id, error)
         return None
 
     db_user = user_repository.get_user_by_id(
@@ -107,10 +107,10 @@ def user_dependency(request: Request, db: Session = Depends(get_db)):
             db.delete(session_data)
             db.commit()
             logging.info("Orphaned session deleted: %s", session_id)
-        except Exception as e:
+        except Exception as error:
             db.rollback()
             logging.error(
-                "Failed to delete orphaned session: %s, error: %s", session_id, e)
+                "Failed to delete orphaned session: %s, error: %s", session_id, error)
         return None
 
     return db_user
