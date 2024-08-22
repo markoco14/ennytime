@@ -199,16 +199,16 @@ def get_signin_page(
     current_user=Depends(auth_service.user_dependency)
 ):
     """Go to the sign in page"""
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/signin.html"
-        )
-        if request.cookies.get("session-id"):
-            response.delete_cookie("session-id")
-        return response
+    if current_user:
+        return RedirectResponse(url="/")
 
-    return RedirectResponse(url="/")
+    response = templates.TemplateResponse(
+        request=request,
+        name="website/signin.html"
+    )
+    if request.cookies.get("session-id"):
+        response.delete_cookie("session-id")
+    return response
 
 
 @app.get("/signup", response_class=HTMLResponse)
@@ -217,16 +217,17 @@ def get_signup_page(
     current_user=Depends(auth_service.user_dependency)
 ):
     """Go to the sign up page"""
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/signin.html"
-        )
-        if request.cookies.get("session-id"):
-            response.delete_cookie("session-id")
-        return response
+    if current_user:
+        return RedirectResponse(url="/")
 
-    return RedirectResponse(url="/")
+    response = templates.TemplateResponse(
+        request=request,
+        name="website/signup.html"
+    )
+    if request.cookies.get("session-id"):
+        response.delete_cookie("session-id")
+
+    return response
 
 
 @app.post("/search", response_class=HTMLResponse)
