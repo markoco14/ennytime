@@ -1,7 +1,7 @@
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -31,19 +31,10 @@ def get_profile_page(
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
-    
+
     shift_types = shift_type_repository.list_user_shift_types(
         db=db,
         user_id=current_user.id)
-
-    # shifts = shift_repository.get_user_shifts(db=db, user_id=current_user.id)
-    # for shift in shifts:
-    #     shift.type = shift_type_repository.get_user_shift_type(
-    #         db=db,
-    #         user_id=current_user.id,
-    #         shift_type_id=shift.type_id
-    #     )
-    #     shift.date = f"{calendar_service.MONTHS[shift.date.month - 1]}  {calendar_service.get_current_day(shift.date.day)}, {shift.date.year}"
 
     share_headings = ["Name", "Actions"]
     shift_headings = ["Type", "Date", "Actions"]
@@ -80,7 +71,8 @@ def get_profile_page(
 
     share_user = user_repository.get_user_by_id(
         db=db, user_id=share_owner.guest_id)
-    context.update({"share": share_owner, "share_user": share_user, "matched_user": share_user})
+    context.update(
+        {"share": share_owner, "share_user": share_user, "matched_user": share_user})
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",
@@ -92,24 +84,17 @@ def get_profile_page(
 def get_display_name_widget(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    current_user=Depends(auth_service.user_dependency)
 ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
         )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
@@ -142,24 +127,18 @@ def update_user_contact(
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
     display_name: Annotated[str, Form()] = None,
+    current_user=Depends(auth_service.user_dependency)
 ):
     """ update user attribute"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
         )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
@@ -207,25 +186,19 @@ def update_user_contact(
 def get_edit_display_name_widget(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Edit contact page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
         )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
@@ -508,14 +481,13 @@ def validate_username(
 
     if current_user == None:
         return Response(status_code=403)
-    
 
     if username == "":
         context = {"request": request,
-                "user": current_user,
-                "username": username,
-                "username_taken": True
-                }
+                   "user": current_user,
+                   "username": username,
+                   "username_taken": True
+                   }
         return templates.TemplateResponse(
             request=request,
             name="profile/username-edit.html",
