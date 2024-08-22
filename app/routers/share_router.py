@@ -58,7 +58,6 @@ def share_calendar(
     new_db_share = share_repository.create_share(db=db, new_share=new_db_share)
     share_user = user_repository.get_user_by_id(
         db=db, user_id=new_db_share.guest_id)
-    share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
         name="profile/share-exists.html",
@@ -67,7 +66,6 @@ def share_calendar(
             "share": new_db_share,
             "share_user": share_user,
             "matched_user": share_user,
-            "share_headings":  share_headings,
             "message": "Calendar shared!"
         },
     )
@@ -81,13 +79,11 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
         share_repository.delete_share(db=db, share_id=share_id)
     except IntegrityError:
         return "IntegrityError"
-    share_headings = ["Name", "Actions"]
     return templates.TemplateResponse(
         request=request,
         name="profile/share-form.html",
         context={
             "request": request,
-            "share_headings": share_headings,
             "message": "Calendar unshared!"
         },
     )

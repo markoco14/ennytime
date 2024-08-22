@@ -3,7 +3,7 @@ import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form,  Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from sqlalchemy.orm import Session
@@ -209,21 +209,22 @@ def post_new_message(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     room_id: str,
-    message: Annotated[str, Form()]
+    message: Annotated[str, Form()],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """
     Add a new message to the chat
     """
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
         )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
 
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
+        return response
 
     db_message = DBChatMessage(
         room_id=room_id,
@@ -250,7 +251,19 @@ def set_message_to_read(
     request: Request,
     message_id: int,
     db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
+        )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+
+        return response
+
     db_message = db.query(DBChatMessage).filter(
         DBChatMessage.id == message_id).first()
 
@@ -265,13 +278,19 @@ def set_message_to_read(
 def get_unread_messages(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
-    
     if not current_user:
-        return Response(status_code=401)
+        context = {
+            "current_user": current_user,
+            "request": request,
+            "message_count": 0
+        }
+
+        return block_templates.TemplateResponse(
+            name="chat/unread-counter.html",
+            context=context
+        )
 
     message_count = chat_service.get_user_unread_message_count(
         db=db,
