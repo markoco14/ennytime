@@ -28,20 +28,18 @@ router = APIRouter()
 def get_simple_calendar_day_card(
         request: Request,
         db: Annotated[Session, Depends(get_db)],
-        date_string: str):
+        date_string: str,
+        current_user=Depends(auth_service.user_dependency)
+        ):
     """Get calendar day card"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
+    if not current_user:
+        response = templates.TemplateResponse(
             request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+            name="website/web-home.html"
         )
+        response.delete_cookie("session-id")
 
-    session_data: schemas.Session = auth_service.get_session_data(
-        db=db, session_token=request.cookies.get("session-id"))
-
-    current_user: schemas.AppUser = auth_service.get_current_user(
-        db=db, user_id=session_data.user_id)
+        return response
 
     year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
         date_string=date_string)
@@ -233,21 +231,18 @@ def get_calendar_card_detailed(
 def get_calendar_day_form(
     request: Request,
     date_string: str,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day form"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
+    if not current_user:
+        response = templates.TemplateResponse(
             request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+            name="website/web-home.html"
         )
+        response.delete_cookie("session-id")
 
-    session_data: schemas.Session = auth_service.get_session_data(
-        db=db, session_token=request.cookies.get("session-id"))
-
-    current_user: schemas.AppUser = auth_service.get_current_user(
-        db=db, user_id=session_data.user_id)
+        return response
 
     shift_types = shift_type_repository.list_user_shift_types(
         db=db,
