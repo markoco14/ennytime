@@ -174,7 +174,6 @@ def index(
         "next_month_name": next_month_name,
         "message_count": message_count,
         "current_user": current_user,
-        "bae_user": bae_user,
         "month_calendar": list(month_calendar_dict.values())
     }
 
