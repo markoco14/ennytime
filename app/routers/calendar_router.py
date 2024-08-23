@@ -72,14 +72,16 @@ def get_simple_calendar_day_card(
             "name": current_user.display_name,
             "day": current_user.birthday.day
         })
-    bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
-        db=db, share_user_id=shared_with_me.owner_id)
 
-    if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
-        birthdays.append({
-            "name": bae_user.display_name,
-            "day": bae_user.birthday.day
-        })
+    if shared_with_me:
+        bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+            db=db, share_user_id=shared_with_me.owner_id)
+
+        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
+            birthdays.append({
+                "name": bae_user.display_name,
+                "day": bae_user.birthday.day
+            })
 
     context = {
         "request": request,
@@ -90,7 +92,6 @@ def get_simple_calendar_day_card(
             "bae_shifts": bae_shifts,
         },
         "current_user": current_user,
-        "bae_user": bae_user,
         "birthdays": birthdays
     }
 
