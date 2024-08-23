@@ -449,10 +449,14 @@ def get_edit_username_widget(
 
     if current_user.id != user_id:
         return Response(status_code=403)
-
+    if not current_user.username:
+        username = ""
+    else:
+        username = current_user.username
     context = {
         "request": request,
         "user": current_user,
+        "username": username,
     }
 
     return templates.TemplateResponse(
@@ -491,7 +495,7 @@ def validate_username(
     db_username = db.query(DBUser).filter(
         DBUser.username == username).first()
 
-    if db_username == None:
+    if not db_username:
         username_taken = False
     else:
         username_taken = True
