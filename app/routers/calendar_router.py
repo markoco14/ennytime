@@ -293,9 +293,9 @@ def get_calendar_day_form(
         "written_day": written_day,
         "date_dict": date_dict,
     }
-
+ 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/add-shift-form.html",
+        name="/calendar/calendar-card-edit-schedule.html",
         context=context
     )
