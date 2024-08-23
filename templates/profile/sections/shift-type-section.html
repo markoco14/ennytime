@@ -1,5 +1,6 @@
 {% from "macros/spinner.html" import spinner %}
-<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
+<section id="types"
+		 class="bg-white dark:bg-gray-900 dark:text-gray-100">
 	<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
 		{% block shift_type_list %}
 		<div id="type-list"
@@ -10,6 +11,9 @@
 						hx-target="#type-list"
 						hx-swap="outerHTML show:body:bottom">New Type</button>
 			</div>
+			{% if not shift_types %}
+			<p>You didn't add any of the shifts you work. Click 'New Type' to add some.</p>
+			{% else %}
 			<ul class="flex flex-col gap-2 w-full max-w-[400px]">
 				{% for shift in shift_types %}
 				<li class="flex justify-between p-2 rounded-md border border-pink-300">
@@ -27,6 +31,7 @@
 				</li>
 				{% endfor %}
 			</ul>
+			{% endif %}
 		</div>
 		{% endblock shift_type_list %}
 	</div>
