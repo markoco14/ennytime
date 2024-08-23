@@ -294,8 +294,15 @@ def get_calendar_day_form(
         "date_dict": date_dict,
     }
 
+    if not shift_types:
+        return templates.TemplateResponse(
+            request=request,
+            name="/calendar/calendar-card-no-types.html",
+            context=context
+        )
+ 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/add-shift-form.html",
+        name="/calendar/calendar-card-edit-schedule.html",
         context=context
     )

@@ -1,0 +1,64 @@
+{% from '/macros/spinner.html' import spinner%}
+<div class="relative p-4 md:p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2 overflow-y-auto"
+	 hx-indicator="this">
+	<div class="htmx-indicator h-full w-full grid place-content-center">
+		<div class="w-full h-full flex justify-center items-center">
+			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+		</div>
+	</div>
+	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
+		<header>
+			<h3 class="text-3xl">{{written_month}}</h3>
+			<p class="text-xl">{{written_day}}</p>
+		</header>
+		<div>
+			<p class="mb-4">You didn't set up any shift types yet. Add a shift type to schedule shifts.</p>
+			<p>
+				<a href="/profile#types" class="text-blue-500 underline underline-offset-4 decoration-blue-500">Go to profile</a> and add the shifts you work.
+			</p>
+			{# <form id="type-form"
+				  class="max-w-[400px] flex flex-col gap-2 rounded-md dark:bg-gray-800"
+				  hx-post="/shift-types/new"
+				  hx-target="#type-form"
+				  hx-swap="outerHTML">
+				<div class="flex flex-col gap-2">
+					<label for="long_name"
+						   class="dark:text-gray-100">Full Shift Name</label>
+					<span>Give your shift type a descriptive name.</span>
+					<input type="text"
+						   id="long_name"
+						   name="long_name"
+						   required
+						   placeholder="Choose name for shift type..."
+						   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+				</div>
+				<div class="flex flex-col gap-2">
+					<label for="short_name"
+						   class="dark:text-gray-100">Short Shift Name</label>
+					<span>Give your shift type a short name to show in <strong>calendar view</strong></span>
+					<input type="text"
+						   id="short_name"
+						   name="short_name"
+						   required
+						   placeholder="Choose name for shift type..."
+						   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+				</div>
+				<button type="submit"
+						class="flex gap-2 justify-center items-center bg-[#E22C7B] px-3 py-1 rounded-md grow-0">
+					Save
+					{{spinner('h-10', 'h-10', 'text-black')}}
+				</button>
+			</form> #}
+		</div>
+		<footer>
+			<button type="button"
+					class="rounded bg-gray-300 dark:bg-gray-700 px-4 py-1"
+					hx-get="/calendar-card-detail/{{date_string}}"
+					hx-target="#day-{{day_number}}"
+					hx-swap="innerHTML"
+					hx-trigger="click">
+				Back
+			</button>
+		</footer>
+	</div>
+</div>
