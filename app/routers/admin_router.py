@@ -1,7 +1,7 @@
 """ Admin routes """
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -19,28 +19,22 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse | RedirectResponse)
 def read_admin_home_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Returns admin section home page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    current_user = auth_service.get_current_session_user(
-        db=db, cookies=request.cookies)
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if not current_user.is_admin:
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
+        response = RedirectResponse(url="/")
+        return response
 
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -61,34 +55,26 @@ def read_admin_home_page(
     )
 
 
-
 @router.get("/users", response_class=HTMLResponse)
 def list_users(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    ):
+    current_user=Depends(auth_service.user_dependency)
+):
     """List users"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-    
-    current_user = auth_service.get_current_session_user(db=db, cookies=request.cookies)
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if not current_user.is_admin:
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
+        response = RedirectResponse(url="/")
+        return response
 
-    
     users = UserRepository.list_users(db=db)
     headings = ["Display name", "Email", "Username", "Actions"]
-    
-    
+
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
         db=db,
@@ -102,60 +88,57 @@ def list_users(
         "headings": headings,
         "message_count": message_count
     }
-    
+
     return templates.TemplateResponse(
         request=request,
         name="admin/users.html",
         context=context
     )
 
+
 @router.delete("/users/{user_id}", response_class=JSONResponse)
 def delete_user(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
-    ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return JSONResponse(status_code=401, content="Unauthorized")
-
-    current_user = auth_service.get_current_session_user(
-        db=db, cookies=request.cookies)
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
+):
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if not current_user.is_admin:
-        return JSONResponse(status_code=401, content="Unauthorized")
-    
+        response = JSONResponse(status_code=401, content="Unauthorized")
+        return response
+
     db_user = UserRepository.get_user_by_id(
         db=db, user_id=user_id)
-    
+
     db.delete(db_user)
     db.commit()
-    
-    
+
     return Response(status_code=200)
 
 # @router.get("/sessions", response_class=HTMLResponse)
 # def list_sessions(
 #     request: Request,
-#     db: Annotated[Session, Depends(get_db)]
+#     db: Annotated[Session, Depends(get_db)],
+#     current_user = Depends(auth_service.get_current_user)
+
 #     ):
 #     """List sessions"""
-#     if not auth_service.get_session_cookie(request.cookies):
-#         return templates.TemplateResponse(
-#             request=request,
-#             name="website/web-home.html",
-#             headers={"HX-Redirect": "/"},
-#         )
-    
-#     current_user = auth_service.get_current_session_user(
-#         db=db, cookies=request.cookies)
+#    if not current_user:
+    #   response = RedirectResponse(url="/signin")
+    #    if request.cookies.get("session-id"):
+    #         response.delete_cookie("session-id")
+    #     return response
 
-#     if not current_user.is_admin:
-#         return templates.TemplateResponse(
-#             request=request,
-#             name="website/web-home.html",
-#             headers={"HX-Redirect": "/"},
-#         )
-    
+    # if not current_user.is_admin:
+    #     response = RedirectResponse(url="/")
+    #     return response
+
 #     sessions = session_repository.list_sessions(db=db)
 #     headings = ["ID", "Session Token", "User ID", "Expiry date", "Actions"]
 #     context = {

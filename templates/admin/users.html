@@ -9,8 +9,9 @@ Ennytime Profile Page
 <div class="py-8">
 	<section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 		<div class="container mx-auto p-2 md:px-0">
-			<a href="/admin">Back</a>
-			<h1 class="text-3xl text-[#D31D6C] dark:text-pink-100">Users</h1>
+			<h1 class="text-3xl text-[#D31D6C] dark:text-pink-100 mb-12">
+				<a href="/admin" class="underline underline-offset-4 underline-[#D31D6C]">Admin</a> / <span>Users</span>
+			</h1>
 			<div class="relative w-full overflow-auto">
 				<table class="w-full caption-bottom text-sm">
 					<thead class="[&amp;_tr]:border-b">
@@ -26,9 +27,11 @@ Ennytime Profile Page
 								{{user.display_name}}
 							</td>
 							<td>
-							{{user.email}}</td>
+								{{user.email}}
+							</td>
 							<td>
-							{{user.username}}</td>
+								{{user.username}}
+							</td>
 							<td class="p-4 align-middle flex justify-end gap-2">
 								<button hx-delete="/admin/users/{{user.id}}">delete</button>
 							</td>
