@@ -12,10 +12,11 @@ class DbShare(Base):
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, index=True, nullable=False)
     guest_id = Column(Integer, index=True, nullable=False)
-    sender_id = Column(Integer, index=True, nullable=True)
-    receiver_id = Column(Integer, index=True, nullable=True)
+    sender_id = Column(Integer, index=True, nullable=False)
+    receiver_id = Column(Integer, index=True, nullable=False)
 
     # Define the unique constraint within the table metadata
     __table_args__ = (
         UniqueConstraint('owner_id', 'guest_id', name='uix_owner_id_guest_id'),
+        UniqueConstraint('sender_id', 'receiver_id', name='uix_sender_id_receiver_id'),
     )
