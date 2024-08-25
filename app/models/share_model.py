@@ -2,6 +2,8 @@
 from sqlalchemy import Column, Integer
 # Make sure this import points to your Base declarative base instance
 from app.core.database import Base
+from sqlalchemy import Column, Integer, DateTime, func
+from app.core.database import Base
 
 # change type to name later, easier to understand in the app
 
@@ -20,3 +22,5 @@ class DbShare(Base):
     id = Column(Integer, primary_key=True, index=True)
     sender_id = Column(Integer, index=True, nullable=False, unique=True)
     receiver_id = Column(Integer, index=True, nullable=False, unique=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
