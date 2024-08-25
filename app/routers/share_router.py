@@ -1,7 +1,7 @@
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -20,32 +20,19 @@ templates = Jinja2Templates(directory="templates")
 def share_calendar(
     request: Request,
     target_user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Share calendar page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/signin.html",
-            headers={"HX-Redirect": "/"},
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
         )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
 
-    session_data: Session = auth_service.get_session_data(
-        db=db, session_token=request.cookies.get("session-id"))
-
-    try:
-        current_user: schemas.User = auth_service.get_current_user(
-            db=db, user_id=session_data.user_id)
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/signin.html",
-            headers={"HX-Redirect": "/signin"},
-        )
-        response.delete_cookie("session-id")
         return response
     # TODO: would this be more secure if it sent owner ID also?
     # then we could check if the owner ID mathces the current user
