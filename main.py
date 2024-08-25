@@ -19,6 +19,8 @@ from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
 from app.routers import admin_router, calendar_router, profile_router, share_router, shift_router, shift_type_router, chat_router
 from app.services import calendar_service, chat_service
+from app.models.user_model import DBUser
+from app.models.share_model import DbShare
 
 
 SETTINGS = get_settings()
@@ -141,14 +143,11 @@ def index(
 
     # check if any other users have shared their calendars with the current user
     # so we can get that calendar data and show on the screen
-    shared_with_me = share_repository.get_share_from_other_user(
-        db=db, receiver_id=current_user.id)
 
-    # only get bae user data if someone has shared calendar with current user
-    if shared_with_me:
-        bae_user = share_repository.get_share_user_with_shifts_by_receiver_id(
-            db=db, share_user_id=shared_with_me.sender_id)
-
+    bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
+        DbShare.receiver_id == current_user.id).first()
+    
+    if bae_user:
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
             birthdays.append({
                 "name": bae_user.display_name,
@@ -156,7 +155,7 @@ def index(
             })
 
         bae_shifts = shift_repository.get_user_shifts_details(
-            db=db, user_id=shared_with_me.sender_id)
+            db=db, user_id=bae_user.id)
 
         for shift in bae_shifts:
             shift_date = str(shift.date.date())
