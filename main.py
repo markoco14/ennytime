@@ -127,12 +127,14 @@ def index(
         db=db,
         current_user_id=current_user.id
     )
-
+    # interesting... If I find any calendar sharing user first
+    # I can query the shifts table once
+    # and get all the shifts where owner_id is current user and sharing user
     # TODO: add month filters to shift query
     # because right now we get all the shifts in the db belonging to the user
-    db_shifts = shift_repository.get_user_shifts_details(
+    current_user_shifts = shift_repository.get_user_shifts_details(
         db=db, user_id=current_user.id)
-    for shift in db_shifts:
+    for shift in current_user_shifts:
         shift_date = str(shift.date.date())
         if month_calendar_dict.get(shift_date):
             month_calendar_dict[shift_date]['shifts'].append(shift._asdict())
