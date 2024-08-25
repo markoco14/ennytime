@@ -52,7 +52,7 @@ def share_calendar(
     # and prevent weird shares?
 
     new_db_share = schemas.CreateShare(
-        owner_id=current_user.id,
+        sender_id=current_user.id,
         guest_id=target_user_id
     )
     new_db_share = share_repository.create_share(db=db, new_share=new_db_share)

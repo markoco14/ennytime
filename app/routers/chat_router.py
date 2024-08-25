@@ -54,7 +54,7 @@ def get_chat(
             etime_users.display_name as guest_first_name
         FROM etime_shares
         LEFT JOIN etime_users ON etime_users.id = etime_shares.guest_id
-        WHERE etime_shares.owner_id = :user_id
+        WHERE etime_shares.sender_id = :user_id
     """)
     share_result = db.execute(query, {"user_id": current_user.id}).fetchone()
 
@@ -86,10 +86,10 @@ def generate_room_id():
     return uuid.uuid4().hex
 
 
-@router.post("/create-chat/{owner_id}/{guest_id}", response_class=HTMLResponse)
+@router.post("/create-chat/{sender_id}/{guest_id}", response_class=HTMLResponse)
 def create_new_chat(
     request: Request,
-    owner_id: int,
+    sender_id: int,
     guest_id: int,
     db: Annotated[Session, Depends(get_db)],
 ):
@@ -108,7 +108,7 @@ def create_new_chat(
     chat_room_id = generate_room_id()
     db_chat = DBChatRoom(
         room_id=chat_room_id,
-        chat_users=[owner_id, guest_id]
+        chat_users=[sender_id, guest_id]
     )
     db.add(db_chat)
     db.commit()

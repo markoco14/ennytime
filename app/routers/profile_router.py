@@ -53,7 +53,7 @@ def get_profile_page(
     # TODO: refactor this to use a service
     # don't send the whole user db model to the front end
     # hashed passwords are there
-    share_owner = share_repository.get_share_by_owner_id(
+    share_owner = share_repository.get_share_by_sender_id(
         db=db, user_id=current_user.id)
 
     if not share_owner:

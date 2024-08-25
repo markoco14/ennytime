@@ -145,7 +145,7 @@ def index(
     # only get bae user data if someone has shared calendar with current user
     if shared_with_me:
         bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
-            db=db, share_user_id=shared_with_me.owner_id)
+            db=db, share_user_id=shared_with_me.sender_id)
 
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
             birthdays.append({
@@ -154,7 +154,7 @@ def index(
             })
 
         bae_shifts = shift_repository.get_user_shifts_details(
-            db=db, user_id=shared_with_me.owner_id)
+            db=db, user_id=shared_with_me.sender_id)
 
         for shift in bae_shifts:
             shift_date = str(shift.date.date())

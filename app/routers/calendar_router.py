@@ -30,7 +30,7 @@ def get_simple_calendar_day_card(
         db: Annotated[Session, Depends(get_db)],
         date_string: str,
         current_user=Depends(auth_service.user_dependency)
-        ):
+):
     """Get calendar day card"""
     if not current_user:
         response = templates.TemplateResponse(
@@ -59,7 +59,7 @@ def get_simple_calendar_day_card(
         db=db, guest_id=current_user.id)
     if shared_with_me:
         bae_db_shifts = shift_repository.get_user_shifts_details(
-            db=db, user_id=shared_with_me.owner_id)
+            db=db, user_id=shared_with_me.sender_id)
         for shift in bae_db_shifts:
             if str(shift.date.date()) == date_string:
                 bae_shifts.append(shift)
@@ -73,7 +73,7 @@ def get_simple_calendar_day_card(
 
     if shared_with_me:
         bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
-            db=db, share_user_id=shared_with_me.owner_id)
+            db=db, share_user_id=shared_with_me.sender_id)
 
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
             birthdays.append({
@@ -125,12 +125,12 @@ def get_calendar_card_detailed(
         FROM etime_shifts
         LEFT JOIN etime_shift_types
         ON etime_shifts.type_id = etime_shift_types.id
-        WHERE etime_shifts.user_id = :owner_id
+        WHERE etime_shifts.user_id = :sender_id
         AND DATE(etime_shifts.date) = :date_string
         """)
 
     user_shifts_result = db.execute(
-        user_shifts_query, {"owner_id": current_user.id, "date_string": date_string}).fetchall()
+        user_shifts_query, {"sender_id": current_user.id, "date_string": date_string}).fetchall()
 
     year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
         date_string)
@@ -143,7 +143,7 @@ def get_calendar_card_detailed(
         SELECT etime_shares.*,
             etime_users.display_name as bae_name
         FROM etime_shares
-        LEFT JOIN etime_users ON etime_shares.owner_id = etime_users.id 
+        LEFT JOIN etime_users ON etime_shares.sender_id = etime_users.id 
         WHERE etime_shares.guest_id = :guest_id
     """)
 
@@ -159,7 +159,7 @@ def get_calendar_card_detailed(
         })
     if share_result:
         bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
-            db=db, share_user_id=share_result.owner_id)
+            db=db, share_user_id=share_result.sender_id)
 
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
             birthdays.append({
@@ -197,12 +197,12 @@ def get_calendar_card_detailed(
         FROM etime_shifts
         LEFT JOIN etime_shift_types
         ON etime_shifts.type_id = etime_shift_types.id
-        WHERE etime_shifts.user_id = :owner_id
+        WHERE etime_shifts.user_id = :sender_id
         AND DATE(etime_shifts.date) = :date_string
         """)
 
     shifts_result = db.execute(
-        shifts_query, {"owner_id": share_result.owner_id, "date_string": date_string}).fetchall()
+        shifts_query, {"sender_id": share_result.sender_id, "date_string": date_string}).fetchall()
 
     context = {
         "request": request,
@@ -300,7 +300,7 @@ def get_calendar_day_form(
             name="/calendar/calendar-card-no-types.html",
             context=context
         )
- 
+
     return templates.TemplateResponse(
         request=request,
         name="/calendar/calendar-card-edit-schedule.html",
