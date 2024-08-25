@@ -95,10 +95,10 @@ class Share(BaseModel):
     """Shares"""
     id: int
     sender_id: int
-    guest_id: int
+    receiver_id: int
 
 
 class CreateShare(BaseModel):
     """Create share"""
     sender_id: int
-    guest_id: int
+    receiver_id: int

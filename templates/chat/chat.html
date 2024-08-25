@@ -19,7 +19,7 @@ Ennytime Chat
 	<div class="p-4 border rounded-md">
 		<p class="mb-4">{{current_user.display_name}} and {{ share.guest_first_name }}</p>
 		{% if not chat %}
-		<a hx-post="/create-chat/{{share.sender_id}}/{{share.guest_id}}"
+		<a hx-post="/create-chat/{{share.sender_id}}/{{share.receiver_id}}"
 		   class="cursor-pointer"
 		   class="bg-gray-900 text-white px-3 py-1 rounded-md">Create Chat</a>
 

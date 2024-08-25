@@ -53,11 +53,11 @@ def share_calendar(
 
     new_db_share = schemas.CreateShare(
         sender_id=current_user.id,
-        guest_id=target_user_id
+        receiver_id=target_user_id
     )
     new_db_share = share_repository.create_share(db=db, new_share=new_db_share)
     share_user = user_repository.get_user_by_id(
-        db=db, user_id=new_db_share.guest_id)
+        db=db, user_id=new_db_share.receiver_id)
     return templates.TemplateResponse(
         request=request,
         name="profile/share-exists.html",

@@ -56,7 +56,7 @@ def get_simple_calendar_day_card(
 
     bae_shifts = []
     shared_with_me = share_repository.get_share_from_other_user(
-        db=db, guest_id=current_user.id)
+        db=db, receiver_id=current_user.id)
     if shared_with_me:
         bae_db_shifts = shift_repository.get_user_shifts_details(
             db=db, user_id=shared_with_me.sender_id)
@@ -72,7 +72,7 @@ def get_simple_calendar_day_card(
         })
 
     if shared_with_me:
-        bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        bae_user = share_repository.get_share_user_with_shifts_by_receiver_id(
             db=db, share_user_id=shared_with_me.sender_id)
 
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
@@ -144,11 +144,11 @@ def get_calendar_card_detailed(
             etime_users.display_name as bae_name
         FROM etime_shares
         LEFT JOIN etime_users ON etime_shares.sender_id = etime_users.id 
-        WHERE etime_shares.guest_id = :guest_id
+        WHERE etime_shares.receiver_id = :receiver_id
     """)
 
     share_result = db.execute(
-        share_query, {"guest_id": current_user.id}).fetchone()
+        share_query, {"receiver_id": current_user.id}).fetchone()
 
     # organize birthdays
     birthdays = []
@@ -158,7 +158,7 @@ def get_calendar_card_detailed(
             "day": current_user.birthday.day
         })
     if share_result:
-        bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        bae_user = share_repository.get_share_user_with_shifts_by_receiver_id(
             db=db, share_user_id=share_result.sender_id)
 
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):

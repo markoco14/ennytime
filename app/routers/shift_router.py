@@ -321,7 +321,7 @@ def schedule_shift(
 
     bae_shifts = []
     shared_with_me = share_repository.get_share_from_other_user(
-        db=db, guest_id=current_user.id)
+        db=db, receiver_id=current_user.id)
     if shared_with_me:
         bae_db_shifts = shift_repository.get_user_shifts_details(
             db=db, user_id=shared_with_me.sender_id)

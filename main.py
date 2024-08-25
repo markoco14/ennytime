@@ -140,11 +140,11 @@ def index(
     # check if any other users have shared their calendars with the current user
     # so we can get that calendar data and show on the screen
     shared_with_me = share_repository.get_share_from_other_user(
-        db=db, guest_id=current_user.id)
+        db=db, receiver_id=current_user.id)
 
     # only get bae user data if someone has shared calendar with current user
     if shared_with_me:
-        bae_user = share_repository.get_share_user_with_shifts_by_guest_id(
+        bae_user = share_repository.get_share_user_with_shifts_by_receiver_id(
             db=db, share_user_id=shared_with_me.sender_id)
 
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
