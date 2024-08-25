@@ -21,6 +21,8 @@ from app.routers import admin_router, calendar_router, profile_router, share_rou
 from app.services import calendar_service, chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
+from app.models.db_shift import DbShift
+from app.models.db_shift_type import DbShiftType
 
 
 SETTINGS = get_settings()
@@ -129,24 +131,11 @@ def index(
         db=db,
         current_user_id=current_user.id
     )
-    # interesting... If I find any calendar sharing user first
-    # I can query the shifts table once
-    # and get all the shifts where owner_id is current user and sharing user
-    # TODO: add month filters to shift query
-    # because right now we get all the shifts in the db belonging to the user
-    current_user_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=current_user.id)
-    for shift in current_user_shifts:
-        shift_date = str(shift.date.date())
-        if month_calendar_dict.get(shift_date):
-            month_calendar_dict[shift_date]['shifts'].append(shift._asdict())
 
-    # check if any other users have shared their calendars with the current user
-    # so we can get that calendar data and show on the screen
-
+    # get user the sent their calendar to current user if any
     bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
         DbShare.receiver_id == current_user.id).first()
-    
+
     if bae_user:
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
             birthdays.append({
@@ -154,14 +143,27 @@ def index(
                 "day": bae_user.birthday.day
             })
 
-        bae_shifts = shift_repository.get_user_shifts_details(
-            db=db, user_id=bae_user.id)
+    # gathering user ids to query shift table and get shifts for both users at once
+    user_ids = [current_user.id]
+    if bae_user:
+        user_ids.append(bae_user.id)
 
-        for shift in bae_shifts:
-            shift_date = str(shift.date.date())
-            if month_calendar_dict.get(shift_date):
+    all_shifts = db.query(DbShift, DbShiftType).join(DbShiftType, DbShift.type_id == DbShiftType.id).filter(
+        DbShift.user_id.in_(user_ids)).all()
+
+    for shift, shift_type in all_shifts:
+        shift_date = str(shift.date.date())
+        shift.long_name = shift_type.long_name
+        shift.short_name = shift_type.short_name
+        if month_calendar_dict.get(shift_date):
+            # find current user shifts
+            if shift.user_id == current_user.id:
+                month_calendar_dict[shift_date]['shifts'].append(
+                    shift.__dict__)
+            # find bae user shifts
+            else:
                 month_calendar_dict[shift_date]['bae_shifts'].append(
-                    shift._asdict())
+                    shift.__dict__)
 
     context = {
         "request": request,
