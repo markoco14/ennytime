@@ -55,7 +55,7 @@ def get_simple_calendar_day_card(
             shifts.append(shift._asdict())
 
     bae_shifts = []
-    shared_with_me = share_repository.get_share_from_other_user(
+    shared_with_me = share_repository.get_share_by_receiver_id(
         db=db, receiver_id=current_user.id)
     if shared_with_me:
         bae_db_shifts = shift_repository.get_user_shifts_details(

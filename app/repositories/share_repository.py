@@ -20,7 +20,7 @@ def get_share_by_sender_id(db: Session, user_id: int):
     return db_share
 
 
-def get_share_from_other_user(db: Session, receiver_id: int):
+def get_share_by_receiver_id(db: Session, receiver_id: int):
     """Get a share by guest id"""
     db_share = db.query(DbShare).filter(
         DbShare.receiver_id == receiver_id).first()
