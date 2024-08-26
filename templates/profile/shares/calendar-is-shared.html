@@ -4,7 +4,8 @@
 		You've shared your calendar with someone. Unshare the calendar if you want
 		to share with someone else.
 	</p>
-	<p class="flex gap-2 items-center bg-white p-2 rounded-md">{{current_user_sched_receiver.display_name}} @ {{current_user_sched_receiver.username}}
+	<p class="flex gap-2 items-center bg-white p-2 rounded-md">{{current_user_sched_receiver.display_name}} @
+		{{current_user_sched_receiver.username}}
 		<button hx-delete="/share-calendar/{{share.id}}"
 				hx-target="#share-section"
 				hx-swap="outerHTML"

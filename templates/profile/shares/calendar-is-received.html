@@ -1,0 +1,9 @@
+{% if not current_user_received_share %}
+<p>No one has shared their calendar with you! Oh no!</p>
+
+{% else %}
+<p class="flex gap-2 items-center bg-white p-2 rounded-md">
+	{{current_user_received_share.sender.display_name}} @ {{current_user_received_share.sender.username}} shared their
+	calendar with you!
+</p>
+{% endif %}
