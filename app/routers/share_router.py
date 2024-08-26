@@ -47,7 +47,7 @@ def share_calendar(
         db=db, user_id=new_db_share.receiver_id)
     return templates.TemplateResponse(
         request=request,
-        name="profile/share-exists.html",
+        name="profile/shares/calendar-is-shared.html",
         context={
             "request": request,
             "share": new_db_share,
@@ -68,7 +68,7 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
         return "IntegrityError"
     return templates.TemplateResponse(
         request=request,
-        name="profile/share-form.html",
+        name="profile/shares/calendar-not-shared.html",
         context={
             "request": request,
             "message": "Calendar unshared!"
