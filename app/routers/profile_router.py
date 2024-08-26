@@ -1,4 +1,4 @@
-
+from collections import namedtuple
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -51,9 +51,9 @@ def get_profile_page(
         "message_count": message_count
     }
 
-    # we want to find out if the current user has shared their calendar with anyone
-    current_user_sent_share = share_repository.get_share_by_sender_id(
-        db=db, user_id=current_user.id)
+    # get the user object for the person that the current user has shared their calendar with
+    current_user_sent_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.receiver_id).filter(
+        DbShare.sender_id == current_user.id).first()
 
     if not current_user_sent_share:
         return templates.TemplateResponse(
@@ -62,14 +62,13 @@ def get_profile_page(
             context=context
         )
 
-    # get the user object for the person that the current user has shared their calendar with
-    # TODO: take care of with join/better SQL
-    current_user_sched_receiver = user_repository.get_user_by_id(
-        db=db, user_id=current_user_sent_share.receiver_id)
+    current_user_sent_share = namedtuple(
+        'ShareWithUser', ['share', 'user'])(*current_user_sent_share)
 
     context.update(
-        {"share": current_user_sent_share, "current_user_sched_receiver": current_user_sched_receiver})
+        {"current_user_sent_share": current_user_sent_share})
 
+    # get the user object for the person that has shared their calendar with the current user
     current_user_received_share = share_repository.get_share_by_receiver_id(
         db=db, receiver_id=current_user.id)
 

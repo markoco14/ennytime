@@ -3,7 +3,7 @@
 		<h2 class="text-3xl mb-4 text-pink-800">Calendar Sharing</h2>
 		<div class="mb-8">
 			<h3 class="text-xl mb-2">Share your calendar.</h3>
-			{% if share %}
+			{% if current_user_sent_share %}
 			{% include "/profile/shares/calendar-is-shared.html" %}
 			{% else %}
 			{% include 'profile/shares/calendar-not-shared.html' %}

@@ -1,3 +1,4 @@
+from collections import namedtuple
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
@@ -45,6 +46,11 @@ def share_calendar(
     new_db_share = share_repository.create_share(db=db, new_share=new_db_share)
     share_user = user_repository.get_user_by_id(
         db=db, user_id=new_db_share.receiver_id)
+    # to match the named tuple formatting from the /profile page request
+    share_with_user_tuple = (new_db_share, share_user)
+    current_user_sent_share = namedtuple(
+        'ShareWithUser', ['share', 'user'])(*share_with_user_tuple)
+
     return templates.TemplateResponse(
         request=request,
         name="profile/shares/calendar-is-shared.html",
@@ -52,7 +58,7 @@ def share_calendar(
             "request": request,
             "share": new_db_share,
             "share_user": share_user,
-            "current_user_sched_receiver": share_user,
+            "current_user_sent_share": current_user_sent_share,
             "message": "Calendar shared!"
         },
     )
