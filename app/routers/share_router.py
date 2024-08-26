@@ -52,7 +52,7 @@ def share_calendar(
             "request": request,
             "share": new_db_share,
             "share_user": share_user,
-            "matched_user": share_user,
+            "current_user_sched_receiver": share_user,
             "message": "Calendar shared!"
         },
     )

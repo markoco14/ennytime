@@ -14,6 +14,7 @@ from app.repositories import user_repository, share_repository
 from app.schemas import schemas
 from app.services import chat_service
 from app.models.user_model import DBUser
+from app.models.share_model import DbShare
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -53,20 +54,32 @@ def get_profile_page(
     # TODO: refactor this to use a service
     # don't send the whole user db model to the front end
     # hashed passwords are there
-    share_owner = share_repository.get_share_by_sender_id(
+
+    # we want to find out if the current user has shared their calendar with anyone
+    current_user_sent_share = share_repository.get_share_by_sender_id(
         db=db, user_id=current_user.id)
 
-    if not share_owner:
+    if not current_user_sent_share:
         return templates.TemplateResponse(
             request=request,
             name="profile/profile-page.html",
             context=context
         )
 
-    share_user = user_repository.get_user_by_id(
-        db=db, user_id=share_owner.receiver_id)
+    # get the user object for the person that the current user has shared their calendar with
+    # TODO: take care of with join/better SQL
+    current_user_sched_receiver = user_repository.get_user_by_id(
+        db=db, user_id=current_user_sent_share.receiver_id)
+
     context.update(
-        {"share": share_owner, "share_user": share_user, "matched_user": share_user})
+        {"share": current_user_sent_share, "current_user_sched_receiver": current_user_sched_receiver})
+
+    # get any user who has shared with current_user
+    # OK so the share section should show two main things
+    # it should show any user that the current user has shared their calendar with
+    # it should show any user that has shared their calendar with the current user
+    # and they may or may not be the same person.
+
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",
