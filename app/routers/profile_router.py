@@ -54,36 +54,22 @@ def get_profile_page(
     # get the user object for the person that the current user has shared their calendar with
     current_user_sent_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.receiver_id).filter(
         DbShare.sender_id == current_user.id).first()
-
-    if not current_user_sent_share:
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/profile-page.html",
-            context=context
-        )
-
-    current_user_sent_share = namedtuple(
-        'ShareWithUser', ['share', 'user'])(*current_user_sent_share)
-
-    context.update(
-        {"current_user_sent_share": current_user_sent_share})
+    
+    if current_user_sent_share:
+        current_user_sent_share = namedtuple(
+            'ShareWithUser', ['share', 'user'])(*current_user_sent_share)
+        context.update(
+            {"current_user_sent_share": current_user_sent_share})
 
     # get the user object for the person that has shared their calendar with the current user
     current_user_received_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.sender_id).filter(
         DbShare.receiver_id == current_user.id).first()
 
-    if not current_user_received_share:
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/profile-page.html",
-            context=context
-        )
-
-    current_user_received_share = namedtuple(
-        'ShareWithUser', ['share', 'user'])(*current_user_received_share)
-
-    context.update(
-        {"current_user_received_share": current_user_received_share})
+    if current_user_received_share:
+        current_user_received_share = namedtuple(
+            'ShareWithUser', ['share', 'user'])(*current_user_received_share)
+        context.update(
+            {"current_user_received_share": current_user_received_share})
 
     return templates.TemplateResponse(
         request=request,
