@@ -69,8 +69,12 @@ def get_profile_page(
         {"current_user_sent_share": current_user_sent_share})
 
     # get the user object for the person that has shared their calendar with the current user
-    current_user_received_share = share_repository.get_share_by_receiver_id(
-        db=db, receiver_id=current_user.id)
+    
+    current_user_received_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.sender_id).filter(
+        DbShare.receiver_id == current_user.id).first()
+    
+    current_user_received_share = namedtuple(
+        'ShareWithUser', ['share', 'user'])(*current_user_received_share)
 
     if not current_user_received_share:
         return templates.TemplateResponse(
@@ -78,11 +82,6 @@ def get_profile_page(
             name="profile/profile-page.html",
             context=context
         )
-
-    calendar_sender_user = user_repository.get_user_by_id(
-        db=db, user_id=current_user_received_share.sender_id)
-
-    current_user_received_share.sender = calendar_sender_user
 
     context.update(
         {"current_user_received_share": current_user_received_share})
