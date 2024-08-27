@@ -80,3 +80,22 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
             "message": "Calendar unshared!"
         },
     )
+
+
+@router.delete("/reject-calendar/{share_id}", response_class=HTMLResponse)
+def reject_calendar_share(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    share_id: int
+):
+    """Delete the calendar share entity in DB"""
+    share_repository.delete_share(db=db, share_id=share_id)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/shares/calendar-is-received.html",
+        context={
+            "request": request,
+            "message": "Calendar share request rejected."
+        },
+    )
