@@ -320,17 +320,17 @@ def schedule_shift(
             shifts.append(shift._asdict())
 
     bae_shifts = []
-    shared_with_me = share_repository.get_share_from_other_user(
-        db=db, guest_id=current_user.id)
+    shared_with_me = share_repository.get_share_by_receiver_id(
+        db=db, receiver_id=current_user.id)
     if shared_with_me:
         bae_db_shifts = shift_repository.get_user_shifts_details(
-            db=db, user_id=shared_with_me.owner_id)
+            db=db, user_id=shared_with_me.sender_id)
         for shift in bae_db_shifts:
             if str(shift.date.date()) == date:
                 bae_shifts.append(shift)
 
     bae_user = user_repository.get_user_by_id(
-        db=db, user_id=shared_with_me.owner_id)
+        db=db, user_id=shared_with_me.sender_id)
 
     context = {
         "request": request,

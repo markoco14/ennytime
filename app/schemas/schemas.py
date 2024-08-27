@@ -10,6 +10,7 @@ class ShiftType(BaseModel):
     id: int
     user_id: int
 
+
 class CreateShiftType(BaseModel):
     "Create shift type"
     long_name: str
@@ -25,11 +26,13 @@ class Shift(BaseModel):
     date: datetime
     type: Optional[ShiftType] = None
 
+
 class AppShift(BaseModel):
     id: int
     type_id: int
     user_id: int
     date: datetime
+
 
 class CreateShift(BaseModel):
     """Create shift"""
@@ -44,6 +47,7 @@ class Session(BaseModel):
     session_id: str
     user_id: int
     expires_at: datetime
+
 
 class AppUserSession(BaseModel):
     """In App User Session"""
@@ -74,23 +78,27 @@ class AppUser(BaseModel):
     email: str
     display_name: Optional[str] = None
 
+
 class CreateUser(BaseModel):
     """Create user"""
     email: str
     password: str
+
 
 class CreateUserHashed(BaseModel):
     email: str
     hashed_password: str
     display_name: str
 
+
 class Share(BaseModel):
     """Shares"""
     id: int
-    owner_id: int
-    guest_id: int
+    sender_id: int
+    receiver_id: int
+
 
 class CreateShare(BaseModel):
     """Create share"""
-    owner_id: int
-    guest_id: int
+    sender_id: int
+    receiver_id: int

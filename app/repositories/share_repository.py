@@ -9,21 +9,21 @@ from app.schemas import schemas
 def get_user_shares(db: Session, user_id: int):
     """Get all shares of a user"""
     db_shares = db.query(DbShare).filter(
-        DbShare.owner_id == user_id).all()
+        DbShare.sender_id == user_id).all()
     return db_shares
 
 
-def get_share_by_owner_id(db: Session, user_id: int):
+def get_share_by_sender_id(db: Session, user_id: int):
     """Get a share by user id"""
     db_share = db.query(DbShare).filter(
-        DbShare.owner_id == user_id).first()
+        DbShare.sender_id == user_id).first()
     return db_share
 
 
-def get_share_from_other_user(db: Session, guest_id: int):
+def get_share_by_receiver_id(db: Session, receiver_id: int):
     """Get a share by guest id"""
     db_share = db.query(DbShare).filter(
-        DbShare.guest_id == guest_id).first()
+        DbShare.receiver_id == receiver_id).first()
     return db_share
 
 
@@ -42,7 +42,7 @@ def delete_share(db: Session, share_id: int):
     db.commit()
 
 
-def get_share_user_with_shifts_by_guest_id(db: Session, share_user_id: int):
+def get_share_user_with_shifts_by_receiver_id(db: Session, share_user_id: int):
     query = text("""
         SELECT 
             etime_users.display_name,

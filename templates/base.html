@@ -133,8 +133,13 @@
 		</main>
 		<script>
 			document.body.addEventListener('unauthorizedRedirect', function () {
-					window.location.href = '/signin';
-				});
+				window.location.href = '/signin';
+			});
+
+			document.body.addEventListener('htmx:responseError', function (event) {
+				message = JSON.parse(event.detail.xhr.response).message
+				alert(message);
+			});
 		</script>
 	</body>
 

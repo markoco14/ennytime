@@ -1,7 +1,8 @@
+from collections import namedtuple
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -16,56 +17,57 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/share-calendar/{target_user_id}", response_class=HTMLResponse | Response)
+@router.get("/share-calendar/{receiver_id}", response_class=HTMLResponse | Response)
 def share_calendar(
     request: Request,
-    target_user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    receiver_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Share calendar page"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/signin.html",
-            headers={"HX-Redirect": "/"},
+    if not current_user:
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
         )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
 
-    session_data: Session = auth_service.get_session_data(
-        db=db, session_token=request.cookies.get("session-id"))
-
-    try:
-        current_user: schemas.User = auth_service.get_current_user(
-            db=db, user_id=session_data.user_id)
-    except AttributeError:
-        # TODO: figure out how to specify because may be other errors
-        # although this response may just be fine
-        # AttributeError: 'NoneType' object has no attribute 'user_id'
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/signin.html",
-            headers={"HX-Redirect": "/signin"},
-        )
-        response.delete_cookie("session-id")
         return response
     # TODO: would this be more secure if it sent owner ID also?
     # then we could check if the owner ID mathces the current user
     # and prevent weird shares?
 
     new_db_share = schemas.CreateShare(
-        owner_id=current_user.id,
-        guest_id=target_user_id
+        sender_id=current_user.id,
+        receiver_id=receiver_id
     )
-    new_db_share = share_repository.create_share(db=db, new_share=new_db_share)
+    try:
+        new_db_share = share_repository.create_share(
+            db=db, new_share=new_db_share)
+    except IntegrityError as error:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "message": "Someone is already sharing their calendar with this user."}
+        )
+
     share_user = user_repository.get_user_by_id(
-        db=db, user_id=new_db_share.guest_id)
+        db=db, user_id=new_db_share.receiver_id)
+    # to match the named tuple formatting from the /profile page request
+    share_with_user_tuple = (new_db_share, share_user)
+    current_user_sent_share = namedtuple(
+        'ShareWithUser', ['share', 'user'])(*share_with_user_tuple)
+
     return templates.TemplateResponse(
         request=request,
-        name="profile/share-exists.html",
+        name="profile/shares/calendar-is-shared.html",
         context={
             "request": request,
             "share": new_db_share,
             "share_user": share_user,
-            "matched_user": share_user,
+            "current_user_sent_share": current_user_sent_share,
             "message": "Calendar shared!"
         },
     )
@@ -81,9 +83,28 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
         return "IntegrityError"
     return templates.TemplateResponse(
         request=request,
-        name="profile/share-form.html",
+        name="profile/shares/calendar-not-shared.html",
         context={
             "request": request,
             "message": "Calendar unshared!"
+        },
+    )
+
+
+@router.delete("/reject-calendar/{share_id}", response_class=HTMLResponse)
+def reject_calendar_share(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    share_id: int
+):
+    """Delete the calendar share entity in DB"""
+    share_repository.delete_share(db=db, share_id=share_id)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/shares/calendar-is-received.html",
+        context={
+            "request": request,
+            "message": "Calendar share request rejected."
         },
     )

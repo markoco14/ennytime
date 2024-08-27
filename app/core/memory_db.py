@@ -81,18 +81,18 @@ SHARES: dict[schemas.Share] = {
 }
 # "owner2guest3": Share(
 # 	id=1,
-# 	owner_id=2,
-# 	guest_id=3,
+# 	sender_id=2,
+# 	receiver_id=3,
 # ),
 # "owner1guest2": Share(
 # 	id=2,
-# 	owner_id=1,
-# 	guest_id=2,
+# 	sender_id=1,
+# 	receiver_id=2,
 # ),
 # "owner3guest4": Share(
 # 	id=3,
-# 	owner_id=3,
-# 	guest_id=4,
+# 	sender_id=3,
+# 	receiver_id=4,
 # )
 
 
@@ -114,25 +114,25 @@ SHARES: dict[schemas.Share] = {
 
 USERS: dict[schemas.User] = {
     "johndoe@example.com": schemas.User(
-		id=1,
+        id=1,
         email="johndoe@example.com",
         password="fakehashedsecret"
-	),
+    ),
     "alice@example.com": schemas.User(
-		id=2,
+        id=2,
         email="alice@example.com",
         password="fakehashedsecret"
-	),
+    ),
     "mark.oconnor14@gmail.com": schemas.User(
-		id=3,
+        id=3,
         email="mark.oconnor14@gmail.com",
         password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
-		display_name="Mark O'Connor"
-	),
-	"rose@rosemail.com": schemas.User(
-		id=4,
+        display_name="Mark O'Connor"
+    ),
+    "rose@rosemail.com": schemas.User(
+        id=4,
         email="rose@rosemail.com",
         password="$2b$12$.hJ1LOqpdFZldlwiSnDUUeorgtwjIB68u0tTZwD2kjPNjRIP0.tPK",
-		display_name="Rose Rosie"
-	),
+        display_name="Rose Rosie"
+    ),
 }

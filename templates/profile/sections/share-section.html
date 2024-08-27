@@ -1,10 +1,17 @@
 <section class="bg-white dark:bg-gray-900 dark:text-gray-100">
 	<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
-		<h2 class="text-3xl mb-4">Sharing</h2>
-		{% if share %}
-		{% include "/profile/share-exists.html" %}
-		{% else %}
-		{% include 'profile/share-form.html' %}
-		{% endif %}
+		<h2 class="text-3xl mb-4 text-pink-800">Calendar Sharing</h2>
+		<div class="mb-8">
+			<h3 class="text-xl mb-2">Share your calendar.</h3>
+			{% if current_user_sent_share %}
+			{% include "/profile/shares/calendar-is-shared.html" %}
+			{% else %}
+			{% include 'profile/shares/calendar-not-shared.html' %}
+			{% endif %}
+		</div>
+		<div>
+			<h3 class="text-xl mb-2">Calendar shared with you</h3>
+			{% include "/profile/shares/calendar-is-received.html" %}
+		</div>
 	</div>
 </section>

@@ -1,4 +1,4 @@
-
+from collections import namedtuple
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -14,6 +14,7 @@ from app.repositories import user_repository, share_repository
 from app.schemas import schemas
 from app.services import chat_service
 from app.models.user_model import DBUser
+from app.models.share_model import DbShare
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -50,23 +51,26 @@ def get_profile_page(
         "message_count": message_count
     }
 
-    # TODO: refactor this to use a service
-    # don't send the whole user db model to the front end
-    # hashed passwords are there
-    share_owner = share_repository.get_share_by_owner_id(
-        db=db, user_id=current_user.id)
+    # get the user object for the person that the current user has shared their calendar with
+    current_user_sent_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.receiver_id).filter(
+        DbShare.sender_id == current_user.id).first()
+    
+    if current_user_sent_share:
+        current_user_sent_share = namedtuple(
+            'ShareWithUser', ['share', 'user'])(*current_user_sent_share)
+        context.update(
+            {"current_user_sent_share": current_user_sent_share})
 
-    if not share_owner:
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/profile-page.html",
-            context=context
-        )
+    # get the user object for the person that has shared their calendar with the current user
+    current_user_received_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.sender_id).filter(
+        DbShare.receiver_id == current_user.id).first()
 
-    share_user = user_repository.get_user_by_id(
-        db=db, user_id=share_owner.guest_id)
-    context.update(
-        {"share": share_owner, "share_user": share_user, "matched_user": share_user})
+    if current_user_received_share:
+        current_user_received_share = namedtuple(
+            'ShareWithUser', ['share', 'user'])(*current_user_received_share)
+        context.update(
+            {"current_user_received_share": current_user_received_share})
+
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",
