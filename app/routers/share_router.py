@@ -17,10 +17,10 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/share-calendar/{target_user_id}", response_class=HTMLResponse | Response)
+@router.get("/share-calendar/{receiver_id}", response_class=HTMLResponse | Response)
 def share_calendar(
     request: Request,
-    target_user_id: int,
+    receiver_id: int,
     db: Annotated[Session, Depends(get_db)],
     current_user=Depends(auth_service.user_dependency)
 ):
@@ -41,7 +41,7 @@ def share_calendar(
 
     new_db_share = schemas.CreateShare(
         sender_id=current_user.id,
-        receiver_id=target_user_id
+        receiver_id=receiver_id
     )
     new_db_share = share_repository.create_share(db=db, new_share=new_db_share)
     share_user = user_repository.get_user_by_id(
