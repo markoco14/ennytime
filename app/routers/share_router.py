@@ -43,7 +43,16 @@ def share_calendar(
         sender_id=current_user.id,
         receiver_id=receiver_id
     )
-    new_db_share = share_repository.create_share(db=db, new_share=new_db_share)
+    try:
+        new_db_share = share_repository.create_share(
+            db=db, new_share=new_db_share)
+    except IntegrityError as error:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "message": "Someone is already sharing their calendar with this user."}
+        )
+
     share_user = user_repository.get_user_by_id(
         db=db, user_id=new_db_share.receiver_id)
     # to match the named tuple formatting from the /profile page request
