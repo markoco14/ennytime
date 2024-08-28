@@ -1,0 +1,163 @@
+{% if not current_user %}
+<header class="dark:bg-gray-900 dark:text-gray-100 ">
+	<div class="py-4 px-2 md:px-0 container mx-auto flex justify-between align-center">
+		<span class="text-3xl">Ennytime</span>
+		<nav class="flex gap-2 items-center">
+			<a href="/">Home</a>
+			<a href="/signup">Sign up</a>
+			<a href="/signin">Sign in</a>
+		</nav>
+	</div>
+	<hr />
+</header>
+{% else %}
+<header x-data="{ mobilenavOpen: false }"
+		class="md:flex items-center justify-between dark:bg-gray-900 dark:text-gray-100 px-4 bg-white">
+	<div class="flex items-center justify-between h-20">
+		<span class="text-3xl">Ennytime</span>
+		{# mobile icon #}
+		<div class="md:hidden flex z-50">
+			<li hx-get="/unread"
+				hx-target="find div"
+				hx-swap="outerHTML"
+				hx-trigger="every 8s"
+				class="flex flex-col justify-center block md:hidden relative p-1">
+				<a href="/chat"><img width="26"
+						 height="26"
+						 src="https://img.icons8.com/metro/26/chat.png"
+						 alt="chat" /></a>
+				{% include "/chat/unread-counter.html" %}
+			</li>
+			<a @click="mobilenavOpen = !mobilenavOpen"
+			   class="h-12 w-12 flex justify-center items-center">
+				<svg x-show="!mobilenavOpen"
+					 class="select-none cursor-pointer"
+					 xmlns="http://www.w3.org/2000/svg"
+					 width="24"
+					 height="24"
+					 viewBox="0 0 24 24"
+					 fill="none"
+					 stroke="currentColor"
+					 stroke-width="2"
+					 stroke-linecap="round"
+					 stroke-linejoin="round"
+					 class="h-6 w-6">
+					<line x1="4"
+						  x2="20"
+						  y1="12"
+						  y2="12"></line>
+					<line x1="4"
+						  x2="20"
+						  y1="6"
+						  y2="6"></line>
+					<line x1="4"
+						  x2="20"
+						  y1="18"
+						  y2="18"></line>
+				</svg>
+				<span x-show="mobilenavOpen"
+					  x-cloak
+					  class="select-none cursor-pointer z-20">
+					<svg xmlns="http://www.w3.org/2000/svg"
+						 x="0px"
+						 y="0px"
+						 class="w-6 h-6"
+						 viewBox="0 0 50 50">
+						<path
+							  d="M 9.15625 6.3125 L 6.3125 9.15625 L 22.15625 25 L 6.21875 40.96875 L 9.03125 43.78125 L 25 27.84375 L 40.9375 43.78125 L 43.78125 40.9375 L 27.84375 25 L 43.6875 9.15625 L 40.84375 6.3125 L 25 22.15625 Z">
+						</path>
+					</svg>
+				</span>
+			</a>
+		</div>
+	</div>
+	<nav x-show="mobilenavOpen"
+		 x-cloak
+		 x-transition:enter="duration-300 ease-out"
+		 x-transition:enter-start="opacity-0 -translate-y-12"
+		 x-transition:enter-end="opacity-100 translate-y-0"
+		 x-transition:leave="duration-200 ease-out"
+		 x-transition:leave-start="opacity-100"
+		 x-transition:leave-end="opacity-0"
+		 class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative bg-pink-600 md:bg-transparent text-white text-xl md:text-base md:text-black z-20">
+		<ul class="flex items-center flex-col md:flex-row justify-center h-full w-full gap-4">
+			<li>
+				<a href="/">Home</a>
+			</li>
+			<li class="block md:hidden">
+				<a href="/chat">Chat</a>
+			</li>
+			<li class="block md:hidden">
+				<a href="/shifts">Schedule</a>
+			</li>
+			<li class="block md:hidden">
+				<a href="/profile">Profile</a>
+			</li>
+			{% if current_user.is_admin %}
+			<li class="block md:hidden">
+				<a href="/admin">Admin</a>
+			</li>
+			{% endif %}
+			<li class="block md:hidden">
+				<button hx-get="/signout"
+						class="w-full text-end">Sign out</button>
+			</li>
+			<li hx-get="/unread"
+				hx-target="find div"
+				hx-swap="outerHTML"
+				hx-trigger="every 8s"
+				class="hidden md:block relative p-1">
+				<a href="/chat"><img width="26"
+						 height="26"
+						 src="https://img.icons8.com/metro/26/chat.png"
+						 alt="chat" /></a>
+				{% include "/chat/unread-counter.html"%}
+			</li>
+			<li x-data="{dropdownOpen: false}"
+				class="relative hidden md:block">
+				<a @click="dropdownOpen = !dropdownOpen"
+				   @click.away="dropdownOpen = false"
+				   class="whitespace-nowrap cursor-pointer select-none flex items-center gap-2">
+
+					<p>{{current_user.display_name}}</p>
+
+					<img class="w-4"
+						 x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
+						 src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
+				</a>
+				<div x-show="dropdownOpen"
+					 x-cloak
+					 class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
+					 x-transition:enter="duration-300 ease-out"
+					 x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
+					{# Dropdown on large screens #}
+					<ul>
+						<li class="md:hidden grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<a href="/chat"
+							   class="w-full text-right">Chat</a>
+						</li>
+						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<a href="/shifts"
+							   class="w-full text-right">Schedule</a>
+						</li>
+						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<a href="/profile"
+							   class="w-full text-right">Profile</a>
+						</li>
+						{% if current_user.is_admin %}
+						<li class="grid text-right rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<a href="/admin"
+							   class="w-full">Admin</a>
+						</li>
+						{% endif%}
+						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+							<button hx-get="/signout"
+									class="w-full text-end">Sign out</button>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</header>
+{% endif %}
