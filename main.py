@@ -272,9 +272,3 @@ def search_users_to_share(
         context=context
     )
 
-# @app.get("/development")
-# def get_development_page(request: Request):
-#     return templates.TemplateResponse(
-#         request=request,
-#         name="development.html",
-#     )
