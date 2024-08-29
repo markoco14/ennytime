@@ -1,5 +1,18 @@
+{% if not current_user %}
+<header class="bg-gradient-to-r from-pink-500 to-pink-600 text-white">
+	<div class="max-w-[1000px] py-4 px-2 md:px-4 container mx-auto flex justify-between items-baseline">
+		<span class="text-3xl">Ennytime</span>
+		<nav class="flex gap-2 items-center">
+			<a href="/">Home</a>
+			<a href="/signup">Sign up</a>
+			<a href="/signin">Sign in</a>
+		</nav>
+	</div>
+	<hr class="border-pink-700" />
+</header>
+{% else %}
 <header x-data="{ mobilenavOpen: false }"
-		class="md:flex items-center justify-between dark:bg-gray-900 dark:text-gray-100 border-b border-gray-500 px-4 bg-white">
+		class="md:flex items-center justify-between dark:bg-gray-900 dark:text-gray-100 px-4 bg-white">
 	<div class="flex items-center justify-between h-20">
 		<span class="text-3xl">Ennytime</span>
 		{# mobile icon #}
@@ -145,7 +158,6 @@
 				</div>
 			</li>
 		</ul>
-
 	</nav>
-
 </header>
+{% endif %}

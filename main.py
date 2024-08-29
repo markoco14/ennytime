@@ -182,13 +182,13 @@ def index(
 
     if "hx-request" in request.headers:
         response = block_templates.TemplateResponse(
-            name="app-home.html",
+            name="webapp/app-home.html",
             block_name="calendar",
             context=context,
         )
     else:
         response = templates.TemplateResponse(
-            name="app-home.html",
+            name="webapp/app-home.html",
             context=context,
         )
 
@@ -271,10 +271,3 @@ def search_users_to_share(
         name="profile/search-results.html",
         context=context
     )
-
-# @app.get("/development")
-# def get_development_page(request: Request):
-#     return templates.TemplateResponse(
-#         request=request,
-#         name="development.html",
-#     )
