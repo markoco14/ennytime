@@ -5,7 +5,8 @@ Ennytime Couple's Calendar
 {% block content %}
 <section class="bg-gradient-to-r from-pink-500 to-pink-600 text-gray-900 	grid md:place-items-center pt-16">
 	<div class="max-w-[1000px] md:grid md:grid-cols-2 md:gap-0 mx-auto sm:px-4">
-		<div class="flex flex-col text-balance items-start px-4 md:px-0 md:text-left py-4 md:max-w-[400px] mb-12 md:mb-0">
+		<div
+			 class="flex flex-col text-balance items-start px-4 md:px-0 md:text-left py-4 md:max-w-[400px] mb-12 md:mb-0">
 			<h1 class="text-pretty text-xl md:text-2xl md:max-w-[65ch] text-white mb-12">
 				Easy calendar sharing for couples with always changing work schedules.
 			</h1>
@@ -13,7 +14,7 @@ Ennytime Couple's Calendar
 				Make finding the time easy again.
 			</h2>
 			<a href="/signup"
-			   class="text-xl bg-pink-100 text-pink-900 py-2 px-4 rounded-md">
+			   class="text-xl bg-pink-800 text-white py-2 px-8 rounded-md">
 				Spend more time together
 			</a>
 		</div>
@@ -25,4 +26,23 @@ Ennytime Couple's Calendar
 		{% include "/svg/waves-down.svg" %}
 	</div>
 </section>
+{# <section class="min-h-screen"></section>
+<section class="min-h-screen bg-gray-100"></section> #}
+<section class="min-h-[50vh] bg-gradient-to-r from-pink-500 to-pink-600 pb-36">
+	<div class="bg-gradient-to-r from-pink-500 to-pink-600 w-full mb-16">
+		{% include "/svg/waves-up.svg" %}
+	</div>
+	<div class="max-w-[1000px] mx-auto text-white text-balance text-center">
+		<h2 class="text-6xl text-center mb-6">Spend More Time with the One You Love</h2>
+		<hr class="border-pink-300 mb-8" />
+		<p class="mb-16 text-xl">
+			Take the pain out of scheduling and get the gains of time together!
+		</p>
+		<a href="signup"
+		   class="inline-block bg-pink-800 text-white text-4xl rounded-lg px-8 py-2">Sign Up</a>
+	</div>
+</section>
+<footer class="bg-pink-800 py-48">
+	<p class="text-white text-center">&copy; 2024 Ennytime. All rights reserved.</p>
+</footer>
 {% endblock content %}
