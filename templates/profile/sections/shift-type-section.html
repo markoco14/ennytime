@@ -1,10 +1,10 @@
 {% from "macros/spinner.html" import spinner %}
 <section id="types"
 		 class="bg-white dark:bg-gray-900 dark:text-gray-100">
-	<div class="container mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
+	<div class="mx-auto md:rounded-md p-4 bg-pink-100 dark:bg-gray-800">
 		{% block shift_type_list %}
 		<div id="type-list"
-			 class="max-w-[400px]">
+			 class="max-w-[400px] mx-auto min-h-[400px]">
 			<div class="flex justify-between mb-4">
 				<h2 class="text-3xl">Shift Types</h2>
 				<button hx-get="/shift-types/new"
