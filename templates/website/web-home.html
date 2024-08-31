@@ -3,26 +3,8 @@
 Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
-<section class="bg-gradient-to-r from-pink-500 to-pink-600 text-gray-900 	grid md:place-items-center pt-16">
-	<div class="max-w-[1000px] md:grid md:grid-cols-2 md:gap-0 mx-auto sm:px-4">
-		<div class="flex flex-col text-balance items-start px-4 md:px-0 md:text-left py-4 md:max-w-[400px] mb-12 md:mb-0">
-			<h1 class="text-pretty text-xl md:text-2xl md:max-w-[65ch] text-white mb-12">
-				Easy calendar sharing for couples with always changing work schedules.
-			</h1>
-			<h2 class="text-balance order-first text-3xl md:text-6xl md:max-w-[400px] text-white mb-6">
-				Make finding the time easy again.
-			</h2>
-			<a href="/signup"
-			   class="text-xl bg-pink-100 text-pink-900 py-2 px-4 rounded-md">
-				Spend more time together
-			</a>
-		</div>
-		<div class="bg-pink-300 rounded-full aspect-square">
-			{% include "/svg/hero-lovers.html" %}
-		</div>
-	</div>
-	<div class="bg-gradient-to-r from-pink-500 to-pink-600 w-full">
-		{% include "/svg/waves-down.svg" %}
-	</div>
-</section>
+{% include "/website/sections/hero.html" %}
+{% include "/website/sections/features.html" %}
+{% include "/website/sections/bottom-cta.html" %}
+{% include "website/sections/footer.html" %}
 {% endblock content %}
