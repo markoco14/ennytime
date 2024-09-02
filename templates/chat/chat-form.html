@@ -1,29 +1,32 @@
 <form hx-post="/chat/{{chat.room_id}}"
 	  hx-target="this"
 	  hx-swap="outerHTML"
-	  class="bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
-	<label class="sr-only"
-		   for="message">Message</label>
-	<input class="flex h-10 w-full bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1 rounded-lg px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-		   id="message"
-		   name="message"
-		   placeholder="Type your message..."
-		   type="text" />
-	<button
-			class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 ml-4">
-		<svg xmlns="http://www.w3.org/2000/svg"
-			 width="24"
-			 height="24"
-			 viewBox="0 0 24 24"
-			 fill="none"
-			 stroke="currentColor"
-			 stroke-width="2"
-			 stroke-linecap="round"
-			 stroke-linejoin="round"
-			 class="w-5 h-5">
-			<path d="m22 2-7 20-4-9-9-4Z"></path>
-			<path d="M22 2 11 13"></path>
-		</svg>
-		<span class="sr-only">Send</span>
-	</button>
+	  class="h-[72px] fixed w-full bottom-0 left-0 bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
+	<div class="w-full max-w-[800px] mx-auto flex items-center gap-4">
+		<label class="sr-only"
+			   for="message">Message</label>
+		<textarea class="flex h-10 w-full bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1 rounded-lg px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+				  id="message"
+				  name="message"
+				  placeholder="Type your message..."
+				  type="text"></textarea>
+		<button
+				class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 ml-4">
+			<svg xmlns="http://www.w3.org/2000/svg"
+				 width="24"
+				 height="24"
+				 viewBox="0 0 24 24"
+				 fill="none"
+				 stroke="currentColor"
+				 stroke-width="2"
+				 stroke-linecap="round"
+				 stroke-linejoin="round"
+				 class="w-5 h-5">
+				<path d="m22 2-7 20-4-9-9-4Z"></path>
+				<path d="M22 2 11 13"></path>
+			</svg>
+			<span class="htmx-indicator">...</span>
+			<span class="sr-only">Send</span>
+		</button>
+	</div>
 </form>

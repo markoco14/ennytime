@@ -21,7 +21,10 @@
 				hx-confirm="Are you sure you want to delete this shift?"
 				hx-swap="outerHTML"
 				class="border border-pink-300 bg-pink-300 py-1 px-2 rounded-md">
-			{{type.long_name}}
+			<span class="htmx-indicator-content">
+				{{type.long_name}}
+			</span>
+			<span class="htmx-indicator">Removing...</span>
 		</button>
 		{% endblock shift_exists_button %}
 		{% else %}
@@ -29,7 +32,11 @@
 		<button hx-post="/shifts/{{date_dict.date_string}}/{{type.id}}"
 				hx-swap="outerHTML"
 				class="border py-1 px-2 rounded-md">
-			{{type.long_name}}</button>
+			<span class="htmx-indicator-content">
+				{{type.long_name}}
+			</span>
+			<span class="htmx-indicator">Scheduling...</span>
+		</button>
 		{% endblock no_shift_button %}
 		{% endif %}
 		{% endfor %}
