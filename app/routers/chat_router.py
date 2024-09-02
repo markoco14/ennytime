@@ -166,7 +166,7 @@ def get_user_chat(
     }
 
     return block_templates.TemplateResponse(
-        name="chat/chat_room.html",
+        name="chat/chat-room.html",
         context=context
     )
 
@@ -198,7 +198,7 @@ def get_chat_room_messages(
     }
 
     return block_templates.TemplateResponse(
-        name="chat/chat_room.html",
+        name="chat/chat-room.html",
         context=context,
         block_name="messages"
     )
