@@ -1,8 +1,10 @@
 <div hx-ext="ws"
-	 ws-connect="/ws/chat/{{chat.room_id}}/{{current_user.id}}">
+	 ws-connect="/ws/chat/{{chat.room_id}}/{{current_user.id}}"
+	 class="h-[72px] fixed w-full bottom-0 left-0 bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
 	<form id="chat-form"
 		  ws-send
-		  class="h-[72px] fixed w-full bottom-0 left-0 bg-gray-100 dark:bg-gray-950 p-4 flex items-center">
+		  class="w-full max-w-[1000px] mx-auto"
+		  >
 		<div class="w-full max-w-[800px] mx-auto flex items-center gap-4">
 			<label class="sr-only"
 				   for="message">Message</label>
