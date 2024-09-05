@@ -125,37 +125,53 @@ Couple's Chat
 		const is_read = response.is_read
 
 		const chatContainer = document.getElementById('chat-container');
-		const messageElement = document.createElement('div');
-		if (sender_id == Number("{{ current_user.id }}")) {
-			// Message from the current user
-			messageElement.classList.add('flex', 'justify-end');
-			messageElement.innerHTML = `
-                <div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
-                    <p>${message}</p>
-                    <p class="text-xs text-gray-200 mt-1">${created_at}</p>
-					<p class="text-xs text-gray-200">${is_read ? 'Read' : 'Unread'}</p>
-                </div>
-            `;
-		} else {
-			// Message from another user
-			messageElement.classList.add('flex', 'justify-start');
-			messageElement.innerHTML = `
-                <div class="bg-pink-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
-                    <p>${message}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${created_at}</p>
-                </div>
-            `;
-		}
+		const isCurrentUser = sender_id === Number("{{ current_user.id }}");
+
+		const messageElement = renderMessage(message, created_at, is_read, isCurrentUser);
 		// Append the new message to the chat container
 
 		// check if currently at the bottom of chat
 		const isScrolledToBottom = chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop + 1;
-		if (isScrolledToBottom) {
-			chatContainer.appendChild(messageElement);
-			chatContainer.scrollTop = chatContainer.scrollHeight;
-		} else {
-			chatContainer.appendChild(messageElement);
-		}
+		appendMessageToChat(chatContainer, messageElement, isScrolledToBottom);
 	})
+
+	// Function to generate the HTML structure for a message
+	function renderMessage(message, created_at, is_read, isCurrentUser) {
+		const messageWrapper = document.createElement('div');
+
+		if (!isCurrentUser) {
+			// Message from another user
+			messageWrapper.classList.add('flex', 'justify-start');
+			messageWrapper.innerHTML = `
+				<div class="bg-pink-200 dark:bg-gray-800 text-gray-800 	dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
+					<p>${message}</p>
+					<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${created_at}</p>
+				</div>
+			`;
+		}
+
+		if (isCurrentUser) {
+			// Message from the current user
+			messageWrapper.classList.add('flex', 'justify-end');
+			messageWrapper.innerHTML = `
+				<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
+					<p>${message}</p>
+					<p class="text-xs text-gray-200 mt-1">${created_at}</p>
+					<p class="text-xs text-gray-200">${is_read ? 'Read' : 'Unread'}</p>
+				</div>
+			`;
+		}
+
+		return messageWrapper;
+	}
+
+	function appendMessageToChat(chatContainer, messageElement, isScrolledToBottom) {
+		chatContainer.appendChild(messageElement);
+
+		// If the user is already scrolled to the bottom, auto-scroll to the latest message
+		if (isScrolledToBottom) {
+			chatContainer.scrollTop = chatContainer.scrollHeight;
+		}
+	}
 </script>
 {% endblock content %}
