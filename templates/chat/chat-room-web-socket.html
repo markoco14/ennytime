@@ -93,12 +93,28 @@ Couple's Chat
 		const chatContainer = document.getElementById('chat-container');
 		chatContainer.scrollTop = chatContainer.scrollHeight;
 	});
-</script>
-<script>
 
-	// loading states:
-	// htmx:wsBeforeMessage = remove indicating class
-	// htmx:wsBeforeSend = add indicating class
+	document.addEventListener('htmx:wsAfterMessage', function (event) {
+		const chatInput = document.getElementById('message');
+		chatInput.value = '';
+		chatInput.focus();
+		const sendButton = document.querySelector('#chat-form button[type="submit"]');
+		sendButton.disabled = false;
+		sendButton.classList.remove('disabled');
+		sendButton.style.cursor = 'pointer';
+	});
+
+	document.addEventListener('htmx:wsBeforeSend', function (event) {
+		const chatInput = document.getElementById('message');
+		if (chatInput.value === '') {
+			event.preventDefault();
+			return;
+		}
+		const sendButton = document.querySelector('#chat-form button[type="submit"]');
+		sendButton.disabled = true;
+		sendButton.classList.add('disabled');
+		sendButton.style.cursor = 'not-allowed';
+	});
 
 	document.addEventListener('htmx:wsBeforeMessage', function (event) {
 		const response = JSON.parse(event.detail.message)
@@ -140,12 +156,6 @@ Couple's Chat
 		} else {
 			chatContainer.appendChild(messageElement);
 		}
-
-
 	})
-
-
-
-
 </script>
 {% endblock content %}
