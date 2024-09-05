@@ -118,7 +118,7 @@ Couple's Chat
 
 	document.addEventListener('htmx:wsBeforeMessage', function (event) {
 		const response = JSON.parse(event.detail.message)
-		const messageContent = response.message
+		const message_content = response.message
 		const message_created_at = response.created_at
 		const message_sender_id = response.sender_id
 		const message_id = response.id
@@ -129,20 +129,23 @@ Couple's Chat
 
 		const messageElement = isCurrentUser ? renderRightSideMessage(
 			id = message_id,
-			message = messageContent,
+			message = message_content,
 			created_at = message_created_at,
 			is_read = message_is_read,
 		) : renderLeftSideMessage(
 			id = message_id,
-			message = messageContent,
+			message = message_content,
 			created_at = message_created_at,
 			is_read = message_is_read,
 		);
-		
+
 		// check if currently at the bottom of chat
 		const isScrolledToBottom = chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop + 1;
 		// Append the new message to the chat container
 		appendMessageToChat(chatContainer, messageElement, isScrolledToBottom);
+
+		// Trigger HTMX to process the new element
+		htmx.process(messageElement);
 	})
 
 	// Function to generate the HTML structure for a message
@@ -164,14 +167,17 @@ Couple's Chat
 		const messageWrapper = document.createElement('div');
 		messageWrapper.classList.add('flex', 'justify-start');
 		messageWrapper.innerHTML = `
-				<div class="bg-pink-200 dark:bg-gray-800 text-gray-800 	dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
+				<div hx-get="/read-status/${id}"
+					hx-trigger="intersect once threshold:0.2"
+					hx-swap="none"
+					class="bg-pink-200 dark:bg-gray-800 text-gray-800 	dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
 					<p>${message}</p>
 					<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${created_at}</p>
 				</div>
 			`;
 		return messageWrapper;
 	}
-	
+
 	function appendMessageToChat(chatContainer, messageElement, isScrolledToBottom) {
 		chatContainer.appendChild(messageElement);
 
