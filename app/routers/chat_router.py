@@ -403,10 +403,13 @@ async def multi_websocket_endpoint(
             db.commit()
             db.refresh(db_message)
             message_data = {
+                "id": db_message.id,
                 "sender_id": db_message.sender_id,  
                 "message": db_message.message,
+                "is_read": db_message.is_read,
                 "created_at": str(db_message.created_at)
             }
+            
             await manager.broadcast(json.dumps(message_data))
     except WebSocketDisconnect:
         manager.disconnect(websocket)

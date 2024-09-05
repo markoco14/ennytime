@@ -90,32 +90,34 @@ Couple's Chat
 </section>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
-		const chatForm = document.querySelector('form');
-
-
-		{# console.log(chatForm) #}
 		const chatContainer = document.getElementById('chat-container');
 		chatContainer.scrollTop = chatContainer.scrollHeight;
 	});
 </script>
 <script>
-	const room_id = "{{chat.room_id}}";
-	const user_id = "{{current_user.id}}";
-	document.addEventListener('htmx:wsBeforeMessage', function(event) {
-		const data = event.detail;
-		response = data.message;
-		responseData = JSON.parse(response)
-		message = JSON.parse(response).message;
+
+	// loading states:
+	// htmx:wsBeforeMessage = remove indicating class
+	// htmx:wsBeforeSend = add indicating class
+
+	document.addEventListener('htmx:wsBeforeMessage', function (event) {
+		const response = JSON.parse(event.detail.message)
+		const message = response.message
+		const created_at = response.created_at
+		const sender_id = response.sender_id
+		const id = response.id
+		const is_read = response.is_read
 
 		const chatContainer = document.getElementById('chat-container');
 		const messageElement = document.createElement('div');
-		 if (responseData.sender_id == Number("{{ current_user.id }}")) {
+		if (sender_id == Number("{{ current_user.id }}")) {
 			// Message from the current user
 			messageElement.classList.add('flex', 'justify-end');
 			messageElement.innerHTML = `
                 <div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
-                    <p>${responseData.message}</p>
-                    <p class="text-xs text-gray-200 mt-1">${responseData.created_at}</p>
+                    <p>${message}</p>
+                    <p class="text-xs text-gray-200 mt-1">${created_at}</p>
+					<p class="text-xs text-gray-200">${is_read ? 'Read' : 'Unread'}</p>
                 </div>
             `;
 		} else {
@@ -123,8 +125,8 @@ Couple's Chat
 			messageElement.classList.add('flex', 'justify-start');
 			messageElement.innerHTML = `
                 <div class="bg-pink-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
-                    <p>${responseData.message}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${responseData.created_at}</p>
+                    <p>${message}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${created_at}</p>
                 </div>
             `;
 		}
