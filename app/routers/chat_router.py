@@ -160,7 +160,10 @@ async def multi_websocket_endpoint(
     client_id: int,
     db: Annotated[Session, Depends(get_db)]
 ):
-    await websocket_manager.connect(websocket)
+    await websocket_manager.connect_chatroom(
+        websocket=websocket,
+        room_id=room_id
+    )
     try:
         while True:
             data = await websocket.receive_text()
@@ -180,13 +183,16 @@ async def multi_websocket_endpoint(
                 "is_read": db_message.is_read,
                 "created_at": str(db_message.created_at)
             }
-            await websocket_manager.send_personal_message(
-                message=f"Hello {client_id}",
-                websocket=websocket
+            await websocket_manager.broadcast_chatroom(
+                message=json.dumps(message_data),
+                room_id=room_id
             )
-            await websocket_manager.broadcast(json.dumps(message_data))
     except WebSocketDisconnect:
-        websocket_manager.disconnect(websocket)
+        websocket_manager.disconnect_chatroom(
+            websocket=websocket,
+            room_id=room_id
+        )
+        print(f"Client {client_id} disconnected from room {room_id}")
 
 
 @router.get("/read-status/{message_id}", response_class=HTMLResponse)

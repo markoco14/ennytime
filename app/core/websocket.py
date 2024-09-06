@@ -8,7 +8,7 @@ class WebSocketConnectionManager:
 
     def __init__(self):
         self.active_connections: list[WebSocket] = []
-        
+        self.chatroom_connections: dict[str, list[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -23,6 +23,28 @@ class WebSocketConnectionManager:
     async def broadcast(self, message: str):
         for connection in self.active_connections:
             await connection.send_text(message)
+
+    # chat room related
+    async def connect_chatroom(self, websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        if room_id not in self.chatroom_connections:
+            self.chatroom_connections[room_id] = []
+        self.chatroom_connections[room_id].append(websocket)
+
+    async def disconnect_chatroom(self, websocket: WebSocket, room_id: str):
+        self.chatroom_connections[room_id].remove(websocket)
+        if not self.chatroom_connections[room_id]:
+            del self.chatroom_connections[room_id]
+
+    async def broadcast_chatroom(self, message: str, room_id: str):
+        if room_id in self.chatroom_connections:
+            for connection in self.chatroom_connections[room_id]:
+                try:
+                    await connection.send_text(message)
+                except RuntimeError as e:
+                    # TODO: change to logging
+                    print(f"Error sending message to connection: {e}")
+                    self.chatroom_connections[room_id].remove(connection)
 
 
 websocket_manager = WebSocketConnectionManager()
