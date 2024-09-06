@@ -1,47 +1,24 @@
-import datetime
+
 import json
-import string
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form,  Request, Response, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
-
 from app.auth import auth_service
 from app.core.database import get_db
+from app.core.websocket import websocket_manager
 from app.models.chat_models import DBChatRoom, DBChatMessage
 from app.services import chat_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 block_templates = Jinja2Blocks(directory="templates")
-
-
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
-
-
-manager = ConnectionManager()
 
 
 @router.get("/chat", response_class=HTMLResponse)
@@ -60,18 +37,10 @@ def get_chat(
         db=db,
         cookies=request.cookies)
 
-    # we get the current user from the request cookie
-    # we get the share id from the current user's shares
-    # but maybe we don't need the share ID
-    # we get the current user's current chat and all related messages
-    # even if they are the other user
-
     chat = db.query(DBChatRoom).filter(
         DBChatRoom.is_active == 1,
         DBChatRoom.chat_users.contains(current_user.id)
     ).first()
-    # if chat:
-    #     print(chat.__dict__)
 
     query = text("""
         SELECT etime_shares.*,
@@ -104,9 +73,6 @@ def get_chat(
 
 def generate_room_id():
     """Generate a random room id"""
-    length = 16
-    characters = string.ascii_letters + string.digits
-
     return uuid.uuid4().hex
 
 
@@ -147,28 +113,23 @@ def create_new_chat(
     )
 
 
+# WEB SOCKET CHAT BELOW
+
 @router.get("/chat/{room_id}", response_class=HTMLResponse)
-def get_user_chat(
+def get_chatroom(
     request: Request,
     room_id: str,
     db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
+    if not current_user:
+        response = templates.TemplateResponse(
             request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+            name="website/web-home.html"
         )
+        response.delete_cookie("session-id")
 
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
-
-    # we get the current user from the request cookie
-    # we get the share id from the current user's shares
-    # but maybe we don't need the share ID
-    # we get the current user's current chat and all related messages
-    # even if they are the other user
+        return response
 
     # we get the chat room and the messages
     # TODO: set up the messages table
@@ -178,9 +139,6 @@ def get_user_chat(
 
     messages = db.query(DBChatMessage).filter(
         DBChatMessage.room_id == room_id).all()
-    # print(messages)
-    # for message in messages:
-    #     print(message)
 
     context = {
         "request": request,
@@ -190,84 +148,45 @@ def get_user_chat(
     }
 
     return block_templates.TemplateResponse(
-        name="chat/chat-room.html",
+        name="chat/chat-room-web-socket.html",
         context=context
     )
 
 
-@router.get("/chat/{room_id}/messages", response_class=HTMLResponse)
-def get_chat_room_messages(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    room_id: str
-):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
-
-    messages = db.query(DBChatMessage).filter(
-        DBChatMessage.room_id == room_id).all()
-
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "messages": messages
-    }
-
-    return block_templates.TemplateResponse(
-        name="chat/chat-room.html",
-        context=context,
-        block_name="messages"
-    )
-
-
-@router.post("/chat/{room_id}", response_class=HTMLResponse)
-def post_new_message(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
+@router.websocket("/ws/chat/{room_id}/{client_id}")
+async def multi_websocket_endpoint(
+    websocket: WebSocket,
     room_id: str,
-    message: Annotated[str, Form()],
-    current_user=Depends(auth_service.user_dependency)
+    client_id: int,
+    db: Annotated[Session, Depends(get_db)]
 ):
-    """
-    Add a new message to the chat
-    """
-    if not current_user:
-        response = JSONResponse(
-            status_code=401,
-            content={"message": "Unauthorized"},
-            headers={"HX-Trigger": 'unauthorizedRedirect'}
-        )
-        if request.cookies.get("session-id"):
-            response.delete_cookie("session-id")
-
-        return response
-
-    db_message = DBChatMessage(
-        room_id=room_id,
-        message=message,
-        sender_id=current_user.id
-    )
-    db.add(db_message)
-    db.commit()
-    db.refresh(db_message)
-
-    return templates.TemplateResponse(
-        name="chat/chat-form.html",
-        context={
-            "request": request,
-            "chat": {
-                "room_id": room_id
+    await websocket_manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            message = json.loads(data)['message']
+            db_message = DBChatMessage(
+                room_id=room_id,
+                message=message,
+                sender_id=client_id
+            )
+            db.add(db_message)
+            db.commit()
+            db.refresh(db_message)
+            message_data = {
+                "id": db_message.id,
+                "sender_id": db_message.sender_id,
+                "message": db_message.message,
+                "is_read": db_message.is_read,
+                "created_at": str(db_message.created_at)
             }
-        }
-    )
+            await websocket_manager.send_personal_message(
+                message=f"Hello {client_id}",
+                websocket=websocket
+            )
+            await websocket_manager.broadcast(json.dumps(message_data))
+    except WebSocketDisconnect:
+        websocket_manager.disconnect(websocket)
 
 
 @router.get("/read-status/{message_id}", response_class=HTMLResponse)
@@ -331,85 +250,3 @@ def get_unread_messages(
         name="chat/unread-counter.html",
         context=context
     )
-
-
-# WEB SOCKET CHAT BELOW
-
-@router.get("/ws-chat/{room_id}", response_class=HTMLResponse)
-def get_user_ws_chat(
-    request: Request,
-    room_id: str,
-    db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
-):
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-        response.delete_cookie("session-id")
-
-        return response
-
-    # we get the current user from the request cookie
-    # we get the share id from the current user's shares
-    # but maybe we don't need the share ID
-    # we get the current user's current chat and all related messages
-    # even if they are the other user
-
-    # we get the chat room and the messages
-    # TODO: set up the messages table
-    chat_room = db.query(DBChatRoom).filter(
-        DBChatRoom.room_id == room_id
-    ).first()
-
-    messages = db.query(DBChatMessage).filter(
-        DBChatMessage.room_id == room_id).all()
-    # print(messages)
-    # for message in messages:
-    #     print(message)
-
-    context = {
-        "request": request,
-        "chat": chat_room,
-        "current_user": current_user,
-        "messages": messages
-    }
-
-    return block_templates.TemplateResponse(
-        name="chat/chat-room-web-socket.html",
-        context=context
-    )
-
-
-@router.websocket("/ws/chat/{room_id}/{client_id}")
-async def multi_websocket_endpoint(
-    websocket: WebSocket,
-    room_id: str,
-    client_id: int,
-    db: Annotated[Session, Depends(get_db)]
-):
-    await manager.connect(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            message = json.loads(data)['message']
-            db_message = DBChatMessage(
-                room_id=room_id,
-                message=message,
-                sender_id=client_id
-            )
-            db.add(db_message)
-            db.commit()
-            db.refresh(db_message)
-            message_data = {
-                "id": db_message.id,
-                "sender_id": db_message.sender_id,  
-                "message": db_message.message,
-                "is_read": db_message.is_read,
-                "created_at": str(db_message.created_at)
-            }
-            
-            await manager.broadcast(json.dumps(message_data))
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
