@@ -1,0 +1,129 @@
+{% extends "chat-base.html" %}
+
+{% block title %}
+Couple's Chat
+{% endblock title %}
+
+{% block content %}
+
+<section class="flex flex-col h-screen max-w-[800px] mx-auto">
+	<header class="fixed w-full top-0 left-0 h-[48px] bg-gray-900 text-white">
+		<div class="w-full max-w-[1000px] mx-auto flex items-center gap-4">
+			<a href="/"
+			   class="text-5xl">&larr;</a>
+			<h1 class="text-xl font-bold">Chat Ennytime</h1>
+			{# <span id="ids"></span> #}
+		</div>
+	</header>
+
+	{% include "/chat/chat-container-web-socket.html" %}
+	{% include "/chat/chat-form-web-socket.html" %}
+</section>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const chatContainer = document.getElementById('chat-container');
+		chatContainer.scrollTop = chatContainer.scrollHeight;
+	});
+
+	document.addEventListener('htmx:wsAfterMessage', function (event) {
+		const chatInput = document.getElementById('message');
+		chatInput.value = '';
+		chatInput.focus();
+		const sendButton = document.querySelector('#chat-form button[type="submit"]');
+		sendButton.disabled = false;
+		sendButton.classList.remove('disabled');
+		sendButton.style.cursor = 'pointer';
+	});
+
+	document.addEventListener('htmx:wsBeforeSend', function (event) {
+		const chatInput = document.getElementById('message');
+		if (chatInput.value === '') {
+			event.preventDefault();
+			return;
+		}
+		const sendButton = document.querySelector('#chat-form button[type="submit"]');
+		sendButton.disabled = true;
+		sendButton.classList.add('disabled');
+		sendButton.style.cursor = 'not-allowed';
+	});
+
+	document.addEventListener('htmx:wsBeforeMessage', function (event) {
+		const response = JSON.parse(event.detail.message)
+
+
+		if (response.read_status_update === true) {
+			let message = document.querySelector(`[data-message-id="${response.message_id}"]`);
+			message.lastElementChild.textContent = 'Read';
+			return;
+		}
+		const message_content = response.message
+		const message_created_at = response.created_at
+		const message_sender_id = response.sender_id
+		const message_id = response.id
+		const message_is_read = response.is_read
+
+		const chatContainer = document.getElementById('chat-container');
+		const isCurrentUser = message_sender_id === Number("{{ current_user.id }}");
+
+		const messageElement = isCurrentUser ? renderRightSideMessage(
+			id = message_id,
+			message = message_content,
+			created_at = message_created_at,
+			is_read = message_is_read,
+		) : renderLeftSideMessage(
+			id = message_id,
+			message = message_content,
+			created_at = message_created_at,
+			is_read = message_is_read,
+		);
+
+		// check if currently at the bottom of chat
+		const isScrolledToBottom = chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop + 1;
+		// Append the new message to the chat container
+		appendMessageToChat(chatContainer, messageElement, isScrolledToBottom);
+
+		// Trigger HTMX to process the new element
+		htmx.process(messageElement);
+	})
+
+	// Function to generate the HTML structure for a message
+	function renderRightSideMessage(id, message, created_at, is_read) {
+		const messageWrapper = document.createElement('div');
+		// Message from the current user
+		messageWrapper.classList.add('flex', 'justify-end');
+		messageWrapper.innerHTML = `
+				<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]"
+				data-message-id=${id}>
+					<p>${message}</p>
+					<p class="text-xs text-gray-200 mt-1">${created_at}</p>
+					<p class="text-xs text-gray-200">${is_read ? 'Read' : 'Unread'}</p>
+				</div>
+			`;
+		return messageWrapper;
+	}
+
+	function renderLeftSideMessage(id, message, created_at, is_read) {
+		const messageWrapper = document.createElement('div');
+		messageWrapper.classList.add('flex', 'justify-start');
+		messageWrapper.innerHTML = `
+				<div hx-get="/read-status/${id}"
+					hx-trigger="intersect once threshold:0.2"
+					hx-swap="none"
+					class="bg-pink-200 dark:bg-gray-800 text-gray-800 	dark:text-gray-200 p-3 rounded-lg max-w-[70%]">
+					<p>${message}</p>
+					<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${created_at}</p>
+				</div>
+			`;
+		return messageWrapper;
+	}
+
+	function appendMessageToChat(chatContainer, messageElement, isScrolledToBottom) {
+		chatContainer.appendChild(messageElement);
+
+		// If the user is already scrolled to the bottom, auto-scroll to the latest message
+		if (isScrolledToBottom) {
+			chatContainer.scrollTop = chatContainer.scrollHeight;
+		}
+	}
+</script>
+{% endblock content %}
