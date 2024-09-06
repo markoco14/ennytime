@@ -196,7 +196,7 @@ async def multi_websocket_endpoint(
 
 
 @router.get("/read-status/{message_id}", response_class=HTMLResponse)
-def set_message_to_read(
+async def set_message_to_read(
     request: Request,
     message_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -219,6 +219,24 @@ def set_message_to_read(
     if not db_message.is_read:
         db_message.is_read = 1
         db.commit()
+
+    websocket = websocket_manager.find_user_chatroom_connection(
+        room_id=db_message.room_id,
+        user_id=db_message.sender_id
+    )
+
+    message = {
+        "message_id": db_message.id,
+        "sender_id": db_message.sender_id,
+        "is_read": db_message.is_read,
+        "read_status_update": True
+    }
+
+    if websocket:
+        await websocket_manager.send_personal_message(
+            message=json.dumps(message),
+            websocket=websocket
+        )
 
     return Response(status_code=200)
 

@@ -49,6 +49,13 @@ Couple's Chat
 
 	document.addEventListener('htmx:wsBeforeMessage', function (event) {
 		const response = JSON.parse(event.detail.message)
+
+
+		if (response.read_status_update === true) {
+			let message = document.querySelector(`[data-message-id="${response.message_id}"]`);
+			message.lastElementChild.textContent = 'Read';
+			return;
+		}
 		const message_content = response.message
 		const message_created_at = response.created_at
 		const message_sender_id = response.sender_id
@@ -85,7 +92,8 @@ Couple's Chat
 		// Message from the current user
 		messageWrapper.classList.add('flex', 'justify-end');
 		messageWrapper.innerHTML = `
-				<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
+				<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]"
+				data-message-id=${id}>
 					<p>${message}</p>
 					<p class="text-xs text-gray-200 mt-1">${created_at}</p>
 					<p class="text-xs text-gray-200">${is_read ? 'Read' : 'Unread'}</p>

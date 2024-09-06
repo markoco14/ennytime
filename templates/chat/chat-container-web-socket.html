@@ -4,7 +4,7 @@
 	{% for message in messages  %}
 	{% if message.sender_id == current_user.id %}
 	<div class="flex justify-end">
-		<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]">
+		<div class="bg-pink-500 text-white p-3 rounded-lg max-w-[70%]" data-message-id="{{message.id}}">
 			<p>{{message.message}}</p>
 			<p class="text-xs text-gray-200 mt-1">{{message.created_at}}</p>
 			{% if message.is_read %}
