@@ -153,16 +153,17 @@ def get_chatroom(
     )
 
 
-@router.websocket("/ws/chat/{room_id}/{client_id}")
+@router.websocket("/ws/chat/{room_id}/{user_id}")
 async def multi_websocket_endpoint(
     websocket: WebSocket,
     room_id: str,
-    client_id: int,
+    user_id: int,
     db: Annotated[Session, Depends(get_db)]
 ):
     await websocket_manager.connect_chatroom(
         websocket=websocket,
-        room_id=room_id
+        room_id=room_id,
+        user_id=user_id
     )
     try:
         while True:
@@ -171,7 +172,7 @@ async def multi_websocket_endpoint(
             db_message = DBChatMessage(
                 room_id=room_id,
                 message=message,
-                sender_id=client_id
+                sender_id=user_id
             )
             db.add(db_message)
             db.commit()
@@ -188,11 +189,10 @@ async def multi_websocket_endpoint(
                 room_id=room_id
             )
     except WebSocketDisconnect:
-        websocket_manager.disconnect_chatroom(
+        await websocket_manager.disconnect_chatroom(
             websocket=websocket,
             room_id=room_id
         )
-        print(f"Client {client_id} disconnected from room {room_id}")
 
 
 @router.get("/read-status/{message_id}", response_class=HTMLResponse)
