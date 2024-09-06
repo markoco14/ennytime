@@ -24,23 +24,42 @@ class WebSocketConnectionManager:
         for connection in self.active_connections:
             await connection.send_text(message)
 
-    # chat room related
-    async def connect_chatroom(self, websocket: WebSocket, room_id: str):
+    # chat room related methods
+    async def connect_chatroom(
+            self,
+            websocket: WebSocket,
+            room_id: str,
+            user_id: int
+    ):
         await websocket.accept()
         if room_id not in self.chatroom_connections:
             self.chatroom_connections[room_id] = []
-        self.chatroom_connections[room_id].append(websocket)
+        self.chatroom_connections[room_id].append({
+            "user_id": user_id,
+            "connection": websocket
+        })
 
-    async def disconnect_chatroom(self, websocket: WebSocket, room_id: str):
-        self.chatroom_connections[room_id].remove(websocket)
+    async def disconnect_chatroom(
+            self,
+            websocket: WebSocket,
+            room_id: str
+    ):
+        self.chatroom_connections[room_id] = [
+            connection for connection in self.chatroom_connections[room_id]
+            if connection["connection"] != websocket
+        ]
         if not self.chatroom_connections[room_id]:
             del self.chatroom_connections[room_id]
 
-    async def broadcast_chatroom(self, message: str, room_id: str):
+    async def broadcast_chatroom(
+            self,
+            message: str,
+            room_id: str
+    ):
         if room_id in self.chatroom_connections:
             for connection in self.chatroom_connections[room_id]:
                 try:
-                    await connection.send_text(message)
+                    await connection["connection"].send_text(message)
                 except RuntimeError as e:
                     # TODO: change to logging
                     print(f"Error sending message to connection: {e}")
