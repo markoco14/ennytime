@@ -25,7 +25,11 @@ class WebSocketConnectionManager:
             await connection.send_text(message)
 
     # chat room related methods
-    def find_user_chatroom_connection(self, room_id, user_id) -> WebSocket | None:
+    def find_user_chatroom_connection(
+        self,
+        room_id: str,
+        user_id: int
+    ) -> WebSocket | None:
         if room_id in self.chatroom_connections:
             for connection in self.chatroom_connections[room_id]:
                 if connection["user_id"] == user_id:
