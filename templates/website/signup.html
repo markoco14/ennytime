@@ -8,13 +8,13 @@ Ennytime Sign Up
 
 {% block content %}
     <section
-      class="bg-white dark:bg-gray-900 dark:text-gray-100 grid place-items-center p-2 py-8 md:py-16 bg-pink-700"
+      class="bg-white   grid place-items-center p-2 py-8 md:py-16 bg-pink-700"
     >
       <article
-        class="bg-[#FDE5EC] dark:bg-[#691C3D] rounded-md text-black p-8 md:max-w-[400px] mx-auto"
+        class="bg-[#FDE5EC]  rounded-md text-black p-8 md:max-w-[400px] mx-auto"
       >
-        <h2 class="text-5xl mb-4 dark:text-gray-100">Sign up</h2>
-        <p class="mb-4 text-gray-700 dark:text-gray-300 text-[16px]">
+        <h2 class="text-5xl mb-4 ">Sign up</h2>
+        <p class="mb-4 text-gray-700  text-[16px]">
           Start sharing your calendar with the one you love.
         </p>
         <form
@@ -24,7 +24,7 @@ Ennytime Sign Up
           class="grid gap-2 mb-8"
         >
           <div class="flex flex-col gap-1">
-            <label class="dark:text-gray-100 font-bold">Email</label>
+            <label class=" font-bold">Email</label>
             <input
               class="border rounded p-2 text-gray-700"
               type="email"
@@ -33,7 +33,7 @@ Ennytime Sign Up
             />
           </div>
           <div class="flex flex-col gap-1">
-            <label class="dark:text-gray-100 font-bold">Password</label>
+            <label class=" font-bold">Password</label>
             <input
               class="border rounded p-2"
               type="password"
@@ -42,15 +42,15 @@ Ennytime Sign Up
             />
           </div>
           <button
-            class="flex gap-2 justify-center items-center px-2 py-1 bg-[#D31D6C] dark:bg-[#E22C7B] text-white rounded"
+            class="flex gap-2 justify-center items-center px-2 py-1 bg-[#D31D6C]  text-white rounded"
           >
             Find the time
 			{{spinner('h-5', 'h-5', 'text-white')}}
           </button>
         </form>
-        <p class="text-gray-700 dark:text-gray-300">
+        <p class="text-gray-700 ">
           Already have an account?
-          <a class="text-[#a51755] dark:text-[#E22C7B] underline" href="/signin"
+          <a class="text-[#a51755]  underline" href="/signin"
             >Sign in</a
           >
         </p>

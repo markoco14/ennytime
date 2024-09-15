@@ -1,6 +1,6 @@
 {% from "macros/spinner.html" import spinner %}
 <form id="type-form"
-	  class="max-w-[400px] mx-auto min-h-[400px] flex flex-col items-start gap-2 rounded-md dark:bg-gray-800"
+	  class="max-w-[400px] mx-auto min-h-[400px] flex flex-col items-start gap-2 rounded-md "
 	  hx-post="/shift-types/new"
 	  hx-target="#type-form"
 	  hx-swap="outerHTML">
@@ -24,7 +24,7 @@
 			   name="long_name"
 			   required
 			   placeholder="Choose name for shift type..."
-			   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+			   class="border p-2 shadow rounded  " />
 	</div>
 	<div class="flex flex-col mb-10">
 		<label for="short_name"
@@ -37,7 +37,7 @@
 			   name="short_name"
 			   required
 			   placeholder="Choose name for shift type..."
-			   class="border p-2 shadow rounded dark:bg-gray-800 dark:text-gray-100" />
+			   class="border p-2 shadow rounded  " />
 	</div>
 	<button type="submit"
 			class="flex gap-2 justify-center items-center bg-[#E22C7B] px-8 py-2 rounded-md grow-0 text-white">
