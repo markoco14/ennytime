@@ -5,7 +5,7 @@ Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
 <section data-js-calendar
-		 class="enter-from-right dark:bg-gray-900 py-4 dark:text-gray-100">
+		 class="enter-from-right  py-4 ">
 	{% block calendar %}
 	{% from '/macros/spinner.html' import spinner%}
 	<div class="container mx-auto px-2">
@@ -19,7 +19,7 @@ Ennytime Couple's Calendar
 			<div class="flex gap-2 justify-center">
 				{% if current_month_number == 1 %}
 				<button disabled
-						class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">
+						class="col-span-1 px-3 py-1 border rounded bg-gray-200   opacity-70">
 					{{prev_month_name}}
 				</button>
 				{% else %}
@@ -29,14 +29,14 @@ Ennytime Couple's Calendar
 						hx-indicator="#spinner"
 						hx-push-url="true"
 						hx-on::before-request="setEnterFromLeft();"
-						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
+						class="col-span-1 px-3 py-1 border rounded  ">
 					{{prev_month_name}}
 				</button>
 				{% endif%}
 				<!-- if end of year -->
 				{% if current_month_number == 12 %}
 				<button disabled
-						class="col-span-1 px-3 py-1 border rounded bg-gray-200 dark:bg-gray-900 dark:border-gray-900 opacity-70">
+						class="col-span-1 px-3 py-1 border rounded bg-gray-200   opacity-70">
 					{{next_month_name}}
 				</button>
 				{% else %}
@@ -46,7 +46,7 @@ Ennytime Couple's Calendar
 						hx-indicator="#spinner"
 						hx-push-url="true"
 						hx-on::before-request="setEnterFromRight();"
-						class="col-span-1 px-3 py-1 border rounded dark:bg-gray-700 dark:border-gray-700">
+						class="col-span-1 px-3 py-1 border rounded  ">
 					{{next_month_name}}
 				</button>
 				{% endif %}
