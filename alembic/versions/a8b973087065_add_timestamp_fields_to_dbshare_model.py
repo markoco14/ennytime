@@ -34,7 +34,7 @@ def upgrade() -> None:
     # Get all the ids from the etime_shares table
     result = connection.execute(
         text("SELECT id FROM etime_shares ORDER BY id ASC"))
-    ids = [row[0] for row in result]
+    ids = [row[0] for row in result] if result is not None else []
 
     if not ids:
         return  # No rows to update
