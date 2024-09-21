@@ -125,21 +125,45 @@ def validate_password(
 def signup(
     request: Request,
     response: Response,
-    email: Annotated[str, Form()],
+    username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency),
     ):
     """Sign up a user"""
     # check if user exists
-    # db_user: User = USERS.get(email)
-    db_user = user_repository.get_user_by_email(db=db, email=email)
-    # return db_user
-    if db_user:
-        return templates.TemplateResponse(
-            request=request,
-            name="/auth/form-error.html",
-            context={"request": request, "error": "Invalid email or password."}
-        )
+    if current_user:
+        response = Response(status_code=303, content="Redirecting...")
+        response.headers["HX-Redirect"] = "/"
+        return response
+    
+    # store username in email for readability
+    email = username
+
+    context = {
+        "request": request,
+        "previous_email": email,
+        "previous_password": password
+    }
+    
+    # check if email is valid
+    if not auth_service.is_valid_email(email=email):
+        context.update({"email_error": "Please enter a valid email."})
+    
+    # check if password is proper length
+    if len(password) < 8: 
+        context.update({"password_error": "Password must be at least 8 characters long."})
+
+    # check if email already exists for this app
+    if user_repository.get_user_by_email(db=db, email=email):
+        context.update({"form_error": "Invalid email or password"})
+
+    if context.get("form_error") or context.get("email_error") or context.get("password_error"):
+        response = templates.TemplateResponse(
+            name="/auth/forms/sign-up-form.html",
+            context=context)
+        
+        return response
     # Hash password
     hashed_password = auth_service.get_password_hash(password)
     
