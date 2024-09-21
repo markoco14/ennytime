@@ -11,16 +11,15 @@ Ennytime Sign Up
       class="bg-white   grid place-items-center p-2 py-8 md:py-16 bg-pink-700"
     >
       <div
-        class="bg-[#FDE5EC]  rounded-md text-black p-8 md:max-w-[400px] mx-auto"
+        class="bg-[#FDE5EC] flex flex-col gap-4 rounded-md text-black p-8 md:max-w-[400px] mx-auto"
       >
         <header>
           <h2 class="text-5xl mb-4 ">Sign up</h2>
-          <p class="mb-4 text-gray-700  text-[16px]">
+          <p class="text-gray-700 text-[16px]">
             Start sharing your calendar with the one you love.
           </p>
         </header>
         {% include "auth/forms/sign-up-form.html" %}
-        {# {{spinner('h-5', 'h-5', 'text-white')}} #}
         <footer>
           <p class="text-gray-700 ">
             Already have an account?
