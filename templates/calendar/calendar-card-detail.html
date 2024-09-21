@@ -22,13 +22,7 @@
 		{% endif %}
 		{% endfor %}
 	</div>
-	{# loading spinner #}
-	<div class="htmx-indicator h-full w-full grid">
-		<div class="w-full h-full flex justify-center items-center">
-			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
-		</div>
-	</div>
-	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
+	<div class="h-full flex flex-col justify-between overflow-y-auto">
 		<header>
 			<h3 class="text-3xl">{{written_month}}</h3>
 			<p class="text-xl">{{written_day}}</p>
