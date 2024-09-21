@@ -55,6 +55,39 @@ def validate_email(
         )
     return response
 
+
+@router.post("/user/password", response_class=HTMLResponse)
+def validate_password(
+    request: Request,
+    password: Annotated[str, Form(...)] = ''
+):
+    context = {
+        "request": request,
+        "password_error": "",
+        "previous_password": password
+    }
+
+    if password == '':
+        response = templates.TemplateResponse(
+            name="/auth/forms/password-input.html",
+            context=context
+            )
+        return response
+    
+    if len(password) < 8:
+        context.update({"password_error": "Password must be at least 8 characters long"})
+        response = templates.TemplateResponse(
+            name="/auth/forms/password-input.html",
+            context=context
+            )
+        return response
+    
+    response = templates.TemplateResponse(
+            name="/auth/forms/password-input.html",
+            context=context
+            )
+    return response    
+
 @router.post("/signup", response_class=Response)
 def signup(
     request: Request,
