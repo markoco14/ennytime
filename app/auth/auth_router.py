@@ -38,6 +38,23 @@ def get_signup_page(
 
     return response
 
+@router.get("/signin", response_class=HTMLResponse)
+def get_signin_page(
+    request: Request,
+    current_user=Depends(auth_service.user_dependency)
+):
+    """Go to the sign in page"""
+    if current_user:
+        return RedirectResponse(url="/")
+
+    response = templates.TemplateResponse(
+        request=request,
+        name="auth/signin.html"
+    )
+    if request.cookies.get("session-id"):
+        response.delete_cookie("session-id")
+    return response
+
 @router.post("/user/email", response_class=HTMLResponse)
 def validate_email(
     request: Request,
