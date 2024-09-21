@@ -4,7 +4,9 @@
 	 hx-target="this"
 	 hx-swap="outerHTML"
 	 hx-trigger="click"
-	 class="relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white ">
+	 hx-on::before-request="moveCalendarCard(Number(`{{date.day_number}}`));"
+	 class="relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white"
+	 >
 	{# birthdays #}
 	<div class="absolute -top-2 sm:-top-5 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
