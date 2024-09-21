@@ -195,43 +195,6 @@ def index(
     return response
 
 
-@app.get("/signin", response_class=HTMLResponse)
-def get_signin_page(
-    request: Request,
-    current_user=Depends(auth_service.user_dependency)
-):
-    """Go to the sign in page"""
-    if current_user:
-        return RedirectResponse(url="/")
-
-    response = templates.TemplateResponse(
-        request=request,
-        name="website/signin.html"
-    )
-    if request.cookies.get("session-id"):
-        response.delete_cookie("session-id")
-    return response
-
-
-@app.get("/signup", response_class=HTMLResponse)
-def get_signup_page(
-    request: Request,
-    current_user=Depends(auth_service.user_dependency)
-):
-    """Go to the sign up page"""
-    if current_user:
-        return RedirectResponse(url="/")
-
-    response = templates.TemplateResponse(
-        request=request,
-        name="website/signup.html"
-    )
-    if request.cookies.get("session-id"):
-        response.delete_cookie("session-id")
-
-    return response
-
-
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
     request: Request,
