@@ -204,31 +204,53 @@ def signup(
 def signin(
     request: Request,
     response: Response,
-    email: Annotated[str, Form()],
+    username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency),
     ):
     """Sign in a user"""
     # check if user exists
+    if current_user:
+        response = Response(status_code=303, content="Redirecting...")
+        response.headers["HX-Redirect"] = "/"
+        return response
+    # for readability
+    email=username
+
+    # context updated with errors later
+    context = {
+        "request": request,
+        "previous_email": email,
+        "previous_password": password
+    }
+
+    # get user to check password against hashed password
     db_user = user_repository.get_user_by_email(db=db, email=email)
     if not db_user:
-        return templates.TemplateResponse(
-            request=request,
-            name="/auth/form-error.html",
-            context={"request": request, "error": "Invalid email or password."}
-            
-        )
-    # verify the password
-    if not auth_service.verify_password(
+        context.update({"form_error": "Invalid email or password"})
+    
+    # need to check if password is correct
+    if db_user and not auth_service.verify_password(
         plain_password=password,
         hashed_password=db_user.hashed_password
-        ):
-        return templates.TemplateResponse(
-            request=request,
-            name="/auth/form-error.html",
-            context={"request": request, "error": "Invalid email or password"}
-            
-        )
+    ):
+        context.update({"form_error": "Invalid email or password"})
+
+    # can also check if email is valid
+    if not auth_service.is_valid_email(email=email):
+        context.update({"email_error": "Please enter a valid email."})
+    
+    # check if password is proper length
+    if len(password) < 8: 
+        context.update({"password_error": "Password must be at least 8 characters long."})
+
+    if context.get("form_error") or context.get("email_error") or context.get("password_error"):
+        response = templates.TemplateResponse(
+            name="/auth/forms/sign-in-form.html",
+            context=context)
+        
+        return response
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
