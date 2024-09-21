@@ -3,7 +3,7 @@
     hx-post="/signup"
     hx-swap="outerHTML"
     >
-    <span id="form-error" class="text-red-500">{{form_error}}</span>
+    <div id="form-error" class="text-red-500 text-sm h-5">{{form_error}}</div>
     {% include "/auth/forms/email-input.html" %}
     {% include "/auth/forms/password-input.html" %}
     <button class="w-full mt-4 bg-pink-600 text-white px-3 py-2 rounded">
