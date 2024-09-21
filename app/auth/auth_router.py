@@ -22,6 +22,38 @@ templates = Jinja2Templates(directory="templates")
 
 
 
+@router.post("/user/email", response_class=HTMLResponse)
+def validate_email(
+    request: Request,
+    username: Annotated[str, Form(...)] = ''
+):
+    email = username
+    context = {
+        "request": request,
+        "email_error": "",
+        "previous_email": email
+    }
+    
+    if email == '':
+        response = templates.TemplateResponse(
+            name="/auth/forms/email-input.html",
+            context=context
+            )
+        return response
+        
+    if not auth_service.is_valid_email(email=email):
+        context.update({"email_error": "Please enter a valid email."})
+        response = templates.TemplateResponse(
+            name="/auth/forms/email-input.html",
+            context=context
+            )
+        return response
+    
+    response = templates.TemplateResponse(
+        name="/auth/forms/email-input.html",
+        context=context
+        )
+    return response
 
 @router.post("/signup", response_class=Response)
 def signup(
