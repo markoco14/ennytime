@@ -1,7 +1,6 @@
 <form 
     hx-post="/signup"
     hx-swap="outerHTML"
-    {# class="grid gap-4 p-8 bg-white rounded-md shadow" #}
     >
     <span id="form-error" class="text-red-500">{{form_error}}</span>
     {% include "/auth/forms/email-input.html" %}
