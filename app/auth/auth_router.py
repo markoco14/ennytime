@@ -5,7 +5,7 @@ from typing import Annotated
 
 
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -20,7 +20,23 @@ from app.repositories import user_repository
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+@router.get("/signup", response_class=HTMLResponse)
+def get_signup_page(
+    request: Request,
+    current_user=Depends(auth_service.user_dependency)
+):
+    """Go to the sign up page"""
+    if current_user:
+        return RedirectResponse(url="/")
 
+    response = templates.TemplateResponse(
+        request=request,
+        name="auth/signup.html"
+    )
+    if request.cookies.get("session-id"):
+        response.delete_cookie("session-id")
+
+    return response
 
 @router.post("/user/email", response_class=HTMLResponse)
 def validate_email(
