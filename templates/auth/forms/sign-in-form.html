@@ -1,0 +1,13 @@
+<form 
+    hx-post="/signin"
+    hx-swap="outerHTML"
+    class="grid gap-4 p-8 bg-white rounded-md shadow">
+    <h2 class="text-3xl">Sign In</h2>
+    <span id="form-error" class="text-red-500">{{form_error}}</span>
+    {% include "/english/forms/email-input.html" %}
+    {% include "/english/forms/password-input.html" %}
+    <button class="bg-gray-700 text-white px-3 py-2 rounded">
+        Start reading
+        <span class="htmx-indicator">Starting...</span>
+    </button>
+</form>
