@@ -21,7 +21,15 @@
 				[x-cloak] {
 					display: none;
 				}
+				.js-card.htmx-added {
+					opacity: 0;
+				}
 
+				.js-card {
+					opacity: 1 ;
+					transition: opacity 0.5s ease-out;
+					transition-delay: 0.4s;
+				}
 				.htmx-request .htmx-indicator-content {
 					display: none;
 				}
