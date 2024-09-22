@@ -26,9 +26,15 @@
 		{% endif %}
 		{% endfor %}
 	</div>
+	{# loading spinner #}
+	<div class="htmx-indicator w-full h-full grid place-content-center">
+		<div class="w-full h-full flex justify-center items-center">
+			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+		</div>
+	</div>
 	{# day number #}
 	{# shifts #}
-	<div class=" grid grid-rows-3 md:gap-2 max-h-[200px]">
+	<div class="htmx-indicator-content grid grid-rows-3 md:gap-2 max-h-[200px]">
 		<span>{{ date.day_number }}</span>
 		{# user shifts #}
 		{% if date.shifts|length == 1%}
