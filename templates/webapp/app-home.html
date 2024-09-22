@@ -64,43 +64,55 @@ Ennytime Couple's Calendar
 <script>
 	gsap.registerPlugin(Flip);
 
-	function moveCalendarCard(day_number) {
+	function moveToModal(day_number) {
 		const calendarCard = document.getElementById(
 			`day-${day_number}`
 		);
-		const calendarContainer = document.getElementById(
-			`container-${day_number}`
-		);
-		const modal = document.getElementById("modal");
-		const state = Flip.getState(`#day-${day_number}`);
+		const state = Flip.getState(calendarCard);
 
-		if (calendarCard.parentNode !== modal) {
-			modal.append(calendarCard);
-		} else {
-			calendarContainer.append(calendarCard);
-		}
-		changeClasses(day_number);
+		const modal = document.getElementById("modal");
+		const overlay = document.getElementById("overlay");
+		modal.append(calendarCard);
+		styleCalendarCard(day_number);
+		toggleModal();
 
 		Flip.from(state, {
 			duration: 0.4,
 			ease: "power1.inOut",
 			absolute: true,
-			onComplete: () => {
-				calendarCard.offsetHeight;
-				calendarContainer.offsetHeight;
-				modal.offsetHeight;
-			},
-		});
+		})
 	}
 
-	function changeClasses(day_number) {
+	function moveToCalendar(day_number) {
+		const calendarCard = document.getElementById(
+			`day-${day_number}`
+		);
+		const state = Flip.getState(calendarCard);
+		const calendarContainer = document.getElementById(
+			`container-${day_number}`
+		);
+		calendarContainer.append(calendarCard);
+		styleCalendarCard(day_number);
+		toggleModal();
+
+		Flip.from(state, {
+			duration: 0.4,
+			ease: "power1.inOut",
+			absolute: true,
+		})
+	}
+
+	function toggleModal() {
 		const overlay = document.getElementById("overlay");
 		overlay.classList.toggle("hidden");
 		const modal = document.getElementById("modal");
 		modal.classList.toggle("hidden");
+	}
+
+	function styleCalendarCard(day_number) {
 		let selectedCard = htmx.find(`#day-${day_number}`);
-		htmx.toggleClass(selectedCard, "rounded-md", 250);
-		htmx.toggleClass(selectedCard, "border", 250);
+		htmx.toggleClass(selectedCard, "rounded-md", 400);
+		htmx.toggleClass(selectedCard, "border", 400);
 
 	}
 </script>
