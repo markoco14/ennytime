@@ -57,9 +57,9 @@ Ennytime Couple's Calendar
 	{% endblock calendar %}
 </section>
 <div id="overlay"
-	 class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out">
+	 class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition-all duration-300 ease-in-out">
 	<div id="modal"
-		 class="hidden w-full max-w-[500px] aspect-square"></div>
+		 class="w-full max-w-[500px] aspect-square"></div>
 </div>
 <script>
 	gsap.registerPlugin(Flip);
@@ -87,26 +87,35 @@ Ennytime Couple's Calendar
 		const calendarCard = document.getElementById(
 			`day-${day_number}`
 		);
-		const state = Flip.getState(calendarCard);
 		const calendarContainer = document.getElementById(
 			`container-${day_number}`
 		);
+
+		const state = Flip.getState(calendarCard);
+		// Grab the current height of the calendar container
+		const cardHeight = calendarCard.offsetHeight;
+		const containerHeight = calendarContainer.offsetHeight;
+
+		calendarCard.style.height = `${containerHeight}px`
+
 		calendarContainer.append(calendarCard);
 		styleCalendarCard(day_number);
-		toggleModal();
 
 		Flip.from(state, {
 			duration: 0.4,
 			ease: "power1.inOut",
 			absolute: true,
+			onComplete: () => {
+				// Reset the card's height after the animation completes
+				calendarCard.style.height = '';
+			}
 		})
+		toggleModal();
 	}
 
 	function toggleModal() {
-		const overlay = document.getElementById("overlay");
-		overlay.classList.toggle("hidden");
-		const modal = document.getElementById("modal");
-		modal.classList.toggle("hidden");
+		const overlay = htmx.find("#overlay");
+		htmx.toggleClass(overlay, "hidden");
 	}
 
 	function styleCalendarCard(day_number) {
