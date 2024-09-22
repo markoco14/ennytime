@@ -177,7 +177,7 @@ def update_user_contact(
     except IntegrityError:
         context = {
             "request": request,
-            "user": current_user,
+            "user": db_user,
         }
 
         return templates.TemplateResponse(

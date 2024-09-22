@@ -3,9 +3,10 @@
 	hx-trigger="keyup changed delay:500ms"
 	hx-swap="outerHTML"
 	hx-indicator="next span"
+    hx-on::after-settle="displaySuccess('name-success')"
 	placeholder="Choose the name to use in the app."
 	class="w-full max-w-[400px] p-2 pr-6 rounded-md border border-pink-300 bg-pink-100 focus:bg-white"
     type="text"
     name="display_name"
-    value="{{user.display_name}}" 
+    value="{{user.display_name}}"
     />
