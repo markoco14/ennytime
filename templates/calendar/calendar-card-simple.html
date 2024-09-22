@@ -1,10 +1,11 @@
 {% from '/macros/spinner.html' import spinner %}
-
 <div hx-get="/calendar-card-detail/{{date.date}}"
 	 hx-target="this"
 	 hx-swap="outerHTML"
 	 hx-trigger="click"
-	 class="relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white ">
+	 hx-on::before-request="moveToModal(Number(`{{date.day_number}}`));"
+	 class="js-card relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white"
+	 >
 	{# birthdays #}
 	<div class="absolute -top-2 sm:-top-5 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
@@ -25,15 +26,9 @@
 		{% endif %}
 		{% endfor %}
 	</div>
-	{# loading spinner #}
-	<div class="htmx-indicator w-full h-full grid place-content-center">
-		<div class="w-full h-full flex justify-center items-center">
-			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
-		</div>
-	</div>
 	{# day number #}
 	{# shifts #}
-	<div class="htmx-indicator-content grid grid-rows-3 md:gap-2 max-h-[200px]">
+	<div class=" grid grid-rows-3 md:gap-2 max-h-[200px]">
 		<span>{{ date.day_number }}</span>
 		{# user shifts #}
 		{% if date.shifts|length == 1%}

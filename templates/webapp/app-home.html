@@ -57,50 +57,84 @@ Ennytime Couple's Calendar
 	{% endblock calendar %}
 </section>
 <div id="overlay"
-	 class="p-2 sm:p-0 hidden grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition duration-1000 ease-in-out">
+	 class="p-2 sm:p-0 hidden opacity-0 grid place-items-center fixed top-0 left-0 w-full h-full bg-black/50 transition-all duration-400 ease-in-out">
 	<div id="modal"
-		 class="hidden w-full max-w-[500px] aspect-square"></div>
+		 class="w-full max-w-[500px] aspect-square"></div>
 </div>
 <script>
 	gsap.registerPlugin(Flip);
 
-	function moveCalendarCard(day_number) {
+	function moveToModal(day_number) {
+		const calendarCard = document.getElementById(
+			`day-${day_number}`
+		);
+		const state = Flip.getState(calendarCard);
+
+		const modal = document.getElementById("modal");
+		const overlay = document.getElementById("overlay");
+		modal.append(calendarCard);
+		styleCalendarCard(day_number);
+		toggleModal();
+		Flip.from(state, {
+			duration: 0.4,
+			ease: "power1.inOut",
+			absolute: true,
+		})
+	}
+
+	function moveToCalendar(day_number) {
 		const calendarCard = document.getElementById(
 			`day-${day_number}`
 		);
 		const calendarContainer = document.getElementById(
 			`container-${day_number}`
 		);
-		const modal = document.getElementById("modal");
-		const state = Flip.getState(`#day-${day_number}`);
 
-		if (calendarCard.parentNode !== modal) {
-			modal.append(calendarCard);
-		} else {
-			calendarContainer.append(calendarCard);
-		}
-		changeClasses(day_number);
+		const state = Flip.getState(calendarCard);
+		// Grab the current height of the calendar container
+		const cardHeight = calendarCard.offsetHeight;
+		const containerHeight = calendarContainer.offsetHeight;
+
+		calendarCard.style.height = `${containerHeight}px`
+
+		calendarContainer.append(calendarCard);
+		styleCalendarCard(day_number);
 
 		Flip.from(state, {
 			duration: 0.4,
 			ease: "power1.inOut",
 			absolute: true,
 			onComplete: () => {
-				calendarCard.offsetHeight;
-				calendarContainer.offsetHeight;
-				modal.offsetHeight;
-			},
-		});
+				// Reset the card's height after the animation completes
+				calendarCard.style.height = '';
+			}
+		})
+		toggleModal();
 	}
 
-	function changeClasses(day_number) {
-		const overlay = document.getElementById("overlay");
-		overlay.classList.toggle("hidden");
-		const modal = document.getElementById("modal");
-		modal.classList.toggle("hidden");
+	function toggleModal() {
+		const overlay = htmx.find("#overlay");
+		if (overlay.classList.contains("hidden")) {
+			htmx.removeClass(overlay, "hidden");
+			requestAnimationFrame(() => {
+				htmx.removeClass(overlay, "opacity-0");
+				htmx.addClass(overlay, "opacity-100");
+			})
+		} else {
+			htmx.removeClass(overlay, "opacity-100");
+			htmx.addClass(overlay, "opacity-0");
+			overlay.addEventListener('transitionend', () => {
+				if (overlay.classList.contains("opacity-0")) {
+					htmx.toggleClass(overlay, "hidden");
+				}
+			}, {once: true})
+		}
+	}
+
+	function styleCalendarCard(day_number) {
 		let selectedCard = htmx.find(`#day-${day_number}`);
-		htmx.toggleClass(selectedCard, "rounded-md", 250);
-		htmx.toggleClass(selectedCard, "border", 250);
+		htmx.toggleClass(selectedCard, "rounded-md", 400);
+		htmx.toggleClass(selectedCard, "border", 400);
 
 	}
 </script>

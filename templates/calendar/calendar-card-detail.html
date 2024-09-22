@@ -1,5 +1,5 @@
 {% from '/macros/spinner.html' import spinner%}
-<div class="relative p-4 md:p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2"
+<div class="js-card relative p-4 md:p-8 slide-it h-full w-full flex flex-col justify-between md:gap-2"
 	 hx-target="this"
 	 hx-sync="this"
 	 hx-swap="outerHTML"
@@ -22,13 +22,7 @@
 		{% endif %}
 		{% endfor %}
 	</div>
-	{# loading spinner #}
-	<div class="htmx-indicator h-full w-full grid">
-		<div class="w-full h-full flex justify-center items-center">
-			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
-		</div>
-	</div>
-	<div class="htmx-indicator-content h-full flex flex-col justify-between overflow-y-auto">
+	<div class="h-full flex flex-col justify-between overflow-y-auto">
 		<header>
 			<h3 class="text-3xl">{{written_month}}</h3>
 			<p class="text-xl">{{written_day}}</p>
@@ -73,13 +67,12 @@
 			</ul>
 			{%endif%}
 		</main>
-
 		<div class="flex gap-4">
-			<button hx-get="/calendar-card-simple/{{date.date}}"
-					class="rounded bg-gray-300  px-4 py-1"
-					@click="() => {
-                moveCalendarCard(Number(`{{date.day_number}}`));
-				}">
+			<button 
+				hx-get="/calendar-card-simple/{{date.date}}"
+				hx-on::before-request="moveToCalendar(Number(`{{date.day_number}}`));"
+				class="rounded bg-gray-300 px-4 py-1"
+				>
 				Close
 			</button>
 			<button hx-get="/add-shift-form/{{date.date}}"
