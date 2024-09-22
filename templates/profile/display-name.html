@@ -11,8 +11,9 @@
 	<div class="flex items-center">
 	<input hx-put="/profile/display-name/edit/{{user.id}}"
 	hx-trigger="keyup changed delay:500ms"
-	hx-swap="none"
+	hx-swap="outerHTML"
 	hx-indicator="next span"
+	placeholder="Choose your name to use in the app."
 	class="w-full max-w-[400px] p-2 pr-6 rounded-md border border-pink-300 bg-pink-100 focus:bg-white"
 		   type="text"
 		   name="display_name"

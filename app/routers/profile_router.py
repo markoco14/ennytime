@@ -139,8 +139,28 @@ def update_user_contact(
         return response
 
     if current_user.id != user_id:
-        return Response(status_code=403)
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
+        )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
+    # if display name is empty
+    # don't update
+    # send back with last stored display name
+    db_user = user_repository.get_user_by_id(db=db, user_id=current_user.id)
+    context={"request": request, "user": db_user}
+    if display_name == "":
+        response = templates.TemplateResponse(
+            name="profile/display-name-input.html",
+            context=context
+        )
+        return response
 
+    # display name not empty
     update_data = {}
     if display_name is not None:
         update_data.update({"display_name": display_name})
@@ -156,26 +176,24 @@ def update_user_contact(
             updated_user=updated_user)
     except IntegrityError:
         context = {
-            "current_user": current_user,
             "request": request,
             "user": current_user,
         }
 
         return templates.TemplateResponse(
             request=request,
-            name="profile/display-name.html",
+            name="profile/display-name-input.html",
             context=context
         )
 
     context = {
-        "current_user": current_user,
         "request": request,
         "user": updated_user,
     }
 
     return templates.TemplateResponse(
         request=request,
-        name="profile/display-name.html",
+        name="profile/display-name-input.html",
         context=context
     )
 
