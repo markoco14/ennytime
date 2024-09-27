@@ -12,7 +12,12 @@
 	<div class="flex items-center">
 	{% include "profile/display-name-input.html" %}
 	<span class="htmx-indicator -ml-8">{{spinner('spinner', 'h-6', 'w-6', 'text-pink-900')}}</span>
-	<span id="name-success" class="hidden opacity-0 -ml-8 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300">{{success()}}</span>
+	<span 
+		id="name-success" 
+		class="hidden opacity-0 -ml-8 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
+		>
+	{{success()}}
+	</span>
 	<span id="failure" class="hidden -ml-8">failed</span>
 	</div>
 	{% endif %}

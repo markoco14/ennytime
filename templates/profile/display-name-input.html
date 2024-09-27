@@ -1,6 +1,6 @@
 <input 
     hx-put="/profile/display-name/edit/{{user.id}}"
-	hx-trigger="keyup changed delay:500ms"
+	hx-trigger="keyup changed delay:1s"
 	hx-swap="outerHTML"
 	hx-indicator="next span"
     hx-on::after-settle="displaySuccess('name-success')"
