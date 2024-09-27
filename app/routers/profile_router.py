@@ -316,7 +316,7 @@ def update_user_birthday(
 
     return templates.TemplateResponse(
         request=request,
-        name="profile/birthday.html",
+        name="profile/birthday-input.html",
         context=context
     )
 
