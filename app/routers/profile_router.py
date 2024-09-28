@@ -436,6 +436,7 @@ def update_username_widget(
     context = {
         "request": request,
         "user": current_user,
+        "username": current_user.username
     }
 
     return templates.TemplateResponse(
