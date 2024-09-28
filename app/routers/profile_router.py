@@ -434,41 +434,6 @@ def update_username_widget(
         context=context
     )
 
-
-@router.get("/username/{user_id}/edit", response_class=HTMLResponse | Response)
-def get_edit_username_widget(
-    request: Request,
-    user_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)    
-):
-    """Returns HTML to let the user edit their username"""
-    if not current_user:
-        response = RedirectResponse(url="/signin")
-        if request.cookies.get("session-id"):
-            response.delete_cookie("session-id")
-        return response
-
-    if current_user.id != user_id:
-        return Response(status_code=403)
-    
-    if not current_user.username:
-        username = ""
-    else:
-        username = current_user.username
-    context = {
-        "request": request,
-        "user": current_user,
-        "username": username,
-    }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="profile/username-edit.html",
-        context=context
-    )
-
-
 @router.post("/username-unique", response_class=HTMLResponse)
 def validate_username(
     request: Request,
