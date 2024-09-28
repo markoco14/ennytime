@@ -71,6 +71,12 @@ def get_profile_page(
         context.update(
             {"current_user_received_share": current_user_received_share})
 
+
+    if current_user.username is None:
+        context.update({"username": ""})
+    else:
+        context.update({"username": current_user.username})
+        
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",
@@ -377,11 +383,15 @@ def get_username_widget(
 
     if current_user.id != user_id:
         return Response(status_code=403)
-
+    
     context = {
         "request": request,
         "user": current_user,
     }
+    if current_user.username == None:
+        context.update({"username": ""})
+    else:
+        context.update({"username": current_user.username})
 
     return templates.TemplateResponse(
         request=request,
