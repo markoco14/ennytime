@@ -76,6 +76,11 @@ def get_profile_page(
         context.update({"username": ""})
     else:
         context.update({"username": current_user.username})
+
+    if current_user.birthday is None:
+        context.update({"birthday": "yyyy-MM-dd"})
+    else:
+        context.update({"birthday": current_user.birthday})
         
     return templates.TemplateResponse(
         request=request,
@@ -270,6 +275,10 @@ def get_birthday_widget(
         "request": request,
         "user": current_user,
     }
+    if current_user.birthday is None:
+        context.update({"birthday": "yyyy-MM-dd"})
+    else:
+        context.update({"birthday": current_user.birthday})
 
     return templates.TemplateResponse(
         request=request,
@@ -318,6 +327,7 @@ def update_user_birthday(
         "current_user": current_user,
         "request": request,
         "user": current_user,
+        "birthday": current_user.birthday
     }
 
     return templates.TemplateResponse(
