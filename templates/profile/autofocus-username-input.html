@@ -1,0 +1,12 @@
+<input 
+    class="w-full max-w-[400px] p-2 bg-pink-100 rounded-md border border-pink-300 focus:bg-white"
+    type="text"
+    id="app_username"
+    name="app_username"
+    value="{{username}}"
+    placeholder="Choose a username."
+    hx-post="/username-unique"
+    hx-trigger="keyup changed delay:500ms"
+    autofocus
+    onfocus="this.setSelectionRange(this.value.length,this.value.length);"
+    />

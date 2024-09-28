@@ -71,6 +71,17 @@ def get_profile_page(
         context.update(
             {"current_user_received_share": current_user_received_share})
 
+
+    if current_user.username is None:
+        context.update({"username": ""})
+    else:
+        context.update({"username": current_user.username})
+
+    if current_user.birthday is None:
+        context.update({"birthday": "yyyy-MM-dd"})
+    else:
+        context.update({"birthday": current_user.birthday})
+        
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",
@@ -139,8 +150,28 @@ def update_user_contact(
         return response
 
     if current_user.id != user_id:
-        return Response(status_code=403)
+        response = JSONResponse(
+            status_code=401,
+            content={"message": "Unauthorized"},
+            headers={"HX-Trigger": 'unauthorizedRedirect'}
+        )
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
+    # if display name is empty
+    # don't update
+    # send back with last stored display name
+    db_user = user_repository.get_user_by_id(db=db, user_id=current_user.id)
+    context={"request": request, "user": db_user}
+    if display_name == "":
+        response = templates.TemplateResponse(
+            name="profile/display-name-input.html",
+            context=context
+        )
+        return response
 
+    # display name not empty
     update_data = {}
     if display_name is not None:
         update_data.update({"display_name": display_name})
@@ -156,26 +187,24 @@ def update_user_contact(
             updated_user=updated_user)
     except IntegrityError:
         context = {
-            "current_user": current_user,
             "request": request,
-            "user": current_user,
+            "user": db_user,
         }
 
         return templates.TemplateResponse(
             request=request,
-            name="profile/display-name.html",
+            name="profile/display-name-input.html",
             context=context
         )
 
     context = {
-        "current_user": current_user,
         "request": request,
         "user": updated_user,
     }
 
     return templates.TemplateResponse(
         request=request,
-        name="profile/display-name.html",
+        name="profile/display-name-input.html",
         context=context
     )
 
@@ -246,6 +275,10 @@ def get_birthday_widget(
         "request": request,
         "user": current_user,
     }
+    if current_user.birthday is None:
+        context.update({"birthday": "yyyy-MM-dd"})
+    else:
+        context.update({"birthday": current_user.birthday})
 
     return templates.TemplateResponse(
         request=request,
@@ -294,11 +327,12 @@ def update_user_birthday(
         "current_user": current_user,
         "request": request,
         "user": current_user,
+        "birthday": current_user.birthday
     }
 
     return templates.TemplateResponse(
         request=request,
-        name="profile/birthday.html",
+        name="profile/birthday-input.html",
         context=context
     )
 
@@ -347,33 +381,27 @@ def get_edit_birthday_widget(
 def get_username_widget(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Returns HTML to let the user edit their username"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
-
+    
     context = {
         "request": request,
         "user": current_user,
     }
+    if current_user.username == None:
+        context.update({"username": ""})
+    else:
+        context.update({"username": current_user.username})
 
     return templates.TemplateResponse(
         request=request,
@@ -387,30 +415,20 @@ def update_username_widget(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
-    username: Annotated[str, Form()] = None,
+    app_username: Annotated[str, Form()] = None,
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Returns HTML to let the user edit their username"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
 
-    current_user.username = username
+    current_user.username = app_username
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
@@ -418,6 +436,7 @@ def update_username_widget(
     context = {
         "request": request,
         "user": current_user,
+        "username": current_user.username
     }
 
     return templates.TemplateResponse(
@@ -426,89 +445,69 @@ def update_username_widget(
         context=context
     )
 
-
-@router.get("/username/{user_id}/edit", response_class=HTMLResponse | Response)
-def get_edit_username_widget(
-    request: Request,
-    user_id: int,
-    db: Annotated[Session, Depends(get_db)]
-):
-    """Returns HTML to let the user edit their username"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
-
-    if current_user.id != user_id:
-        return Response(status_code=403)
-    if not current_user.username:
-        username = ""
-    else:
-        username = current_user.username
-    context = {
-        "request": request,
-        "user": current_user,
-        "username": username,
-    }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="profile/username-edit.html",
-        context=context
-    )
-
-
 @router.post("/username-unique", response_class=HTMLResponse)
 def validate_username(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    username: Annotated[str, Form()] = ""
+    app_username: Annotated[str, Form()] = "",
+    current_user=Depends(auth_service.user_dependency)    
 ):
-    current_user: schemas.User = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user == None:
         return Response(status_code=403)
 
-    if username == "":
-        context = {"request": request,
-                   "user": current_user,
-                   "username": username,
-                   "username_taken": True
-                   }
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    if app_username == "":
+        context.update({"is_empty_username": True})
+        if current_user.username:
+            context.update({
+                "username": current_user.username
+            })
+        else:
+            context.update({
+                "username": ""
+            })
+
+
         return templates.TemplateResponse(
             request=request,
-            name="profile/username-edit.html",
+            name="profile/username-edit-errors.html",
+            context=context
+        )
+
+    if app_username == current_user.username:
+        context.update({
+            "username": app_username,
+            "is_users_username": True
+        })
+
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/username-edit-errors.html",
             context=context
         )
 
     db_username = db.query(DBUser).filter(
-        DBUser.username == username).first()
+        DBUser.username == app_username).first()
 
     if not db_username:
         username_taken = False
     else:
         username_taken = True
 
-    context = {"request": request,
-               "user": current_user,
-               "username": username,
-               "username_taken": username_taken
-               }
+    context.update({          
+        "username": app_username,
+        "is_username_taken": username_taken
+    })
 
     return templates.TemplateResponse(
         request=request,

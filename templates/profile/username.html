@@ -1,27 +1,9 @@
 <div hx-target="this"
 	 hx-swap="outerHTML"
 	 class="py-2 flex flex-col gap-2">
-	<label class="text-xl text-gray-900 ">Username</label>
-	<p>Choose a unique username for yourself. You need a username before anyone can share their calendar
-		with you.</p>
-	<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
-		{% if user.username %}
-		{{user.username}}
-		{% else %}
-		Choose a username.
-		{% endif %}
+	<p class="text-xl text-gray-900 ">Username</p>
+	<p>
+		Choose a unique username for yourself. You need a username before anyone can share their calendar with you.
 	</p>
-	<div>
-		<button hx-get="/username/{{user.id}}/edit"
-				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
-			<img width="16"
-				 height="16"
-				 src="../../../static/img/icons8-edit-50.png"
-				 alt="Edit"
-				 class="htmx-indicator-content" />
-			<img src="../../../static/img/spinner-48.png"
-				 alt="Loading..."
-				 class="htmx-indicator animate-spin-slow w-4 h-4" />
-		</button>
-	</div>
+	{% include "profile/username-input.html" %}
 </div>

@@ -1,29 +1,24 @@
-<article class="py-2 flex flex-col gap-2"
-		 hx-target="this"
-		 hx-swap="outerHTML">
-	<label class="text-xl text-gray-900 ">Display name</label>
-	<p>
-		This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other
-		users.
-	</p>
+{% from '/macros/spinner.html' import spinner %}
+<div class="py-2 flex flex-col gap-2">
+	<label 
+		for="display_name"
+		class="text-xl text-gray-900">
+		Display name
+	</label>
+	<p>This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other users.</p>
 	{% if not user.display_name %}
 	<p class="p-2">You haven't chosen your display name yet.</p>
 	{% else %}
-	<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
-		{{user.display_name}}
-	</p>
-	{% endif %}
-	<div>
-		<button hx-get="/profile/display-name/edit/{{user.id}}"
-				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
-			<img width="16"
-				 height="16"
-				 src="../../../static/img/icons8-edit-50.png"
-				 alt="Edit"
-				 class="htmx-indicator-content" />
-			<img src="../../../static/img/spinner-48.png"
-				 alt="Loading..."
-				 class="htmx-indicator animate-spin-slow w-4 h-4" />
-		</button>
+	<div class="flex items-center">
+	{% include "profile/display-name-input.html" %}
+	<span class="htmx-indicator -ml-8">{{spinner('spinner', 'h-6', 'w-6', 'text-pink-900')}}</span>
+	<span 
+		id="name-success" 
+		class="hidden opacity-0 -ml-8 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
+		>
+		{% include "svg/success.svg" %}
+	</span>
+	<span id="failure" class="hidden -ml-8">failed</span>
 	</div>
-</article>
+	{% endif %}
+</div>

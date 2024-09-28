@@ -1,27 +1,18 @@
+{% from '/macros/spinner.html' import spinner%}
 <div class="py-2 flex flex-col gap-2"
 	 hx-target="this"
 	 hx-swap="outerHTML">
-	<label class="text-xl text-gray-900 ">Birthday</label>
+	<label for="birthday" class="text-xl text-gray-900 ">Birthday</label>
 	<p>Share your birthday and it will appear on your calendar. If you share your calendar with your
 		special someone, your birthday will also appear on their calendar. </p>
-	<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
-		{% if not user.birthday %}
-		You haven't chosen your birthday yet.
-		{% else %}
-		{{user.birthday}}
-		{% endif %}
-	</p>
-	<div>
-		<button hx-get="/birthday/{{user.id}}/edit"
-				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
-			<img width="16"
-				 height="16"
-				 src="../../../static/img/icons8-edit-50.png"
-				 alt="Edit"
-				 class="htmx-indicator-content" />
-			<img src="../../../static/img/spinner-48.png"
-				 alt="Loading..."
-				 class="htmx-indicator animate-spin-slow w-4 h-4" />
-		</button>
+	<div class="flex items-center">
+		{% include "profile/birthday-input.html" %}
+		<span class="htmx-indicator -ml-8">{{spinner('spinner', 'h-6', 'w-6', 'text-pink-900')}}</span>
+		<span 
+			id="birthday-success" 
+			class="hidden opacity-0 -ml-14 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
+			>
+			{% include "svg/success.svg" %}
+		</span>
 	</div>
 </div>
