@@ -4,14 +4,24 @@
 	<label class="text-xl text-gray-900 ">Username</label>
 	<p>Choose a unique username for yourself. You need a username before anyone can share their calendar
 		with you.</p>
-	<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
+		<input 
+			class="w-full max-w-[400px] p-2 bg-pink-100 rounded-md border border-pink-300 focus:bg-white"
+			type="text"
+			name="username"
+			value="{{username}}"
+			hx-post="/username-unique"
+			hx-trigger="keyup changed delay:500ms"
+			placeholder="Choose a username."
+			{# autofocus #}
+			/>
+	{# <p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
 		{% if user.username %}
 		{{user.username}}
 		{% else %}
 		Choose a username.
 		{% endif %}
-	</p>
-	<div>
+	</p> #}
+	{# <div>
 		<button hx-get="/username/{{user.id}}/edit"
 				class="grow-0 flex justify-center items-center border rounded-md hover:bg-pink-400 active:bg-pink-500 p-2 border-pink-300">
 			<img width="16"
@@ -23,5 +33,5 @@
 				 alt="Loading..."
 				 class="htmx-indicator animate-spin-slow w-4 h-4" />
 		</button>
-	</div>
+	</div> #}
 </div>

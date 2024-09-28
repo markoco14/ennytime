@@ -365,25 +365,15 @@ def get_edit_birthday_widget(
 def get_username_widget(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Returns HTML to let the user edit their username"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
@@ -406,24 +396,14 @@ def update_username_widget(
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
     username: Annotated[str, Form()] = None,
+    current_user=Depends(auth_service.user_dependency)
 ):
     """Returns HTML to let the user edit their username"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
@@ -449,28 +429,19 @@ def update_username_widget(
 def get_edit_username_widget(
     request: Request,
     user_id: int,
-    db: Annotated[Session, Depends(get_db)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)    
 ):
     """Returns HTML to let the user edit their username"""
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    session_data: Session = auth_service.get_session_data(
-        db=db,
-        session_token=request.cookies.get("session-id")
-    )
-
-    current_user: schemas.User = auth_service.get_current_user(
-        db=db,
-        user_id=session_data.user_id
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user.id != user_id:
         return Response(status_code=403)
+    
     if not current_user.username:
         username = ""
     else:
@@ -492,12 +463,14 @@ def get_edit_username_widget(
 def validate_username(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    username: Annotated[str, Form()] = ""
+    username: Annotated[str, Form()] = "",
+    current_user=Depends(auth_service.user_dependency)    
 ):
-    current_user: schemas.User = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies
-    )
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
 
     if current_user == None:
         return Response(status_code=403)
