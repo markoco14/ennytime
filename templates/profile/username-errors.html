@@ -1,0 +1,72 @@
+{% if is_username_taken %}
+	<div class="flex justify-between bg-white p-2 rounded-md max-w-[400px] text-red-600 border border-red-600">
+		<span>{{username}} is already taken</span>
+		<button id="close-username"
+				type="button"
+				hx-get="/username/{{user.id}}"
+				hx-indicator="#close-username"
+				class="grow-0 flex justify-center items-center">
+			<img width="16"
+				 height="16"
+				 src="../../../static/img/icons8-close-50.png"
+				 alt="Close"
+				 class="htmx-indicator-content" />
+			<img src="../../../static/img/spinner-48.png"
+				 alt="Closing..."
+				 class="htmx-indicator animate-spin-slow w-4 h-4" />
+		</button>
+	</div>
+	{% elif is_users_username %}
+	<div class="flex justify-between bg-white p-2 rounded-md max-w-[400px] text-red-600 border border-red-600">
+		<span>{{username}} is already yours</span>
+		<button id="close-username"
+				type="button"
+				hx-get="/username/{{user.id}}"
+				hx-indicator="#close-username"
+				class="grow-0 flex justify-center items-center">
+			<img width="16"
+				 height="16"
+				 src="../../../static/img/icons8-close-50.png"
+				 alt="Close"
+				 class="htmx-indicator-content" />
+			<img src="../../../static/img/spinner-48.png"
+				 alt="Closing..."
+				 class="htmx-indicator animate-spin-slow w-4 h-4" />
+		</button>
+	</div>
+	{% elif is_empty_username %}
+	<div class="flex justify-between bg-white p-2 rounded-md max-w-[400px] text-red-600 border border-red-600">
+		<span>Username can't be empty</span>
+		<button id="close-username"
+				type="button"
+				hx-get="/username/{{user.id}}"
+				hx-indicator="#close-username"
+				class="grow-0 flex justify-center items-center">
+			<img width="16"
+				 height="16"
+				 src="../../../static/img/icons8-close-50.png"
+				 alt="Close"
+				 class="htmx-indicator-content" />
+			<img src="../../../static/img/spinner-48.png"
+				 alt="Closing..."
+				 class="htmx-indicator animate-spin-slow w-4 h-4" />
+		</button>
+	</div>
+	{% else %}
+	<div class="flex justify-between bg-white p-2 rounded-md max-w-[400px] text-green-600 border border-green-600">
+		<span>{{username}} is available </span>
+		<button id="save-username"
+				type="submit"
+				class="grow-0 flex justify-center items-center">
+			<img width="16"
+					height="16"
+					src="../../../static/img/icons8-check-50.png"
+					alt="Save"
+					class="htmx-indicator-content " />
+			<img id="save-indicator"
+					src="../../../static/img/spinner-48.png"
+					alt="Saving..."
+					class="htmx-indicator animate-spin-slow w-4 h-4" />
+		</button>
+	</div>
+	{% endif %}

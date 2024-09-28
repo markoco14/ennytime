@@ -415,7 +415,7 @@ def update_username_widget(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
-    username: Annotated[str, Form()] = None,
+    app_username: Annotated[str, Form()] = None,
     current_user=Depends(auth_service.user_dependency)
 ):
     """Returns HTML to let the user edit their username"""
@@ -428,7 +428,7 @@ def update_username_widget(
     if current_user.id != user_id:
         return Response(status_code=403)
 
-    current_user.username = username
+    current_user.username = app_username
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
@@ -449,7 +449,7 @@ def update_username_widget(
 def validate_username(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    username: Annotated[str, Form()] = "",
+    app_username: Annotated[str, Form()] = "",
     current_user=Depends(auth_service.user_dependency)    
 ):
     if not current_user:
@@ -466,7 +466,7 @@ def validate_username(
         "user": current_user,
     }
 
-    if username == "":
+    if app_username == "":
         context.update({"is_empty_username": True})
         if current_user.username:
             context.update({
@@ -484,9 +484,9 @@ def validate_username(
             context=context
         )
 
-    if username == current_user.username:
+    if app_username == current_user.username:
         context.update({
-            "username": username,
+            "username": app_username,
             "is_users_username": True
         })
 
@@ -497,7 +497,7 @@ def validate_username(
         )
 
     db_username = db.query(DBUser).filter(
-        DBUser.username == username).first()
+        DBUser.username == app_username).first()
 
     if not db_username:
         username_taken = False
@@ -505,7 +505,7 @@ def validate_username(
         username_taken = True
 
     context.update({          
-        "username": username,
+        "username": app_username,
         "is_username_taken": username_taken
     })
 
