@@ -1,5 +1,4 @@
-{% from '/macros/spinner.html' import spinner%}
-{% from '/svg/success.html' import success%}
+{% from '/macros/spinner.html' import spinner %}
 <article class="py-2 flex flex-col gap-2">
 	<label class="text-xl text-gray-900 ">Display name</label>
 	<p>
@@ -16,7 +15,7 @@
 		id="name-success" 
 		class="hidden opacity-0 -ml-8 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
 		>
-	{{success()}}
+		{% include "svg/success.svg" %}
 	</span>
 	<span id="failure" class="hidden -ml-8">failed</span>
 	</div>
