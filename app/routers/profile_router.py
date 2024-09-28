@@ -485,15 +485,38 @@ def validate_username(
     if current_user == None:
         return Response(status_code=403)
 
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
     if username == "":
-        context = {"request": request,
-                   "user": current_user,
-                   "username": username,
-                   "username_taken": True
-                   }
+        context.update({"is_empty_username": True})
+        if current_user.username:
+            context.update({
+                "username": current_user.username
+            })
+        else:
+            context.update({
+                "username": ""
+            })
+
+
         return templates.TemplateResponse(
             request=request,
-            name="profile/username-edit.html",
+            name="profile/username-edit-errors.html",
+            context=context
+        )
+
+    if username == current_user.username:
+        context.update({
+            "username": username,
+            "is_users_username": True
+        })
+
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/username-edit-errors.html",
             context=context
         )
 
@@ -505,11 +528,10 @@ def validate_username(
     else:
         username_taken = True
 
-    context = {"request": request,
-               "user": current_user,
-               "username": username,
-               "username_taken": username_taken
-               }
+    context.update({          
+        "username": username,
+        "is_username_taken": username_taken
+    })
 
     return templates.TemplateResponse(
         request=request,
