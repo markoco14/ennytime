@@ -65,7 +65,7 @@ def get_shifts_page(
     
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="/shifts/shift-type-list.html",
+            name="/shifts/fragments/shift-type-list.html",
             context=context
         )
 

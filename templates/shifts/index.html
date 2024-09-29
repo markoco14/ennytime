@@ -4,6 +4,22 @@ Schedule
 {% endblock title %}
 {% block content %}
 <section>
-{% include "shifts/shift-type-list.html" %}
+<div class="max-w-[800px] mx-auto px-2">
+    <h1 class="mb-2 text-3xl text-pink-700">Your Work Shifts</h1>
+    <p class="mb-4">
+        Manage your work shifts below.
+    </p>
+    <hr class="mb-4 border-pink-200"/>
+{% include "shifts/fragments/shift-type-list.html" %}
+<a 
+    href="/shifts/new"
+    hx-get="/shifts/new" 
+    hx-target="closest div" 
+    hx-swap="outerHTML"
+    hx-push-url="/shifts/new"
+    class="cursor-pointer px-8 py-2 bg-pink-500 text-white rounded-md">
+    Add more shifts
+</a>
+</div>
 </section>
 {% endblock content %}
