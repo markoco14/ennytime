@@ -46,7 +46,7 @@ def get_scheduling_index_page(
     shift_types = shift_type_repository.list_user_shift_types(
         db=db, user_id=current_user.id)
     if not shift_types:
-        response = RedirectResponse(status_code=303, url="/shifts/new") 
+        response = RedirectResponse(status_code=303, url="/shifts/setup") 
         return response
     
     # TODO:if no shift types, return page with shift type form or info about

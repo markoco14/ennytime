@@ -49,7 +49,7 @@ def get_shifts_page(
     shift_types = shift_type_repository.list_user_shift_types(
         db=db, user_id=current_user.id)
     if not shift_types:
-        response = RedirectResponse(status_code=303, url="/shifts/new") 
+        response = RedirectResponse(status_code=303, url="/shifts/setup") 
         return response
     message_count = chat_service.get_user_unread_message_count(
         db=db,
@@ -65,7 +65,7 @@ def get_shifts_page(
     
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="/shifts/shift-type-form.html",
+            name="/shifts/shift-type-list.html",
             context=context
         )
 
@@ -74,6 +74,40 @@ def get_shifts_page(
 
     response = templates.TemplateResponse(
         name="/shifts/index.html",
+        context=context
+    )
+
+    return response
+
+
+@router.get("/setup")
+def get_shifts_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+    
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
+    context = {
+        "request": request,
+        "current_user": current_user,
+        "message_count": message_count,
+    }
+
+    response = templates.TemplateResponse(
+        name="/shifts/setup.html",
         context=context
     )
 
@@ -188,6 +222,6 @@ def delete_shift_type(
     shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
 
     if not shift_types:
-        response.headers["HX-Redirect"] = "/shifts/new/"
+        response.headers["HX-Redirect"] = "/shifts/setup/"
         
     return response
