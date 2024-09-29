@@ -3,7 +3,7 @@
     Manage your work shifts below.
 </p>
 <hr class="mb-4 border-pink-200"/>
-<ul class="flex flex-col gap-2 w-full">
+<ul class="flex flex-col gap-2 w-full mb-8">
     {% for shift in shift_types %}
     <li class="flex justify-between p-2 rounded-md border border-pink-300">
         <span>
@@ -20,3 +20,13 @@
     </li>
     {% endfor %}
 </ul>
+<div>
+    <button 
+        class="px-8 py-2 border border-pink-100 rounded-md" 
+        hx-get="/scheduling" 
+        hx-target="closest section" 
+        hx-swap="innerHTML">
+        Go to scheduling
+    </button>
+    <button class="px-8 py-2 bg-pink-500 text-white rounded-md">Add more shifts</button>
+</div>

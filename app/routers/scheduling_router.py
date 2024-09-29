@@ -155,8 +155,15 @@ def get_scheduling_index_page(
         "message_count": message_count
     }
 
+    if request.headers.get("HX-Request"):
+        return block_templates.TemplateResponse(
+            name="scheduling/schedule.html",
+            context=context
+        )
+
+
     return block_templates.TemplateResponse(
-        name="webapp/shifts/add-shifts-page.html",
+        name="scheduling/index.html",
         context=context
     )
 
