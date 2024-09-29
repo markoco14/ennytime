@@ -167,6 +167,41 @@ def get_scheduling_index_page(
         context=context
     )
 
+@router.get("/shifts")
+def get_shifts_tab(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    shift_types = shift_type_repository.list_user_shift_types(
+        db=db, user_id=current_user.id)
+    context = {
+        "request": request,
+        "current_user": current_user,
+        "shift_types": shift_types,
+    }
+
+    if request.headers.get("HX-Request"):
+        return block_templates.TemplateResponse(
+            name="scheduling/shift-type-list.html",
+            context=context
+        )
+    
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
+    context.update({
+        "shifts_requested": True,
+        "message_count": message_count
+        })    
+    
+    return block_templates.TemplateResponse(
+        name="scheduling/index.html",
+        context=context
+    )
+
 @router.post("/new")
 def create_shift_type(
     request: Request,

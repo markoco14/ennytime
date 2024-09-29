@@ -1,32 +1,25 @@
-<h1 class="mb-2 text-3xl text-pink-700">Your Work Shifts</h1>
-<p class="mb-4">
-    Manage your work shifts below.
-</p>
-<hr class="mb-4 border-pink-200"/>
-<ul class="flex flex-col gap-2 w-full mb-8">
-    {% for shift in shift_types %}
-    <li class="flex justify-between p-2 rounded-md border border-pink-300">
-        <span>
-            {{ shift.long_name }} ({{ shift.short_name }})
-        </span>
-        <button hx-delete="/delete-shift-type/{{shift.id}}"
-                hx-target="closest li"
-                hx-swap="delete swap:0.5s"
-                hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
-                class="flex gap-2 justify-center items-center underline underline-offset-2 hover:text-red-500">
-            <span class="htmx-indicator-content">Delete</span>
-            <span class="htmx-indicator text-red-500 decoration-red-500">Deleting...</span>
-        </button>
-    </li>
-    {% endfor %}
-</ul>
-<div>
-    <button 
-        class="px-8 py-2 border border-pink-100 rounded-md" 
-        hx-get="/scheduling" 
-        hx-target="closest section" 
-        hx-swap="innerHTML">
-        Go to scheduling
-    </button>
-    <button class="px-8 py-2 bg-pink-500 text-white rounded-md">Add more shifts</button>
+<div class="max-w-[800px] mx-auto">
+    <h1 class="mb-2 text-3xl text-pink-700">Your Work Shifts</h1>
+    <p class="mb-4">
+        Manage your work shifts below.
+    </p>
+    <hr class="mb-4 border-pink-200"/>
+    <ul class="flex flex-col gap-2 w-full mb-8">
+        {% for shift in shift_types %}
+        <li class="flex justify-between p-2 rounded-md border border-pink-300">
+            <span>
+                {{ shift.long_name }} ({{ shift.short_name }})
+            </span>
+            <button hx-delete="/delete-shift-type/{{shift.id}}"
+                    hx-target="closest li"
+                    hx-swap="delete swap:0.5s"
+                    hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
+                    class="flex gap-2 justify-center items-center underline underline-offset-2 hover:text-red-500">
+                <span class="htmx-indicator-content">Delete</span>
+                <span class="htmx-indicator text-red-500 decoration-red-500">Deleting...</span>
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="#" class="px-8 py-2 bg-pink-500 text-white rounded-md">Add more shifts</a>
 </div>
