@@ -4,36 +4,6 @@ Schedule
 {% endblock title %}
 {% block content %}
 <section>
-{% if shift_types|length == 0 %}
-<div class="max-w-[600px] mx-auto px-2">
-    <h1 class="mb-2 text-3xl text-pink-700">Your Work Shifts</h1>
-    <p class="mb-4">
-        You haven't registered any of your work shifts. You need to register your shifts before you can add them to your schedule.
-    </p>
-    <hr class="mb-4 border-pink-200"/>
-    {% include "scheduling/shift-type-form.html" %}
-</div>
-{% else %}
-<div class="max-w-[800px] mx-auto">
-<a
-    hx-get="/scheduling/"
-    hx-target="next div" 
-    hx-push-url="/scheduling/"
-    >
-    Schedule
-</a>
-<a
-    hx-get="/scheduling/shifts"
-    hx-target="next div" 
-    hx-push-url="/scheduling/shifts">
-    Shifts
-</a>
-</div>
-{% if shifts_requested %}
-{% include "scheduling/shift-type-list.html" %}
-{% else %}
 {% include "scheduling/schedule.html" %}
-{% endif %}
-{% endif %}
 </section>
 {% endblock content %}
