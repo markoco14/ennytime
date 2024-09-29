@@ -33,9 +33,6 @@ def get_profile_page(
             response.delete_cookie("session-id")
         return response
 
-    shift_types = shift_type_repository.list_user_shift_types(
-        db=db,
-        user_id=current_user.id)
 
     # get unread message count so chat icon can display the count on page load
     message_count = chat_service.get_user_unread_message_count(
@@ -46,7 +43,6 @@ def get_profile_page(
     context = {
         "current_user": current_user,
         "request": request,
-        "shift_types": shift_types,
         "user": current_user,
         "message_count": message_count
     }
