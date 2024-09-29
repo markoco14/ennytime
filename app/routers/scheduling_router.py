@@ -255,3 +255,26 @@ def create_shift_type(
     response.headers["HX-Redirect"] = "/scheduling/"
 
     return response
+
+@router.delete("/shifts/{shift_type_id}")
+def delete_shift_type(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    shift_type_id: int
+):
+    """Delete shift type"""
+    response = Response(
+        status_code=200,
+    )
+    shift_type_repository.delete_shift_type_and_relations(
+        db=db,
+        shift_type_id=shift_type_id
+    )
+    
+    shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+
+    if not shift_types:
+        response.headers["HX-Redirect"] = "/scheduling/shifts/"
+        
+    return response
