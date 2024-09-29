@@ -2,7 +2,7 @@
 from typing import Annotated
 import datetime
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 
@@ -46,19 +46,8 @@ def get_scheduling_index_page(
     shift_types = shift_type_repository.list_user_shift_types(
         db=db, user_id=current_user.id)
     if not shift_types:
-        # get unread message count so chat icon can display the count on page load
-        message_count = chat_service.get_user_unread_message_count(
-            db=db,
-            current_user_id=current_user.id
-        )
-        context.update({
-            "shift_types": shift_types,
-            "message_count": message_count
-            })
-        return block_templates.TemplateResponse(
-            name="scheduling/index.html",
-            context=context
-        )
+        response = RedirectResponse(status_code=303, url="/shifts/new") 
+        return response
     
     # TODO:if no shift types, return page with shift type form or info about
 
