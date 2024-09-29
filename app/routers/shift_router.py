@@ -104,8 +104,16 @@ def get_shift_manager_page(
         "current_user": current_user,
         "message_count": message_count
     }
+
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="shifts/shift-type-form.html",
+            context=context
+        )
+        return response
+
     response = templates.TemplateResponse(
-        name="shifts/shift-type-form.html",
+        name="shifts/new.html",
         context=context
     )
     return response

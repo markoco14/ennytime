@@ -1,4 +1,9 @@
 {% from "macros/spinner.html" import spinner %}
+{% extends "base.html" %}
+{% block title %}
+	Register New Shift
+{% endblock title %}
+{% block content %}
 <div class="max-w-[800px] mx-auto min-h-[400px] rounded-md px-2">
 	<h1 class="mb-2 text-3xl text-pink-700">Save New Shift</h1>
 	<p class="mb-4">
@@ -44,3 +49,4 @@
 		</button>
 	</form>
 </div>
+{% endblock content %}

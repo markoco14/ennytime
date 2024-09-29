@@ -21,5 +21,13 @@
         </li>
         {% endfor %}
     </ul>
-    <a hx-get="/shifts/new" hx-target="closest div" hx-swap="outerHTML" class="px-8 py-2 bg-pink-500 text-white rounded-md">Add more shifts</a>
+    <a 
+        href="/shifts/new"
+        hx-get="/shifts/new" 
+        hx-target="closest div" 
+        hx-swap="outerHTML"
+        hx-push-url="/shifts/new"
+        class="cursor-pointer px-8 py-2 bg-pink-500 text-white rounded-md">
+        Add more shifts
+    </a>
 </div>
