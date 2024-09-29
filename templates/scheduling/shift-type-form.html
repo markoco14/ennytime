@@ -1,9 +1,9 @@
 {% from "macros/spinner.html" import spinner %}
 <form 
     class="max-w-[600px] mx-auto min-h-[400px] flex flex-col items-start gap-2 rounded-md "
-    hx-post="/shift-types/new"
+    hx-post="/scheduling/new"
     hx-target="closest div"
-    hx-swap="outerHTML">
+    hx-swap="innerHTML">
 	<div class="w-full flex flex-col mb-6">
 		<label for="long_name"
 			   class="text-xl text-pink-700">Full Shift Name</label>

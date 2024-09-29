@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import text
 
 from app.auth import auth_service
@@ -17,9 +18,9 @@ from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository, share_repository, user_repository
 from app.services import calendar_service, chat_service
 
-router = APIRouter()
+router = APIRouter(prefix="/scheduling")
 
-@router.get("/scheduling", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 def get_scheduling_index_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -159,3 +160,56 @@ def get_scheduling_index_page(
         context=context
     )
 
+@router.post("/new")
+def create_shift_type(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    long_name: Annotated[str, Form()],
+    short_name: Annotated[str, Form()],
+    ):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+
+    # get new shift type data ready
+    new_shift_type = schemas.CreateShiftType(
+        long_name=long_name,
+        short_name=short_name,
+        user_id=current_user.id
+    )
+
+    # create new shift type or return an error
+    try:
+        shift_type_repository.create_shift_type(
+            db=db,
+            shift_type=new_shift_type
+        )
+    except IntegrityError:
+        return block_templates.TemplateResponse(
+            name="profile/sections/shift-type-section.html",
+            context={"request": request, "error": "Something went wrong."},
+            block_name="shift_type_list"
+        )
+
+    # TODO: change this to return single shift type and animate it into the list
+    # get the new shift type list
+    shift_types = shift_type_repository.list_user_shift_types(
+        db=db,
+        user_id=current_user.id
+    )
+
+    context = {
+        "request": request,
+        "shift_types": shift_types,
+    }
+
+    return templates.TemplateResponse(
+        name="scheduling/shift-type-list.html",
+        context=context,
+    )
