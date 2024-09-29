@@ -12,7 +12,7 @@
 </header>
 {% else %}
 <header x-data="{ mobilenavOpen: false }"
-		class="max-w-[1000px] mx-auto md:flex items-center justify-between   px-4 bg-white">
+		class="max-w-[1000px] mx-auto md:flex items-center justify-between   px-2 bg-white">
 	<div class="flex items-center justify-between h-20">
 		<span class="text-3xl">Ennytime</span>
 		{# mobile icon #}
@@ -82,13 +82,16 @@
 		 class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative bg-pink-600 md:bg-transparent text-white text-xl md:text-base md:text-black z-20">
 		<ul class="flex items-center flex-col md:flex-row justify-center h-full w-full gap-4">
 			<li>
-				<a href="/">Home</a>
+				<a href="/">Calendar</a>
 			</li>
 			<li class="block md:hidden">
 				<a href="/chat">Chat</a>
 			</li>
 			<li class="block md:hidden">
-				<a href="/shifts">Schedule</a>
+				<a href="/scheduling">Scheduling</a>
+			</li>
+			<li class="block md:hidden">
+				<a href="/shifts">Shifts</a>
 			</li>
 			<li class="block md:hidden">
 				<a href="/profile">Profile</a>
@@ -132,25 +135,29 @@
 					 x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
 					{# Dropdown on large screens #}
 					<ul>
-						<li class="md:hidden grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+						<li class="md:hidden grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
 							<a href="/chat"
 							   class="w-full text-right">Chat</a>
 						</li>
-						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
-							<a href="/shifts"
-							   class="w-full text-right">Schedule</a>
+						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+							<a href="/scheduling"
+							   class="w-full text-right">Scheduling</a>
 						</li>
-						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+							<a href="/shifts"
+							   class="w-full text-right">Shifts</a>
+						</li>
+						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
 							<a href="/profile"
 							   class="w-full text-right">Profile</a>
 						</li>
 						{% if current_user.is_admin %}
-						<li class="grid text-right rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+						<li class="grid text-right rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
 							<a href="/admin"
 							   class="w-full">Admin</a>
 						</li>
 						{% endif%}
-						<li class="grid rounded px-2 py-1 hover:bg-gray-200 cursor-pointer">
+						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
 							<button hx-get="/signout"
 									class="w-full text-end">Sign out</button>
 						</li>
