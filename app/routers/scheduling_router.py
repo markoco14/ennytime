@@ -251,7 +251,7 @@ def create_shift_type(
         "shift_types": shift_types,
     }
 
-    return templates.TemplateResponse(
-        name="scheduling/shift-type-list.html",
-        context=context,
-    )
+    response = Response(status_code=303)
+    response.headers["HX-Redirect"] = "/scheduling/"
+
+    return response
