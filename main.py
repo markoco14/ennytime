@@ -23,7 +23,6 @@ from app.routers import (
     profile_router,
     share_router,
     shift_router,
-    shift_type_router,
     chat_router,
     scheduling_router
 )
@@ -80,7 +79,6 @@ app.add_middleware(ClosingDownMiddleware)
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
 app.include_router(profile_router.router)
-app.include_router(shift_type_router.router)
 app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
