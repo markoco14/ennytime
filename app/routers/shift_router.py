@@ -107,7 +107,7 @@ def get_shifts_page(
     }
 
     response = templates.TemplateResponse(
-        name="/shifts/setup.html",
+        name="/shifts/pages/setup.html",
         context=context
     )
 
@@ -147,7 +147,7 @@ def get_shift_manager_page(
         return response
 
     response = templates.TemplateResponse(
-        name="shifts/new.html",
+        name="shifts/pages/new.html",
         context=context
     )
     return response

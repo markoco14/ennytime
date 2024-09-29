@@ -1,32 +1,32 @@
 {% from "macros/spinner.html" import spinner %}
-<div class="max-w-[800px] mx-auto min-h-[400px] rounded-md px-2">
-	<h1 class="mb-2 text-3xl text-pink-700">Save New Shift</h1>
-	<p class="mb-4">
-		Save the details of your newest shift with the form below.
-	</p>
-	<hr class="mb-4 border-pink-200"/>
-	<form 
-		hx-post="/shifts/new"
-		hx-target="closest div"
-		hx-swap="innerHTML">
-		<div class="w-full flex flex-col mb-6">
-			<label for="shift_name"
-				class="text-xl text-pink-700">Shift Name</label>
-			<span class="mb-4">
-				Choose a name for your shift like <strong>Day Shift</strong> or <strong>Night Shift</strong>.
-			</span>
-			<input 
-				type="text"
-				id="shift_name"
-				name="shift_name"
-				required
-				placeholder="Night Shift"
-				class="border p-2 shadow rounded"/>
-		</div>
-		<button type="submit"
-				class="flex gap-2 justify-center items-center bg-[#E22C7B] px-8 py-2 rounded-md grow-0 text-white">
-			Save
-			{{spinner('h-10', 'h-10', 'text-black')}}
-		</button>
-	</form>
-</div>
+
+<h1 class="mb-2 text-3xl text-pink-700">Save New Shift</h1>
+<p class="mb-4">
+	Save the details of your newest shift with the form below.
+</p>
+<hr class="mb-4 border-pink-200"/>
+<form 
+	hx-post="/shifts/new"
+	hx-target="closest div"
+	hx-swap="innerHTML">
+	<div class="w-full flex flex-col mb-6">
+		<label for="shift_name"
+			class="text-xl text-pink-700">Shift Name</label>
+		<span class="mb-4">
+			Choose a name for your shift like <strong>Day Shift</strong> or <strong>Night Shift</strong>.
+		</span>
+		<input 
+			type="text"
+			id="shift_name"
+			name="shift_name"
+			required
+			placeholder="Night Shift"
+			class="border p-2 shadow rounded"/>
+	</div>
+	<button type="submit"
+			class="flex gap-2 justify-center items-center bg-[#E22C7B] px-8 py-2 rounded-md grow-0 text-white">
+		Save
+		{{spinner('h-10', 'h-10', 'text-black')}}
+	</button>
+</form>
+
