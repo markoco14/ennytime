@@ -123,8 +123,7 @@ def store_shift_type(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    long_name: Annotated[str, Form()],
-    short_name: Annotated[str, Form()],
+    shift_name: Annotated[str, Form()],
     ):
     if not current_user:
         response = templates.TemplateResponse(
@@ -134,10 +133,15 @@ def store_shift_type(
         response.delete_cookie("session-id")
 
         return response
+    
+    long_name_split = shift_name.split(" ")
+    short_name = ""
+    for part in long_name_split:
+        short_name += part[0].upper()
 
     # get new shift type data ready
     new_shift_type = schemas.CreateShiftType(
-        long_name=long_name,
+        long_name=shift_name,
         short_name=short_name,
         user_id=current_user.id
     )
