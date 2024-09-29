@@ -17,7 +17,16 @@ from app.core.config import get_settings
 from app.core.template_utils import templates, block_templates
 from app.repositories import share_repository, shift_repository
 from app.repositories import user_repository
-from app.routers import admin_router, calendar_router, profile_router, share_router, shift_router, shift_type_router, chat_router
+from app.routers import (
+    admin_router,
+    calendar_router,
+    profile_router,
+    share_router,
+    shift_router,
+    shift_type_router,
+    chat_router,
+    scheduling_router
+)
 from app.services import calendar_service, chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
@@ -76,6 +85,7 @@ app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 app.include_router(chat_router.router)
+app.include_router(scheduling_router.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
