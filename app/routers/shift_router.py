@@ -2,7 +2,7 @@
 from typing import Annotated
 import datetime
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 
@@ -31,12 +31,69 @@ def is_user_shift(shift_type_id, shifts):
 templates.env.filters['is_user_shift'] = is_user_shift
 block_templates.env.filters['is_user_shift'] = is_user_shift
 
+@router.get("/")
+def get_shifts_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+    
+    shift_types = shift_type_repository.list_user_shift_types(
+        db=db, user_id=current_user.id)
+    if not shift_types:
+        response = RedirectResponse(status_code=303, url="/shifts/new") 
+        return response
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
+    context = {
+        "request": request,
+        "current_user": current_user,
+        "message_count": message_count,
+        "shift_types": shift_types
+    }
+    
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/shifts/shift-type-form.html",
+            context=context
+        )
+
+        return response
+
+
+    response = templates.TemplateResponse(
+        name="/shifts/index.html",
+        context=context
+    )
+
+    return response
+
 @router.get("/new")
 def get_shift_manager_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+    
     message_count = chat_service.get_user_unread_message_count(
         db=db,
         current_user_id=current_user.id
@@ -51,6 +108,53 @@ def get_shift_manager_page(
         name="shifts/shift-type-form.html",
         context=context
     )
+    return response
+
+@router.post("/new")
+def store_shift_type(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    long_name: Annotated[str, Form()],
+    short_name: Annotated[str, Form()],
+    ):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+
+    # get new shift type data ready
+    new_shift_type = schemas.CreateShiftType(
+        long_name=long_name,
+        short_name=short_name,
+        user_id=current_user.id
+    )
+
+    # create new shift type or return an error
+    shift_type_repository.create_shift_type(
+        db=db,
+        shift_type=new_shift_type
+    )
+    
+    # TODO: change this to return single shift type and animate it into the list
+    # get the new shift type list
+    shift_types = shift_type_repository.list_user_shift_types(
+        db=db,
+        user_id=current_user.id
+    )
+
+    context = {
+        "request": request,
+        "shift_types": shift_types,
+    }
+    # TODO: change to /shifts when route up and running
+    response = Response(status_code=303)
+    response.headers["HX-Redirect"] = "/shifts"
+
     return response
 
 # @router.get("/shifts", response_class=HTMLResponse)

@@ -264,6 +264,6 @@ def delete_shift_type(
     shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
 
     if not shift_types:
-        response.headers["HX-Redirect"] = "/scheduling/shifts/"
+        response.headers["HX-Redirect"] = "/shifts/new/"
         
     return response
