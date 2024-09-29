@@ -36,6 +36,33 @@ def get_scheduling_index_page(
 
         return response
     
+    context = {
+        "request": request,
+        "current_user": current_user
+    }
+
+    # TODO: check first if there are any shift types.
+    shift_types = shift_type_repository.list_user_shift_types(
+        db=db, user_id=current_user.id)
+    if not shift_types:
+        # get unread message count so chat icon can display the count on page load
+        message_count = chat_service.get_user_unread_message_count(
+            db=db,
+            current_user_id=current_user.id
+        )
+        context.update({
+            "shift_types": shift_types,
+            "message_count": message_count
+            })
+        return block_templates.TemplateResponse(
+            name="scheduling/index.html",
+            context=context
+        )
+    
+    # TODO:if no shift types, return page with shift type form or info about
+
+    # TODO: if shift types send the page
+    
     # need to handle the case where year and month are not provided
     current_time = datetime.datetime.now()
     if not year:
@@ -73,8 +100,7 @@ def get_scheduling_index_page(
         if date[1] == month:
             calendar_date_list.update(date_dict)
 
-    shift_types = shift_type_repository.list_user_shift_types(
-        db=db, user_id=current_user.id)
+    
 
     # get the start and end of the month for query filters
     start_of_month = datetime.datetime(year, month, 1)

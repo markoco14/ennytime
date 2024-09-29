@@ -1,0 +1,40 @@
+{% from "macros/spinner.html" import spinner %}
+<form 
+    class="max-w-[600px] mx-auto min-h-[400px] flex flex-col items-start gap-2 rounded-md "
+    hx-post="/shift-types/new"
+    hx-target="closest div"
+    hx-swap="outerHTML">
+	<div class="w-full flex flex-col mb-6">
+		<label for="long_name"
+			   class="text-xl text-pink-700">Full Shift Name</label>
+		<span class="mb-4">
+            Choose a name for your shift like <strong>Day Shift</strong> or <strong>Night Shift</strong>.
+        </span>
+		<input 
+            type="text"
+            id="long_name"
+            name="long_name"
+            required
+            placeholder="Night Shift"
+            class="border p-2 shadow rounded"/>
+	</div>
+	<div class="w-full flex flex-col mb-10">
+		<label for="short_name"
+			   class="text-xl text-pink-700">Short Name for Calendar</label>
+		<span class="mb-4">
+			Choose a short name like <strong>D</strong> or <strong>DS</strong> for <strong>Day Shift</strong>. This name will be used in the <strong>Calendar</strong>.
+		</span>
+		<input 
+            type="text"
+            id="short_name"
+            name="short_name"
+            required
+            placeholder="N"
+            class="border p-2 shadow rounded"/>
+	</div>
+	<button type="submit"
+			class="flex gap-2 justify-center items-center bg-[#E22C7B] px-8 py-2 rounded-md grow-0 text-white">
+		Save
+		{{spinner('h-10', 'h-10', 'text-black')}}
+	</button>
+</form>

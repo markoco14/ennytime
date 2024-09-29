@@ -4,48 +4,58 @@ Schedule
 {% endblock title %}
 {% block content %}
 <section>
-	<div class="max-w-[800px] mx-auto">
-		<h1 class="text-3xl">Scheduling</h1>
-		<p class="mb-8">Click the buttons to quickly add shifts to your calendar. Clicking the blue buttons will delete
-			your shifts.
-		</p>
-		<ul class="divide-y">
-			{% for date in month_calendar.values() %}
-			<li class="py-2 flex justify-between grid grid-cols-2 md:grid-cols-3">
-				<span class=" text-xl text-center md:text-left">{{date.date_string}}</span>
-				<span class=" text-xl text-center md:text-left">{{date.day_of_week}}</span>
-				<div class="flex justify-center gap-1 col-span-2 md:col-span-1">
-					{% for type in shift_types %}
-					{% if type.id | is_user_shift(date.shifts) %}
-					{% block shift_exists_button scoped %}
-					<button hx-delete="/shifts/{{date.date_string}}/{{type.id}}"
-							hx-confirm="Are you sure you want to delete this shift?"
-							hx-swap="outerHTML"
-							class="border border-pink-300 bg-pink-300 py-1 px-2 rounded-md">
-						<span class="htmx-indicator-content">
-							{{type.long_name}}
-						</span>
-						<span class="htmx-indicator">Removing...</span>
-					</button>
-					{% endblock shift_exists_button %}
-					{% else %}
-					{% block no_shift_button scoped %}
-					<button hx-post="/shifts/{{date.date_string}}/{{type.id}}"
-							hx-swap="outerHTML"
-							class="border py-1 px-2 rounded-md">
-						<span class="htmx-indicator-content">
-							{{type.long_name}}
-						</span>
-						<span class="htmx-indicator">Scheduling...</span>
-					</button>
-					{% endblock no_shift_button %}
-					{% endif %}
-					{% endfor %}
-				</div>
-			</li>
-			{% endfor %}
+{% if shift_types|length == 0 %}
+<div class="max-w-[600px] mx-auto px-2">
+    <h1 class="mb-2 text-3xl text-pink-700">Your Work Shifts</h1>
+    <p class="mb-4">
+        You haven't registered any of your work shifts. You need to register your shifts before you can add them to your schedule.
+    </p>
+    <hr class="mb-4 border-pink-200"/>
+    {% include "scheduling/shift-type-form.html" %}
+</div>
+{% else %}
+<div class="max-w-[800px] mx-auto">
+    <h1 class="text-3xl">Scheduling</h1>
+    <p class="mb-8">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.
+    </p>
+    <ul class="divide-y">
+        {% for date in month_calendar.values() %}
+        <li class="py-2 flex justify-between grid grid-cols-2 md:grid-cols-3">
+            <span class=" text-xl text-center md:text-left">{{date.date_string}}</span>
+            <span class=" text-xl text-center md:text-left">{{date.day_of_week}}</span>
+            <div class="flex justify-center gap-1 col-span-2 md:col-span-1">
+                {% for type in shift_types %}
+                {% if type.id | is_user_shift(date.shifts) %}
+                {% block shift_exists_button scoped %}
+                <button hx-delete="/shifts/{{date.date_string}}/{{type.id}}"
+                        hx-confirm="Are you sure you want to delete this shift?"
+                        hx-swap="outerHTML"
+                        class="border border-pink-300 bg-pink-300 py-1 px-2 rounded-md">
+                    <span class="htmx-indicator-content">
+                        {{type.long_name}}
+                    </span>
+                    <span class="htmx-indicator">Removing...</span>
+                </button>
+                {% endblock shift_exists_button %}
+                {% else %}
+                {% block no_shift_button scoped %}
+                <button hx-post="/shifts/{{date.date_string}}/{{type.id}}"
+                        hx-swap="outerHTML"
+                        class="border py-1 px-2 rounded-md">
+                    <span class="htmx-indicator-content">
+                        {{type.long_name}}
+                    </span>
+                    <span class="htmx-indicator">Scheduling...</span>
+                </button>
+                {% endblock no_shift_button %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </li>
+        {% endfor %}
 
-		</ul>
-	</div>
+    </ul>
+</div>
+{% endif %}
 </section>
 {% endblock content %}
