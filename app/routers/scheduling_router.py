@@ -12,6 +12,7 @@ from sqlalchemy import text
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
+from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository, share_repository, user_repository
 from app.services import calendar_service, chat_service
@@ -19,23 +20,22 @@ from app.services import calendar_service, chat_service
 router = APIRouter()
 
 @router.get("/scheduling", response_class=HTMLResponse)
-def get_add_shifts_page(
+def get_scheduling_index_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     year: int = None,
     month: int = None,
 ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
+    if not current_user:
+        response = templates.TemplateResponse(
             request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
+            name="website/web-home.html"
         )
+        response.delete_cookie("session-id")
 
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
-
+        return response
+    
     # need to handle the case where year and month are not provided
     current_time = datetime.datetime.now()
     if not year:
