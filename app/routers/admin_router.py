@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 
+from app.models.user_signin_model import DBUserSignin
 from app.repositories import user_repository as UserRepository
 from app.services import chat_service
 
@@ -96,6 +97,47 @@ def list_users(
     )
 
 
+@router.get("/user-signins", response_class=HTMLResponse)
+def list_user_signins(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user=Depends(auth_service.user_dependency)
+):
+    """List users"""
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+
+    if not current_user.is_admin:
+        response = RedirectResponse(url="/")
+        return response
+
+    user_signins = db.query(DBUserSignin).all()
+    headings = ["user_id", "signin_at", "status"]
+
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
+    context = {
+        "current_user": current_user,
+        "request": request,
+        "user_signins": user_signins,
+        "headings": headings,
+        "message_count": message_count
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="admin/user-signins.html",
+        context=context
+    )
+
+
 @router.delete("/users/{user_id}", response_class=JSONResponse)
 def delete_user(
     request: Request,
@@ -121,33 +163,3 @@ def delete_user(
 
     return Response(status_code=200)
 
-# @router.get("/sessions", response_class=HTMLResponse)
-# def list_sessions(
-#     request: Request,
-#     db: Annotated[Session, Depends(get_db)],
-#     current_user = Depends(auth_service.get_current_user)
-
-#     ):
-#     """List sessions"""
-#    if not current_user:
-    #   response = RedirectResponse(url="/signin")
-    #    if request.cookies.get("session-id"):
-    #         response.delete_cookie("session-id")
-    #     return response
-
-    # if not current_user.is_admin:
-    #     response = RedirectResponse(url="/")
-    #     return response
-
-#     sessions = session_repository.list_sessions(db=db)
-#     headings = ["ID", "Session Token", "User ID", "Expiry date", "Actions"]
-#     context = {
-#         "request": request,
-#     "sessions": sessions,
-#     "headings": headings
-#     }
-#     return templates.TemplateResponse(
-#         request=request,
-#         name="admin/sessions.html",
-#         context=context
-#     )

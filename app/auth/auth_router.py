@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import auth_service
 from app.core.database import get_db
-
+from app.models.user_signin_model import DBUserSignin, SigninStatus
 from app.schemas import schemas
 from app.repositories import session_repository
 
@@ -263,6 +263,20 @@ def signin(
     # store user session
     session_repository.create_session(db=db, session=new_session)
     
+    ip_address = request.client.host
+    user_agent = request.headers.get("User-Agent")
+
+    user_signin = DBUserSignin(
+        user_id=db_user.id,  # Assuming you have the current user info
+        ip_address=ip_address,
+        user_agent=user_agent,
+        status = SigninStatus.SUCCESS
+    )
+
+    db.add(user_signin)
+    db.commit()
+    db.refresh(user_signin)
+
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",

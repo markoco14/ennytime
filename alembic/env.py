@@ -9,6 +9,7 @@ from app.core.config import get_settings
 from app.core.database import Base
 
 from app.models.user_model import DBUser
+from app.models.user_signin_model import DBUserSignin
 from app.models.user_session_model import DBUserSession
 from app.models.db_shift_type import DbShiftType
 from app.models.db_shift import DbShift
