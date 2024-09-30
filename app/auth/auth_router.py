@@ -263,7 +263,7 @@ def signin(
     # store user session
     session_repository.create_session(db=db, session=new_session)
     
-    ip_address = request.client.host
+    ip_address = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
     user_agent = request.headers.get("User-Agent")
 
     user_signin = DBUserSignin(
