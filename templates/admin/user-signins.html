@@ -1,0 +1,40 @@
+{% from '/macros/table.html' import heading_row%}
+{% extends "base.html" %}
+
+{% block title %}
+Ennytime Profile Page
+{% endblock title%}
+
+{% block content %}
+<div class="py-8">
+	<section class="bg-white">
+		<div class="container mx-auto p-2 md:px-0">
+			<h1 class="text-3xl text-[#D31D6C] mb-12">
+				<a href="/admin" class="underline underline-offset-4 underline-[#D31D6C]">Admin</a> / <span>Users</span>
+			</h1>
+			<div class="relative w-full overflow-auto">
+				<table class="w-full caption-bottom text-sm">
+					<thead class="[&amp;_tr]:border-b">
+						{{heading_row(headings)}}
+					</thead>
+					<tbody class="[&amp;_tr:last-child]:border-0">
+						{% for signin in user_signins %}
+						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+							<td class="p-4 align-middle">
+								{{signin.user_id}}
+							</td>
+							<td>
+								{{signin.signin_at}}
+							</td>
+							<td>
+                                {{signin.status.value.capitalize()}}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+</div>
+{% endblock content %}
