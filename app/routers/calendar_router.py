@@ -15,6 +15,7 @@ from fastapi.responses import HTMLResponse
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates
+from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
@@ -227,6 +228,49 @@ def get_calendar_card_detailed(
     )
 
 
+@router.get("/calendar/card/{date_string}/edit")
+def get_calendar_card_edit(
+    request: Request,
+    date_string: str,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date = :date_string
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "date_string": date_string
+         }
+    ).fetchall()
+
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
+
+    context= {
+        "request": request,
+        "current_user": current_user,
+        "shifts": user_shifts,
+        "shift_types": db_shift_types,
+        "date_string": date_string
+    }
+
+    return templates.TemplateResponse(
+        name="/calendar/fragments/edit-schedule.html",
+        context=context
+    )
+
+
 @router.get("/add-shift-form/{date_string}", response_class=HTMLResponse)
 def get_calendar_day_form(
     request: Request,
@@ -303,6 +347,7 @@ def get_calendar_day_form(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/calendar-card-edit-schedule.html",
+        name="/calendar/fragments/edit-schedule.html",
         context=context
     )
+
