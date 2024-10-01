@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app.core.template_utils import templates
+from app.core.template_utils import templates, block_templates
 from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import share_repository, shift_repository
@@ -235,6 +235,14 @@ def get_calendar_card_edit(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
     db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
 
     query = text("""
@@ -268,6 +276,52 @@ def get_calendar_card_edit(
     return templates.TemplateResponse(
         name="/calendar/fragments/edit-schedule.html",
         context=context
+    )
+
+
+@router.post("/calendar/card/{date_string}/edit/{type_id}")
+def get_calendar_card_edit(
+    request: Request,
+    date_string: str,
+    type_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+     # check if shift already exists
+    # if exists delete, user will already have clicked a confirm on the frontend
+
+    date_segments = date_string.split("-")
+    db_shift = schemas.CreateShift(
+        type_id=type_id,
+        user_id=current_user.id,
+        date=datetime.datetime(int(date_segments[0]), int(
+            date_segments[1]), int(date_segments[2]))
+    )
+
+    new_shift = shift_repository.create_shift(db=db, shift=db_shift)
+
+    shift_type = shift_type_repository.get_user_shift_type(
+        db=db, user_id=current_user.id, shift_type_id=type_id)
+
+    context = {
+        "current_user": current_user,
+        "request": request,
+        "date_string": date_string,
+        "type": shift_type
+    }
+
+    return block_templates.TemplateResponse(
+        name="/calendar/fragments/edit-schedule.html",
+        context=context,
+        block_name="shift_exists_button"
     )
 
 

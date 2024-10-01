@@ -17,8 +17,10 @@
 {% endblock shift_exists_button %}
 {% else %}
 {% block no_shift_button scoped %}
-<button hx-post="/scheduling/{{date_string}}/{{type.id}}"
+<button hx-post="/calendar/card/{{date_string}}/edit/{{type.id}}"
         hx-swap="outerHTML"
+        hx-target="this"
+        hx-indicator="find .htmx-indicator"
         class="border py-1 px-2 rounded-md">
     <span class="htmx-indicator-content">
         {{type.long_name}}
