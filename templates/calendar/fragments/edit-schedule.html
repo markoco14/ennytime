@@ -35,3 +35,12 @@
 {% endif %}
 {% endfor %}
 </main>
+<button 
+    id="toggle-button"
+    hx-swap-oob="true"
+    hx-get="/calendar/card/detail/{{date_string}}"
+    hx-target=".js-card-content"
+    class="rounded bg-blue-500 text-white px-4 py-1"
+>
+    Back
+</button>
