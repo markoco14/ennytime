@@ -34,7 +34,7 @@
 			<p class="text-xl">{{written_day}}</p>
 		</header>
 
-		<main class="flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
+		<main class="js-card-content flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
 			{# birthday details #}
 			{% if birthdays %}
 			<div class="flex justify-between gap-2">
@@ -79,10 +79,17 @@
 				hx-on::before-request="moveToCalendar(Number(`{{date.day_number}}`));"
 				class="rounded bg-gray-300 px-4 py-1"
 				>
-				Close
+				Calendar
 			</button>
-			<button hx-get="/add-shift-form/{{date.date}}"
-					class="rounded bg-blue-500 text-white px-4 py-1">Edit</button>
+			<button
+				id="toggle-button"
+				hx-get="/calendar/card/{{date.date}}/edit"
+				hx-target=".js-card-content"
+				hx-indicator="this"
+				class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
+				<span class="htmx-indicator-content">Edit</span>
+				<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+			</button>
 		</div>
 	</div>
 </div>

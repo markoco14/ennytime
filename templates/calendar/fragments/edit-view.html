@@ -1,0 +1,46 @@
+{% from '/macros/spinner.html' import spinner%}
+<main class="js-card-content flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
+{% for shift_type in shift_types %}
+{% if shift_type.id | is_user_shift(shifts) %}
+{% block shift_exists_button scoped %}
+{% from '/macros/spinner.html' import spinner%}
+<button hx-delete="/calendar/card/{{date_string}}/edit/{{shift_type.id}}"
+        hx-confirm="Are you sure you want to delete this shift?"
+        hx-swap="outerHTML"
+        hx-target="this"
+        hx-indicator="this"
+        class="border border-pink-300 bg-pink-300 py-1 px-2 rounded-md">
+    <span class="htmx-indicator-content">
+        {{shift_type.long_name}}
+    </span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-white')}}</span>
+</button>
+{% endblock shift_exists_button %}
+{% else %}
+{% block no_shift_button scoped %}
+{% from '/macros/spinner.html' import spinner%}
+<button hx-post="/calendar/card/{{date_string}}/edit/{{shift_type.id}}"
+        hx-swap="outerHTML"
+        hx-target="this"
+        hx-indicator="this"
+        class="border py-1 px-2 rounded-md">
+    <span class="htmx-indicator-content">
+        {{shift_type.long_name}}
+    </span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
+</button>
+{% endblock no_shift_button %}
+{% endif %}
+{% endfor %}
+</main>
+<button 
+    id="toggle-button"
+    hx-swap-oob="true"
+    hx-get="/calendar/card/detail/{{date_string}}"
+    hx-target=".js-card-content"
+    hx-indicator="this"
+    class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
+>
+    <span class="htmx-indicator-content">Back</span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+</button>

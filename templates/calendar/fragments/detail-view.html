@@ -1,0 +1,51 @@
+{% from '/macros/spinner.html' import spinner%}
+<main class="js-card-content flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
+    {# birthday details #}
+    {% if birthdays %}
+    <div class="flex justify-between gap-2">
+        {% for birthday in birthdays %}
+        {% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
+        <p class="bg-pink-500 p-4 rounded-md">It is your birthday today!</p>
+        {% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
+        <p class="bg-pink-300  p-4 rounded-md">It is {{birthday.name}}'s birthday today!</p>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if date.shifts|length > 0%}
+    <ul id="user-list"
+        class="bg-pink-500  p-4 rounded-md">
+        {% for shift in date.shifts %}
+        <li>
+            <p>{{current_user.display_name}}</p>
+            <p>{{shift.long_name}}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="border p-4 rounded-md">No shifts for today. Go have fun!</p>
+    {% endif %}
+    <br class="hidden" />
+    {% if date.bae_shifts and date.bae_shifts|length > 0%}
+    <ul id="partner-list"
+        class="bg-pink-300  p-4 rounded-md">
+        {% for shift in date.bae_shifts %}
+        <li>
+            <p>{{bae_user.display_name}}</p>
+            <p>{{shift.long_name}}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {%endif%}
+</main>
+<button 
+    id="toggle-button"
+    hx-swap-oob="true"
+    hx-get="/calendar/card/{{date.date}}/edit"
+    hx-target=".js-card-content"
+    hx-indicator="this"
+    class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
+>
+    <span class="htmx-indicator-content">Edit</span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+</button>
