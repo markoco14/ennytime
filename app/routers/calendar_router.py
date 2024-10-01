@@ -313,7 +313,7 @@ def get_calendar_card_detailed(
 
         return templates.TemplateResponse(
             request=request,
-            name="/calendar/fragments/card-detail.html",
+            name="/calendar/fragments/detail-view.html",
             context=context,
         )
 
@@ -350,7 +350,7 @@ def get_calendar_card_detailed(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/fragments/card-detail.html",
+        name="/calendar/fragments/detail-view.html",
         context=context,
     )
 
@@ -401,7 +401,7 @@ def get_calendar_card_edit(
     }
 
     return templates.TemplateResponse(
-        name="/calendar/fragments/edit-schedule.html",
+        name="/calendar/fragments/edit-view.html",
         context=context
     )
 
@@ -446,7 +446,7 @@ def get_calendar_card_edit(
     }
 
     return block_templates.TemplateResponse(
-        name="/calendar/fragments/edit-schedule.html",
+        name="/calendar/fragments/edit-view.html",
         context=context,
         block_name="shift_exists_button"
     )
@@ -495,7 +495,7 @@ async def delete_shift_for_date(
     }
 
     return block_templates.TemplateResponse(
-        name="/calendar/fragments/edit-schedule.html",
+        name="/calendar/fragments/edit-view.html",
         context=context,
         block_name="no_shift_button"
     )
@@ -577,7 +577,7 @@ def get_calendar_day_form(
 
     return templates.TemplateResponse(
         request=request,
-        name="/calendar/fragments/edit-schedule.html",
+        name="/calendar/fragments/edit-view.html",
         context=context
     )
 
