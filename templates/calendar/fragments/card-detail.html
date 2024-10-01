@@ -1,3 +1,4 @@
+{% from '/macros/spinner.html' import spinner%}
 <main class="js-card-content flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
     {# birthday details #}
     {% if birthdays %}
@@ -42,7 +43,9 @@
     hx-swap-oob="true"
     hx-get="/calendar/card/{{date.date}}/edit"
     hx-target=".js-card-content"
-    class="rounded bg-blue-500 text-white px-4 py-1"
+    hx-indicator="this"
+    class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
 >
-    Edit
+    <span class="htmx-indicator-content">Edit</span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
 </button>

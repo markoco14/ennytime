@@ -1,7 +1,5 @@
+{% from '/macros/spinner.html' import spinner%}
 <main class="js-card-content flex flex-col gap-2 max-h-[200px] sm:max-h-[400px] overflow-y-auto">
-{% for shift in shifts %}
-<p>{{shift.long_name}}</p>
-{% endfor %}
 {% for shift_type in shift_types %}
 {% if shift_type.id | is_user_shift(shifts) %}
 {% block shift_exists_button scoped %}
@@ -40,7 +38,9 @@
     hx-swap-oob="true"
     hx-get="/calendar/card/detail/{{date_string}}"
     hx-target=".js-card-content"
-    class="rounded bg-blue-500 text-white px-4 py-1"
+    hx-indicator="this"
+    class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
 >
-    Back
+    <span class="htmx-indicator-content">Back</span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
 </button>
