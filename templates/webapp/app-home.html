@@ -5,7 +5,7 @@ Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
 <section data-js-calendar
-		 class="enter-from-right  py-4 ">
+		 class="py-4">
 	{% block calendar %}
 	{% from '/macros/spinner.html' import spinner%}
 	<div class="container mx-auto px-2">
@@ -28,7 +28,7 @@ Ennytime Couple's Calendar
 						hx-swap="innerHTML transition:true"
 						hx-indicator="#spinner"
 						hx-push-url="true"
-						hx-on::before-request="setEnterFromLeft();"
+						hx-on::before-request="toggleEnterFromLeft('data-js-calendar');"
 						class="col-span-1 px-3 py-1 border rounded  ">
 					{{prev_month_name}}
 				</button>
@@ -45,7 +45,7 @@ Ennytime Couple's Calendar
 						hx-swap="innerHTML transition:true"
 						hx-indicator="#spinner"
 						hx-push-url="true"
-						hx-on::before-request="setEnterFromRight();"
+						hx-on::before-request="toggleEnterFromRight('data-js-calendar');"
 						class="col-span-1 px-3 py-1 border rounded  ">
 					{{next_month_name}}
 				</button>
@@ -137,10 +137,9 @@ Ennytime Couple's Calendar
 		htmx.toggleClass(selectedCard, "border", 400);
 
 	}
-</script>
-<script>
-	function setEnterFromRight() {
-		const calendar = document.querySelector("[data-js-calendar]");
+
+	function toggleEnterFromRight(attribute) {
+		const calendar = document.querySelector(`[${attribute}]`);
 		if (!calendar) return;
 		if (calendar.classList.contains("enter-from-left")) {
 			calendar.classList.remove("enter-from-left");
@@ -148,10 +147,13 @@ Ennytime Couple's Calendar
 		if (!calendar.classList.contains("enter-from-right")) {
 			calendar.classList.add("enter-from-right");
 		}
+		setTimeout(() => {
+			calendar.classList.remove("enter-from-right")
+		}, 600)
 	}
-
-	function setEnterFromLeft() {
-		const calendar = document.querySelector("[data-js-calendar]");
+	
+	function toggleEnterFromLeft(attribute) {
+		const calendar = document.querySelector(`[${attribute}]`);
 		if (!calendar) return;
 		if (calendar.classList.contains("enter-from-right")) {
 			calendar.classList.remove("enter-from-right");
@@ -159,6 +161,9 @@ Ennytime Couple's Calendar
 		if (!calendar.classList.contains("enter-from-left")) {
 			calendar.classList.add("enter-from-left");
 		}
+		setTimeout(() => {
+			calendar.classList.remove("enter-from-left")
+		}, 600)
 	}
 </script>
 {% endblock content %}
