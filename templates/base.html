@@ -346,7 +346,7 @@
 
 					// Remove the closest <li> element manually
 					const liElement = evt.detail.target.closest('li');
-					if (liElement) {
+					if (liElement.classList.contains('js-shift-li')) {
 						liElement.classList.add('htmx-swapping')
 						setTimeout(() => {
 							liElement.remove();

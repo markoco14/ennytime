@@ -77,16 +77,17 @@ def get_scheduling_index_page(
             month_string = f"0{date[1]}"
         if date[2] < 10:
             day_string = f"0{date[2]}"
+        
+        date_object = datetime.date(year=date[0], month=date[1], day=date[2])
         date_dict = {
             f"{year_string}-{month_string}-{day_string}": {
-                "date_string": f"{year_string}-{month_string}-{day_string}",
+                "date_string": f"{date_object.year}-{month_string}-{day_string}",
                 "day_of_week": str(calendar_service.Weekday(date[3])),
+                "date_object": date_object
             }
         }
         if date[1] == month:
             calendar_date_list.update(date_dict)
-
-    
 
     # get the start and end of the month for query filters
     start_of_month = datetime.datetime(year, month, 1)
@@ -141,13 +142,13 @@ def get_scheduling_index_page(
     }
 
     if request.headers.get("HX-Request"):
-        return block_templates.TemplateResponse(
+        return templates.TemplateResponse(
             name="scheduling/schedule.html",
             context=context
         )
 
 
-    return block_templates.TemplateResponse(
+    return templates.TemplateResponse(
         name="scheduling/index.html",
         context=context
     )
@@ -192,13 +193,12 @@ async def add_shift_to_date(
         "request": request,
         "date": {"date_string": date},
         "shifts": [new_shift],
-        "type": {"id": type_id, "long_name": shift_type.long_name, }
+        "type": shift_type
     }
 
-    return block_templates.TemplateResponse(
-        name="/scheduling/schedule.html",
+    return templates.TemplateResponse(
+        name="/scheduling/fragments/shift-exists-button.html",
         context=context,
-        block_name="shift_exists_button"
     )
 
 
@@ -239,11 +239,10 @@ async def delete_shift_for_date(
         "current_user": current_user,
         "request": request,
         "date": {"date_string": date},
-        "type": {"id": type_id, "long_name": shift_type.long_name}
+        "type": shift_type
     }
 
     return block_templates.TemplateResponse(
-        name="scheduling/schedule.html",
+        name="scheduling/fragments/no-shift-button.html",
         context=context,
-        block_name="no_shift_button"
     )

@@ -1,6 +1,7 @@
+{% from '/macros/spinner.html' import spinner%}
 <ul class="flex flex-col gap-2 w-full mb-8">
     {% for shift in shift_types %}
-    <li class="flex justify-between p-2 rounded-md border border-pink-300">
+    <li class="js-shift-li flex justify-between p-2 rounded-md border border-pink-300">
         <span>
             {{ shift.long_name }} ({{ shift.short_name }})
         </span>
@@ -9,7 +10,7 @@
                 hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
                 class="flex gap-2 justify-center items-center underline underline-offset-2 hover:text-red-500">
             <span class="htmx-indicator-content">Delete</span>
-            <span class="htmx-indicator text-red-500 decoration-red-500">Deleting...</span>
+            <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
         </button>
     </li>
     {% endfor %}

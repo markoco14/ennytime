@@ -1,0 +1,10 @@
+{% from '/macros/spinner.html' import spinner%}
+<button hx-post="/scheduling/{{date.date_string}}/{{type.id}}"
+        hx-swap="outerHTML"
+        hx-on::before-request="this.classList.add('bg-pink-100')"
+        class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+    <span class="htmx-indicator-content">
+        {{type.short_name}}
+    </span>
+    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
+</button>
