@@ -19,7 +19,11 @@
     </div>
     <button type="submit"
             class="flex gap-2 justify-center items-center bg-[#E22C7B] px-8 py-2 rounded-md grow-0 text-white">
-        Save
-        {{spinner('h-10', 'h-10', 'text-black')}}
+            <span class="htmx-indicator-content">
+				Save
+			</span>
+			<span class="htmx-indicator">
+				{{spinner('spinner', 'h-5', 'w-5', 'text-white')}}
+			</span>
     </button>
 </form>
