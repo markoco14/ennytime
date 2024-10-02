@@ -57,7 +57,7 @@
 
 				li.htmx-swapping {
 					opacity: 0;
-					transition: opacity 0.5s ease-out;
+					transition: opacity 0.7s ease-out;
 				}
 
 				@keyframes fade-in {
@@ -343,6 +343,15 @@
 
 					// If the user confirms, we manually issue the request
 					evt.detail.issueRequest(true); // true to skip the built-in window.confirm()
+
+					// Remove the closest <li> element manually
+					const liElement = evt.detail.target.closest('li');
+					if (liElement) {
+						liElement.classList.add('htmx-swapping')
+						setTimeout(() => {
+							liElement.remove();
+						}, 700)
+					}
 				} else {
 					if (modal) {
 						modal.classList.remove('hidden');
