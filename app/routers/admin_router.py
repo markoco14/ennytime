@@ -28,13 +28,13 @@ def read_admin_home_page(
 ):
     """Returns admin section home page"""
     if not current_user:
-        response = RedirectResponse(url="/signin")
+        response = RedirectResponse(status_code=303, url="/")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
 
     if not current_user.is_admin:
-        response = RedirectResponse(url="/")
+        response = RedirectResponse(status_code=303, url="/")
         return response
 
     # get unread message count so chat icon can display the count on page load
@@ -64,13 +64,13 @@ def list_users(
 ):
     """List users"""
     if not current_user:
-        response = RedirectResponse(url="/signin")
+        response = RedirectResponse(status_code=303, url="/")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
 
     if not current_user.is_admin:
-        response = RedirectResponse(url="/")
+        response = RedirectResponse(status_code=303, url="/")
         return response
 
     users = UserRepository.list_users(db=db)
@@ -105,13 +105,13 @@ def list_user_signins(
 ):
     """List users"""
     if not current_user:
-        response = RedirectResponse(url="/signin")
+        response = RedirectResponse(status_code=303, url="/")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
 
     if not current_user.is_admin:
-        response = RedirectResponse(url="/")
+        response = RedirectResponse(status_code=303, url="/")
         return response
 
     user_signins = db.query(DBUserSignin).all()

@@ -28,7 +28,7 @@ def get_profile_page(
 ):
     """Profile page"""
     if not current_user:
-        response = RedirectResponse(url="/signin")
+        response = RedirectResponse(status_code=303, url="/")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response

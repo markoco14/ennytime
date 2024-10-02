@@ -29,12 +29,8 @@ def get_scheduling_index_page(
     month: int = None,
 ):
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
-
         return response
     
     context = {

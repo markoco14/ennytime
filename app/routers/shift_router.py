@@ -38,12 +38,8 @@ def get_shifts_page(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
-
         return response
     
     shift_types = shift_type_repository.list_user_shift_types(
@@ -87,12 +83,8 @@ def get_shifts_page(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
-
         return response
     
     message_count = chat_service.get_user_unread_message_count(
@@ -120,12 +112,8 @@ def get_shift_manager_page(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
-
         return response
     
     message_count = chat_service.get_user_unread_message_count(
