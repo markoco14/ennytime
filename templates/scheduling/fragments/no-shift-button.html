@@ -1,0 +1,8 @@
+<button hx-post="/scheduling/{{date.date_string}}/{{type.id}}"
+        hx-swap="outerHTML"
+        class="border py-1 px-2 rounded-md">
+    <span class="htmx-indicator-content">
+        {{type.short_name}}
+    </span>
+    <span class="htmx-indicator">Scheduling...</span>
+</button>
