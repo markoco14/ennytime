@@ -4,7 +4,7 @@ import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
 from sqlalchemy.orm import Session
@@ -14,6 +14,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.core.websocket import websocket_manager
 from app.models.chat_models import DBChatRoom, DBChatMessage
+from app.models.user_model import DBUser
 from app.services import chat_service
 
 router = APIRouter()
@@ -25,17 +26,12 @@ block_templates = Jinja2Blocks(directory="templates")
 def get_chat(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        response.delete_cookie("session-id")
+        return response
 
     chat = db.query(DBChatRoom).filter(
         DBChatRoom.is_active == 1,
@@ -120,15 +116,11 @@ def get_chatroom(
     request: Request,
     room_id: str,
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
-
         return response
 
     # we get the chat room and the messages
