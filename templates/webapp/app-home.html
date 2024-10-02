@@ -147,9 +147,6 @@ Ennytime Couple's Calendar
 		if (!calendar.classList.contains("enter-from-right")) {
 			calendar.classList.add("enter-from-right");
 		}
-		setTimeout(() => {
-			calendar.classList.remove("enter-from-right")
-		}, 600)
 	}
 	
 	function toggleEnterFromLeft(attribute) {
@@ -161,9 +158,20 @@ Ennytime Couple's Calendar
 		if (!calendar.classList.contains("enter-from-left")) {
 			calendar.classList.add("enter-from-left");
 		}
-		setTimeout(() => {
-			calendar.classList.remove("enter-from-left")
-		}, 600)
 	}
+
+	function cleanSlideInClasses(eventTarget) {
+		if (eventTarget.classList.contains('enter-from-right')) {
+			eventTarget.classList.remove('enter-from-right')
+		}
+		if (eventTarget.classList.contains('enter-from-left')) {
+			eventTarget.classList.remove('enter-from-left')
+		}
+	}
+	
+	htmx.on('htmx:afterSwap', function(evt) {
+		const eventTarget = evt.detail.target;
+		cleanSlideInClasses(eventTarget)
+	});
 </script>
 {% endblock content %}
