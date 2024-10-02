@@ -1,0 +1,42 @@
+{% from '/macros/spinner.html' import spinner%}
+<div 
+    id="calendar-heading" 
+    class="mb-4">
+    <p class="min-h-8 text-center">
+        {{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+    </p>
+    <h1  class="text-4xl mb-2 md:mb-4 md:text-5xl text-center col-span-2">
+        {{current_month}} {{current_year}}
+    </h1>
+    <div class="grid grid-cols-2 max-w-[250px] mx-auto gap-2">
+        {% if current_month_number == 1 %}
+        <button disabled
+                class="col-span-1 px-3 py-1 border rounded bg-gray-200 opacity-70">
+        {% else %}
+        <button hx-get="/?month={{current_month_number-1}}"
+                hx-target=".js-calendar"
+                hx-swap="outerHTML transition:true"
+                hx-indicator="#spinner"
+                hx-push-url="true"
+                hx-on::before-request="toggleEnterFromLeft('data-js-calendar');"
+                class="col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
+        {% endif%}
+            {{prev_month_name}}
+        </button>
+        <!-- if end of year -->
+        {% if current_month_number == 12 %}
+        <button disabled
+                class="text-center col-span-1 px-3 py-1 border rounded bg-gray-200  opacity-70">
+        {% else %}
+        <button hx-get="/?month={{current_month_number+1}}"
+                hx-target=".js-calendar"
+                hx-swap="outerHTML transition:true"
+                hx-indicator="#spinner"
+                hx-push-url="true"
+                hx-on::before-request="toggleEnterFromRight('data-js-calendar');"
+                class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
+        {% endif %}
+            {{next_month_name}}
+        </button>
+    </div>
+</div>
