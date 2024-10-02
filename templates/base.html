@@ -321,26 +321,32 @@
 
 				// Hide your existing modal content
 				const modal = document.getElementById('modal'); // Assuming your modal has this ID
-				modal.classList.add('hidden'); // or any other way you want to hide the content
+				if (modal) {
+					modal.classList.add('hidden'); // or any other way you want to hide the content
+				}
 
 				Swal.fire({
 					title: "Remove from schedule",
 					text: `${evt.detail.question}`,
 					showCancelButton: true,
 					customClass: {
-						popup: 'w-[500px] aspect-square animate__fadeInRight',
+						popup: 'w-[500px] aspect-square',
 						confirmButton: 'flex justify-center items-center rounded bg-pink-500 text-white px-4 py-1',
 						cancelButton: 'flex justify-center items-center rounded bg-gray-300 text-black px-4 py-1'
 					},
 					reverseButtons: true
 				}).then(function(result) {
 				if (result.isConfirmed) {
-					modal.classList.remove('hidden');
+					if (modal) {
+						modal.classList.remove('hidden');
+					}
 
 					// If the user confirms, we manually issue the request
 					evt.detail.issueRequest(true); // true to skip the built-in window.confirm()
 				} else {
-					modal.classList.remove('hidden');
+					if (modal) {
+						modal.classList.remove('hidden');
+					}
 				}
 				})
 			})
