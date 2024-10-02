@@ -1,4 +1,5 @@
-<div class="grid grid-cols-7 border border-collapse border-gray-300 md:border-0 md:gap-2">
+{% from '/macros/spinner.html' import spinner%}
+<div data-js-calendar class="js-calendar grid grid-cols-7 border border-collapse border-gray-300 md:border-0 md:gap-2">
 	{# render calendar day headings #}
 	{% for day_name in days_of_week %}
 	<div class="text-center text-xl font-bold">{{ day_name }}</div>
@@ -13,10 +14,10 @@
 	</div>
 	{% else %}
 	<div id="container-{{date.day_number}}"
-		 class="min-h-[48px] md:border-gray-900 md:rounded-md border-gray-900 bg-white "
-		 >
+		class="min-h-[48px] md:border-gray-900 md:rounded-md border-gray-900 bg-white "
+		>
 		<div id="day-{{date.day_number}}"
-			 class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white ">
+			class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white ">
 			{% include '/calendar/calendar-card-simple.html'%}
 		</div>
 	</div>

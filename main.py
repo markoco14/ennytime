@@ -189,14 +189,13 @@ def index(
     }
 
     if "hx-request" in request.headers:
-        response = block_templates.TemplateResponse(
-            name="webapp/app-home.html",
-            block_name="calendar",
+        response = templates.TemplateResponse(
+            name="calendar/fragments/calendar-oob.html",
             context=context,
         )
     else:
         response = templates.TemplateResponse(
-            name="webapp/app-home.html",
+            name="calendar/index.html",
             context=context,
         )
 

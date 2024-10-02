@@ -1,0 +1,10 @@
+{% from '/macros/spinner.html' import spinner%}
+<div 
+    id="calendar-heading" 
+    class="mb-4">
+    <p class="min-h-8 text-center">
+        {{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+    </p>
+    {% include "calendar/fragments/controls-heading.html" %}
+    {% include "calendar/fragments/controls-buttons.html" %}
+</div>
