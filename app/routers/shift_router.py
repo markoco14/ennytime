@@ -1,20 +1,16 @@
-
 from typing import Annotated
-import datetime
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, Response, RedirectResponse
+from fastapi.responses import Response, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jinja2_fragments.fastapi import Jinja2Blocks
-
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 
 from app.auth import auth_service
 from app.core.database import get_db
 from app.models.user_model import DBUser
 from app.schemas import schemas
-from app.repositories import shift_repository, shift_type_repository, share_repository, user_repository
-from app.services import calendar_service, chat_service
+from app.repositories import shift_type_repository
+from app.services import chat_service
 
 router = APIRouter(prefix="/shifts")
 templates = Jinja2Templates(directory="templates")
@@ -146,6 +142,7 @@ def store_shift_type(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     shift_name: Annotated[str, Form()],
+    date_string: Annotated[str, Form()] = None,
     ):
     if not current_user:
         response = templates.TemplateResponse(
@@ -185,11 +182,24 @@ def store_shift_type(
         "request": request,
         "shift_types": shift_types,
     }
-    # TODO: change to /shifts when route up and running
-    response = Response(status_code=303)
-    response.headers["HX-Redirect"] = "/shifts"
 
+    hx_current_url = request.headers.get("hx-current-url") or None
+    from_setup_page = "/shifts/setup" in hx_current_url
+    from_new_page = "/shifts/new" in hx_current_url
+    if from_new_page or from_setup_page:
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = "/shifts"
+
+        return response
+    
+    context.update({"date_string": date_string})
+    response = templates.TemplateResponse(
+        name="/calendar/fragments/edit-view.html",
+        context=context
+        )
+    
     return response
+
 
 @router.delete("/{shift_type_id}")
 def delete_shift_type(
