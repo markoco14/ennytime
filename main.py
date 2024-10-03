@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from mangum import Mangum
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import RequestResponseEndpoint
@@ -16,7 +17,7 @@ from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
 from app.core.template_utils import templates
-from app.repositories import user_repository
+from app.repositories import user_repository, shift_type_repository
 from app.routers import (
     admin_router,
     calendar_router,
@@ -26,6 +27,7 @@ from app.routers import (
     chat_router,
     scheduling_router
 )
+from app.schemas import schemas
 from app.services import calendar_service, chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
@@ -217,7 +219,9 @@ def get_quick_setup_page(
 @app.post("/quick-setup/first-shift", response_class=HTMLResponse)
 def store_first_shift(
     request: Request,
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    shift_name: Annotated[str, Form()],
 ):
     current_time = datetime.datetime.now()
     year = current_time.year
@@ -255,11 +259,66 @@ def store_first_shift(
         }
         if date[1] == month:
             calendar_date_list.update(date_dict)
+    long_name_split = shift_name.split(" ")
+    short_name = ""
+    for part in long_name_split:
+        short_name += part[0].upper()
+    # get new shift type data ready
+    new_shift_type = schemas.CreateShiftType(
+        long_name=shift_name,
+        short_name=short_name,
+        user_id=current_user.id
+    )
+
+    # create new shift type or return an error
+    shift_type_repository.create_shift_type(
+        db=db,
+        shift_type=new_shift_type
+    )
+    
+    shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+    # get the start and end of the month for query filters
+    start_of_month = datetime.datetime(year, month, 1)
+    end_of_month = datetime.datetime(
+        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+    
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date >= :start_of_month
+        AND etime_shifts.date <= :end_of_month
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "start_of_month": start_of_month,
+         "end_of_month": end_of_month}
+    ).fetchall()
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
+
+    # here is the problem
+    # overwriting the previous shift when there are 2
+    # only 1 being packed and sent
+    for shift in user_shifts:
+        key_to_find = f"{shift['date'].date()}"
+        if key_to_find in calendar_date_list:
+            if not calendar_date_list[f"{key_to_find}"].get("shifts"):
+                calendar_date_list[f"{key_to_find}"]["shifts"] = []
+
+            calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
 
     context= {
         "request": request,
         "current_user": current_user,
-        "month_calendar": calendar_date_list
+        "month_calendar": calendar_date_list,
+        "shift_types": shift_types,
+        "user_shifts": user_shifts
     }
     response = templates.TemplateResponse(
         name="/quick-setup/fragments/schedule-shift.html",                               
@@ -272,6 +331,7 @@ def store_first_shift(
 @app.get("/quick-setup/schedule-shift")
 def get_schedule_first_shift_page(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
     current_time = datetime.datetime.now()
@@ -310,11 +370,49 @@ def get_schedule_first_shift_page(
         }
         if date[1] == month:
             calendar_date_list.update(date_dict)
+    shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
 
+    # get the start and end of the month for query filters
+    start_of_month = datetime.datetime(year, month, 1)
+    end_of_month = datetime.datetime(
+        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+    
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date >= :start_of_month
+        AND etime_shifts.date <= :end_of_month
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "start_of_month": start_of_month,
+         "end_of_month": end_of_month}
+    ).fetchall()
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
+
+    # here is the problem
+    # overwriting the previous shift when there are 2
+    # only 1 being packed and sent
+    for shift in user_shifts:
+        key_to_find = f"{shift['date'].date()}"
+        if key_to_find in calendar_date_list:
+            if not calendar_date_list[f"{key_to_find}"].get("shifts"):
+                calendar_date_list[f"{key_to_find}"]["shifts"] = []
+
+            calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
     context= {
         "request": request,
         "current_user": current_user,
-        "month_calendar": calendar_date_list        
+        "month_calendar": calendar_date_list,
+        "shift_types": shift_types,
+        "user_shifts": user_shifts,
     }
 
     if request.headers.get("HX-Request"):
@@ -333,6 +431,33 @@ def get_schedule_first_shift_page(
     )
     return response
 
+@app.get("/quick-setup/username", response_class=HTMLResponse)
+def get_quick_setup_page(
+    request: Request,
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    context={
+        "request": request,
+        "current_user": current_user
+        }
+    
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/fragments/username.html",
+            context=context
+        )
+        response.headers["HX-Push-Url"] = "/quick-setup/username"
+
+        return response
+    
+    context.update({"message_count": 0})
+
+    response = templates.TemplateResponse(
+        name="/quick-setup/username-step.html",
+        context=context
+    )
+
+    return response
 
 # @app.post("/{date}/{type_id}", response_class=HTMLResponse)
 # async def add_shift_to_date(
