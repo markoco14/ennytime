@@ -1,0 +1,28 @@
+<div class="enter-from-right max-w-[800px] mx-auto">
+    <p>Great job! You named your first shift.</p>
+    <p class="mb-4">Use the list of dates below and schedule your shift when you're working.</p>
+    <hr class="mb-4 border-pink-200"/>
+    <div class="text-right">
+    <a href="#">Next step</a>
+    </div>
+    <ul class="divide-y">
+        {% for date in month_calendar.values() %}
+        <li class="py-2">
+            <p class="mb-2">
+                <span class="text-2xl text-center md:text-left">{{date.date_object.strftime("%A")}}</span>
+                <span class="text-md text-gray-700 text-center md:text-left">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
+            </p>
+            <div class="flex flex-wrap gap-2 p-2 border rounded-md">
+                {% for type in shift_types %}
+                {% if type.id | is_user_shift(date.shifts) %}
+                    {% include "scheduling/fragments/shift-exists-button.html" %}
+                {% else %}
+                    {% include "scheduling/fragments/no-shift-button.html" %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </li>
+        {% endfor %}
+
+    </ul>
+</div>

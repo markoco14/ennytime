@@ -1,9 +1,10 @@
 """Main file to hold app and api routes"""
+import datetime
 from typing import Annotated, Optional
 from pprint import pprint
 import time
 from fastapi import Depends, FastAPI, Request, Form, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from mangum import Mangum
@@ -14,8 +15,7 @@ from starlette.middleware.base import RequestResponseEndpoint
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
-from app.core.template_utils import templates, block_templates
-from app.repositories import share_repository, shift_repository
+from app.core.template_utils import templates
 from app.repositories import user_repository
 from app.routers import (
     admin_router,
@@ -219,12 +219,54 @@ def store_first_shift(
     request: Request,
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
+    current_time = datetime.datetime.now()
+    year = current_time.year
+    month = current_time.month
+
+    month_calendar = calendar_service.get_month_date_list(
+        year=year,
+        month=month
+    )
+
+    # calendar_date_list is a list of dictionaries
+    # the keys are date_strings to make matching shifts easier
+    # ie; "2021-09-01": {"more keys": "more values"}
+    calendar_date_list = {}
+
+    # because month calendar year/month/day are numbers
+    # numbers less than 10 don't have preceeding 0's to match the formatting of
+    # the date strings, need to add 0's to the front of the numbers
+    for date in month_calendar:
+        year_string = f"{date[0]}"
+        month_string = f"{date[1]}"
+        day_string = f"{date[2]}"
+        if date[1] < 10:
+            month_string = f"0{date[1]}"
+        if date[2] < 10:
+            day_string = f"0{date[2]}"
+        
+        date_object = datetime.date(year=date[0], month=date[1], day=date[2])
+        date_dict = {
+            f"{year_string}-{month_string}-{day_string}": {
+                "date_string": f"{date_object.year}-{month_string}-{day_string}",
+                "day_of_week": str(calendar_service.Weekday(date[3])),
+                "date_object": date_object
+            }
+        }
+        if date[1] == month:
+            calendar_date_list.update(date_dict)
+
     context= {
         "request": request,
         "current_user": current_user,
+        "month_calendar": calendar_date_list
     }
 
-    return "first shift named!"
+
+    return templates.TemplateResponse(
+        name="/quick-setup/fragments/schedule-shift.html",                               
+        context=context
+        )
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(

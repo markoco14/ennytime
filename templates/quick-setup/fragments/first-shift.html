@@ -1,12 +1,12 @@
 {% from "macros/spinner.html" import spinner %}
-<div class="max-w-[800px] mx-auto">
-    <h1 class="text-3xl text-bold mb-8">Welcome to Ennytime Couple's Calendar</h1>
+<div class="enter-from-right max-w-[800px] mx-auto">
     <p>Before you can start sharing your calender with your significant other...</p>
-    <p class="mb-8">Name your first shift. You need to name the different shifts you work to share them on your calendar.</p>
+    <p class="mb-4">Name your first shift. You need to name the different shifts you work to share them on your calendar.</p>
+    <hr class="mb-4 border-pink-200"/>
     <form 
         hx-post="/quick-setup/first-shift"
         hx-target="closest div"
-        hx-swap="outerHTML"
+        hx-swap="outerHTML transition:true"
         hx-indicator="find button">
         <div class="w-full flex flex-col mb-6">
             <label for="shift_name"
