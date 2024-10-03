@@ -168,10 +168,10 @@ def signup(
     hashed_password = auth_service.get_password_hash(password)
     
     # give the user a display name
-    display_name = f"NewUser{random.randint(1, 10000)}"
+    # display_name = f"NewUser{random.randint(1, 10000)}"
     
     # create new user with encrypted password
-    new_user = schemas.CreateUserHashed(email=email, hashed_password=hashed_password, display_name=display_name)
+    new_user = schemas.CreateUserHashed(email=email, hashed_password=hashed_password)
 
     # add user to USERS
     app_user = user_repository.create_user(db=db, user=new_user)
@@ -195,7 +195,7 @@ def signup(
         secure=True,
         samesite="Lax"
     )
-    response.headers["HX-Redirect"] = "/"
+    response.headers["HX-Redirect"] = "/quick-setup/first-shift"
 
     return response
 
