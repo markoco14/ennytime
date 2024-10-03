@@ -122,7 +122,12 @@
 				   @click.away="dropdownOpen = false"
 				   class="whitespace-nowrap cursor-pointer select-none flex items-center gap-2">
 
-					<p>{{current_user.display_name}}</p>
+					<p>{% if current_user.display_name %}
+						{{current_user.display_name}}
+					{% else %}
+						New User
+					{% endif %}
+					</p>
 
 					<img class="w-4"
 						 x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
