@@ -261,12 +261,125 @@ def store_first_shift(
         "current_user": current_user,
         "month_calendar": calendar_date_list
     }
-
-
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         name="/quick-setup/fragments/schedule-shift.html",                               
         context=context
         )
+    response.headers["HX-Push-Url"] = "/quick-setup/schedule-shift"
+
+    return response
+
+@app.get("/quick-setup/schedule-shift")
+def get_schedule_first_shift_page(
+    request: Request,
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    current_time = datetime.datetime.now()
+    year = current_time.year
+    month = current_time.month
+
+    month_calendar = calendar_service.get_month_date_list(
+        year=year,
+        month=month
+    )
+
+    # calendar_date_list is a list of dictionaries
+    # the keys are date_strings to make matching shifts easier
+    # ie; "2021-09-01": {"more keys": "more values"}
+    calendar_date_list = {}
+
+    # because month calendar year/month/day are numbers
+    # numbers less than 10 don't have preceeding 0's to match the formatting of
+    # the date strings, need to add 0's to the front of the numbers
+    for date in month_calendar:
+        year_string = f"{date[0]}"
+        month_string = f"{date[1]}"
+        day_string = f"{date[2]}"
+        if date[1] < 10:
+            month_string = f"0{date[1]}"
+        if date[2] < 10:
+            day_string = f"0{date[2]}"
+        
+        date_object = datetime.date(year=date[0], month=date[1], day=date[2])
+        date_dict = {
+            f"{year_string}-{month_string}-{day_string}": {
+                "date_string": f"{date_object.year}-{month_string}-{day_string}",
+                "day_of_week": str(calendar_service.Weekday(date[3])),
+                "date_object": date_object
+            }
+        }
+        if date[1] == month:
+            calendar_date_list.update(date_dict)
+
+    context= {
+        "request": request,
+        "current_user": current_user,
+        "month_calendar": calendar_date_list        
+    }
+
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/fragments/schedule-shift.html",                               
+            context=context
+            )
+        response.headers["HX-Push-Url"] = "/quick-setup/schedule-shift"
+        return response
+    
+    context.update({"message_count": 0})
+
+    response = templates.TemplateResponse(
+        name="/quick-setup/scheduling.html",
+        context=context
+    )
+    return response
+
+
+# @app.post("/{date}/{type_id}", response_class=HTMLResponse)
+# async def add_shift_to_date(
+#     request: Request,
+#     db: Annotated[Session, Depends(get_db)],
+#     date: str,
+#     type_id: int
+# ):
+#     if not auth_service.get_session_cookie(request.cookies):
+#         return templates.TemplateResponse(
+#             request=request,
+#             name="website/web-home.html",
+#             headers={"HX-Redirect": "/"},
+#         )
+
+#     current_user = auth_service.get_current_session_user(
+#         db=db,
+#         cookies=request.cookies)
+
+#     # check if shift already exists
+#     # if exists delete, user will already have clicked a confirm on the frontend
+
+#     date_segments = date.split("-")
+#     db_shift = schemas.CreateShift(
+#         type_id=type_id,
+#         user_id=current_user.id,
+#         date=datetime.datetime(int(date_segments[0]), int(
+#             date_segments[1]), int(date_segments[2]))
+#     )
+
+#     new_shift = shift_repository.create_shift(db=db, shift=db_shift)
+
+#     shift_type = shift_type_repository.get_user_shift_type(
+#         db=db, user_id=current_user.id, shift_type_id=type_id)
+
+#     context = {
+#         "current_user": current_user,
+#         "request": request,
+#         "date": {"date_string": date},
+#         "shifts": [new_shift],
+#         "type": shift_type
+#     }
+
+#     return templates.TemplateResponse(
+#         name="/scheduling/fragments/shift-exists-button.html",
+#         context=context,
+#     )
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
