@@ -201,6 +201,30 @@ def index(
 
     return response
 
+@app.get("/quick-setup/first-shift", response_class=HTMLResponse)
+def get_quick_setup_page(
+    request: Request,
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    context= {
+        "request": request,
+        "current_user": current_user,
+        "message_count": 0
+    }
+
+    return templates.TemplateResponse(name="/quick-setup/index.html", context=context)
+
+@app.post("/quick-setup/first-shift", response_class=HTMLResponse)
+def store_first_shift(
+    request: Request,
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    context= {
+        "request": request,
+        "current_user": current_user,
+    }
+
+    return "first shift named!"
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(

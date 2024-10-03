@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from '/macros/spinner.html' import spinner%}
+{% block title %}
+Ennytime - Quick Setup
+{% endblock title %}
+{% block content %}
+<div class="max-w-[65ch] mx-auto px-2 sm:px-0">
+    {% include "/quick-setup/fragments/first-shift.html" %}
+</div>
+{% endblock content %}
