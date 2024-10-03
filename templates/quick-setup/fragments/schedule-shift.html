@@ -1,11 +1,16 @@
 <div class="enter-from-right max-w-[800px] mx-auto">
     <p>Great job! You named your first shift.</p>
-    <p class="mb-4">Use the list of dates below and schedule your shift when you're working.</p>
-    <hr class="mb-4 border-pink-200"/>
-    <p class="text-right">
-        <a href="#">Next step</a>
+    <p>Use the list of dates below and schedule your shift when you're working.</p>
+    <p class="mb-4 text-right">
+        <a 
+            hx-get="/quick-setup/username"
+            hx-target="closest div"
+            hx-swap="outerHTML transition:true">
+            Username
+        </a>
     </p>
-    <ul class="divide-y">
+    <hr class="mb-4 border-pink-200"/>
+    <ul class="divide-y h-[500px] sm:h-full overflow-y-auto">
         {% for date in month_calendar.values() %}
         <li class="py-2">
             <p class="mb-2">
