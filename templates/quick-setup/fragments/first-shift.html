@@ -1,8 +1,8 @@
 {% from "macros/spinner.html" import spinner %}
 <div class="enter-from-right max-w-[800px] mx-auto">
     <div class="grid grid-cols-3 text-center mb-8">
-        <a href="/quick-setup/first-shift" class="text-pink-600 underline underline-offset-2 duration-200 ease-in-out">Shifts</a>
-        <a href="/quick-setup/schedule-shift">Schedule</a>
+        <a href="/quick-setup/shifts" class="text-pink-600 underline underline-offset-2 duration-200 ease-in-out">Shifts</a>
+        <a href="/quick-setup/schedule">Schedule</a>
         <a href="/quick-setup/username">Username</a>
     </div>
     <h2 class="text-2xl mb-2 text-pink-700">Name your shifts</h2>
@@ -18,10 +18,10 @@
     </div>
     <hr class="mb-4 border-pink-200"/>
     <div class="flex justify-end">
-        <a href="/quick-setup/schedule-shift" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
+        <a href="/quick-setup/schedule" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
     </div>
     <form 
-        hx-post="/quick-setup/first-shift"
+        hx-post="/quick-setup/shifts"
         hx-target="closest div"
         hx-swap="outerHTML transition:true"
         hx-indicator="find button">

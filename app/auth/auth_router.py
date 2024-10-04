@@ -195,7 +195,7 @@ def signup(
         secure=True,
         samesite="Lax"
     )
-    response.headers["HX-Redirect"] = "/quick-setup/first-shift"
+    response.headers["HX-Redirect"] = "/quick-setup/shifts"
 
     return response
 

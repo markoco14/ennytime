@@ -203,7 +203,7 @@ def index(
 
     return response
 
-@app.get("/quick-setup/first-shift", response_class=HTMLResponse)
+@app.get("/quick-setup/shifts", response_class=HTMLResponse)
 def get_quick_setup_page(
     request: Request,
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
@@ -216,7 +216,7 @@ def get_quick_setup_page(
 
     return templates.TemplateResponse(name="/quick-setup/index.html", context=context)
 
-@app.post("/quick-setup/first-shift", response_class=HTMLResponse)
+@app.post("/quick-setup/shifts", response_class=HTMLResponse)
 def store_first_shift(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -324,11 +324,11 @@ def store_first_shift(
         name="/quick-setup/fragments/schedule-shift.html",                               
         context=context
         )
-    response.headers["HX-Push-Url"] = "/quick-setup/schedule-shift"
+    response.headers["HX-Push-Url"] = "/quick-setup/schedule"
 
     return response
 
-@app.get("/quick-setup/schedule-shift")
+@app.get("/quick-setup/schedule")
 def get_schedule_first_shift_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -420,7 +420,7 @@ def get_schedule_first_shift_page(
             name="/quick-setup/fragments/schedule-shift.html",                               
             context=context
             )
-        response.headers["HX-Push-Url"] = "/quick-setup/schedule-shift"
+        response.headers["HX-Push-Url"] = "/quick-setup/schedule"
         return response
     
     context.update({"message_count": 0})
