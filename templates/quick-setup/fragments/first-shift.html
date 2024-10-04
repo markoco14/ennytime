@@ -1,8 +1,25 @@
 {% from "macros/spinner.html" import spinner %}
 <div class="enter-from-right max-w-[800px] mx-auto">
-    <p>Before you can start sharing your calender with your significant other...</p>
-    <p class="mb-4">Name your first shift. You need to name the different shifts you work to share them on your calendar.</p>
+    <div class="grid grid-cols-3 text-center mb-8">
+        <a href="/quick-setup/first-shift" class="text-pink-600 underline underline-offset-2 duration-200 ease-in-out">Shifts</a>
+        <a href="/quick-setup/schedule-shift">Schedule</a>
+        <a href="/quick-setup/username">Username</a>
+    </div>
+    <h2 class="text-2xl mb-2 text-pink-700">Name your shifts</h2>
+    <p class="mb-2">Name the shifts you work before you share them on your calendar.</p>
+    <p class="mb-2">Here are a few ideas to help you get started...</p>
+    <div class="grid grid-cols-3 gap-y-2 gap-x-2 text-center font-semibold border p-4 rounded-md">
+        <span>Day Shift</span>
+        <span>Dali Office</span>
+        <span>Night Shift</span>
+        <span>Work from Home</span>
+        <span>Opening Shift</span>
+        <span>Closing Shift</span>
+    </div>
     <hr class="mb-4 border-pink-200"/>
+    <div class="flex justify-end">
+        <a href="/quick-setup/schedule-shift" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
+    </div>
     <form 
         hx-post="/quick-setup/first-shift"
         hx-target="closest div"
@@ -10,16 +27,15 @@
         hx-indicator="find button">
         <div class="w-full flex flex-col mb-6">
             <label for="shift_name"
-                class="text-xl text-pink-700 mb-1">Name your first shift</label>
-            <span class="mb-4">
-                Choose a name for your shift like <strong>Day Shift</strong> or <strong>Night Shift</strong>.
-            </span>
+                class="text-lg text-pink-700 mb-1">
+                Choose a name for your shift
+            </label>
             <input 
                 type="text"
                 id="shift_name"
                 name="shift_name"
                 required
-                placeholder="Night Shift"
+                placeholder="Night Shift... Day Shift... Work from Home"
                 class="border p-2 shadow rounded"/>
         </div>
         <button type="submit"
