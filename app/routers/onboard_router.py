@@ -138,7 +138,7 @@ def store_first_shift(
         "user_shifts": user_shifts
     }
     response = templates.TemplateResponse(
-        name="/quick-setup/fragments/schedule-shift.html",                               
+        name="/quick-setup/scheduling/fragments/schedule-content-oob.html",                               
         context=context
         )
     response.headers["HX-Push-Url"] = "/quick-setup/schedule"
@@ -235,7 +235,7 @@ def get_schedule_first_shift_page(
 
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="/quick-setup/fragments/schedule-shift.html",                               
+            name="/quick-setup/scheduling/fragments/schedule-content.html",                               
             context=context
             )
         response.headers["HX-Push-Url"] = "/quick-setup/schedule"
@@ -244,7 +244,7 @@ def get_schedule_first_shift_page(
     context.update({"message_count": 0})
 
     response = templates.TemplateResponse(
-        name="/quick-setup/scheduling-step.html",
+        name="/quick-setup/scheduling/index.html",
         context=context
     )
     return response
