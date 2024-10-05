@@ -1,7 +1,5 @@
 <form 
-    hx-post="/quick-setup/username"
-    hx-target="closest div"
-    hx-swap="outerHTML transition:true"
+    hx-put="/quick-setup/username/{{current_user.id}}"
     class="mb-6">
     <label class="text-xl text-gray-900 mb-1 sr-only">Username</label>
     <p class="mb-4">
@@ -22,5 +20,5 @@
             />
         <span></span>
     </div>
-    <button type="submit" class="block mt-4 bg-pink-500 px-3 py-1 rounded-md">Save</button>
+    <button id="submit" disabled type="submit" class="block mt-4 bg-gray-300 px-3 py-1 rounded-md duration-300 ease-in-out">Save</button>
 </form>

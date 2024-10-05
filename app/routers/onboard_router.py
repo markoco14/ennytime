@@ -1,8 +1,8 @@
 import datetime
 
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, Form, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -276,6 +276,39 @@ def get_quick_setup_page(
     )
 
     return response
+
+
+@router.put("/quick-setup/username/{user_id}")
+def update_username_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    app_username: Annotated[str, Form()] = None,
+    current_user=Depends(auth_service.user_dependency)
+):
+    """Returns HTML to let the user edit their username"""
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+    
+    if not app_username:
+        return Response(status_code=400)
+
+    current_user.username = app_username
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
+    response = Response(status_code=303)
+    response.headers["HX-Redirect"] = "/"
+    
+    return response
+
 
 @router.get("/quick-setup/username-unique")
 def onboarding_validate_username(
