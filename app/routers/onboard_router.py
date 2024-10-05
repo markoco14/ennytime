@@ -259,6 +259,9 @@ def get_quick_setup_page(
         "current_user": current_user
         }
     
+    username = current_user.username or ""
+    context.update({"username": username})
+    
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
             name="/quick-setup/username/fragments/username-content.html",

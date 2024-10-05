@@ -1,9 +1,39 @@
     {% if error %}
+	 <input 
+            class="w-full max-w-[400px] p-2 rounded-md border border-pink-300 focus:bg-white"
+            type="text"
+            id="app_username"
+            name="app_username"
+            value="{{username}}"
+            placeholder="Choose a username."
+            hx-get="/quick-setup/username-unique"
+            hx-trigger="keyup changed delay:500ms"
+            hx-target="next span"
+            hx-swap="outerHTML transition:false"
+			hx-swap-oob="true"
+			autofocus
+			onfocus="this.setSelectionRange(this.value.length,this.value.length);"
+            />
 	<span class="-ml-8 h-6 w-6 transition-all duration-300 ease-in-out stroke-red-500">
         {% include "svg/failed.svg" %}
 	</span>
     <button id="submit" hx-swap-oob="true" disabled type="submit" class="block mt-4 bg-gray-300 px-3 py-1 rounded-md duration-300 ease-in-out">Save</button>
 	{% else %}
+	 <input 
+            class="w-full max-w-[400px] p-2 rounded-md border border-pink-300 focus:bg-white"
+            type="text"
+            id="app_username"
+            name="app_username"
+            value="{{username}}"
+            placeholder="Choose a username."
+            hx-get="/quick-setup/username-unique"
+            hx-trigger="keyup changed delay:500ms"
+            hx-target="next span"
+            hx-swap="outerHTML transition:false"
+			hx-swap-oob="true"
+			autofocus
+			onfocus="this.setSelectionRange(this.value.length,this.value.length);"
+            />
 	<span class="-ml-8 h-6 w-6 transition-all duration-300 ease-in-out stroke-green-500">
         {% include "svg/success.svg" %}
 	</span>
