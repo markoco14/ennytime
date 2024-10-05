@@ -446,7 +446,7 @@ def get_quick_setup_page(
     
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="/quick-setup/fragments/username.html",
+            name="/quick-setup/username/fragments/username-content.html",
             context=context
         )
         response.headers["HX-Push-Url"] = "/quick-setup/username"
