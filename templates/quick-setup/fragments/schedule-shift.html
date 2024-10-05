@@ -7,7 +7,7 @@
     <hr class="mb-4 border-pink-200"/>
     <h2 class="text-2xl mb-2 text-pink-700">Schedule your shifts</h2>
     <p class="mb-2">Use the list of dates below and schedule your shift when you're working.</p>
-    <ul class="grid grid-cols-3 gap-x-2 h-[450px] sm:h-[400px] pb-[96px] sm:pb-0 overflow-y-auto no-scrollbar border border-gray-300 shadow-inner p-2 rounded-md">
+    <ul class="mb-6 grid grid-cols-3 gap-x-2 h-[450px] sm:h-[400px] pb-[96px] sm:pb-0 overflow-y-auto no-scrollbar border border-gray-300 shadow-inner p-2 rounded-md">
         {% for date in month_calendar.values() %}
         <li class="py-2">
             <p class="mb-2 grid truncate">
@@ -32,7 +32,7 @@
         </li>
         {% endfor %}
     </ul>
-    <div class="mb-16 pt-4 w-full bg-white flex justify-between items-start grow-0 sm:relative">
+    <div class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
         <a 
         href="/quick-setup/shifts"
         class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
