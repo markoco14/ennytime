@@ -7,7 +7,17 @@
     <hr class="mb-4 border-pink-200"/>
     <h2 class="text-2xl mb-2 text-pink-700"></h2>
     {% include "/quick-setup/fragments/username-form.html" %}
-    <div class="flex justify-end">
-        <a href="/" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Finish</a>
+    <div class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
+        <a 
+        href="/quick-setup/schedule"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Back to schedule
+        </a>
+        <a 
+        href="/"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Finish
+        </a>
     </div>
+    
 </div>

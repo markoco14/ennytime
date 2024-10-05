@@ -217,7 +217,7 @@ def get_quick_setup_page(
         "shift_types": db_shift_types
     }
 
-    return templates.TemplateResponse(name="/quick-setup/index.html", context=context)
+    return templates.TemplateResponse(name="/quick-setup/shifts-step.html", context=context)
 
 @app.post("/quick-setup/shifts", response_class=HTMLResponse)
 def store_first_shift(
@@ -429,7 +429,7 @@ def get_schedule_first_shift_page(
     context.update({"message_count": 0})
 
     response = templates.TemplateResponse(
-        name="/quick-setup/scheduling.html",
+        name="/quick-setup/scheduling-step.html",
         context=context
     )
     return response
@@ -456,7 +456,7 @@ def get_quick_setup_page(
     context.update({"message_count": 0})
 
     response = templates.TemplateResponse(
-        name="/quick-setup/username-step.html",
+        name="/quick-setup/username/index.html",
         context=context
     )
 
