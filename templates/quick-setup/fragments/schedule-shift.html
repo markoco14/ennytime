@@ -15,18 +15,33 @@
                 <span class="text-ellipsis text-md text-gray-700 text-center truncate">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
             </p>
             <div class="flex justify-center flex-wrap gap-2">
-                {% for type in shift_types %}
-                {% if type.id | is_user_shift(date.shifts) %}
-                    {% include "scheduling/fragments/shift-exists-button.html" %}
+                {% if not shift_types %}
+                    <p class="text-center border border-gray-300 bg-gray-100 py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+                        No shifts found
+                    </p>
                 {% else %}
-                    {% include "scheduling/fragments/no-shift-button.html" %}
+                    {% for type in shift_types %}
+                    {% if type.id | is_user_shift(date.shifts) %}
+                        {% include "scheduling/fragments/shift-exists-button.html" %}
+                    {% else %}
+                        {% include "scheduling/fragments/no-shift-button.html" %}
+                    {% endif %}
+                    {% endfor %}
                 {% endif %}
-                {% endfor %}
             </div>
         </li>
         {% endfor %}
     </ul>
-    <div class="mb-16 pt-4 w-full bg-white flex justify-end items-start grow-0 sm:relative">
-        <a href="/quick-setup/username" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
+    <div class="mb-16 pt-4 w-full bg-white flex justify-between items-start grow-0 sm:relative">
+        <a 
+        href="/quick-setup/shifts"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Back to shifts
+        </a>
+        <a 
+        href="/quick-setup/username"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Continue
+        </a>
     </div>
 </div>
