@@ -206,12 +206,15 @@ def index(
 @app.get("/quick-setup/shifts", response_class=HTMLResponse)
 def get_quick_setup_page(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
+    db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
     context= {
         "request": request,
         "current_user": current_user,
-        "message_count": 0
+        "message_count": 0,
+        "shift_types": db_shift_types
     }
 
     return templates.TemplateResponse(name="/quick-setup/index.html", context=context)

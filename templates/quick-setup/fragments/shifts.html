@@ -8,6 +8,15 @@
     <hr class="mb-4 border-pink-200"/>
     <h2 class="text-2xl mb-2 text-pink-700">Name your shifts</h2>
     <p class="mb-2">Name the shifts you work before you share them on your calendar.</p>
+    {% if shift_types %}
+    <p>Your shifts</p>
+    <ul>
+    {% for shift_type in shift_types %}
+        <li>{{shift_type.long_name}}</li>
+    {% endfor %}
+    </ul>
+    <button class="mb-6 bg-pink-500 text-white rounded-md px-3 py-1">Name more shifts</button>
+    {% else %}
     <p class="mb-2">Here are a few ideas to help you get started...</p>
     <div class="grid grid-cols-3 gap-y-2 gap-x-2 text-center font-semibold border p-4 rounded-md">
         <span>Day Shift</span>
@@ -22,7 +31,8 @@
         hx-post="/quick-setup/shifts"
         hx-target="closest div"
         hx-swap="outerHTML transition:true"
-        hx-indicator="find button">
+        hx-indicator="find button"
+        class="mb-6">
         <div class="w-full flex flex-col mb-6">
             <label for="shift_name"
                 class="text-lg text-pink-700 mb-1">
@@ -46,7 +56,13 @@
                 </span>
         </button>
     </form>
+    {% endif %}
+    <hr class="mb-4 border-pink-200"/>
     <div class="flex justify-end">
-        <a href="/quick-setup/schedule" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
+        <a 
+            href="/quick-setup/schedule" 
+            class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Continue
+        </a>
     </div>
 </div>
