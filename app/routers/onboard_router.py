@@ -1,0 +1,277 @@
+import datetime
+
+from typing import Annotated
+from fastapi import APIRouter, Depends, Form, Request
+from fastapi.responses import HTMLResponse
+
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from app.auth import auth_service
+from app.core.database import get_db
+from app.core.template_utils import templates
+from app.repositories import shift_type_repository
+from app.schemas import schemas
+from app.models.user_model import DBUser
+from app.services import calendar_service
+
+router = APIRouter()
+
+@router.get("/quick-setup/shifts", response_class=HTMLResponse)
+def get_quick_setup_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+    context= {
+        "request": request,
+        "current_user": current_user,
+        "message_count": 0,
+        "shift_types": db_shift_types
+    }
+
+    return templates.TemplateResponse(name="/quick-setup/shifts-step.html", context=context)
+
+@router.post("/quick-setup/shifts", response_class=HTMLResponse)
+def store_first_shift(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    shift_name: Annotated[str, Form()],
+):
+    current_time = datetime.datetime.now()
+    year = current_time.year
+    month = current_time.month
+
+    month_calendar = calendar_service.get_month_date_list(
+        year=year,
+        month=month
+    )
+
+    # calendar_date_list is a list of dictionaries
+    # the keys are date_strings to make matching shifts easier
+    # ie; "2021-09-01": {"more keys": "more values"}
+    calendar_date_list = {}
+
+    # because month calendar year/month/day are numbers
+    # numbers less than 10 don't have preceeding 0's to match the formatting of
+    # the date strings, need to add 0's to the front of the numbers
+    for date in month_calendar:
+        year_string = f"{date[0]}"
+        month_string = f"{date[1]}"
+        day_string = f"{date[2]}"
+        if date[1] < 10:
+            month_string = f"0{date[1]}"
+        if date[2] < 10:
+            day_string = f"0{date[2]}"
+        
+        date_object = datetime.date(year=date[0], month=date[1], day=date[2])
+        date_dict = {
+            f"{year_string}-{month_string}-{day_string}": {
+                "date_string": f"{date_object.year}-{month_string}-{day_string}",
+                "day_of_week": str(calendar_service.Weekday(date[3])),
+                "date_object": date_object
+            }
+        }
+        if date[1] == month:
+            calendar_date_list.update(date_dict)
+    long_name_split = shift_name.split(" ")
+    short_name = ""
+    for part in long_name_split:
+        short_name += part[0].upper()
+    # get new shift type data ready
+    new_shift_type = schemas.CreateShiftType(
+        long_name=shift_name,
+        short_name=short_name,
+        user_id=current_user.id
+    )
+
+    # create new shift type or return an error
+    shift_type_repository.create_shift_type(
+        db=db,
+        shift_type=new_shift_type
+    )
+    
+    shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+    # get the start and end of the month for query filters
+    start_of_month = datetime.datetime(year, month, 1)
+    end_of_month = datetime.datetime(
+        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+    
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date >= :start_of_month
+        AND etime_shifts.date <= :end_of_month
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "start_of_month": start_of_month,
+         "end_of_month": end_of_month}
+    ).fetchall()
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
+
+    # here is the problem
+    # overwriting the previous shift when there are 2
+    # only 1 being packed and sent
+    for shift in user_shifts:
+        key_to_find = f"{shift['date'].date()}"
+        if key_to_find in calendar_date_list:
+            if not calendar_date_list[f"{key_to_find}"].get("shifts"):
+                calendar_date_list[f"{key_to_find}"]["shifts"] = []
+
+            calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
+
+    context= {
+        "request": request,
+        "current_user": current_user,
+        "month_calendar": calendar_date_list,
+        "shift_types": shift_types,
+        "user_shifts": user_shifts
+    }
+    response = templates.TemplateResponse(
+        name="/quick-setup/fragments/schedule-shift.html",                               
+        context=context
+        )
+    response.headers["HX-Push-Url"] = "/quick-setup/schedule"
+
+    return response
+
+@router.get("/quick-setup/schedule")
+def get_schedule_first_shift_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    current_time = datetime.datetime.now()
+    year = current_time.year
+    month = current_time.month
+
+    month_calendar = calendar_service.get_month_date_list(
+        year=year,
+        month=month
+    )
+
+    # calendar_date_list is a list of dictionaries
+    # the keys are date_strings to make matching shifts easier
+    # ie; "2021-09-01": {"more keys": "more values"}
+    calendar_date_list = {}
+
+    # because month calendar year/month/day are numbers
+    # numbers less than 10 don't have preceeding 0's to match the formatting of
+    # the date strings, need to add 0's to the front of the numbers
+    for date in month_calendar:
+        year_string = f"{date[0]}"
+        month_string = f"{date[1]}"
+        day_string = f"{date[2]}"
+        if date[1] < 10:
+            month_string = f"0{date[1]}"
+        if date[2] < 10:
+            day_string = f"0{date[2]}"
+        
+        date_object = datetime.date(year=date[0], month=date[1], day=date[2])
+        date_dict = {
+            f"{year_string}-{month_string}-{day_string}": {
+                "date_string": f"{date_object.year}-{month_string}-{day_string}",
+                "day_of_week": str(calendar_service.Weekday(date[3])),
+                "date_object": date_object
+            }
+        }
+        if date[1] == month:
+            calendar_date_list.update(date_dict)
+    shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+
+    # get the start and end of the month for query filters
+    start_of_month = datetime.datetime(year, month, 1)
+    end_of_month = datetime.datetime(
+        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+    
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date >= :start_of_month
+        AND etime_shifts.date <= :end_of_month
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+         "start_of_month": start_of_month,
+         "end_of_month": end_of_month}
+    ).fetchall()
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
+
+    # here is the problem
+    # overwriting the previous shift when there are 2
+    # only 1 being packed and sent
+    for shift in user_shifts:
+        key_to_find = f"{shift['date'].date()}"
+        if key_to_find in calendar_date_list:
+            if not calendar_date_list[f"{key_to_find}"].get("shifts"):
+                calendar_date_list[f"{key_to_find}"]["shifts"] = []
+
+            calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
+    context= {
+        "request": request,
+        "current_user": current_user,
+        "month_calendar": calendar_date_list,
+        "shift_types": shift_types,
+        "user_shifts": user_shifts,
+    }
+
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/fragments/schedule-shift.html",                               
+            context=context
+            )
+        response.headers["HX-Push-Url"] = "/quick-setup/schedule"
+        return response
+    
+    context.update({"message_count": 0})
+
+    response = templates.TemplateResponse(
+        name="/quick-setup/scheduling-step.html",
+        context=context
+    )
+    return response
+
+@router.get("/quick-setup/username", response_class=HTMLResponse)
+def get_quick_setup_page(
+    request: Request,
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    context={
+        "request": request,
+        "current_user": current_user
+        }
+    
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/username/fragments/username-content.html",
+            context=context
+        )
+        response.headers["HX-Push-Url"] = "/quick-setup/username"
+
+        return response
+    
+    context.update({"message_count": 0})
+
+    response = templates.TemplateResponse(
+        name="/quick-setup/username/index.html",
+        context=context
+    )
+
+    return response
