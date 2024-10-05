@@ -7,6 +7,24 @@ Ennytime - Quick Setup
 <div class="max-w-[65ch] mx-auto px-2 sm:px-0">
     <h1 class="text-3xl font-semibold mb-4 text-pink-500">Welcome to Ennytime Couple's Calendar</h1>
     <hr class="border-pink-300 mb-4"/>
+    <div class="flex justify-center gap-4 mb-4">
+        <a href="/quick-setup/shifts" class="bg-pink-200 h-4 w-4 rounded-full"></a>
+        <a href="/quick-setup/schedule" class="bg-pink-200 h-4 w-4 rounded-full"></a>
+        <a href="/quick-setup/username" class="bg-pink-600 h-4 w-4 rounded-full"></a>
+    </div>
+    <hr class="mb-4 border-pink-200"/>
     {% include "/quick-setup/username/fragments/username-content.html" %}
+    <div class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
+        <a 
+        href="/quick-setup/schedule"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Back to schedule
+        </a>
+        <a 
+        href="/"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+            Finish
+        </a>
+    </div>
 </div>
 {% endblock content %}
