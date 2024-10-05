@@ -1,14 +1,13 @@
 <div class="enter-from-right max-w-[800px] mx-auto">
-    <div class="grid grid-cols-3 text-center mb-8">
-        <a href="/quick-setup/shifts">Shifts</a>
-        <a href="/quick-setup/schedule">Schedule</a>
-        <a href="/quick-setup/username" class="text-pink-600 underline underline-offset-2 duration-200 ease-in-out">Username</a>
+    <div class="flex justify-center gap-4 mb-4">
+        <a href="/quick-setup/shifts" class="bg-pink-200 h-4 w-4 rounded-full"></a>
+        <a href="/quick-setup/schedule" class="bg-pink-200 h-4 w-4 rounded-full"></a>
+        <a href="/quick-setup/username" class="bg-pink-600 h-4 w-4 rounded-full"></a>
     </div>
-    <p>Your shifts are added to your calendar!</p>
-    <p>Choose your username to share your calendar.</p>
     <hr class="mb-4 border-pink-200"/>
+    <h2 class="text-2xl mb-2 text-pink-700"></h2>
+    {% include "/quick-setup/fragments/username-form.html" %}
     <div class="flex justify-end">
         <a href="/" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Finish</a>
     </div>
-    {% include "/quick-setup/fragments/username-form.html" %}
 </div>

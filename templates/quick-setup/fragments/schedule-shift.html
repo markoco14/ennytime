@@ -1,23 +1,20 @@
 <div class="enter-from-right max-w-[800px] mx-auto">
-    <div class="grid grid-cols-3 text-center mb-8">
-        <a href="/quick-setup/shifts">Shifts</a>
-        <a href="/quick-setup/schedule" class="text-pink-600 underline underline-offset-2 duration-200 ease-in-out">Schedule</a>
-        <a href="/quick-setup/username">Username</a>
+    <div class="flex justify-center gap-4 mb-4">
+        <a href="/quick-setup/shifts" class="bg-pink-200 h-4 w-4 rounded-full"></a>
+        <a href="/quick-setup/schedule" class="bg-pink-600 h-4 w-4 rounded-full"></a>
+        <a href="/quick-setup/username" class="bg-pink-200 h-4 w-4 rounded-full"></a>
     </div>
+    <hr class="mb-4 border-pink-200"/>
     <h2 class="text-2xl mb-2 text-pink-700">Schedule your shifts</h2>
     <p class="mb-2">Use the list of dates below and schedule your shift when you're working.</p>
-    <hr class="mb-4 border-pink-200"/>
-    <div class="flex justify-end">
-        <a href="/quick-setup/username" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
-    </div>
-    <ul class="divide-y h-[500px] overflow-y-auto no-scrollbar">
+    <ul class="grid grid-cols-3 gap-x-2 h-[450px] sm:h-[400px] pb-[96px] sm:pb-0 overflow-y-auto no-scrollbar border border-gray-300 shadow-inner p-2 rounded-md">
         {% for date in month_calendar.values() %}
         <li class="py-2">
-            <p class="mb-2">
-                <span class="text-2xl text-center md:text-left">{{date.date_object.strftime("%A")}}</span>
-                <span class="text-md text-gray-700 text-center md:text-left">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
+            <p class="mb-2 grid truncate">
+                <span class="text-ellipsis text-2xl text-center truncate">{{date.date_object.strftime("%A")}}</span>
+                <span class="text-ellipsis text-md text-gray-700 text-center truncate">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
             </p>
-            <div class="flex flex-wrap gap-2 p-2 border rounded-md">
+            <div class="flex justify-center flex-wrap gap-2">
                 {% for type in shift_types %}
                 {% if type.id | is_user_shift(date.shifts) %}
                     {% include "scheduling/fragments/shift-exists-button.html" %}
@@ -28,6 +25,8 @@
             </div>
         </li>
         {% endfor %}
-
     </ul>
+    <div class="mb-16 pt-4 w-full bg-white flex justify-end items-start grow-0 sm:relative">
+        <a href="/quick-setup/username" class="bg-pink-500 text-white rounded-md px-3 py-1 hovercursor-pointer">Continue</a>
+    </div>
 </div>
