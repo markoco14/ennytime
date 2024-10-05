@@ -1,0 +1,9 @@
+    {% if error %}
+	<span class="-ml-8 h-6 w-6 transition-all duration-300 ease-in-out stroke-red-500">
+        {% include "svg/failed.svg" %}
+	</span>
+	{% else %}
+	<span class="-ml-8 h-6 w-6 transition-all duration-300 ease-in-out stroke-green-500">
+        {% include "svg/success.svg" %}
+	</span>
+	{% endif %}

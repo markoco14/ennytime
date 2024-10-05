@@ -145,6 +145,7 @@ def store_first_shift(
 
     return response
 
+
 @router.get("/quick-setup/schedule")
 def get_schedule_first_shift_page(
     request: Request,
@@ -275,3 +276,64 @@ def get_quick_setup_page(
     )
 
     return response
+
+@router.get("/quick-setup/username-unique")
+def onboarding_validate_username(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    app_username: str = "",
+):
+    context = {
+        "request": request,
+        "user": current_user,
+    }
+
+    if app_username == "":
+        context.update({"error": True})
+        if current_user.username:
+            context.update({
+                "username": current_user.username
+            })
+        else:
+            context.update({
+                "username": ""
+            })
+
+
+        return templates.TemplateResponse(
+            request=request,
+            name="quick-setup/username/fragments/input-errors.html",
+            context=context
+        )
+
+    if app_username == current_user.username:
+        context.update({
+            "username": app_username,
+            "error": True
+        })
+
+        return templates.TemplateResponse(
+            request=request,
+            name="quick-setup/username/fragments/input-errors.html",
+            context=context
+        )
+
+    db_username = db.query(DBUser).filter(
+        DBUser.username == app_username).first()
+
+    if not db_username:
+        username_taken = False
+    else:
+        username_taken = True
+
+    context.update({          
+        "username": app_username,
+        "error": username_taken
+    })
+
+    return templates.TemplateResponse(
+        request=request,
+        name="quick-setup/username/fragments/input-errors.html",
+        context=context
+    )
