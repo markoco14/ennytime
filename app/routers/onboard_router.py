@@ -15,9 +15,9 @@ from app.schemas import schemas
 from app.models.user_model import DBUser
 from app.services import calendar_service
 
-router = APIRouter()
+router = APIRouter(prefix="/quick-setup")
 
-@router.get("/quick-setup/shifts", response_class=HTMLResponse)
+@router.get("/shifts", response_class=HTMLResponse)
 def get_quick_setup_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -33,7 +33,7 @@ def get_quick_setup_page(
 
     return templates.TemplateResponse(name="/quick-setup/shifts-step.html", context=context)
 
-@router.post("/quick-setup/shifts", response_class=HTMLResponse)
+@router.post("/shifts", response_class=HTMLResponse)
 def store_first_shift(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -146,7 +146,7 @@ def store_first_shift(
     return response
 
 
-@router.get("/quick-setup/schedule")
+@router.get("/schedule")
 def get_schedule_first_shift_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -249,7 +249,7 @@ def get_schedule_first_shift_page(
     )
     return response
 
-@router.get("/quick-setup/username", response_class=HTMLResponse)
+@router.get("/username", response_class=HTMLResponse)
 def get_quick_setup_page(
     request: Request,
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
@@ -278,7 +278,7 @@ def get_quick_setup_page(
     return response
 
 
-@router.put("/quick-setup/username/{user_id}")
+@router.put("/username/{user_id}")
 def update_username_widget(
     request: Request,
     user_id: int,
@@ -310,7 +310,7 @@ def update_username_widget(
     return response
 
 
-@router.get("/quick-setup/username-unique")
+@router.get("/username-unique")
 def onboarding_validate_username(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
