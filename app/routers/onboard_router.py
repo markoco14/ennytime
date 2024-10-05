@@ -373,3 +373,32 @@ def onboarding_validate_username(
         name="quick-setup/username/fragments/input-errors.html",
         context=context
     )
+
+@router.get("/display-name")
+def get_display_name_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+):
+    context={
+        "request": request,
+        "current_user": current_user
+        }
+    
+    
+    # if request.headers.get("HX-Request"):
+    #     response = templates.TemplateResponse(
+    #         name="/quick-setup/username/fragments/username-content.html",
+    #         context=context
+    #     )
+    #     response.headers["HX-Push-Url"] = "/quick-setup/username"
+
+    #     return response
+    
+
+    response = templates.TemplateResponse(
+        name="/quick-setup/display-name/index.html",
+        context=context
+    )
+
+    return response
