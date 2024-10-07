@@ -308,7 +308,7 @@ def update_username_widget(
     db.refresh(current_user)
 
     response = Response(status_code=303)
-    response.headers["HX-Redirect"] = "/"
+    response.headers["HX-Redirect"] = "/quick-setup/display-name"
     
     return response
 
