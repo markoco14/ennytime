@@ -1,0 +1,12 @@
+<input 
+    hx-get="/quick-setup/validate-display-name"
+    hx-target="this"
+    hx-trigger="keyup changed delay:1s"
+    hx-swap="outerHTML"
+    placeholder="Simon Smith... Jane Thompson..."
+    class="w-full max-w-[400px] p-2 pr-6 rounded-md border border-pink-300"
+    type="text"
+    id="display_name"
+    name="display_name"
+    value="{{display_name}}"
+    />
