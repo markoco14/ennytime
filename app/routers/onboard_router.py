@@ -380,11 +380,13 @@ def get_display_name_page(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
+    display_name = current_user.display_name or ""
+    
     context={
         "request": request,
-        "current_user": current_user
+        "current_user": current_user,
+        "display_name": display_name
         }
-    
     
     # if request.headers.get("HX-Request"):
     #     response = templates.TemplateResponse(
@@ -401,4 +403,61 @@ def get_display_name_page(
         context=context
     )
 
+    return response
+
+@router.get("/validate-display-name")
+def onboarding_validate_username(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    display_name: str = "",
+):
+    context = {          
+        "request": request,
+        "display_name": display_name,
+    }
+    
+    if display_name == "":
+        return templates.TemplateResponse(
+            request=request,
+            name="quick-setup/display-name/submit-disabled-oob.html",
+            context=context
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="quick-setup/display-name/submit-enabled-oob.html",
+        context=context
+    )
+
+
+@router.put("/display-name/{user_id}")
+def update_display_name_widget(
+    request: Request,
+    user_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    display_name: Annotated[str, Form()] = None,
+):
+    """Returns HTML to let the user edit their display name"""
+    if not current_user:
+        response = RedirectResponse(url="/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+
+    if current_user.id != user_id:
+        return Response(status_code=403)
+    
+    if not display_name:
+        return Response(status_code=400)
+
+    current_user.display_name = display_name
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
+    response = Response(status_code=303)
+    response.headers["HX-Redirect"] = "/"
+    
     return response
