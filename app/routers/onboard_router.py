@@ -31,6 +31,14 @@ def get_quick_setup_page(
         "shift_types": db_shift_types
     }
 
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/shifts/fragments/shift-content-oob.html",
+            context=context)
+        response.headers["HX-Push-Url"] = "/quick-setup/shifts"
+
+        return response
+
     return templates.TemplateResponse(name="/quick-setup/shifts/index.html", context=context)
 
 @router.post("/shifts", response_class=HTMLResponse)
