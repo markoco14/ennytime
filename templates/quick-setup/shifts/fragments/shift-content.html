@@ -5,6 +5,7 @@
     hx-post="/quick-setup/shifts"
     hx-target="closest div"
     hx-swap="innerHTML transition:true"
+    hx-on::before-request="toggleEnterFromRight('data-js-content-container')"
     hx-indicator="find button"
     class="mb-6">
     <div class="w-full flex flex-col mb-6">
