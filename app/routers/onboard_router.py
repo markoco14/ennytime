@@ -145,6 +145,7 @@ def store_first_shift(
         "shift_types": shift_types,
         "user_shifts": user_shifts
     }
+    
     response = templates.TemplateResponse(
         name="/quick-setup/scheduling/fragments/schedule-content-oob.html",                               
         context=context
