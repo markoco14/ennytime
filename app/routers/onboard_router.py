@@ -396,16 +396,15 @@ def get_display_name_page(
         "display_name": display_name
         }
     
-    # if request.headers.get("HX-Request"):
-    #     response = templates.TemplateResponse(
-    #         name="/quick-setup/username/fragments/username-content.html",
-    #         context=context
-    #     )
-    #     response.headers["HX-Push-Url"] = "/quick-setup/username"
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/display-name/fragments/display-name-content-oob.html",
+            context=context
+        )
+        response.headers["HX-Push-Url"] = "/quick-setup/display-name"
 
-    #     return response
-    
-
+        return response
+        
     response = templates.TemplateResponse(
         name="/quick-setup/display-name/index.html",
         context=context

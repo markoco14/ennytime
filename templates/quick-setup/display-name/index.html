@@ -9,34 +9,13 @@ Ennytime - Quick Setup
 <div class="max-w-[65ch] mx-auto mt-8 sm:mt-16 px-2 sm:px-0">
     <h1 class="text-3xl font-semibold mb-4 text-pink-500">Welcome to Ennytime Couple's Calendar</h1>
     <hr class="border-pink-300 mb-4"/>
-    <div class="flex justify-center gap-4 mb-4">
-        <a href="/quick-setup/shifts" class="bg-pink-200 h-4 w-4 rounded-full"></a>
-        <a href="/quick-setup/schedule" class="bg-pink-200 h-4 w-4 rounded-full"></a>
-        <a href="/quick-setup/username" class="bg-pink-200 h-4 w-4 rounded-full"></a>
-        <a href="/quick-setup/display-name" class="bg-pink-600 h-4 w-4 rounded-full"></a>
-    </div>
+    {% include "/quick-setup/display-name/fragments/display-name-breadcrumb.html" %}
     <hr class="mb-4 border-pink-200"/>
-    <h2 class="text-2xl mb-2 text-pink-700">Choose your Name</h2>
-    <p class="mb-6">This is the name we will use if we ever need to contact you. It's also how other people will see you in the app.</p>
-    <form 
-    hx-put="/quick-setup/display-name/{{current_user.id}}"
-    class="mb-6">
-        {% include "/quick-setup/display-name/display-name-input.html" %}
-        <button id="submit" disabled type="submit" class="block mt-4 bg-gray-300 px-3 py-1 rounded-md duration-300 ease-in-out">
-            Save and finish
-        </button>
-    </form>
-    <div class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
-        <a 
-        href="/quick-setup/username"
-        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
-            Back to username
-        </a>
-        <a 
-        href="/"
-        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
-            Finish without name
-        </a>
+    <div data-js-content-container class="js-content-container max-w-[800px] mx-auto">
+        {% include "/quick-setup/display-name/fragments/display-name-content.html" %}
     </div>
+    {% include "/quick-setup/display-name/fragments/display-name-footer.html" %}
+    
+    
 </div>
 {% endblock content %}

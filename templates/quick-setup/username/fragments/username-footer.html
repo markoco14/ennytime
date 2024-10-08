@@ -2,18 +2,20 @@
     hx-target="previous .js-content-container"
     hx-swap="innerHTML transition:true"
     hx-swap-oob="true"
-    hx-on::before-request="toggleEnterFromLeft('data-js-content-container')"
     id="footer"
     class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
     <a 
-    href="/quick-setup/schedule"
-    hx-get="/quick-setup/schedule"
-    class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+        href="/quick-setup/schedule"
+        hx-get="/quick-setup/schedule"
+        hx-on::before-request="toggleEnterFromLeft('data-js-content-container')"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
         Back to schedule
     </a>
     <a 
-    href="/quick-setup/display-name"
-    class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+        href="/quick-setup/display-name"
+        hx-get="/quick-setup/display-name"
+        hx-on::before-request="toggleEnterFromRight('data-js-content-container')"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
         Continue
     </a>
 </div>

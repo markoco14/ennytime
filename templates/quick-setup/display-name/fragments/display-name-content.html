@@ -1,0 +1,10 @@
+<h2 class="text-2xl mb-2 text-pink-700">Choose your name</h2>
+<p class="mb-6">This is the name we will use if we ever need to contact you. It's also how other people will see you in the app.</p>
+<form 
+hx-put="/quick-setup/display-name/{{current_user.id}}"
+class="mb-6">
+    {% include "/quick-setup/display-name/display-name-input.html" %}
+    <button id="submit" disabled type="submit" class="block mt-4 bg-gray-300 px-3 py-1 rounded-md duration-300 ease-in-out">
+        Save and finish
+    </button>
+</form>
