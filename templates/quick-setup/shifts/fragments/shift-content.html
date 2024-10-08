@@ -1,59 +1,57 @@
 {% from "macros/spinner.html" import spinner %}
-<div class="js-content-container enter-from-right max-w-[800px] mx-auto">
-    <h2 class="text-2xl mb-2 text-pink-700">Name your shifts</h2>
-    <p class="mb-6">Get started and name your shifts before you add them to your calendar.</p>
-    <form 
-        hx-post="/quick-setup/shifts"
-        hx-target="closest div"
-        hx-swap="outerHTML transition:true"
-        hx-indicator="find button"
-        class="mb-6">
-        <div class="w-full flex flex-col mb-6">
-            <label for="shift_name"
-                class="text-lg text-pink-700 mb-1 sr-only">
-                Choose a name for your shift
-            </label>
-            <input 
-                type="text"
-                id="shift_name"
-                name="shift_name"
-                required
-                placeholder="Night Shift... Day Shift... Work from Home"
-                class="border p-2 shadow rounded"/>
-        </div>
-        <button type="submit"
-                class="flex gap-2 justify-center items-center bg-[#E22C7B] px-6 py-1 rounded-md grow-0 text-white">
-                <span class="htmx-indicator-content">
-                    Save
-                </span>
-                <span class="htmx-indicator">
-                    {{spinner('spinner', 'h-5', 'w-5', 'text-white')}}
-                </span>
-        </button>
-    </form>
-    <hr class="mb-4 border-pink-200"/>
-    {% if shift_types %}
-    <div class="mb-6 border border-pink-300 p-4 rounded-md">
-    <ul>
-        {% if shift_types|length == 1 %}
-            <p class="text-xl mb-2 text-pink-700">You already saved {{shift_types|length}} shift</p>
-        {% else %}
-            <p class="text-xl mb-2 text-pink-700">You already saved {{shift_types|length}} shifts</p>
-        {% endif %}
-    {% for shift_type in shift_types %}
-        <li class="text-lg font-semibold">{{shift_type.long_name}} ({{shift_type.short_name}})</li>
-    {% endfor %}
-    </ul>
+<h2 class="text-2xl mb-2 text-pink-700">Name your shifts</h2>
+<p class="mb-6">Get started and name your shifts before you add them to your calendar.</p>
+<form 
+    hx-post="/quick-setup/shifts"
+    hx-target="closest div"
+    hx-swap="outerHTML transition:true"
+    hx-indicator="find button"
+    class="mb-6">
+    <div class="w-full flex flex-col mb-6">
+        <label for="shift_name"
+            class="text-lg text-pink-700 mb-1 sr-only">
+            Choose a name for your shift
+        </label>
+        <input 
+            type="text"
+            id="shift_name"
+            name="shift_name"
+            required
+            placeholder="Night Shift... Day Shift... Work from Home"
+            class="border p-2 shadow rounded"/>
     </div>
+    <button type="submit"
+            class="flex gap-2 justify-center items-center bg-[#E22C7B] px-6 py-1 rounded-md grow-0 text-white">
+            <span class="htmx-indicator-content">
+                Save
+            </span>
+            <span class="htmx-indicator">
+                {{spinner('spinner', 'h-5', 'w-5', 'text-white')}}
+            </span>
+    </button>
+</form>
+<hr class="mb-4 border-pink-200"/>
+{% if shift_types %}
+<div class="mb-6 border border-pink-300 p-4 rounded-md">
+<ul>
+    {% if shift_types|length == 1 %}
+        <p class="text-xl mb-2 text-pink-700">You already saved {{shift_types|length}} shift</p>
     {% else %}
-    <p class="mb-2">Here are a few ideas to help you get started...</p>
-    <div class="grid grid-cols-3 gap-y-2 gap-x-2 text-center font-semibold border p-4 rounded-md mb-6">
-        <span>Day Shift</span>
-        <span>Dali Office</span>
-        <span>Night Shift</span>
-        <span>Work from Home</span>
-        <span>Opening Shift</span>
-        <span>Closing Shift</span>
-    </div>
+        <p class="text-xl mb-2 text-pink-700">You already saved {{shift_types|length}} shifts</p>
     {% endif %}
+{% for shift_type in shift_types %}
+    <li class="text-lg font-semibold">{{shift_type.long_name}} ({{shift_type.short_name}})</li>
+{% endfor %}
+</ul>
 </div>
+{% else %}
+<p class="mb-2">Here are a few ideas to help you get started...</p>
+<div class="grid grid-cols-3 gap-y-2 gap-x-2 text-center font-semibold border p-4 rounded-md mb-6">
+    <span>Day Shift</span>
+    <span>Dali Office</span>
+    <span>Night Shift</span>
+    <span>Work from Home</span>
+    <span>Opening Shift</span>
+    <span>Closing Shift</span>
+</div>
+{% endif %}

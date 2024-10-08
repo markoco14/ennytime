@@ -16,7 +16,9 @@ Ennytime - Quick Setup
         <a href="/quick-setup/display-name" class="bg-pink-200 h-4 w-4 rounded-full"></a>
     </div>
     <hr class="mb-4 border-pink-200"/>
-    {% include "/quick-setup/shifts/fragments/shift-content.html" %}
+    <div data-js-content-container class="js-content-container max-w-[800px] mx-auto">
+        {% include "/quick-setup/shifts/fragments/shift-content.html" %}
+    </div>
     {% include "/quick-setup/shifts/fragments/shift-footer.html" %}
 </div>
 {% endblock content %}
