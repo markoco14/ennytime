@@ -235,7 +235,7 @@ def get_schedule_first_shift_page(
 
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="/quick-setup/scheduling/fragments/schedule-content.html",                               
+            name="/quick-setup/scheduling/fragments/schedule-content-oob.html",                               
             context=context
             )
         response.headers["HX-Push-Url"] = "/quick-setup/schedule"

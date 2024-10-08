@@ -17,9 +17,14 @@ Ennytime - Quick Setup
     </div>
     <hr class="mb-4 border-pink-200"/>
     {% include "/quick-setup/shifts/fragments/shift-content.html" %}
-    <div id="footer" class="flex justify-end">
+    <div 
+        hx-target="previous .js-content-container"
+        hx-swap="outerHTML transition:true"
+        id="footer" 
+        class="flex justify-end">
         <a 
             href="/quick-setup/schedule" 
+            hx-get="/quick-setup/schedule"
             class="border border-pink-500 rounded-md px-6 py-1 hover:bg-pink-100 active:bg-pink-200">
             Continue
         </a>

@@ -1,37 +1,10 @@
-<div class="enter-from-right max-w-[800px] mx-auto">
-    <h2 class="text-2xl mb-2 text-pink-700">Schedule your shifts</h2>
-    <p class="mb-2">Use the list of dates below and schedule your shift when you're working.</p>
-    <ul class="mb-6 grid grid-cols-3 gap-x-2 h-[450px] sm:h-[400px] pb-[96px] sm:pb-0 overflow-y-auto no-scrollbar border border-gray-300 shadow-inner p-2 rounded-md">
-        {% for date in month_calendar.values() %}
-        <li class="py-2">
-            <p class="mb-2 grid truncate">
-                <span class="text-ellipsis text-2xl text-center truncate">{{date.date_object.strftime("%A")}}</span>
-                <span class="text-ellipsis text-md text-gray-700 text-center truncate">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
-            </p>
-            <div class="flex justify-center flex-wrap gap-2">
-                {% if not shift_types %}
-                    <p class="text-center border border-gray-300 bg-gray-100 py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-                        No shifts found
-                    </p>
-                {% else %}
-                    {% for type in shift_types %}
-                    {% if type.id | is_user_shift(date.shifts) %}
-                        {% include "scheduling/fragments/shift-exists-button.html" %}
-                    {% else %}
-                        {% include "scheduling/fragments/no-shift-button.html" %}
-                    {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+{% include "/quick-setup/scheduling/fragments/schedule-content.html" %}
 <div id="breadcrumb" hx-swap-oob="true" class="flex justify-center gap-4 mb-4">
-        <a href="/quick-setup/shifts" class="bg-pink-200 h-4 w-4 rounded-full"></a>
-        <a href="/quick-setup/schedule" class="bg-pink-600 h-4 w-4 rounded-full"></a>
-        <a href="/quick-setup/username" class="bg-pink-200 h-4 w-4 rounded-full"></a>
-    </div>
+    <a href="/quick-setup/shifts" class="bg-pink-200 h-4 w-4 rounded-full duration-200 ease-in-out"></a>
+    <a href="/quick-setup/schedule" class="bg-pink-600 h-4 w-4 rounded-full duration-200 ease-in-out"></a>
+    <a href="/quick-setup/username" class="bg-pink-200 h-4 w-4 rounded-full duration-200 ease-in-out"></a>
+    <a href="/quick-setup/display-name" class="bg-pink-200 h-4 w-4 rounded-full duration-200 ease-in-out"></a>
+</div>
 <div id="footer" hx-swap-oob="true" class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
     <a 
     href="/quick-setup/shifts"
