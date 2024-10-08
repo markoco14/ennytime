@@ -16,18 +16,9 @@ Ennytime - Quick Setup
         <a href="/quick-setup/display-name" class="bg-pink-200 h-4 w-4 rounded-full"></a>
     </div>
     <hr class="mb-4 border-pink-200"/>
-    {% include "/quick-setup/username/fragments/username-content.html" %}
-    <div class="mb-16 w-full bg-white flex justify-between items-start grow-0 sm:relative">
-        <a 
-        href="/quick-setup/schedule"
-        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
-            Back to schedule
-        </a>
-        <a 
-        href="/quick-setup/display-name"
-        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
-            Continue
-        </a>
+    <div data-js-content-container class="js-content-container max-w-[800px] mx-auto">
+        {% include "/quick-setup/username/fragments/username-content.html" %}
     </div>
+    {% include "/quick-setup/username/fragments/username-footer.html" %}
 </div>
 {% endblock content %}
