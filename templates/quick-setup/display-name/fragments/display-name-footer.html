@@ -11,9 +11,17 @@
         class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
         Back to username
     </a>
+    {% if not display_name %}
     <a 
         href="/"
         class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
-        Finish without name
+        Finish without name 
     </a>
+    {% else %}
+    <a 
+        href="/"
+        class="border border-pink-500 rounded-md px-3 py-1 hover:bg-pink-100 active:bg-pink-200">
+        Finish
+    </a>
+    {% endif %}
 </div>
