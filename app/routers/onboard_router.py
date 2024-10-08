@@ -315,6 +315,21 @@ def update_username_widget(
     db.commit()
     db.refresh(current_user)
 
+    context = {
+        "request": request,
+        "current_user": current_user
+    }
+
+    if request.headers.get("HX-Request"):
+        display_name = current_user.display_name or ""
+        context.update({"display_name": display_name})
+        response = templates.TemplateResponse(
+            name="/quick-setup/display-name/fragments/display-name-content-oob.html",
+            context=context
+            )
+        
+        return response
+
     response = Response(status_code=303)
     response.headers["HX-Redirect"] = "/quick-setup/display-name"
     

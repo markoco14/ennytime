@@ -1,6 +1,9 @@
 <h2 class="text-2xl mb-2 text-pink-700">Choose your username</h2>
 <form 
     hx-put="/quick-setup/username/{{current_user.id}}"
+    hx-target="closest div"
+    hx-swap="innerHTML transition:true"
+    hx-on::before-request="toggleEnterFromRight('data-js-content-container')"
     class="mb-6">
     <label class="text-xl text-gray-900 mb-1 sr-only">Username</label>
     <p class="mb-4">
