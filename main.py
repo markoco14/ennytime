@@ -1,12 +1,14 @@
 """Main file to hold app and api routes"""
+import datetime
 from typing import Annotated, Optional
 from pprint import pprint
 import time
 from fastapi import Depends, FastAPI, Request, Form, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from mangum import Mangum
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import RequestResponseEndpoint
@@ -14,9 +16,8 @@ from starlette.middleware.base import RequestResponseEndpoint
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
-from app.core.template_utils import templates, block_templates
-from app.repositories import share_repository, shift_repository
-from app.repositories import user_repository
+from app.core.template_utils import templates
+from app.repositories import user_repository, shift_type_repository
 from app.routers import (
     admin_router,
     calendar_router,
@@ -24,7 +25,8 @@ from app.routers import (
     share_router,
     shift_router,
     chat_router,
-    scheduling_router
+    scheduling_router,
+    onboard_router
 )
 from app.services import calendar_service, chat_service
 from app.models.user_model import DBUser
@@ -84,6 +86,7 @@ app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 app.include_router(chat_router.router)
 app.include_router(scheduling_router.router)
+app.include_router(onboard_router.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -201,6 +204,53 @@ def index(
 
     return response
 
+
+# @app.post("/{date}/{type_id}", response_class=HTMLResponse)
+# async def add_shift_to_date(
+#     request: Request,
+#     db: Annotated[Session, Depends(get_db)],
+#     date: str,
+#     type_id: int
+# ):
+#     if not auth_service.get_session_cookie(request.cookies):
+#         return templates.TemplateResponse(
+#             request=request,
+#             name="website/web-home.html",
+#             headers={"HX-Redirect": "/"},
+#         )
+
+#     current_user = auth_service.get_current_session_user(
+#         db=db,
+#         cookies=request.cookies)
+
+#     # check if shift already exists
+#     # if exists delete, user will already have clicked a confirm on the frontend
+
+#     date_segments = date.split("-")
+#     db_shift = schemas.CreateShift(
+#         type_id=type_id,
+#         user_id=current_user.id,
+#         date=datetime.datetime(int(date_segments[0]), int(
+#             date_segments[1]), int(date_segments[2]))
+#     )
+
+#     new_shift = shift_repository.create_shift(db=db, shift=db_shift)
+
+#     shift_type = shift_type_repository.get_user_shift_type(
+#         db=db, user_id=current_user.id, shift_type_id=type_id)
+
+#     context = {
+#         "current_user": current_user,
+#         "request": request,
+#         "date": {"date_string": date},
+#         "shifts": [new_shift],
+#         "type": shift_type
+#     }
+
+#     return templates.TemplateResponse(
+#         name="/scheduling/fragments/shift-exists-button.html",
+#         context=context,
+#     )
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(

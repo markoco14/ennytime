@@ -1,0 +1,26 @@
+<div
+    hx-target="next .js-content-container"
+    hx-swap="innerHTML transition:true"
+    hx-swap-oob="true"
+    id="breadcrumb"
+    class="flex justify-center items-center gap-4 mb-4">
+    <a 
+        href="/quick-setup/shifts" 
+        hx-get="/quick-setup/shifts"
+        class="text-pink-500 underline underline-offset-2 hover:text-pink-600 duration-300 ease-in-out">Shifts</a>
+    <a 
+        href="/quick-setup/schedule" 
+        hx-get="/quick-setup/schedule"
+        hx-on::before-request="toggleEnterFromRight('data-js-content-container');"
+        class="text-pink-700 opacity-60 duration-300 ease-in-out">Schedule</a>
+    <a 
+        href="/quick-setup/username" 
+        hx-get="/quick-setup/username"
+        hx-on::before-request="toggleEnterFromRight('data-js-content-container');"
+        class="text-pink-700 opacity-60 duration-300 ease-in-out">Username</a>
+    <a 
+        href="/quick-setup/display-name" 
+        hx-get="/quick-setup/display-name"
+        hx-on::before-request="toggleEnterFromRight('data-js-content-container');"
+        class="text-pink-700 opacity-60 duration-300 ease-in-out">Name</a>
+</div>

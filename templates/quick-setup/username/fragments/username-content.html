@@ -1,0 +1,33 @@
+<h2 class="text-2xl mb-2 text-pink-700">Choose your username</h2>
+<form 
+    hx-put="/quick-setup/username/{{current_user.id}}"
+    hx-target="closest div"
+    hx-swap="innerHTML transition:true"
+    hx-on::before-request="toggleEnterFromRight('data-js-content-container')"
+    class="mb-6">
+    <label class="text-xl text-gray-900 mb-1 sr-only">Username</label>
+    <p class="mb-4">
+        Choose a unique username for yourself. You need a username before anyone can share their calendar with you.
+    </p>
+    <div class="flex items-center">
+        <input 
+            hx-get="/quick-setup/username-unique"
+            hx-trigger="keyup changed delay:500ms"
+            hx-target="next span"
+            hx-swap="outerHTML transition:false"
+            id="app_username"
+            name="app_username"
+            type="text"
+            value="{{username}}"
+            placeholder="Choose a username."
+            class="w-full max-w-[400px] p-2 rounded-md border border-pink-300 focus:bg-white"/>
+        <span></span>
+    </div>
+    <button 
+        id="submit" 
+        disabled 
+        type="submit" 
+        class="block mt-4 bg-gray-300 px-3 py-1 rounded-md duration-300 ease-in-out">
+        Save
+    </button>
+</form>

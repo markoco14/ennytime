@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from '/macros/spinner.html' import spinner%}
+{% block title %}
+Ennytime - Quick Setup
+{% endblock title %}
+{% block header %}
+{% endblock header %}
+{% block content %}
+<div class="max-w-[65ch] mx-auto mt-8 sm:mt-16 px-2 sm:px-0">
+    <h1 class="text-3xl font-semibold mb-4 text-pink-500">Welcome to Ennytime Couple's Calendar</h1>
+    <hr class="border-pink-300 mb-4"/>
+    {% include "/quick-setup/username/fragments/username-breadcrumb.html" %}
+    <hr class="mb-4 border-pink-200"/>
+    <div data-js-content-container class="js-content-container max-w-[800px] mx-auto">
+        {% include "/quick-setup/username/fragments/username-content.html" %}
+    </div>
+    {% include "/quick-setup/straight-to-app.html" %}
+</div>
+{% endblock content %}
