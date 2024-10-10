@@ -4,8 +4,7 @@
 <form 
     hx-post="/quick-setup/shifts"
     hx-target="closest div"
-    hx-swap="innerHTML transition:true"
-    hx-on::before-request="toggleEnterFromRight('data-js-content-container')"
+    hx-swap="innerHTML"
     class="mb-6">
     <label for="shift_name"
         class="text-lg text-pink-700 mb-1 sr-only">
@@ -36,9 +35,9 @@
 <div class="mb-6 border border-pink-300 p-4 rounded-md">
 <ul>
     {% if shift_types|length == 1 %}
-        <p class="text-xl mb-2 text-pink-700">You already saved {{shift_types|length}} shift</p>
+        <p class="text-xl mb-2 text-pink-700">You saved {{shift_types|length}} shift</p>
     {% else %}
-        <p class="text-xl mb-2 text-pink-700">You already saved {{shift_types|length}} shifts</p>
+        <p class="text-xl mb-2 text-pink-700">You saved {{shift_types|length}} shifts</p>
     {% endif %}
 {% for shift_type in shift_types %}
     <li class="text-lg font-semibold">{{shift_type.long_name}} ({{shift_type.short_name}})</li>

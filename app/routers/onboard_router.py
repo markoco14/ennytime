@@ -191,10 +191,9 @@ def store_first_shift(
     }
     
     response = templates.TemplateResponse(
-        name="/quick-setup/scheduling/fragments/schedule-content-oob.html",                               
+        name="/quick-setup/shifts/fragments/shift-content.html",                               
         context=context
         )
-    response.headers["HX-Push-Url"] = "/quick-setup/schedule"
 
     return response
 
