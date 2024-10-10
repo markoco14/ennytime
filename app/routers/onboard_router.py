@@ -376,20 +376,14 @@ def update_username_widget(
         "current_user": current_user
     }
 
-    if request.headers.get("HX-Request"):
-        display_name = current_user.display_name or ""
-        context.update({"display_name": display_name})
-        response = templates.TemplateResponse(
-            name="/quick-setup/display-name/fragments/display-name-content-oob.html",
-            context=context
-            )
-        
-        return response
-
-    response = Response(status_code=303)
-    response.headers["HX-Redirect"] = "/quick-setup/display-name"
+    context.update({"username": current_user.username})
+    response = templates.TemplateResponse(
+        name="/quick-setup/username/fragments/username-content.html",
+        context=context
+        )
     
     return response
+
 
 
 @router.get("/username-unique")
