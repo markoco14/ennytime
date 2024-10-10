@@ -23,12 +23,19 @@ def get_quick_setup_page(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
     context= {
         "request": request,
         "current_user": current_user,
         "message_count": 0,
-        "shift_types": db_shift_types
+        "shift_types": db_shift_types,
+        "shift_name": ""
     }
 
     if request.headers.get("HX-Request"):
@@ -41,6 +48,37 @@ def get_quick_setup_page(
 
     return templates.TemplateResponse(name="/quick-setup/shifts/index.html", context=context)
 
+@router.get("/validate-shift")
+def validate_shift_name(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    shift_name: str = ""
+):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
+    context = {          
+        "request": request,
+        "shift_name": shift_name,
+    }
+    
+    if shift_name == "":
+        return templates.TemplateResponse(
+            request=request,
+            name="quick-setup/shifts/fragments/submit-button-disabled.html",
+            context=context
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="quick-setup/shifts/fragments/submit-button-enabled.html",
+        context=context
+    )
+
 @router.post("/shifts", response_class=HTMLResponse)
 def store_first_shift(
     request: Request,
@@ -48,6 +86,12 @@ def store_first_shift(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     shift_name: Annotated[str, Form()],
 ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     current_time = datetime.datetime.now()
     year = current_time.year
     month = current_time.month
@@ -161,6 +205,12 @@ def get_schedule_first_shift_page(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     current_time = datetime.datetime.now()
     year = current_time.year
     month = current_time.month
@@ -263,6 +313,12 @@ def get_quick_setup_page(
     request: Request,
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     context={
         "request": request,
         "current_user": current_user
@@ -344,6 +400,12 @@ def onboarding_validate_username(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     app_username: str = "",
 ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     context = {
         "request": request,
         "user": current_user,
@@ -404,6 +466,12 @@ def get_display_name_page(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     display_name = current_user.display_name or ""
     
     context={
@@ -435,6 +503,12 @@ def onboarding_validate_username(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     display_name: str = "",
 ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
     context = {          
         "request": request,
         "display_name": display_name,
