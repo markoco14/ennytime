@@ -504,10 +504,18 @@ def onboarding_validate_username(
     
     context = {          
         "request": request,
-        "display_name": display_name,
+        "current_user": current_user,
+        "display_name": display_name
     }
     
     if display_name == "":
+        return templates.TemplateResponse(
+            request=request,
+            name="quick-setup/display-name/submit-disabled-oob.html",
+            context=context
+        )
+    
+    if display_name == current_user.display_name:
         return templates.TemplateResponse(
             request=request,
             name="quick-setup/display-name/submit-disabled-oob.html",
@@ -547,7 +555,23 @@ def update_display_name_widget(
     db.commit()
     db.refresh(current_user)
 
-    response = Response(status_code=303)
-    response.headers["HX-Redirect"] = "/"
-    
+    context = {
+        "request": request,
+        "current_user": current_user,
+        "display_name": current_user.display_name
+    }
+
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="/quick-setup/display-name/fragments/display-name-content.html",
+            context=context
+        )
+
+        return response
+        
+    response = templates.TemplateResponse(
+        name="/quick-setup/display-name/index.html",
+        context=context
+    )
+
     return response
