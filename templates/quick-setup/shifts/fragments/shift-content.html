@@ -6,29 +6,29 @@
     hx-target="closest div"
     hx-swap="innerHTML transition:true"
     hx-on::before-request="toggleEnterFromRight('data-js-content-container')"
-    hx-indicator="find button"
     class="mb-6">
-    <div class="w-full flex flex-col mb-6">
-        <label for="shift_name"
-            class="text-lg text-pink-700 mb-1 sr-only">
-            Choose a name for your shift
-        </label>
-        <input 
-            type="text"
-            id="shift_name"
-            name="shift_name"
-            required
-            placeholder="Night Shift... Day Shift... Work from Home"
-            class="border p-2 shadow rounded"/>
-    </div>
-    <button type="submit"
-            class="flex gap-2 justify-center items-center bg-[#E22C7B] px-6 py-1 rounded-md grow-0 text-white">
-            <span class="htmx-indicator-content">
-                Save
-            </span>
-            <span class="htmx-indicator">
-                {{spinner('spinner', 'h-5', 'w-5', 'text-white')}}
-            </span>
+    <label for="shift_name"
+        class="text-lg text-pink-700 mb-1 sr-only">
+        Choose a name for your shift
+    </label>
+    <input 
+        hx-get="/quick-setup/validate-shift"
+        hx-trigger="keyup changed delay:1s"
+        hx-target="next button"
+        hx-swap="outerHTML transition:false"
+        placeholder="Night Shift... Day Shift... Work from Home"
+        type="text"
+        id="shift_name"
+        name="shift_name"
+        value="{{shift_name}}"
+        required
+        class="w-full mb-6 border p-2 shadow rounded"/>
+    <button 
+        disabled
+        id="submit"
+        type="submit"
+        class="flex gap-2 justify-center items-center bg-pink-300 disabled:bg-gray-300 text-white disabled:text-black disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1 rounded-md grow-0 duration-300 ease-in-out">
+        Save
     </button>
 </form>
 <hr class="mb-4 border-pink-200"/>
