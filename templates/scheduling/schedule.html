@@ -3,6 +3,9 @@
     <p class="mb-4">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.
     </p>
     <hr class="mb-4 border-pink-200"/>
+    <h1 class="text-4xl mb-2 md:mb-4 md:text-5xl col-span-2">
+        {{selected_month_name}} {{selected_year}}
+    </h1>
     <ul class="divide-y">
         {% for date in month_calendar.values() %}
         <li class="py-2">

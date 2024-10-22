@@ -51,6 +51,9 @@ def get_scheduling_index_page(
     
     # need to handle the case where year and month are not provided
     current_time = datetime.datetime.now()
+    selected_year = year or current_time.year
+    selected_month = month or current_time.month
+    selected_month_name = calendar_service.MONTHS[selected_month - 1]
     if not year:
         year = current_time.year
     if not month:
@@ -134,6 +137,8 @@ def get_scheduling_index_page(
         "request": request,
         "current_user": current_user,
         "current_month": month,
+        "selected_month_name": selected_month_name,
+        "selected_year": selected_year,
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
         "user_shifts": user_shifts,
