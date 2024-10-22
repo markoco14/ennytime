@@ -55,6 +55,8 @@ def get_scheduling_index_page(
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
 
+    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
+        current_month=selected_month)
 
     month_calendar = calendar_service.get_month_date_list(
         year=selected_year,
@@ -91,8 +93,12 @@ def get_scheduling_index_page(
 
     # get the start and end of the month for query filters
     start_of_month = datetime.datetime(selected_year, selected_month, 1)
-    end_of_month = datetime.datetime(
-        selected_year, selected_month + 1, 1) + datetime.timedelta(seconds=-1)
+    if selected_month == 12:
+        end_of_month = datetime.datetime(
+            selected_year + 1, 1, 1) + datetime.timedelta(seconds=-1)
+    else:
+        end_of_month = datetime.datetime(
+            selected_year, selected_month + 1, 1) + datetime.timedelta(seconds=-1)
 
     query = text("""
         SELECT
@@ -133,9 +139,11 @@ def get_scheduling_index_page(
     context = {
         "request": request,
         "current_user": current_user,
-        # "current_month": selected_month,
+        "selected_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
         "user_shifts": user_shifts,
