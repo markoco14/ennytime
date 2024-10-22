@@ -1,5 +1,5 @@
 
-from typing import Annotated
+from typing import Annotated, Optional
 import datetime
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
@@ -25,8 +25,8 @@ def get_scheduling_index_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    year: int = None,
-    month: int = None,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
 ):
     if not current_user:
         response = RedirectResponse(status_code=303, url="/")
@@ -51,14 +51,16 @@ def get_scheduling_index_page(
     
     # need to handle the case where year and month are not provided
     current_time = datetime.datetime.now()
-    if not year:
-        year = current_time.year
-    if not month:
-        month = current_time.month
+    selected_year = year or current_time.year
+    selected_month = month or current_time.month
+    selected_month_name = calendar_service.MONTHS[selected_month - 1]
+
+    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
+        current_month=selected_month)
 
     month_calendar = calendar_service.get_month_date_list(
-        year=year,
-        month=month
+        year=selected_year,
+        month=selected_month
     )
 
     # calendar_date_list is a list of dictionaries
@@ -86,13 +88,17 @@ def get_scheduling_index_page(
                 "date_object": date_object
             }
         }
-        if date[1] == month:
+        if date[1] == selected_month:
             calendar_date_list.update(date_dict)
 
     # get the start and end of the month for query filters
-    start_of_month = datetime.datetime(year, month, 1)
-    end_of_month = datetime.datetime(
-        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+    start_of_month = datetime.datetime(selected_year, selected_month, 1)
+    if selected_month == 12:
+        end_of_month = datetime.datetime(
+            selected_year + 1, 1, 1) + datetime.timedelta(seconds=-1)
+    else:
+        end_of_month = datetime.datetime(
+            selected_year, selected_month + 1, 1) + datetime.timedelta(seconds=-1)
 
     query = text("""
         SELECT
@@ -130,11 +136,14 @@ def get_scheduling_index_page(
         db=db,
         current_user_id=current_user.id
     )
-
     context = {
         "request": request,
         "current_user": current_user,
-        "current_month": month,
+        "selected_month": selected_month,
+        "selected_month_name": selected_month_name,
+        "selected_year": selected_year,
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
         "user_shifts": user_shifts,
