@@ -54,14 +54,11 @@ def get_scheduling_index_page(
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
-    if not year:
-        year = current_time.year
-    if not month:
-        month = current_time.month
+
 
     month_calendar = calendar_service.get_month_date_list(
-        year=year,
-        month=month
+        year=selected_year,
+        month=selected_month
     )
 
     # calendar_date_list is a list of dictionaries
@@ -89,13 +86,13 @@ def get_scheduling_index_page(
                 "date_object": date_object
             }
         }
-        if date[1] == month:
+        if date[1] == selected_month:
             calendar_date_list.update(date_dict)
 
     # get the start and end of the month for query filters
-    start_of_month = datetime.datetime(year, month, 1)
+    start_of_month = datetime.datetime(selected_year, selected_month, 1)
     end_of_month = datetime.datetime(
-        year, month + 1, 1) + datetime.timedelta(seconds=-1)
+        selected_year, selected_month + 1, 1) + datetime.timedelta(seconds=-1)
 
     query = text("""
         SELECT
@@ -136,7 +133,7 @@ def get_scheduling_index_page(
     context = {
         "request": request,
         "current_user": current_user,
-        "current_month": month,
+        # "current_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
         "month_calendar": calendar_date_list,
