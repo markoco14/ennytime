@@ -1,5 +1,5 @@
 
-from typing import Annotated
+from typing import Annotated, Optional
 import datetime
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
@@ -25,8 +25,8 @@ def get_scheduling_index_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    year: int = None,
-    month: int = None,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
 ):
     if not current_user:
         response = RedirectResponse(status_code=303, url="/")
@@ -130,7 +130,6 @@ def get_scheduling_index_page(
         db=db,
         current_user_id=current_user.id
     )
-
     context = {
         "request": request,
         "current_user": current_user,
