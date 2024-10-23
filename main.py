@@ -152,11 +152,7 @@ def index(
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
 
-    # get unread message count so chat icon can display the count on page load
-    message_count = chat_service.get_user_unread_message_count(
-        db=db,
-        current_user_id=current_user.id
-    )
+    
 
 
     # gathering user ids to query shift table and get shifts for both users at once
@@ -181,7 +177,6 @@ def index(
         "next_month_name": next_month_name,
         "month_calendar": list(month_calendar_dict.values()),
         "days_of_week": calendar_service.DAYS_OF_WEEK,
-        "message_count": message_count,
     }
 
     if "hx-request" in request.headers:
@@ -189,11 +184,19 @@ def index(
             name="calendar/fragments/calendar-oob.html",
             context=context,
         )
-    else:
-        response = templates.TemplateResponse(
-            name="calendar/index.html",
-            context=context,
-        )
+        return response
+
+    # get unread message count so chat icon can display the count on page load
+    message_count = chat_service.get_user_unread_message_count(
+        db=db,
+        current_user_id=current_user.id
+    )
+
+    context.update({"message_count": message_count})    
+    response = templates.TemplateResponse(
+        name="calendar/index.html",
+        context=context,
+    )
 
     return response
 
