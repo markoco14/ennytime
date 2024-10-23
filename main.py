@@ -120,8 +120,6 @@ def index(
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
-    current_month = calendar_service.get_current_month(month)
-    current_year = calendar_service.get_current_year(year)
 
     birthdays = []
     if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=selected_month):
@@ -191,12 +189,8 @@ def index(
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
         "month_calendar": list(month_calendar_dict.values()),
-        "message_count": message_count,
-        "month_number": month,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
-        "current_year": current_year,
-        "current_month_number": current_month,
-        "current_month": calendar_service.MONTHS[current_month - 1],
+        "message_count": message_count,
     }
 
     if "hx-request" in request.headers:
@@ -212,53 +206,6 @@ def index(
 
     return response
 
-
-# @app.post("/{date}/{type_id}", response_class=HTMLResponse)
-# async def add_shift_to_date(
-#     request: Request,
-#     db: Annotated[Session, Depends(get_db)],
-#     date: str,
-#     type_id: int
-# ):
-#     if not auth_service.get_session_cookie(request.cookies):
-#         return templates.TemplateResponse(
-#             request=request,
-#             name="website/web-home.html",
-#             headers={"HX-Redirect": "/"},
-#         )
-
-#     current_user = auth_service.get_current_session_user(
-#         db=db,
-#         cookies=request.cookies)
-
-#     # check if shift already exists
-#     # if exists delete, user will already have clicked a confirm on the frontend
-
-#     date_segments = date.split("-")
-#     db_shift = schemas.CreateShift(
-#         type_id=type_id,
-#         user_id=current_user.id,
-#         date=datetime.datetime(int(date_segments[0]), int(
-#             date_segments[1]), int(date_segments[2]))
-#     )
-
-#     new_shift = shift_repository.create_shift(db=db, shift=db_shift)
-
-#     shift_type = shift_type_repository.get_user_shift_type(
-#         db=db, user_id=current_user.id, shift_type_id=type_id)
-
-#     context = {
-#         "current_user": current_user,
-#         "request": request,
-#         "date": {"date_string": date},
-#         "shifts": [new_shift],
-#         "type": shift_type
-#     }
-
-#     return templates.TemplateResponse(
-#         name="/scheduling/fragments/shift-exists-button.html",
-#         context=context,
-#     )
 
 @app.post("/search", response_class=HTMLResponse)
 def search_users_to_share(
