@@ -114,17 +114,31 @@ def index(
         response.delete_cookie("session-id")
 
         return response
+    
     current_time = datetime.datetime.now()
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
 
+    # handle all birthday logic
     birthdays = []
     if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=selected_month):
         birthdays.append({
             "name": current_user.display_name,
             "day": current_user.birthday.day
         })
+
+    # get user who shares their calendar with current user
+    # find the DbShare where current user id is the receiver_id 
+    bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
+        DbShare.receiver_id == current_user.id).first()
+
+    if bae_user:
+        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=selected_month):
+            birthdays.append({
+                "name": bae_user.display_name,
+                "day": bae_user.birthday.day
+            })
 
     # get previous and next month names for month navigation
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
@@ -144,16 +158,6 @@ def index(
         current_user_id=current_user.id
     )
 
-    # get user the sent their calendar to current user if any
-    bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
-        DbShare.receiver_id == current_user.id).first()
-
-    if bae_user:
-        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=selected_month):
-            birthdays.append({
-                "name": bae_user.display_name,
-                "day": bae_user.birthday.day
-            })
 
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
