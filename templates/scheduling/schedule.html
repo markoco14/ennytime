@@ -8,15 +8,14 @@
     </h1>
     <div class="grid grid-cols-2 max-w-[250px] text-center gap-2">
         {% if selected_month == 1 %}
-        <span class="border rounded-md px-3 py-1">{{prev_month_name}}</span>
+        <span class="bg-gray-200 cursor-not-allowed border rounded-md px-3 py-1">{{prev_month_name}}</span>
         {% else %}
-        <a href="?month={{selected_month - 1}}" class="border rounded-md px-3 py-1">{{prev_month_name}}</a>
+        <a href="?month={{selected_month - 1}}" class="hover:bg-pink-200 active:bg-pink-200 sm:active:bg-pink-300 border hover:border-pink-400 rounded-md px-3 py-1">{{prev_month_name}}</a>
         {% endif %}
         {% if selected_month == 12 %}
-        <span class="border rounded-md px-3 py-1">{{next_month_name}}</span>
-        
+        <span class="bg-gray-200 cursor-not-allowed border rounded-md px-3 py-1">{{next_month_name}}</span>
         {% else %}
-        <a href="?month={{selected_month + 1}}" class="border rounded-md px-3 py-1">{{next_month_name}}</a>
+        <a href="?month={{selected_month + 1}}" class="hover:bg-pink-200 active:bg-pink-200 sm:active:bg-pink-300 border hover:border-pink-400 rounded-md px-3 py-1">{{next_month_name}}</a>
         {% endif %}
     </div>
     <ul class="divide-y">
