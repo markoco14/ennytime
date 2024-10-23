@@ -116,12 +116,15 @@ def index(
         response.delete_cookie("session-id")
 
         return response
-
+    current_time = datetime.datetime.now()
+    selected_year = year or current_time.year
+    selected_month = month or current_time.month
+    selected_month_name = calendar_service.MONTHS[selected_month - 1]
     current_month = calendar_service.get_current_month(month)
     current_year = calendar_service.get_current_year(year)
 
     birthdays = []
-    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=current_month):
+    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=selected_month):
         birthdays.append({
             "name": current_user.display_name,
             "day": current_user.birthday.day
@@ -129,10 +132,12 @@ def index(
 
     # get previous and next month names for month navigation
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
-        current_month=current_month)
+        current_month=selected_month)
 
     month_calendar = calendar_service.get_month_calendar(
-        current_year, current_month)
+        year=selected_year, 
+        month=selected_month
+        )
 
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
@@ -148,7 +153,7 @@ def index(
         DbShare.receiver_id == current_user.id).first()
 
     if bae_user:
-        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=current_month):
+        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=selected_month):
             birthdays.append({
                 "name": bae_user.display_name,
                 "day": bae_user.birthday.day
@@ -178,17 +183,20 @@ def index(
 
     context = {
         "request": request,
+        "current_user": current_user,
         "birthdays": birthdays,
+        "selected_month": selected_month,
+        "selected_month_name": selected_month_name,
+        "selected_year": selected_year,
+        "prev_month_name": prev_month_name,
+        "next_month_name": next_month_name,
+        "month_calendar": list(month_calendar_dict.values()),
+        "message_count": message_count,
         "month_number": month,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "current_year": current_year,
         "current_month_number": current_month,
         "current_month": calendar_service.MONTHS[current_month - 1],
-        "prev_month_name": prev_month_name,
-        "next_month_name": next_month_name,
-        "message_count": message_count,
-        "current_user": current_user,
-        "month_calendar": list(month_calendar_dict.values())
     }
 
     if "hx-request" in request.headers:

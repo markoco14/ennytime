@@ -1,10 +1,10 @@
 {% from '/macros/spinner.html' import spinner%}
 <div class="grid grid-cols-2 max-w-[250px] mx-auto gap-2">
-    {% if current_month_number == 1 %}
+    {% if selected_month == 1 %}
     <button disabled
             class="col-span-1 px-3 py-1 border rounded bg-gray-200 opacity-70">
     {% else %}
-    <button hx-get="/?month={{current_month_number-1}}"
+    <button hx-get="/?month={{selected_month-1}}"
             hx-target=".js-calendar"
             hx-swap="outerHTML transition:true"
             hx-indicator="this"
@@ -20,11 +20,11 @@
         </span>
     </button>
     <!-- if end of year -->
-    {% if current_month_number == 12 %}
+    {% if selected_month == 12 %}
     <button disabled
             class="text-center col-span-1 px-3 py-1 border rounded bg-gray-200  opacity-70">
     {% else %}
-    <button hx-get="/?month={{current_month_number+1}}"
+    <button hx-get="/?month={{selected_month+1}}"
             hx-target=".js-calendar"
             hx-swap="outerHTML transition:true"
             hx-indicator="this"
