@@ -8,7 +8,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from mangum import Mangum
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import RequestResponseEndpoint
@@ -17,7 +16,7 @@ from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
 from app.core.template_utils import templates
-from app.repositories import user_repository, shift_type_repository
+from app.repositories import user_repository
 from app.routers import (
     admin_router,
     calendar_router,
@@ -28,11 +27,10 @@ from app.routers import (
     scheduling_router,
     onboard_router
 )
-from app.services import calendar_service, chat_service
+from app.services import calendar_service, calendar_shift_service, chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
-from app.models.db_shift import DbShift
-from app.models.db_shift_type import DbShiftType
+
 
 
 SETTINGS = get_settings()
@@ -162,22 +160,11 @@ def index(
     if bae_user:
         user_ids.append(bae_user.id)
 
-    all_shifts = db.query(DbShift, DbShiftType).join(DbShiftType, DbShift.type_id == DbShiftType.id).filter(
-        DbShift.user_id.in_(user_ids)).all()
-
-    for shift, shift_type in all_shifts:
-        shift_date = str(shift.date.date())
-        shift.long_name = shift_type.long_name
-        shift.short_name = shift_type.short_name
-        if month_calendar_dict.get(shift_date):
-            # find current user shifts
-            if shift.user_id == current_user.id:
-                month_calendar_dict[shift_date]['shifts'].append(
-                    shift.__dict__)
-            # find bae user shifts
-            else:
-                month_calendar_dict[shift_date]['bae_shifts'].append(
-                    shift.__dict__)
+    # get shifts for current user and bae user
+    all_shifts = calendar_shift_service.get_shift_info_for_users(db=db, user_ids=user_ids)
+    
+    # update the calendar dictionary with sorted shifts
+    month_calendar_dict = calendar_shift_service.sort_shifts_by_user(all_shifts=all_shifts, month_calendar_dict=month_calendar_dict, current_user=current_user)
 
     context = {
         "request": request,
