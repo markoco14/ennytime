@@ -153,15 +153,22 @@ def index(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
 
     
-
-
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
     if bae_user:
         user_ids.append(bae_user.id)
 
+    # get the start and end of the month for query filters
+    start_of_month = datetime.datetime(selected_year, selected_month, 1)
+    if selected_month == 12:
+        end_of_month = datetime.datetime(
+            selected_year + 1, 1, 1) + datetime.timedelta(seconds=-1)
+    else:
+        end_of_month = datetime.datetime(
+            selected_year, selected_month + 1, 1) + datetime.timedelta(seconds=-1)
+
     # get shifts for current user and bae user
-    all_shifts = calendar_shift_service.get_shift_info_for_users(db=db, user_ids=user_ids)
+    all_shifts = calendar_shift_service.get_month_shift_info_for_users(db=db, user_ids=user_ids, start_of_month=start_of_month, end_of_month=end_of_month)
     
     # update the calendar dictionary with sorted shifts
     month_calendar_dict = calendar_shift_service.sort_shifts_by_user(all_shifts=all_shifts, month_calendar_dict=month_calendar_dict, current_user=current_user)
