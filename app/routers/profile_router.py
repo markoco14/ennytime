@@ -68,6 +68,11 @@ def get_profile_page(
             {"current_user_received_share": current_user_received_share})
 
 
+    if current_user.display_name is None:
+        context.update({"display_name": ""})
+    else:
+        context.update({"display_name": current_user.display_name})
+    
     if current_user.username is None:
         context.update({"username": ""})
     else:
@@ -160,6 +165,7 @@ def update_user_contact(
     # send back with last stored display name
     db_user = user_repository.get_user_by_id(db=db, user_id=current_user.id)
     context={"request": request, "user": db_user}
+
     if display_name == "":
         response = templates.TemplateResponse(
             name="profile/display-name-input.html",
@@ -192,11 +198,18 @@ def update_user_contact(
             name="profile/display-name-input.html",
             context=context
         )
+    
+
 
     context = {
         "request": request,
         "user": updated_user,
     }
+
+    if current_user.display_name is None:
+        context.update({"display_name": ""})
+    else:
+        context.update({"display_name": current_user.display_name})
 
     return templates.TemplateResponse(
         request=request,

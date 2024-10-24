@@ -109,3 +109,16 @@ def get_month_calendar(year, month):
 def get_month_date_list(year, month):
     """Returns a list of dates for the given month/year"""
     return MONTH_CALENDAR.itermonthdays4(year, month)
+
+
+def get_start_of_month(year, month):
+    """Returns the first day of the month"""
+    return datetime.datetime(year, month, 1)
+
+
+def get_end_of_month(year, month):
+    """Returns the last day of the month"""
+    if month == 12:
+        return datetime.datetime(year + 1, 1, 1) + datetime.timedelta(seconds=-1)
+    else:
+        return datetime.datetime(year, month + 1, 1) + datetime.timedelta(seconds=-1)

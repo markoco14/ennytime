@@ -92,13 +92,8 @@ def get_scheduling_index_page(
             calendar_date_list.update(date_dict)
 
     # get the start and end of the month for query filters
-    start_of_month = datetime.datetime(selected_year, selected_month, 1)
-    if selected_month == 12:
-        end_of_month = datetime.datetime(
-            selected_year + 1, 1, 1) + datetime.timedelta(seconds=-1)
-    else:
-        end_of_month = datetime.datetime(
-            selected_year, selected_month + 1, 1) + datetime.timedelta(seconds=-1)
+    start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
+    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
 
     query = text("""
         SELECT

@@ -6,9 +6,6 @@
 		Display name
 	</label>
 	<p>This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other users.</p>
-	{% if not user.display_name %}
-	<p class="p-2">You haven't chosen your display name yet.</p>
-	{% else %}
 	<div class="flex items-center">
 	{% include "profile/display-name-input.html" %}
 	<span class="htmx-indicator -ml-8">{{spinner('spinner', 'h-6', 'w-6', 'text-pink-900')}}</span>
@@ -20,5 +17,4 @@
 	</span>
 	<span id="failure" class="hidden -ml-8">failed</span>
 	</div>
-	{% endif %}
 </div>
