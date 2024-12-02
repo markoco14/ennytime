@@ -199,7 +199,13 @@ def index(
         current_user_id=current_user.id
     )
 
-    context.update({"message_count": message_count})    
+    user_chat_data = chat_service.get_user_chat_data(
+        db=db,
+        current_user_id=current_user.id
+    )
+
+    context.update({"message_count": message_count})
+    context.update({"chat_data": user_chat_data})  
     response = templates.TemplateResponse(
         name="calendar/index.html",
         context=context,
