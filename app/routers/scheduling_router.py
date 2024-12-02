@@ -126,11 +126,13 @@ def get_scheduling_index_page(
 
             calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
 
+    # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
-    message_count = chat_service.get_user_unread_message_count(
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
+
     context = {
         "request": request,
         "current_user": current_user,
@@ -142,7 +144,7 @@ def get_scheduling_index_page(
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
         "user_shifts": user_shifts,
-        "message_count": message_count
+        "chat_data": user_chat_data
     }
 
     if request.headers.get("HX-Request"):
