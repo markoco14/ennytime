@@ -21,3 +21,23 @@ def get_user_unread_message_count(db: Session, current_user_id: int):
     ).all()
 
     return len(db_chat_messages)
+
+def get_user_chat_data(db: Session, current_user_id: int):
+    """ Returns a list of unread messages for the current user. """
+    db_chat_room = db.query(DBChatRoom).filter(
+        DBChatRoom.is_active == 1,
+        DBChatRoom.chat_users.contains(current_user_id)
+    ).first()
+    if not db_chat_room:
+        return None
+
+    db_chat_messages = db.query(DBChatMessage).filter(
+        DBChatMessage.room_id == db_chat_room.room_id,
+        DBChatMessage.is_read == 0,
+        DBChatMessage.sender_id != current_user_id
+    ).all()
+
+    return {
+        "chatroom_id": db_chat_room.room_id,
+        "unread_messages": len(db_chat_messages)
+        }

@@ -37,8 +37,9 @@ def read_admin_home_page(
         response = RedirectResponse(status_code=303, url="/")
         return response
 
+    # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
-    message_count = chat_service.get_user_unread_message_count(
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
@@ -46,7 +47,7 @@ def read_admin_home_page(
     context = {
         "current_user": current_user,
         "request": request,
-        "message_count": message_count
+        "chat_data": user_chat_data
     }
 
     return templates.TemplateResponse(
@@ -76,8 +77,9 @@ def list_users(
     users = UserRepository.list_users(db=db)
     headings = ["Display name", "Email", "Username", "Actions"]
 
+    # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
-    message_count = chat_service.get_user_unread_message_count(
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
@@ -87,7 +89,7 @@ def list_users(
         "request": request,
         "users": users,
         "headings": headings,
-        "message_count": message_count
+        "chat_data": user_chat_data
     }
 
     return templates.TemplateResponse(
@@ -117,8 +119,9 @@ def list_user_signins(
     user_signins = db.query(DBUserSignin).all()
     headings = ["user_id", "signin_at", "status"]
 
+    # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
-    message_count = chat_service.get_user_unread_message_count(
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
@@ -128,7 +131,7 @@ def list_user_signins(
         "request": request,
         "user_signins": user_signins,
         "headings": headings,
-        "message_count": message_count
+        "chat_data": user_chat_data
     }
 
     return templates.TemplateResponse(

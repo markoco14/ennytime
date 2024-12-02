@@ -43,7 +43,10 @@ def get_shifts_page(
     if not shift_types:
         response = RedirectResponse(status_code=303, url="/shifts/setup") 
         return response
-    message_count = chat_service.get_user_unread_message_count(
+    
+    # get chatroom id to link directly from the chat icon
+    # get unread message count so chat icon can display the count on page load
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
@@ -51,7 +54,7 @@ def get_shifts_page(
     context = {
         "request": request,
         "current_user": current_user,
-        "message_count": message_count,
+        "chat_data": user_chat_data,
         "shift_types": shift_types
     }
     
