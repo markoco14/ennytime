@@ -260,10 +260,16 @@ def get_unread_messages(
         current_user_id=current_user.id
     )
 
+    chat_data = chat_service.get_user_chat_data(
+        db=db,
+        current_user_id=current_user.id
+    )
+
     context = {
         "current_user": current_user,
         "request": request,
-        "message_count": message_count
+        "message_count": message_count,
+        "chat_data": chat_data
     }
 
     return block_templates.TemplateResponse(
