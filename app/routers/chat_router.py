@@ -1,4 +1,5 @@
 
+from datetime import timedelta
 import json
 import uuid
 from typing import Annotated
@@ -131,6 +132,9 @@ def get_chatroom(
 
     messages = db.query(DBChatMessage).filter(
         DBChatMessage.room_id == room_id).all()
+    
+    for message in messages:
+        message.created_at = (message.created_at + timedelta(hours=8)).strftime("%b %d %H:%M")
 
     context = {
         "request": request,
@@ -174,7 +178,7 @@ async def multi_websocket_endpoint(
                 "sender_id": db_message.sender_id,
                 "message": db_message.message,
                 "is_read": db_message.is_read,
-                "created_at": str(db_message.created_at)
+                "created_at": str((db_message.created_at + timedelta(hours=8)).strftime("%b %d %H:%M"))
             }
             await websocket_manager.broadcast_chatroom(
                 message=json.dumps(message_data),
