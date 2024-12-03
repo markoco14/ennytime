@@ -21,13 +21,13 @@ Ennytime Profile Page
 						{% for signin in user_signins %}
 						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
 							<td class="p-4 align-middle">
-								{{signin.user_id}}
+								{{signin.DBUser.display_name}}
 							</td>
 							<td>
-								{{signin.signin_at}}
+								{{signin.DBUserSignin.signin_at}}
 							</td>
 							<td>
-                                {{signin.status.value.capitalize()}}
+                                {{signin.DBUserSignin.status.value.capitalize()}}
 							</td>
 						</tr>
 						{% endfor %}

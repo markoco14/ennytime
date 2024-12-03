@@ -1,4 +1,5 @@
 """ Admin routes """
+from datetime import timedelta
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -8,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 
+from app.models.user_model import DBUser
 from app.models.user_signin_model import DBUserSignin
 from app.repositories import user_repository as UserRepository
 from app.services import chat_service
@@ -115,9 +117,12 @@ def list_user_signins(
     if not current_user.is_admin:
         response = RedirectResponse(status_code=303, url="/")
         return response
+    user_signins = db.query(DBUserSignin, UserRepository.DBUser).join(DBUser, DBUserSignin.user_id == DBUser.id).order_by(DBUserSignin.signin_at).all()
 
-    user_signins = db.query(DBUserSignin).all()
-    headings = ["user_id", "signin_at", "status"]
+    for signin in user_signins:
+        signin.DBUserSignin.signin_at = (signin.DBUserSignin.signin_at + timedelta(hours=8)).strftime("%b %d %H:%M")
+
+    headings = ["User ID", "Sign In Time", "Sign In Status"]
 
     # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
