@@ -95,7 +95,6 @@ async def custom_404_handler(request, __):
 def index(
     request: Request,
     response: Response,
-    db: Annotated[Session, Depends(get_db)],
     month: Optional[int] = None,
     year: Optional[int] = None,
     current_user=Depends(auth_service.user_dependency)
@@ -116,12 +115,12 @@ def index(
     
     # HX-Redirect required for hx-request
     if "hx-request" in request.headers:
-        response = Response(status_code=301)
+        response = Response(status_code=303)
         response.headers["HX-Redirect"] = f"/calendar/{selected_year}/{selected_month}"
         return response
     
     # Can use FastAPI Redirect with standard http request
-    return RedirectResponse(url=f"/calendar/{selected_year}/{selected_month}")
+    return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
 
 
 @app.post("/search", response_class=HTMLResponse)

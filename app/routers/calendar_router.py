@@ -9,7 +9,7 @@ import datetime
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 
 from app.auth import auth_service
@@ -29,10 +29,15 @@ router = APIRouter()
 def get_calendar_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     month: Optional[int] = None,
     year: Optional[int] = None,
-    current_user=Depends(auth_service.user_dependency)
 ):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        response.delete_cookie("session-id")
+        return response
+    
     current_time = datetime.datetime.now()
     selected_year = year or current_time.year
     selected_month = month or current_time.month
