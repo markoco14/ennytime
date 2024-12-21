@@ -10,6 +10,7 @@ from fastapi import Depends, Request
 
 from passlib.context import CryptContext
 from app.core.database import get_db
+from app.models.user_model import DBUser
 from app.repositories import session_repository
 
 from app.repositories import user_repository
@@ -122,3 +123,11 @@ def user_dependency(request: Request, db: Session = Depends(get_db)):
         return None
 
     return db_user
+
+
+def update_user_password(db: Session, user_id: int, new_password: str):
+    hashed_password = get_password_hash(new_password)
+    db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
+    db_user.hashed_password = hashed_password
+    db.commit()
+    print("Password updated")
