@@ -3,39 +3,7 @@
     <p class="mb-4">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.
     </p>
     <hr class="mb-4 border-pink-200"/>
-    <h1 class="text-4xl mb-2 md:mb-4 md:text-5xl col-span-2">
-        {{selected_month_name}} {{selected_year}}
-    </h1>
-    <div class="grid grid-cols-2 max-w-[250px] text-center gap-2">
-        {% if selected_month == 1 %}
-        <span class="bg-gray-200 cursor-not-allowed border rounded-md px-3 py-1">{{prev_month_name}}</span>
-        {% else %}
-        <a href="?month={{selected_month - 1}}" class="hover:bg-pink-200 active:bg-pink-200 sm:active:bg-pink-300 border hover:border-pink-400 rounded-md px-3 py-1">{{prev_month_name}}</a>
-        {% endif %}
-        {% if selected_month == 12 %}
-        <span class="bg-gray-200 cursor-not-allowed border rounded-md px-3 py-1">{{next_month_name}}</span>
-        {% else %}
-        <a href="?month={{selected_month + 1}}" class="hover:bg-pink-200 active:bg-pink-200 sm:active:bg-pink-300 border hover:border-pink-400 rounded-md px-3 py-1">{{next_month_name}}</a>
-        {% endif %}
-    </div>
-    <ul class="divide-y">
-        {% for date in month_calendar.values() %}
-        <li class="py-2">
-            <p class="mb-2">
-                <span class="text-2xl text-center md:text-left">{{date.date_object.strftime("%A")}}</span>
-                <span class="text-md text-gray-700 text-center md:text-left">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
-            </p>
-            <div class="flex flex-wrap gap-2 p-2 border rounded-md">
-                {% for type in shift_types %}
-                {% if type.id | is_user_shift(date.shifts) %}
-                    {% include "scheduling/fragments/shift-exists-button.html" %}
-                {% else %}
-                    {% include "scheduling/fragments/no-shift-button.html" %}
-                {% endif %}
-                {% endfor %}
-            </div>
-        </li>
-        {% endfor %}
+    {% include "scheduling/fragments/scheduling-controls.html" %}
 
-    </ul>
+    {% include "scheduling/fragments/schedule-list.html" %}
 </div>
