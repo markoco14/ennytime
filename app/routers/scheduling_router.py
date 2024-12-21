@@ -1,13 +1,10 @@
 
 from typing import Annotated, Optional
 import datetime
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from jinja2_fragments.fastapi import Jinja2Blocks
 
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import text
 
 from app.auth import auth_service
@@ -15,12 +12,39 @@ from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
 from app.models.user_model import DBUser
 from app.schemas import schemas
-from app.repositories import shift_repository, shift_type_repository, share_repository, user_repository
+from app.repositories import shift_repository, shift_type_repository
 from app.services import calendar_service, chat_service
 
 router = APIRouter(prefix="/scheduling")
 
 @router.get("/", response_class=HTMLResponse)
+def get_scheduling_index_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+):
+    if not current_user:
+        response = RedirectResponse(status_code=303, url="/")
+        response.delete_cookie("session-id")
+        return response
+    
+    current_time = datetime.datetime.now()
+    selected_year = year or current_time.year
+    selected_month = month or current_time.month
+    
+    # HX-Redirect required for hx-request
+    if "hx-request" in request.headers:
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = f"/scheduling/{selected_year}/{selected_month}"
+        return response
+    
+    # Can use FastAPI Redirect with standard http request
+    return RedirectResponse(status_code=303, url=f"/scheduling/{selected_year}/{selected_month}")
+    
+    
+@router.get("/{year}/{month}", response_class=HTMLResponse)
 def get_scheduling_index_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -149,7 +173,7 @@ def get_scheduling_index_page(
 
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse(
-            name="scheduling/schedule.html",
+            name="scheduling/fragments/schedule-list-oob.html",
             context=context
         )
 
