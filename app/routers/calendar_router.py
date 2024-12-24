@@ -196,6 +196,7 @@ def get_simple_calendar_day_card(
             "day_number": day_number,
             "bae_shifts": bae_shifts,
         },
+        "selected_month": month_number,
         "current_user": current_user,
         "birthdays": birthdays
     }
@@ -287,6 +288,7 @@ def get_calendar_card_detailed(
                 "day_number": day_number,
                 "bae_shifts": [],
             },
+            "selected_month": month_number,
             "birthdays": birthdays
         }
 
@@ -324,6 +326,7 @@ def get_calendar_card_detailed(
             "day_number": day_number,
             "bae_shifts": shifts_result,
         },
+        "selected_month": month_number,
         "birthdays": birthdays
     }
 

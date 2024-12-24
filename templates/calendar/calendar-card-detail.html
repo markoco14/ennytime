@@ -21,6 +21,14 @@
 		</div>
 		{% endif %}
 		{% endfor %}
+		{% if selected_month == 12 and date.day_number == 25 %}
+		<div class="rounded-full bg-pink-300 h-8 w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/christmas-tree-1.png"
+				 alt="HBD"
+				 class="h-5 w-5">
+		</div>
+		{% endif %}
 	</div>
 	{# loading spinner #}
 	<div class="htmx-indicator h-full w-full grid">
