@@ -4,13 +4,18 @@ const MAX_SNOWFLAKE_SPEED = 2;
 const SNOWFLAKE_COLOUR = '#ddd';
 const snowflakes = [];
 
+let overlay = document.querySelector('.js-christmas-overlay');
+
 const canvas = document.createElement('canvas');
 canvas.style.position = 'absolute';
 canvas.style.pointerEvents = 'none';
 canvas.style.top = '0px';
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-document.querySelector('.js-christmas-overlay').appendChild(canvas);
+
+if (overlay) {
+    overlay.appendChild(canvas);
+}
 
 const ctx = canvas.getContext('2d');
 

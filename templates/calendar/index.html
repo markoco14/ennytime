@@ -15,6 +15,7 @@ Ennytime Couple's Calendar
 	<div id="modal"
 		 class="w-full max-w-[500px] aspect-square"></div>
 </div>
+{% if selected_month == 12 and current_day == 25 %}
 <div class="js-christmas-overlay fixed top-0 left-0 w-full h-full bg-red-700/70 flex justify-center items-center px-2 sm:px-0 duration-500 ease-in-out opacity-0">
     <div class="js-christmas-modal relative w-full sm:w-[500px] bg-white rounded-xl py-16 duration-300 ease-in-out opacity-0 translate-y-16">
         <button class="js-christmas-modal-button absolute top-2 right-2">
@@ -35,4 +36,5 @@ Ennytime Couple's Calendar
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock content %}

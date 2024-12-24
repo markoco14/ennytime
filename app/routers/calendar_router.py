@@ -39,6 +39,7 @@ def get_calendar_page(
         return response
     
     current_time = datetime.datetime.now()
+    current_day = current_time.day
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
@@ -100,6 +101,7 @@ def get_calendar_page(
         "request": request,
         "current_user": current_user,
         "birthdays": birthdays,
+        "current_day": current_day,
         "selected_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
