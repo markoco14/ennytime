@@ -39,6 +39,7 @@ def get_calendar_page(
         return response
     
     current_time = datetime.datetime.now()
+    current_day = current_time.day
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
@@ -100,6 +101,7 @@ def get_calendar_page(
         "request": request,
         "current_user": current_user,
         "birthdays": birthdays,
+        "current_day": current_day,
         "selected_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
@@ -196,6 +198,7 @@ def get_simple_calendar_day_card(
             "day_number": day_number,
             "bae_shifts": bae_shifts,
         },
+        "selected_month": month_number,
         "current_user": current_user,
         "birthdays": birthdays
     }
@@ -287,6 +290,7 @@ def get_calendar_card_detailed(
                 "day_number": day_number,
                 "bae_shifts": [],
             },
+            "selected_month": month_number,
             "birthdays": birthdays
         }
 
@@ -324,6 +328,7 @@ def get_calendar_card_detailed(
             "day_number": day_number,
             "bae_shifts": shifts_result,
         },
+        "selected_month": month_number,
         "birthdays": birthdays
     }
 
