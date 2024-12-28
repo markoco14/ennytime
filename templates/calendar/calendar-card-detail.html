@@ -29,6 +29,14 @@
 				 class="h-5 w-5">
 		</div>
 		{% endif %}
+		{% if selected_month == 12 and date.day_number == 31 %}
+		<div class="rounded-full bg-sky-900 h-8 w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/new-years-eve.png"
+				 alt="HBD"
+				 class="h-8 w-8">
+		</div>
+		{% endif %}
 	</div>
 	{# loading spinner #}
 	<div class="htmx-indicator h-full w-full grid">
