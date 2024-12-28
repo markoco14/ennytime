@@ -10,7 +10,7 @@ gsap.registerPlugin(Flip);
 				const overlay = document.getElementById("overlay");
 				modal.append(calendarCard);
 				styleCalendarCard(day_number);
-				toggleModal();
+				showModal();
 				Flip.from(state, {
 					duration: 0.4,
 					ease: "power1.inOut",
@@ -35,7 +35,7 @@ gsap.registerPlugin(Flip);
 
 				calendarContainer.append(calendarCard);
 				styleCalendarCard(day_number);
-
+				hideModal();
 				Flip.from(state, {
 					duration: 0.4,
 					ease: "power1.inOut",
@@ -45,26 +45,27 @@ gsap.registerPlugin(Flip);
 						calendarCard.style.height = '';
 					}
 				})
-				toggleModal();
 			}
 
-			function toggleModal() {
+
+			function showModal() {
 				const overlay = htmx.find("#overlay");
-				if (overlay.classList.contains("hidden")) {
-					htmx.removeClass(overlay, "hidden");
-					requestAnimationFrame(() => {
-						htmx.removeClass(overlay, "opacity-0");
-						htmx.addClass(overlay, "opacity-100");
-					})
-				} else {
-					htmx.removeClass(overlay, "opacity-100");
-					htmx.addClass(overlay, "opacity-0");
-					overlay.addEventListener('transitionend', () => {
-						if (overlay.classList.contains("opacity-0")) {
-							htmx.toggleClass(overlay, "hidden");
-						}
-					}, {once: true})
-				}
+				htmx.removeClass(overlay, "hidden");
+				requestAnimationFrame(() => {
+					htmx.removeClass(overlay, "opacity-0");
+					htmx.addClass(overlay, "opacity-100");
+				})
+			}
+
+			function hideModal() {
+				const overlay = htmx.find("#overlay");
+				htmx.removeClass(overlay, "opacity-100");
+				htmx.addClass(overlay, "opacity-0");
+				overlay.addEventListener('transitionend', () => {
+					if (overlay.classList.contains("opacity-0")) {
+						htmx.addClass(overlay, "hidden");
+					}
+				}, {once: true})
 			}
 
 			function styleCalendarCard(day_number) {
