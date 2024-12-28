@@ -29,8 +29,16 @@
 		<div class="rounded-full bg-red-400 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
 			<img 
 				 src="../../../static/christmas-tree-1.png"
-				 alt="HBD"
+				 alt="MC"
 				 class="h-3 w-3 sm:h-5 sm:w-5">
+		</div>
+		{% endif %}
+		{% if selected_month == 12 and date.day_number == 31 %}
+		<div class="rounded-full bg-sky-900 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/new-years-eve.png"
+				 alt="HNY"
+				 class="h-4 w-4 sm:h-8 sm:w-8">
 		</div>
 		{% endif %}
 	</div>
