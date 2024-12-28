@@ -21,7 +21,15 @@
 				[x-cloak] {
 					display: none;
 				}
+				.stacked {
+					display: grid;
+					place-items: center;
+				}
 
+				.stacked > * {
+					grid-row: 1 / -1;
+					grid-column: 1 / -1;
+				}
 				.no-scrollbar::-webkit-scrollbar {
 					display: none;
 				}
