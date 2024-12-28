@@ -21,7 +21,15 @@
 				[x-cloak] {
 					display: none;
 				}
+				.stacked {
+					display: grid;
+					place-items: center;
+				}
 
+				.stacked > * {
+					grid-row: 1 / -1;
+					grid-column: 1 / -1;
+				}
 				.no-scrollbar::-webkit-scrollbar {
 					display: none;
 				}
@@ -177,120 +185,11 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script src="/static/js/behaviours/close-christmas-modal.js"></script>
 		<script src="/static/js/behaviours/snow.js"></script>
+		<script src="/static/js/behaviours/swal.js"></script>
+		<script src="/static/js/behaviours/slide-left-right.js"></script>
+		<script src="/static/js/behaviours/calendar-popout.js"></script>
+		<script src="/static/js/behaviours/display-success.js"></script>
 		<script>
-			gsap.registerPlugin(Flip);
-
-			function moveToModal(day_number) {
-				const calendarCard = document.getElementById(
-					`day-${day_number}`
-				);
-				const state = Flip.getState(calendarCard);
-
-				const modal = document.getElementById("modal");
-				const overlay = document.getElementById("overlay");
-				modal.append(calendarCard);
-				styleCalendarCard(day_number);
-				toggleModal();
-				Flip.from(state, {
-					duration: 0.4,
-					ease: "power1.inOut",
-					absolute: true,
-				})
-			}
-
-			function moveToCalendar(day_number) {
-				const calendarCard = document.getElementById(
-					`day-${day_number}`
-				);
-				const calendarContainer = document.getElementById(
-					`container-${day_number}`
-				);
-
-				const state = Flip.getState(calendarCard);
-				// Grab the current height of the calendar container
-				const cardHeight = calendarCard.offsetHeight;
-				const containerHeight = calendarContainer.offsetHeight;
-
-				calendarCard.style.height = `${containerHeight}px`
-
-				calendarContainer.append(calendarCard);
-				styleCalendarCard(day_number);
-
-				Flip.from(state, {
-					duration: 0.4,
-					ease: "power1.inOut",
-					absolute: true,
-					onComplete: () => {
-						// Reset the card's height after the animation completes
-						calendarCard.style.height = '';
-					}
-				})
-				toggleModal();
-			}
-
-			function toggleModal() {
-				const overlay = htmx.find("#overlay");
-				if (overlay.classList.contains("hidden")) {
-					htmx.removeClass(overlay, "hidden");
-					requestAnimationFrame(() => {
-						htmx.removeClass(overlay, "opacity-0");
-						htmx.addClass(overlay, "opacity-100");
-					})
-				} else {
-					htmx.removeClass(overlay, "opacity-100");
-					htmx.addClass(overlay, "opacity-0");
-					overlay.addEventListener('transitionend', () => {
-						if (overlay.classList.contains("opacity-0")) {
-							htmx.toggleClass(overlay, "hidden");
-						}
-					}, {once: true})
-				}
-			}
-
-			function styleCalendarCard(day_number) {
-				let selectedCard = htmx.find(`#day-${day_number}`);
-				htmx.toggleClass(selectedCard, "rounded-md", 400);
-				htmx.toggleClass(selectedCard, "border", 400);
-
-			}
-
-			function toggleEnterFromRight(attribute) {
-				const calendar = document.querySelector(`[${attribute}]`);
-				if (!calendar) return;
-				if (calendar.classList.contains("enter-from-left")) {
-					calendar.classList.remove("enter-from-left");
-				}
-				if (!calendar.classList.contains("enter-from-right")) {
-					calendar.classList.add("enter-from-right");
-				}
-			}
-			
-			function toggleEnterFromLeft(attribute) {
-				const calendar = document.querySelector(`[${attribute}]`);
-				if (!calendar) return;
-				if (calendar.classList.contains("enter-from-right")) {
-					calendar.classList.remove("enter-from-right");
-				}
-				if (!calendar.classList.contains("enter-from-left")) {
-					calendar.classList.add("enter-from-left");
-				}
-			}
-
-			function cleanSlideInClasses(eventTarget) {
-				if (eventTarget.classList.contains('enter-from-right')) {
-					eventTarget.classList.remove('enter-from-right')
-				}
-				if (eventTarget.classList.contains('enter-from-left')) {
-					eventTarget.classList.remove('enter-from-left')
-				}
-			}
-			
-			htmx.on('htmx:afterSwap', function(evt) {
-				const eventTarget = evt.detail.target;
-				cleanSlideInClasses(eventTarget)
-			});
-
-
 			document.body.addEventListener('unauthorizedRedirect', function () {
 				window.location.href = '/signin';
 			});
@@ -299,77 +198,6 @@
 				message = JSON.parse(event.detail.xhr.response).message
 				alert(message);
 			});
-			
-			function displaySuccess(id) {
-				const success = document.getElementById(`${id}`)
-				success.classList.toggle('hidden')
-				
-				requestAnimationFrame(() => {
-					success.classList.toggle('-translate-y-2')
-					success.classList.toggle('opacity-0')
-					success.classList.toggle('opacity-100')
-				})
-				setTimeout(() => {
-					success.classList.toggle('opacity-100')
-					success.classList.toggle('opacity-0')
-
-					success.addEventListener('transitionend', () => {
-						success.classList.toggle('hidden')
-						success.classList.toggle('-translate-y-2')
-					}, {once: true})
-				}, 2000)
-			}
-
-			// sweet alert
-			document.addEventListener("htmx:confirm", function(evt) {
-				// The event is triggered on every trigger for a request, so we need to check if the element
-				// that triggered the request has a hx-confirm attribute, if not we can return early and let
-				// the default behavior happen
-				if (!evt.detail.target.hasAttribute('hx-confirm')) return
-
-				// This will prevent the request from being issued to later manually issue it
-				evt.preventDefault()
-
-				// Hide your existing modal content
-				const modal = document.getElementById('modal'); // Assuming your modal has this ID
-				if (modal) {
-					modal.classList.add('hidden'); // or any other way you want to hide the content
-				}
-
-				Swal.fire({
-					title: "Remove from schedule",
-					text: `${evt.detail.question}`,
-					showCancelButton: true,
-					customClass: {
-						popup: 'w-[500px] aspect-square',
-						confirmButton: 'flex justify-center items-center rounded bg-pink-500 text-white px-4 py-1',
-						cancelButton: 'flex justify-center items-center rounded bg-gray-300 text-black px-4 py-1'
-					},
-					reverseButtons: true
-				}).then(function(result) {
-				if (result.isConfirmed) {
-					if (modal) {
-						modal.classList.remove('hidden');
-					}
-
-					// If the user confirms, we manually issue the request
-					evt.detail.issueRequest(true); // true to skip the built-in window.confirm()
-
-					// Remove the closest <li> element manually
-					const liElement = evt.detail.target.closest('li');
-					if (liElement.classList.contains('js-shift-li')) {
-						liElement.classList.add('htmx-swapping')
-						setTimeout(() => {
-							liElement.remove();
-						}, 700)
-					}
-				} else {
-					if (modal) {
-						modal.classList.remove('hidden');
-					}
-				}
-				})
-			})
 		</script>
 	</body>
 </html>
