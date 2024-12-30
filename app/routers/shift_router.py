@@ -1,4 +1,6 @@
 from typing import Annotated
+import re
+
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import Response, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -156,7 +158,13 @@ def store_shift_type(
 
         return response
     
-    long_name_split = shift_name.split(" ")
+    # clean up shift name
+    cleaned_shift_name = shift_name.strip()
+    space_finder_regex = re.compile(r"\s+")
+    cleaned_shift_name = re.sub(space_finder_regex, ' ', cleaned_shift_name)
+   
+    # create short name
+    long_name_split = cleaned_shift_name.split(" ")
     short_name = ""
     for part in long_name_split:
         short_name += part[0].upper()
