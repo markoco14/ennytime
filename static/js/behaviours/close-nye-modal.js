@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         NYEModal.classList.add('opacity-0');
         setTimeout(() => {
             NYEModalOverlay.classList.add('hidden');
+            NYEModalOverlay.classList.remove('stacked');
         }, 500);
     });
 });
