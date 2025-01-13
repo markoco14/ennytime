@@ -16,9 +16,11 @@
 		<span class="text-3xl">Ennytime</span>
 
         {# mobile nav toggle button #}
-		<button x-bind:class="mobileNavOpen ? 'z-20' : ''"
-				class="md:hidden"
-				@click="mobileNavOpen = !mobileNavOpen; document.body.classList.toggle('overflow-hidden')">
+		<button 
+            x-bind:class="mobileNavOpen ? 'z-20' : ''"
+			class="md:hidden"
+			@click="mobileNavOpen = !mobileNavOpen; document.body.classList.toggle('overflow-hidden')"
+            >
 			<svg x-show="!mobileNavOpen"
 				 class="h-6 w-6 select-none cursor-pointer"
 				 xmlns="http://www.w3.org/2000/svg"
@@ -58,11 +60,11 @@
 		</button>
 
         {# navigation container #}
-		<nav x-show="mobileNavOpen"
-			 x-cloak
-			 class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative z-10 text-white md:text-black">
-
-            {#  #}
+		<nav 
+            x-show="mobileNavOpen"
+            x-cloak
+			class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative z-10 text-white md:text-black"
+            >
 			<ul
 				class="flex flex-col items-center justify-center h-full w-full bg-pink-700/90 md:bg-transparent md:flex-row gap-2 text-5xl md:text-base">
                 {% if not current_user %}
@@ -130,7 +132,6 @@
                                 x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
                                 src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
                         </button>
-                        {# <a href="/profile">Profile</a> #}
                         <div x-show="dropdownOpen"
                             x-cloak
                             class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
@@ -148,8 +149,13 @@
                                 </li>
                                 {% endif%}
                                 <li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-                                    <button hx-get="/signout"
-                                            class="w-full text-end">Sign out</button>
+                                    <a
+                                        hx-get="/signout"        
+                                        href="/signout"
+                                        class="w-full text-end"
+                                        >
+                                        Sign out
+                                    </a>
                                 </li>
                             </ul>
                         </div>
