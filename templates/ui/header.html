@@ -4,7 +4,6 @@
 		class="relative fixed top-0 left-0 w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white"
         x-bind:class="mobileNavOpen ? 'overflow-none' : ''"
 		>
-
 {% else %}
 <header hx-indicator="this"
 		x-data="{mobileNavOpen: false}"
@@ -90,7 +89,7 @@
                         {% endif %}
                     </li>
                     <li class="block md:hidden">
-                        <a 	href="/chat"
+                        <a 	href="/chat/{{chat_data['chatroom_id']}}"
                             class="text-right flex gap-2">
                             Chat
                         </a>
