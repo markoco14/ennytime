@@ -5,7 +5,7 @@
         href="/calendar/{{selected_year-1}}/12"
         hx-target=".js-calendar"
         hx-swap="outerHTML transition:true"
-        hx-indicator="this"
+        hx-indicator=".page-indicator"
         hx-push-url="true"
         hx-on::before-request="toggleEnterFromLeft('data-js-calendar');"
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
@@ -14,7 +14,7 @@
         href="/calendar/{{selected_year}}/{{selected_month-1}}"
         hx-target=".js-calendar"
         hx-swap="outerHTML transition:true"
-        hx-indicator="this"
+        hx-indicator=".page-indicator"
         hx-push-url="true"
         hx-on::before-request="toggleEnterFromLeft('data-js-calendar');"
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
@@ -32,7 +32,7 @@
         href="/calendar/{{selected_year+1}}/1"
         hx-target=".js-calendar"
         hx-swap="outerHTML transition:true"
-        hx-indicator="this"
+        hx-indicator=".page-indicator"
         hx-push-url="true"
         hx-on::before-request="toggleEnterFromRight('data-js-calendar');"
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
@@ -41,7 +41,7 @@
         href="/calendar/{{selected_year}}/{{selected_month+1}}"
         hx-target=".js-calendar"
         hx-swap="outerHTML transition:true"
-        hx-indicator="this"
+        hx-indicator=".page-indicator"
         hx-push-url="true"
         hx-on::before-request="toggleEnterFromRight('data-js-calendar');"
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">

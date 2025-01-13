@@ -48,14 +48,19 @@
 					transition: opacity 0.5s ease-out;
 					transition-delay: 0.4s;
 				}
-				.htmx-request .htmx-indicator-content {
+
+				.page-indicator {
 					display: none;
 				}
 
-				.htmx-request.htmx-indicator-content {
-					display: none;
+				.htmx-request .page-indicator{
+					display:inline;
 				}
 
+				.htmx-request.page-indicator{
+					display:inline;
+				}
+				
 				.htmx-indicator {
 					display: none;
 				}
@@ -71,6 +76,14 @@
 				tr.htmx-swapping {
 					opacity: 0;
 					transition: opacity 0.5s ease-out;
+				}
+
+				.htmx-request .htmx-indicator-content {
+					display: none;
+				}
+
+				.htmx-request.htmx-indicator-content {
+					display: none;
 				}
 
 				li.htmx-swapping {
@@ -168,6 +181,19 @@
 				.animate-spin-slow{
 					animation: spin-slow 2s linear infinite;
 				} 
+
+				.animate-move {
+					animation: move 1.5s linear infinite;
+				}
+
+				@keyframes move {
+					0% {
+						transform: translateX(-100%);
+					}
+					100% {
+						transform: translateX(500%);
+					}
+				}
 			}
 		</style>
 		<title>
@@ -183,6 +209,7 @@
 		<main>
 			{% block content %}{% endblock content %}
 		</main>
+		{% include 'ui/page-load-indicator.html' %}
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		{# <script src="/static/js/behaviours/close-christmas-modal.js"></script> #}
 		{# <script src="/static/js/behaviours/snow.js"></script> #}
