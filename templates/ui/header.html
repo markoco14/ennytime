@@ -1,193 +1,162 @@
 {% if not current_user %}
-<header class="bg-gradient-to-r from-pink-500 to-pink-600 text-white">
-	<div class="max-w-[1000px] py-4 px-2 md:px-4 container mx-auto flex justify-between items-baseline">
+<header hx-indicator="this"
+		x-data="{mobileNavOpen: false}"
+		class="relative fixed top-0 left-0 w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white"
+        x-bind:class="mobileNavOpen ? 'overflow-none' : ''"
+		>
+
+{% else %}
+<header hx-indicator="this"
+		x-data="{mobileNavOpen: false}"
+		class="relative fixed top-0 left-0 w-full"
+        x-bind:class="mobileNavOpen ? 'overflow-none' : ''"
+		>
+{% endif %}
+	<div class="h-[48px] flex justify-between items-center max-w-[1000px] mx-auto px-2 lg:px-0">
+        {# logo #}
 		<span class="text-3xl">Ennytime</span>
-		<nav class="flex gap-2 items-center">
-			<a href="/">Home</a>
-			<a href="/signup">Sign up</a>
-			<a href="/signin">Sign in</a>
+
+        {# mobile nav toggle button #}
+		<button x-bind:class="mobileNavOpen ? 'z-20' : ''"
+				class="md:hidden"
+				@click="mobileNavOpen = !mobileNavOpen; document.body.classList.toggle('overflow-hidden')">
+			<svg x-show="!mobileNavOpen"
+				 class="h-6 w-6 select-none cursor-pointer"
+				 xmlns="http://www.w3.org/2000/svg"
+				 width="24"
+				 height="24"
+				 viewBox="0 0 24 24"
+				 fill="none"
+				 stroke="currentColor"
+				 stroke-width="2"
+				 stroke-linecap="round"
+				 stroke-linejoin="round">
+				<line x1="4"
+					  x2="20"
+					  y1="12"
+					  y2="12"></line>
+				<line x1="4"
+					  x2="20"
+					  y1="6"
+					  y2="6"></line>
+				<line x1="4"
+					  x2="20"
+					  y1="18"
+					  y2="18"></line>
+			</svg>
+
+			<svg x-show="mobileNavOpen"
+				 x-cloak
+				 class="stroke-white fill-white w-6 h-6 select-none cursor-pointer z-20"
+				 xmlns="http://www.w3.org/2000/svg"
+				 x="0px"
+				 y="0px"
+				 viewBox="0 0 50 50">
+				<path
+					  d="M 9.15625 6.3125 L 6.3125 9.15625 L 22.15625 25 L 6.21875 40.96875 L 9.03125 43.78125 L 25 27.84375 L 40.9375 43.78125 L 43.78125 40.9375 L 27.84375 25 L 43.6875 9.15625 L 40.84375 6.3125 L 25 22.15625 Z">
+				</path>
+			</svg>
+		</button>
+
+        {# navigation container #}
+		<nav x-show="mobileNavOpen"
+			 x-cloak
+			 class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative z-10 text-white md:text-black">
+
+            {#  #}
+			<ul
+				class="flex flex-col items-center justify-center h-full w-full bg-pink-700/90 md:bg-transparent md:flex-row gap-2 text-5xl md:text-base">
+                {% if not current_user %}
+                    <li><a href="/">Home</a></li>                
+                    <li><a href="/signup">Sign up</a></li>                
+                    <li><a href="/signin">Sign in</a></li>                
+                {% else %}
+                    <li><a href="/">Calendar</a></li>
+                    <li><a href="/scheduling">Scheduling</a></li>
+                    <li><a href="/shifts">Shifts</a></li>
+
+                    {# chat and unread messages #}
+                    <li hx-get="/unread"
+                        hx-target="find div"
+                        hx-swap="outerHTML"
+                        hx-trigger="every 8s"
+                        class="hidden md:block relative p-1"
+                        >
+                        <a href="/chat/{{chat_data['chatroom_id']}}">
+                        {% include "ui/chat-icon.html" %}
+                        </a>
+                        {% if chat_data %}
+                        {% include "/chat/unread-counter.html" %}
+                        {% endif %}
+                    </li>
+                    <li class="block md:hidden">
+                        <a 	href="/chat"
+                            class="text-right flex gap-2">
+                            Chat
+                        </a>
+                    </li>
+                    <li class="block md:hidden">
+                        <a 	href="/profile"
+                            class="text-right">
+                            Profile
+                        </a>
+                    </li>
+                    <li class="block md:hidden">
+                        <a  href="/admin"
+                            class="text-right">
+                            Admin
+                        </a>
+                    </li>
+                    <li class="block md:hidden">
+                        <a 	hx-get="/signout"
+                            href="/signout"
+                            class="text-right">
+                            Sign Out
+                        </a>
+                    </li>
+
+                    {# large screen drop down menu #}
+                    <li x-data="{dropdownOpen: false}" 
+                        class="relative hidden md:block"
+                        >
+                        <button @click="dropdownOpen = !dropdownOpen" 
+                                @click.away="dropdownOpen = false"
+                                class="flex items-center gap-2 whitespace-nowrap cursor-pointer select-none">
+                            {% if not current_user.display_name %}
+                            New User
+                            {% else %}
+                            {{current_user.display_name}}
+                            {% endif %}
+                            <img class="w-4 h-4"
+                                x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
+                                src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
+                        </button>
+                        {# <a href="/profile">Profile</a> #}
+                        <div x-show="dropdownOpen"
+                            x-cloak
+                            class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
+                            x-transition:enter="duration-300 ease-out"
+                            x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
+                            <ul>
+                                <li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+                                    <a href="/profile"
+                                    class="w-full text-right">Profile</a>
+                                </li>
+                                {% if current_user.is_admin %}
+                                <li class="grid text-right rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+                                    <a href="/admin"
+                                    class="w-full">Admin</a>
+                                </li>
+                                {% endif%}
+                                <li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+                                    <button hx-get="/signout"
+                                            class="w-full text-end">Sign out</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                {% endif %}
+			</ul>
 		</nav>
 	</div>
-	<hr class="border-pink-700" />
 </header>
-{% else %}
-<header x-data="{ mobilenavOpen: false }"
-		class="max-w-[1000px] mx-auto md:flex items-center justify-between   px-2 bg-white">
-	<div class="flex items-center justify-between h-20">
-		<span class="text-3xl">Ennytime</span>
-		{# mobile icon #}
-		<div class="md:hidden flex z-50">
-			<li hx-get="/unread"
-				hx-target="find div"
-				hx-swap="outerHTML"
-				hx-trigger="every 8s"
-				class="flex flex-col justify-center block md:hidden relative p-1">
-				{% if chat_data %}
-					<a href="/chat/{{chat_data['chatroom_id']}}"><img width="26"
-							height="26"
-							src="https://img.icons8.com/metro/26/chat.png"
-							alt="chat" /></a>
-					{% include "/chat/unread-counter.html" %}
-					{% else %}
-				<a href="/chat"><img width="26"
-						 height="26"
-						 src="https://img.icons8.com/metro/26/chat.png"
-						 alt="chat" /></a>
-			{% endif %}
-			</li>
-			<a @click="mobilenavOpen = !mobilenavOpen"
-			   class="h-12 w-12 flex justify-center items-center">
-				<svg x-show="!mobilenavOpen"
-					 class="select-none cursor-pointer"
-					 xmlns="http://www.w3.org/2000/svg"
-					 width="24"
-					 height="24"
-					 viewBox="0 0 24 24"
-					 fill="none"
-					 stroke="currentColor"
-					 stroke-width="2"
-					 stroke-linecap="round"
-					 stroke-linejoin="round"
-					 class="h-6 w-6">
-					<line x1="4"
-						  x2="20"
-						  y1="12"
-						  y2="12"></line>
-					<line x1="4"
-						  x2="20"
-						  y1="6"
-						  y2="6"></line>
-					<line x1="4"
-						  x2="20"
-						  y1="18"
-						  y2="18"></line>
-				</svg>
-				<span x-show="mobilenavOpen"
-					  x-cloak
-					  class="select-none cursor-pointer z-20">
-					<svg xmlns="http://www.w3.org/2000/svg"
-						 x="0px"
-						 y="0px"
-						 class="w-6 h-6"
-						 viewBox="0 0 50 50">
-						<path
-							  d="M 9.15625 6.3125 L 6.3125 9.15625 L 22.15625 25 L 6.21875 40.96875 L 9.03125 43.78125 L 25 27.84375 L 40.9375 43.78125 L 43.78125 40.9375 L 27.84375 25 L 43.6875 9.15625 L 40.84375 6.3125 L 25 22.15625 Z">
-						</path>
-					</svg>
-				</span>
-			</a>
-		</div>
-	</div>
-	<nav x-show="mobilenavOpen"
-		 x-cloak
-		 x-transition:enter="duration-300 ease-out"
-		 x-transition:enter-start="opacity-0 -translate-y-12"
-		 x-transition:enter-end="opacity-100 translate-y-0"
-		 x-transition:leave="duration-200 ease-out"
-		 x-transition:leave-start="opacity-100"
-		 x-transition:leave-end="opacity-0"
-		 class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative bg-pink-600 md:bg-transparent text-white text-xl md:text-base md:text-black z-20">
-		<ul class="flex items-center flex-col md:flex-row justify-center h-full w-full gap-4">
-			<li>
-				<a href="/">Calendar</a>
-			</li>
-			<li class="block md:hidden">
-			{% if chat_data %}
-				<a href="/chat/{{chat_data['chatroom_id']}}">Chat</a>
-			{% else %}
-				<a href="/chat">Chat</a>
-			{% endif %}
-			</li>
-			<li class="block">
-				<a href="/scheduling">Scheduling</a>
-			</li>
-			<li class="block">
-				<a href="/shifts">Shifts</a>
-			</li>
-			<li class="block md:hidden">
-				<a href="/profile">Profile</a>
-			</li>
-			{% if current_user.is_admin %}
-			<li class="block md:hidden">
-				<a href="/admin">Admin</a>
-			</li>
-			{% endif %}
-			<li class="block md:hidden">
-				<button hx-get="/signout"
-						class="w-full text-end">Sign out</button>
-			</li>
-			<li hx-get="/unread"
-				hx-target="find div"
-				hx-swap="outerHTML"
-				hx-trigger="every 8s"
-				class="hidden md:block relative p-1">
-				{% if chat_data %}
-				<a href="/chat/{{chat_data['chatroom_id']}}"><img width="26"
-						 height="26"
-						 src="https://img.icons8.com/metro/26/chat.png"
-						 alt="chat" /></a>
-				{% include "/chat/unread-counter.html" %}
-				{% else %}
-				<a href="/chat"><img width="26"
-						 height="26"
-						 src="https://img.icons8.com/metro/26/chat.png"
-						 alt="chat" /></a>
-				{% endif %}
-			</li>
-			<li x-data="{dropdownOpen: false}"
-				class="relative hidden md:block">
-				<a @click="dropdownOpen = !dropdownOpen"
-				   @click.away="dropdownOpen = false"
-				   class="whitespace-nowrap cursor-pointer select-none flex items-center gap-2">
-
-					<p>{% if current_user.display_name %}
-						{{current_user.display_name}}
-					{% else %}
-						New User
-					{% endif %}
-					</p>
-
-					<img class="w-4"
-						 x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
-						 src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
-				</a>
-				<div x-show="dropdownOpen"
-					 x-cloak
-					 class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
-					 x-transition:enter="duration-300 ease-out"
-					 x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
-					{# Dropdown on large screens #}
-					<ul>
-						{# <li class="md:hidden grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-							<a href="/chat"
-							   class="w-full text-right">Chat</a>
-						</li> #}
-						{# <li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-							<a href="/scheduling"
-							   class="w-full text-right">Scheduling</a>
-						</li>
-						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-							<a href="/shifts"
-							   class="w-full text-right">Shifts</a>
-						</li> #}
-						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-							<a href="/profile"
-							   class="w-full text-right">Profile</a>
-						</li>
-						{% if current_user.is_admin %}
-						<li class="grid text-right rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-							<a href="/admin"
-							   class="w-full">Admin</a>
-						</li>
-						{% endif%}
-						<li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
-							<button hx-get="/signout"
-									class="w-full text-end">Sign out</button>
-						</li>
-					</ul>
-				</div>
-			</li>
-		</ul>
-	</nav>
-</header>
-{% endif %}
