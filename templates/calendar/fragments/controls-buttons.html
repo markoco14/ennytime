@@ -22,9 +22,6 @@
         <span class="htmx-indicator-content">
             {{prev_month_name}}
         </span>
-        <span class="htmx-indicator">
-            {{spinner('spinner', 'h-5', 'w-5', 'text-black')}}
-        </span>
     </a>
     <!-- if end of year -->
     {% if selected_month == 12 %}
@@ -48,9 +45,6 @@
     {% endif %}
         <span class="htmx-indicator-content">
             {{next_month_name}}
-        </span>
-        <span class="htmx-indicator">
-            {{spinner('spinner', 'h-5', 'w-5', 'text-black')}}
         </span>
     </a>
 </div>
