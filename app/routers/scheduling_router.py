@@ -17,7 +17,7 @@ from app.services import calendar_service, chat_service
 
 router = APIRouter(prefix="/scheduling")
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("", response_class=HTMLResponse)
 def get_scheduling_index_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
