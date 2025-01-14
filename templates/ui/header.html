@@ -119,12 +119,14 @@
                             Profile
                         </a>
                     </li>
+                    {% if current_user.is_admin %}
                     <li class="block md:hidden">
                         <a  href="/admin"
                             class="text-right">
                             Admin
                         </a>
                     </li>
+                    {% endif %}
                     <li class="block md:hidden">
                         <a 	hx-get="/signout"
                             href="/signout"
