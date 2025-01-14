@@ -83,7 +83,7 @@
 			class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative z-10 text-white md:text-black"
             >
 			<ul
-				class="flex flex-col items-center justify-center h-full w-full bg-pink-700/90 md:bg-transparent md:flex-row gap-2 text-5xl md:text-base">
+				class="flex flex-col items-center justify-center h-full w-full bg-pink-700/90 md:bg-transparent md:flex-row gap-2 text-2xl md:text-base">
                 {% if not current_user %}
                     <li><a href="/" class="text-white">Home</a></li>                
                     <li><a href="/signup" class="text-white">Sign up</a></li>                
@@ -119,12 +119,14 @@
                             Profile
                         </a>
                     </li>
+                    {% if current_user.is_admin %}
                     <li class="block md:hidden">
                         <a  href="/admin"
                             class="text-right">
                             Admin
                         </a>
                     </li>
+                    {% endif %}
                     <li class="block md:hidden">
                         <a 	hx-get="/signout"
                             href="/signout"
