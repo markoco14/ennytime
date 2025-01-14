@@ -22,7 +22,7 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/", response_class=HTMLResponse | RedirectResponse)
+@router.get("", response_class=HTMLResponse | RedirectResponse)
 def read_admin_home_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
