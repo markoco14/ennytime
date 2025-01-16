@@ -87,8 +87,8 @@ def get_shifts_page(
         response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
         return response
-    
-    message_count = chat_service.get_user_unread_message_count(
+
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
@@ -96,7 +96,7 @@ def get_shifts_page(
     context = {
         "request": request,
         "current_user": current_user,
-        "message_count": message_count,
+        "chat_data": user_chat_data,
     }
 
     response = templates.TemplateResponse(
@@ -117,7 +117,7 @@ def get_shift_manager_page(
         response.delete_cookie("session-id")
         return response
     
-    message_count = chat_service.get_user_unread_message_count(
+    user_chat_data = chat_service.get_user_chat_data(
         db=db,
         current_user_id=current_user.id
     )
@@ -125,7 +125,7 @@ def get_shift_manager_page(
     context = {
         "request": request,
         "current_user": current_user,
-        "message_count": message_count
+        "chat_data": user_chat_data
     }
 
     if request.headers.get("HX-Request"):
