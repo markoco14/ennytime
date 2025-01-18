@@ -254,11 +254,11 @@ def signin(
 
     # return response with session cookie and redirect to index
     session_cookie = auth_service.generate_session_token()
-
+    session_expiry = auth_service.generate_session_expiry()
     new_session = schemas.CreateUserSession(
         session_id=session_cookie,
         user_id=db_user.id,
-        expires_at=auth_service.generate_session_expiry()
+        expires_at=session_expiry
     )
     # store user session
     session_repository.create_session(db=db, session=new_session)
