@@ -1,11 +1,12 @@
 """Main file to hold app and api routes"""
 import datetime
+import logging
 from typing import Annotated, Optional
 import time
+
 from fastapi import Depends, FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-
 from mangum import Mangum
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -33,6 +34,10 @@ SETTINGS = get_settings()
 
 app = FastAPI()
 
+logging.basicConfig(
+    level=logging.INFO,  # Ensure INFO level messages are captured
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 class ClosingDownMiddleware(BaseHTTPMiddleware):
     async def dispatch(
@@ -84,6 +89,7 @@ app.include_router(onboard_router.router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 handler = Mangum(app)
+
 
 
 @app.exception_handler(404)
