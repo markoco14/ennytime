@@ -99,13 +99,13 @@ def user_dependency(request: Request, db: Session = Depends(get_db)):
         logging.info("User dependency no session id found")
         return None
     
-    query_start_time = time.time()
+    query_start_time = time.perf_counter()
     db_user = db.query(DBUser
                         ).join(DBUserSession, DBUser.id == DBUserSession.user_id
                         ).filter(DBUserSession.session_id == session_id
                         ).filter(DBUserSession.expires_at > datetime.now(tz=timezone.utc)
                         ).first()
-    logging.info(f"User dependency query time: {time.time() - query_start_time}")
+    logging.info(f"User dependency query time: {time.perf_counter() - query_start_time:.6f} seconds")
 
     if not db_user:
         logging.info("User dependency no user found")
