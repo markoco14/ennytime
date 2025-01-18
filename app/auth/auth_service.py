@@ -1,7 +1,8 @@
 """ Auth service functions """
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import secrets
+import time
 from typing import Dict
 import logging
 
@@ -11,6 +12,7 @@ from fastapi import Depends, Request
 from passlib.context import CryptContext
 from app.core.database import get_db
 from app.models.user_model import DBUser
+from app.models.user_session_model import DBUserSession
 from app.repositories import session_repository
 
 from app.repositories import user_repository
@@ -40,8 +42,14 @@ def generate_session_token():
 
 
 def generate_session_expiry():
-    return datetime.now() + timedelta(days=3)
+    return datetime.now(tz=timezone.utc) + timedelta(days=3)
 
+
+# currently unused function due to change to db user join db session query
+def is_session_expired(expires_at: datetime):
+    if expires_at < datetime.now(tz=timezone.utc):
+        return True
+    return False
 
 def get_session_cookie(cookies: Dict[str, str]):
     if not cookies.get("session-id"):
@@ -54,10 +62,6 @@ def destroy_db_session(db: Session, session_token: str):
     session_repository.destroy_session(db=db, session_id=session_token)
 
 
-def is_session_expired(expires_at: datetime):
-    if expires_at < datetime.now():
-        return True
-    return False
 
 
 def get_session_data(db: Session, session_token: str):
@@ -90,37 +94,22 @@ def get_current_session_user(db: Session, cookies: Dict[str, str]):
 
 def user_dependency(request: Request, db: Session = Depends(get_db)):
     session_id = request.cookies.get("session-id")
+
     if not session_id:
+        logging.info("User dependency no session id found")
         return None
+    
+    query_start_time = time.perf_counter()
+    db_user = db.query(DBUser
+                        ).join(DBUserSession, DBUser.id == DBUserSession.user_id
+                        ).filter(DBUserSession.session_id == session_id
+                        ).filter(DBUserSession.expires_at > datetime.now(tz=timezone.utc)
+                        ).first()
+    logging.info(f"User dependency query time: {time.perf_counter() - query_start_time:.6f} seconds")
 
-    session_data = session_repository.get_session_by_session_id(
-        db=db, session_id=session_id)
-    if not session_data:
-        return None
-
-    if is_session_expired(session_data.expires_at):
-        try:
-            db.delete(session_data)
-            db.commit()
-            logging.info("Expired session deleted: %s", session_id)
-        except Exception as error:
-            db.rollback()
-            logging.error(
-                "Failed to delete expired session: %s, error: %s", session_id, error)
-        return None
-
-    db_user = user_repository.get_user_by_id(
-        db=db, user_id=session_data.user_id)
     if not db_user:
-        try:
-            db.delete(session_data)
-            db.commit()
-            logging.info("Orphaned session deleted: %s", session_id)
-        except Exception as error:
-            db.rollback()
-            logging.error(
-                "Failed to delete orphaned session: %s, error: %s", session_id, error)
-        return None
+        logging.info("User dependency no user found")
+        return None    
 
     return db_user
 
