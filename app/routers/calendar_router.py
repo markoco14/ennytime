@@ -8,6 +8,7 @@ from pprint import pprint
 import datetime
 
 
+from pydantic import BaseModel
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request, Response
@@ -17,6 +18,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
+from app.models.db_shift import DbShift
+from app.models.db_shift_type import DbShiftType
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
 from app.schemas import schemas
@@ -211,6 +214,14 @@ def get_simple_calendar_day_card(
         context=context,
     )
 
+class ShiftWithType(BaseModel):
+    id: int
+    type_id: int
+    user_id: int
+    date: datetime.datetime
+    long_name: str
+    short_name: str
+
 
 @router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
 def get_calendar_card_detailed(
@@ -240,12 +251,11 @@ def get_calendar_card_detailed(
      # directly get the bae user now.
     direct_bae_user_start = time.perf_counter()
     direct_bae_user = db.query(DBUser
-                               ).join(DbShare, DBUser.id == DbShare.sender_id
-                               ).filter(DbShare.receiver_id == current_user.id
+                                ).join(DbShare, DBUser.id == DbShare.sender_id
+                                ).filter(DbShare.receiver_id == current_user.id
                                 ).first()
     direct_bae_user_time = time.perf_counter() - direct_bae_user_start
     db_trips += 1
-    logging.info(f"User {current_user.display_name[0]}: Total time for get bae user directly is {direct_bae_user_time} seconds.")
 
     # organize birthdays
     birthdays = []
@@ -262,7 +272,7 @@ def get_calendar_card_detailed(
         })
 
     if not direct_bae_user:
-        # just need to get current user shifts
+        # Just query the current user's shifts
         user_shifts_query = text("""
             SELECT etime_shifts.*,
                 etime_shift_types.long_name as long_name,
@@ -275,10 +285,10 @@ def get_calendar_card_detailed(
             """)
 
         # query 1 - get the current user's shifts
-        get_user_start = time.perf_counter()
+        get_current_user_shifts_start = time.perf_counter()
         user_shifts_result = db.execute(
             user_shifts_query, {"user_id": current_user.id, "date_string": date_string}).fetchall()
-        get_user_time = time.perf_counter() - get_user_start
+        get_current_user_shifts_time = time.perf_counter() - get_current_user_shifts_start
         db_trips += 1
 
         context = {
@@ -299,7 +309,7 @@ def get_calendar_card_detailed(
 
         logging.info(f"User {current_user.display_name[0]}: No bae user found.")
         logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
-        logging.info(f"User {current_user.display_name[0]}: Total time for get user shifts is {get_user_time} seconds.")
+        logging.info(f"User {current_user.display_name[0]}: Total time for get user shifts is {get_current_user_shifts_time} seconds.")
 
         return templates.TemplateResponse(
             request=request,
@@ -307,43 +317,36 @@ def get_calendar_card_detailed(
             context=context,
         )
     
-    # get the user's shifts
-    user_shifts_query = text("""
-        SELECT etime_shifts.*,
-            etime_shift_types.long_name as long_name,
-            etime_shift_types.short_name as short_name
-        FROM etime_shifts
-        LEFT JOIN etime_shift_types
-        ON etime_shifts.type_id = etime_shift_types.id
-        WHERE etime_shifts.user_id = :user_id
-        AND DATE(etime_shifts.date) = :date_string
-        """)
-
-    # query 1 - get the current user's shifts
-    get_user_start = time.perf_counter()
-    user_shifts_result = db.execute(
-        user_shifts_query, {"user_id": current_user.id, "date_string": date_string}).fetchall()
-    get_user_time = time.perf_counter() - get_user_start
+    get_both_user_shifts_start = time.perf_counter()
+    direct_get_both_user_shifts = db.query(DbShift, DbShiftType
+                                        ).join(DbShiftType, DbShift.type_id == DbShiftType.id
+                                        ).filter(DbShift.user_id.in_([current_user.id, direct_bae_user.id])
+                                        ).filter(DbShift.date == date_string
+                                        ).order_by(DbShift.user_id).all()
+    get_both_user_shifts_time = time.perf_counter() - get_both_user_shifts_start
     db_trips += 1
 
-    # if there is a share, get the sharing user's (bae's) shifts
-    shifts_query = text("""
-        SELECT etime_shifts.*,
-            etime_shift_types.long_name as long_name,
-            etime_shift_types.short_name as short_name
-        FROM etime_shifts
-        LEFT JOIN etime_shift_types
-        ON etime_shifts.type_id = etime_shift_types.id
-        WHERE etime_shifts.user_id = :user_id
-        AND DATE(etime_shifts.date) = :date_string
-        """)
-
-    # query 4 - get the bae user's shifts
-    get_bae_shifts_start = time.perf_counter()
-    bae_shifts_result = db.execute(
-        shifts_query, {"user_id": direct_bae_user.id, "date_string": date_string}).fetchall()
-    get_bae_shifts_total = time.perf_counter() - get_bae_shifts_start
-    db_trips += 1
+    prepared_current_user_shifts = []
+    prepared_bae_user_shifts = []
+    for shift, shift_tpye in direct_get_both_user_shifts:
+        if shift.user_id == current_user.id:
+            prepared_current_user_shifts.append(ShiftWithType(
+                id=shift.id,
+                type_id=shift.type_id,
+                user_id=shift.user_id,
+                date=shift.date,
+                long_name=shift_tpye.long_name,
+                short_name=shift_tpye.short_name
+            ))
+        if shift.user_id == direct_bae_user.id:
+            prepared_bae_user_shifts.append(ShiftWithType(
+                id=shift.id,
+                type_id=shift.type_id,
+                user_id=shift.user_id,
+                date=shift.date,
+                long_name=shift_tpye.long_name,
+                short_name=shift_tpye.short_name
+            ))
 
     context = {
         "request": request,
@@ -354,18 +357,18 @@ def get_calendar_card_detailed(
         "written_day": written_day,
         "date": {
             "date": date_string,
-            "shifts": user_shifts_result,
+            "shifts": prepared_current_user_shifts,
             "day_number": day_number,
-            "bae_shifts": bae_shifts_result,
+            "bae_shifts": prepared_bae_user_shifts,
         },
         "selected_month": month_number,
         "birthdays": birthdays
     }
 
     logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
-    logging.info(f"Total time for db trips is {get_user_time  + get_bae_shifts_total} seconds.")
-    logging.info(f"User {current_user.display_name[0]}: Total time for get user shifts is {get_user_time} seconds.")
-    logging.info(f"User {current_user.display_name[0]}: Total time for get bae shifts is {get_bae_shifts_total} seconds.")
+    logging.info(f"Total time for db trips is {direct_bae_user_time + get_both_user_shifts_time} seconds.")
+    logging.info(f"User {current_user.display_name[0]}: Total time for get bae user is {direct_bae_user_time} seconds.")
+    logging.info(f"User {current_user.display_name[0]}: Total time for get both user shifts is {get_both_user_shifts_time} seconds.")
 
     return templates.TemplateResponse(
         request=request,
