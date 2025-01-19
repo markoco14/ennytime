@@ -1,6 +1,8 @@
 """
 Calendar related routes
 """
+import logging
+import time
 from typing import Annotated, Optional
 from pprint import pprint
 import datetime
@@ -226,6 +228,8 @@ def get_calendar_card_detailed(
         response.delete_cookie("session-id")
 
         return response
+    
+    db_trips = 0
 
     # get the user's shifts
     user_shifts_query = text("""
@@ -239,8 +243,12 @@ def get_calendar_card_detailed(
         AND DATE(etime_shifts.date) = :date_string
         """)
 
+    # query 1 - get the current user's shifts
+    get_user_start = time.perf_counter()
     user_shifts_result = db.execute(
         user_shifts_query, {"sender_id": current_user.id, "date_string": date_string}).fetchall()
+    get_user_time = time.perf_counter() - get_user_start
+    db_trips += 1
 
     year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
         date_string)
@@ -257,8 +265,12 @@ def get_calendar_card_detailed(
         WHERE etime_shares.receiver_id = :receiver_id
     """)
 
+    # query 2 - get the share request from bae user if exists
+    get_share_request_start = time.perf_counter()
     share_result = db.execute(
         share_query, {"receiver_id": current_user.id}).fetchone()
+    get_share_request_time = time.perf_counter() - get_share_request_start
+    db_trips += 1
 
     # organize birthdays
     birthdays = []
@@ -267,10 +279,15 @@ def get_calendar_card_detailed(
             "name": current_user.display_name,
             "day": current_user.birthday.day
         })
+
     if share_result:
+        # query 3 - get the bae user 
+        get_bae_user_start = time.perf_counter()
         bae_user = share_repository.get_share_user_with_shifts_by_receiver_id(
             db=db, share_user_id=share_result.sender_id)
-
+        get_bae_user_time = time.perf_counter() - get_bae_user_start
+        db_trips += 1
+        
         if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
             birthdays.append({
                 "name": bae_user.display_name,
@@ -312,8 +329,12 @@ def get_calendar_card_detailed(
         AND DATE(etime_shifts.date) = :date_string
         """)
 
+    # query 4 - get the bae user's shifts
+    get_bae_shifts_start = time.perf_counter()
     shifts_result = db.execute(
         shifts_query, {"sender_id": share_result.sender_id, "date_string": date_string}).fetchall()
+    get_bae_shifts_total = time.perf_counter() - get_bae_shifts_start
+    db_trips += 1
 
     context = {
         "request": request,
@@ -331,6 +352,13 @@ def get_calendar_card_detailed(
         "selected_month": month_number,
         "birthdays": birthdays
     }
+
+    logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
+    logging.info(f"Total time for db trips is {get_user_time + get_share_request_time + get_bae_user_time + get_bae_shifts_total} seconds.")
+    logging.info(f"Total time for get user shifts is {get_user_time} seconds.")
+    logging.info(f"Total time for get share request is {get_share_request_time} seconds.")
+    logging.info(f"Total time for get bae user is {get_bae_user_time} seconds.")
+    logging.info(f"Total time for get bae shifts is {get_bae_shifts_total} seconds.")
 
     return templates.TemplateResponse(
         request=request,
