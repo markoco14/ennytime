@@ -22,9 +22,10 @@ from app.models.db_shift import DbShift
 from app.models.db_shift_type import DbShiftType
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
-from app.schemas import schemas
+from app.queries import shift_queries
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
+from app.schemas import schemas
 from app.services import calendar_service, calendar_shift_service, chat_service
 
 
@@ -92,7 +93,7 @@ def get_calendar_page(
     end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
 
     # get shifts for current user and bae user
-    all_shifts = calendar_shift_service.get_month_shift_info_for_users(
+    all_shifts = shift_queries.list_shifts_for_couple_by_month(
         db=db,
         user_ids=user_ids,
         start_of_month=start_of_month,
@@ -142,8 +143,8 @@ def get_calendar_page(
 def get_simple_calendar_day_card(
         request: Request,
         db: Annotated[Session, Depends(get_db)],
+        current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
         date_string: str,
-        current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day card"""
     if not current_user:
@@ -227,8 +228,8 @@ class ShiftWithType(BaseModel):
 def get_calendar_card_detailed(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
-    current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day card"""
     if not current_user:
@@ -272,24 +273,27 @@ def get_calendar_card_detailed(
         })
 
     if not direct_bae_user:
-        # Just query the current user's shifts
-        user_shifts_query = text("""
-            SELECT etime_shifts.*,
-                etime_shift_types.long_name as long_name,
-                etime_shift_types.short_name as short_name
-            FROM etime_shifts
-            LEFT JOIN etime_shift_types
-            ON etime_shifts.type_id = etime_shift_types.id
-            WHERE etime_shifts.user_id = :user_id
-            AND DATE(etime_shifts.date) = :date_string
-            """)
-
         # query 1 - get the current user's shifts
         get_current_user_shifts_start = time.perf_counter()
-        user_shifts_result = db.execute(
-            user_shifts_query, {"user_id": current_user.id, "date_string": date_string}).fetchall()
+        direct_current_user_shifts = shift_queries.list_shifts_for_user_by_date(
+            db=db,
+            user_id=current_user.id,
+            selected_date=date_string
+        )
         get_current_user_shifts_time = time.perf_counter() - get_current_user_shifts_start
         db_trips += 1
+
+        user_shifts_with_type = []
+        for shift, shift_type in direct_current_user_shifts:
+            shift_with_type =ShiftWithType(
+                id=shift.id,
+                type_id=shift.type_id,
+                user_id=shift.user_id,
+                date=shift.date,
+                long_name=shift_type.long_name,
+                short_name=shift_type.short_name
+            ) 
+            user_shifts_with_type.append(shift_with_type)
 
         context = {
             "request": request,
@@ -299,7 +303,7 @@ def get_calendar_card_detailed(
             "written_day": written_day,
             "date": {
                 "date": date_string,
-                "shifts": user_shifts_result,
+                "shifts": user_shifts_with_type,
                 "day_number": day_number,
                 "bae_shifts": [],
             },
@@ -318,17 +322,17 @@ def get_calendar_card_detailed(
         )
     
     get_both_user_shifts_start = time.perf_counter()
-    direct_get_both_user_shifts = db.query(DbShift, DbShiftType
-                                        ).join(DbShiftType, DbShift.type_id == DbShiftType.id
-                                        ).filter(DbShift.user_id.in_([current_user.id, direct_bae_user.id])
-                                        ).filter(DbShift.date == date_string
-                                        ).order_by(DbShift.user_id).all()
+    shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, direct_bae_user.id],
+                                                    selected_date = date_string
+                                                    )
     get_both_user_shifts_time = time.perf_counter() - get_both_user_shifts_start
     db_trips += 1
 
     prepared_current_user_shifts = []
     prepared_bae_user_shifts = []
-    for shift, shift_tpye in direct_get_both_user_shifts:
+    for shift, shift_tpye in shifts_for_couple:
         if shift.user_id == current_user.id:
             prepared_current_user_shifts.append(ShiftWithType(
                 id=shift.id,
@@ -381,8 +385,8 @@ def get_calendar_card_detailed(
 def get_calendar_card_detailed(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
-    current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day card"""
     if not current_user:
@@ -507,9 +511,9 @@ def get_calendar_card_detailed(
 @router.get("/calendar/card/{date_string}/edit")
 def get_calendar_card_edit(
     request: Request,
-    date_string: str,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    date_string: str,
 ):
     if not current_user:
         response = templates.TemplateResponse(
@@ -558,10 +562,10 @@ def get_calendar_card_edit(
 @router.post("/calendar/card/{date_string}/edit/{shift_type_id}")
 def get_calendar_card_edit(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
     shift_type_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
     if not current_user:
         response = templates.TemplateResponse(
@@ -605,10 +609,10 @@ def get_calendar_card_edit(
 @router.delete("/calendar/card/{date_string}/edit/{shift_type_id}", response_class=HTMLResponse)
 async def delete_shift_for_date(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
     shift_type_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(

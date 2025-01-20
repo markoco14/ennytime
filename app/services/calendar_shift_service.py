@@ -7,16 +7,6 @@ from app.models.db_shift_type import DbShiftType
 from app.models.user_model import DBUser
 
 
-def get_shift_info_for_users(db: Session, user_ids: List[int]) -> List[Tuple[DbShift, DbShiftType]]:
-    """Returns a list of shifts for the given users"""
-    return db.query(DbShift, DbShiftType).join(DbShiftType, DbShift.type_id == DbShiftType.id).filter(
-        DbShift.user_id.in_(user_ids)).all()
-
-def get_month_shift_info_for_users(db: Session, user_ids: List[int], start_of_month: datetime, end_of_month: datetime) -> List[Tuple[DbShift, DbShiftType]]:
-    """Returns a list of shifts for the given users within the given month"""
-    return db.query(DbShift, DbShiftType).join(DbShiftType, DbShift.type_id == DbShiftType.id).filter(
-        DbShift.user_id.in_(user_ids)).filter(DbShift.date >= start_of_month).filter(DbShift.date <= end_of_month).all()
-
 def sort_shifts_by_user(all_shifts: List[Tuple[DbShift, DbShiftType]], month_calendar_dict, current_user: DBUser) -> dict:
     """Takes a list of shifts and sorts them into a dictionary by date and user"""
     for shift, shift_type in all_shifts:
