@@ -98,7 +98,7 @@ def get_calendar_page(
         start_of_month=start_of_month,
         end_of_month=end_of_month
         )
-    
+
     # update the calendar dictionary with sorted shifts
     month_calendar_dict = calendar_shift_service.sort_shifts_by_user(all_shifts=all_shifts, month_calendar_dict=month_calendar_dict, current_user=current_user)
 
@@ -142,8 +142,8 @@ def get_calendar_page(
 def get_simple_calendar_day_card(
         request: Request,
         db: Annotated[Session, Depends(get_db)],
+        current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
         date_string: str,
-        current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day card"""
     if not current_user:
@@ -227,8 +227,8 @@ class ShiftWithType(BaseModel):
 def get_calendar_card_detailed(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
-    current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day card"""
     if not current_user:
@@ -381,8 +381,8 @@ def get_calendar_card_detailed(
 def get_calendar_card_detailed(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
-    current_user=Depends(auth_service.user_dependency)
 ):
     """Get calendar day card"""
     if not current_user:
@@ -507,9 +507,9 @@ def get_calendar_card_detailed(
 @router.get("/calendar/card/{date_string}/edit")
 def get_calendar_card_edit(
     request: Request,
-    date_string: str,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    date_string: str,
 ):
     if not current_user:
         response = templates.TemplateResponse(
@@ -558,10 +558,10 @@ def get_calendar_card_edit(
 @router.post("/calendar/card/{date_string}/edit/{shift_type_id}")
 def get_calendar_card_edit(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
     shift_type_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
     if not current_user:
         response = templates.TemplateResponse(
@@ -605,10 +605,10 @@ def get_calendar_card_edit(
 @router.delete("/calendar/card/{date_string}/edit/{shift_type_id}", response_class=HTMLResponse)
 async def delete_shift_for_date(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
     shift_type_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
