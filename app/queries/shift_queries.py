@@ -6,7 +6,7 @@ from app.models.db_shift import DbShift
 from app.models.db_shift_type import DbShiftType
 
 
-def get_shift_for_user_by_date(
+def list_shifts_for_user_by_date(
     db: Session,
     user_id: int,
     selected_date: str
@@ -21,7 +21,7 @@ def get_shift_for_user_by_date(
                     ).all()
 
 
-def get_shift_detail_for_couple_by_date(
+def list_shifts_for_couple_by_date(
     db: Session,
     user_ids: List[int],
     selected_date: str
@@ -37,7 +37,7 @@ def get_shift_detail_for_couple_by_date(
                     ).all()
 
 
-def get_month_shift_info_for_users(
+def list_shifts_for_couple_by_month(
     db: Session,
     user_ids: List[int],
     start_of_month: datetime,

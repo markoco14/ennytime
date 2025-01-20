@@ -93,7 +93,7 @@ def get_calendar_page(
     end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
 
     # get shifts for current user and bae user
-    all_shifts = shift_queries.get_month_shift_info_for_users(
+    all_shifts = shift_queries.list_shifts_for_couple_by_month(
         db=db,
         user_ids=user_ids,
         start_of_month=start_of_month,
@@ -275,7 +275,7 @@ def get_calendar_card_detailed(
     if not direct_bae_user:
         # query 1 - get the current user's shifts
         get_current_user_shifts_start = time.perf_counter()
-        direct_current_user_shifts = shift_queries.get_shift_for_user_by_date(
+        direct_current_user_shifts = shift_queries.list_shifts_for_user_by_date(
             db=db,
             user_id=current_user.id,
             selected_date=date_string
@@ -322,7 +322,7 @@ def get_calendar_card_detailed(
         )
     
     get_both_user_shifts_start = time.perf_counter()
-    shifts_for_couple = shift_queries.get_shift_detail_for_couple_by_date(
+    shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
                                                     db=db,
                                                     user_ids=[current_user.id, direct_bae_user.id],
                                                     selected_date = date_string
