@@ -11,8 +11,8 @@ class DbShift(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     type_id = Column(Integer, nullable=False)
-    user_id = Column(Integer, nullable=False)
-    date = Column(DateTime, nullable=False)
+    user_id = Column(Integer, nullable=False, index=True)
+    date = Column(DateTime, nullable=False, index=True)
 
     # If you want to use ORM relationships to automatically fetch the associated user
     # user = relationship("DBUser", back_populates="shift_types") 
