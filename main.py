@@ -82,7 +82,7 @@ app.include_router(profile_router.router)
 app.include_router(shift_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
-# app.include_router(chat_router.router)
+app.include_router(chat_router.router)
 app.include_router(scheduling_router.router)
 app.include_router(onboard_router.router)
 
