@@ -17,7 +17,7 @@
 
         {# mobile nav toggle button #}
         <div class="flex items-center gap-2">
-            {% if current_user %}
+            {# {% if current_user %}
                 {% if chat_data %}
                     <span hx-get="/unread"
                         hx-target="find div"
@@ -37,7 +37,7 @@
                         </a>
                     </span>
                 {% endif %}
-            {% endif %}
+            {% endif %} #}
             <button 
                 x-bind:class="mobileNavOpen ? 'z-20' : ''"
                 class="md:hidden"
@@ -100,7 +100,7 @@
                     <li><a href="/shifts">Shifts</a></li>
 
                     {# chat and unread messages #}
-                    {% if chat_data %}
+                    {# {% if chat_data %}
                         <li hx-get="/unread"
                             hx-target="find div"
                             hx-swap="outerHTML"
@@ -118,8 +118,8 @@
                             {% include "ui/chat-icon.html" %}
                             </a>
                         </li>
-                    {% endif %}
-                    {% if chat_data %}
+                    {% endif %} #}
+                    {# {% if chat_data %}
                         <li class="block md:hidden">
                             <a 	href="/chat/{{chat_data['chatroom_id']}}"
                                 class="text-right flex gap-2">
@@ -133,7 +133,7 @@
                                 Chat
                             </a>
                         </li>
-                    {% endif %}
+                    {% endif %} #}
                     <li class="block md:hidden">
                         <a 	href="/profile"
                             class="text-right">
