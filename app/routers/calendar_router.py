@@ -311,9 +311,9 @@ def get_calendar_card_detailed(
             "birthdays": birthdays
         }
 
-        logging.info(f"User {current_user.display_name[0]}: No bae user found.")
+        logging.info(f"User: No bae user found.")
         logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
-        logging.info(f"User {current_user.display_name[0]}: Total time for get user shifts is {get_current_user_shifts_time} seconds.")
+        logging.info(f"User: Total time for get user shifts is {get_current_user_shifts_time} seconds.")
 
         return templates.TemplateResponse(
             request=request,
@@ -371,8 +371,8 @@ def get_calendar_card_detailed(
 
     logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
     logging.info(f"Total time for db trips is {direct_bae_user_time + get_both_user_shifts_time} seconds.")
-    logging.info(f"User {current_user.display_name[0]}: Total time for get bae user is {direct_bae_user_time} seconds.")
-    logging.info(f"User {current_user.display_name[0]}: Total time for get both user shifts is {get_both_user_shifts_time} seconds.")
+    logging.info(f"User: Total time for get bae user is {direct_bae_user_time} seconds.")
+    logging.info(f"User: Total time for get both user shifts is {get_both_user_shifts_time} seconds.")
 
     return templates.TemplateResponse(
         request=request,
