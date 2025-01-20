@@ -29,7 +29,7 @@ def is_user_shift(shift_type_id, shifts):
 templates.env.filters['is_user_shift'] = is_user_shift
 block_templates.env.filters['is_user_shift'] = is_user_shift
 
-@router.get("/")
+@router.get("")
 def get_shifts_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
