@@ -17,7 +17,8 @@ def get_chatroom_id_with_unread(db: Session, current_user_id: int):
     """
     chat_data_query_start = time.perf_counter()
     db_chat_data = db.query(
-                        DBChatRoom.room_id, 
+                        DBChatRoom.room_id,
+                        DBChatRoom.chat_users,
                         func.count(DBChatMessage.id).label("message_count")
                     ).outerjoin(
                         DBChatMessage,
@@ -27,7 +28,7 @@ def get_chatroom_id_with_unread(db: Session, current_user_id: int):
                     ).filter(
                         DBChatRoom.is_active == 1,
                         DBChatRoom.chat_users.contains(current_user_id),
-                    ).group_by(DBChatRoom.room_id
+                    ).group_by(DBChatRoom.room_id, DBChatRoom.chat_users
                     ).first()
     chat_data_query_time = time.perf_counter() - chat_data_query_start
     logging.info(f"Total time for chat room query is {chat_data_query_time} seconds.")
@@ -36,9 +37,14 @@ def get_chatroom_id_with_unread(db: Session, current_user_id: int):
         logging.info(f"No chat room or messages were found for user {current_user_id}.")
         return None
     
-    logging.info(f"Found chat room {db_chat_data[0]} with {db_chat_data[1]} unread messages for user {current_user_id}.")
+    logging.info(f"Found chat room {db_chat_data[0]} with {db_chat_data[2]} unread messages for user {current_user_id}.")
+    logging.info(f"Chat room users: {db_chat_data[1]}")
+    logging.info(f"type of chat users: {type(db_chat_data[1])}")
+    for id in db_chat_data[1]:
+        logging.info(f"User: {id}")
+        logging.info(f"type of user: {type(id)}")
     
     return ChatData(
         chatroom_id=db_chat_data[0],
-        unread_messages=db_chat_data[1]
+        unread_messages=db_chat_data[2]
     )
