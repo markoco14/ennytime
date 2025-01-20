@@ -30,11 +30,13 @@ def get_chatroom_id_with_unread(db: Session, current_user_id: int):
                     ).group_by(DBChatRoom.room_id
                     ).first()
     chat_data_query_time = time.perf_counter() - chat_data_query_start
-
     logging.info(f"Total time for chat room query is {chat_data_query_time} seconds.")
     
     if not db_chat_data:
+        logging.info(f"No chat room or messages were found for user {current_user_id}.")
         return None
+    
+    logging.info(f"Found chat room {db_chat_data[0]} with {db_chat_data[1]} unread messages for user {current_user_id}.")
     
     return ChatData(
         chatroom_id=db_chat_data[0],
