@@ -22,9 +22,10 @@ from app.models.db_shift import DbShift
 from app.models.db_shift_type import DbShiftType
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
-from app.schemas import schemas
+from app.queries import shift_queries
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
+from app.schemas import schemas
 from app.services import calendar_service, calendar_shift_service, chat_service
 
 
@@ -92,13 +93,13 @@ def get_calendar_page(
     end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
 
     # get shifts for current user and bae user
-    all_shifts = calendar_shift_service.get_month_shift_info_for_users(
+    all_shifts = shift_queries.get_month_shift_info_for_users(
         db=db,
         user_ids=user_ids,
         start_of_month=start_of_month,
         end_of_month=end_of_month
         )
-
+    
     # update the calendar dictionary with sorted shifts
     month_calendar_dict = calendar_shift_service.sort_shifts_by_user(all_shifts=all_shifts, month_calendar_dict=month_calendar_dict, current_user=current_user)
 
