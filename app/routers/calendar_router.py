@@ -319,17 +319,17 @@ def get_calendar_card_detailed(
         )
     
     get_both_user_shifts_start = time.perf_counter()
-    direct_get_both_user_shifts = db.query(DbShift, DbShiftType
-                                        ).join(DbShiftType, DbShift.type_id == DbShiftType.id
-                                        ).filter(DbShift.user_id.in_([current_user.id, direct_bae_user.id])
-                                        ).filter(DbShift.date == date_string
-                                        ).order_by(DbShift.user_id).all()
+    shifts_for_couple = shift_queries.get_shift_detail_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, direct_bae_user.id],
+                                                    selected_date = date_string
+                                                    )
     get_both_user_shifts_time = time.perf_counter() - get_both_user_shifts_start
     db_trips += 1
 
     prepared_current_user_shifts = []
     prepared_bae_user_shifts = []
-    for shift, shift_tpye in direct_get_both_user_shifts:
+    for shift, shift_tpye in shifts_for_couple:
         if shift.user_id == current_user.id:
             prepared_current_user_shifts.append(ShiftWithType(
                 id=shift.id,
