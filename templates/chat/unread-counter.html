@@ -1,8 +1,10 @@
-{% if chat_data["unread_messages"] == 0 %}
-<div></div>
-{% else %}
-<div
-	 class="absolute top-2 right-0 md:top-0 md:right-0 bg-red-500 text-white text-right rounded-full w-4 h-4 text-[8px] grid place-content-center">
-	{{chat_data["unread_messages"]}}
-</div>
+{% if not chat_data %}
+	<div></div>
+{% elif chat_data["unread_messages"] == 0 %}
+	<div></div>
+{% else  %}
+	<div
+		class="absolute top-2 right-0 md:top-0 md:right-0 bg-red-500 text-white text-right rounded-full w-4 h-4 text-[8px] grid place-content-center">
+		{{chat_data["unread_messages"]}}
+	</div>
 {% endif %}
