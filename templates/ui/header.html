@@ -17,20 +17,26 @@
 
         {# mobile nav toggle button #}
         <div class="flex items-center gap-2">
-            {% if current_user %}        
-            <span hx-get="/unread"
-                hx-target="find div"
-                hx-swap="outerHTML"
-                hx-trigger="every 8s"
-                class="md:hidden relative p-1"
-                >
-                <a href="/chat/{{chat_data['chatroom_id']}}">
-                {% include "ui/chat-icon.html" %}
-                </a>
+            {% if current_user %}
                 {% if chat_data %}
-                {% include "/chat/unread-counter.html" %}
+                    <span hx-get="/unread"
+                        hx-target="find div"
+                        hx-swap="outerHTML"
+                        hx-trigger="every 8s"
+                        class="md:hidden relative p-1"
+                        >
+                        <a href="/chat/{{chat_data['chatroom_id']}}">
+                        {% include "ui/chat-icon.html" %}
+                        </a>
+                        {% include "/chat/unread-counter.html" %}
+                    </span>
+                {% else %}
+                    <span class="md:hidden relative p-1">
+                        <a href="/chat">
+                        {% include "ui/chat-icon.html" %}
+                        </a>
+                    </span>
                 {% endif %}
-            </span>
             {% endif %}
             <button 
                 x-bind:class="mobileNavOpen ? 'z-20' : ''"
@@ -94,25 +100,40 @@
                     <li><a href="/shifts">Shifts</a></li>
 
                     {# chat and unread messages #}
-                    <li hx-get="/unread"
-                        hx-target="find div"
-                        hx-swap="outerHTML"
-                        hx-trigger="every 8s"
-                        class="hidden md:block relative p-1"
-                        >
-                        <a href="/chat/{{chat_data['chatroom_id']}}">
-                        {% include "ui/chat-icon.html" %}
-                        </a>
-                        {% if chat_data %}
-                        {% include "/chat/unread-counter.html" %}
-                        {% endif %}
-                    </li>
-                    <li class="block md:hidden">
-                        <a 	href="/chat/{{chat_data['chatroom_id']}}"
-                            class="text-right flex gap-2">
-                            Chat
-                        </a>
-                    </li>
+                    {% if chat_data %}
+                        <li hx-get="/unread"
+                            hx-target="find div"
+                            hx-swap="outerHTML"
+                            hx-trigger="every 8s"
+                            class="hidden md:block relative p-1"
+                            >
+                            <a href="/chat/{{chat_data['chatroom_id']}}">
+                            {% include "ui/chat-icon.html" %}
+                            </a>
+                            {% include "/chat/unread-counter.html" %}
+                        </li>
+                    {% else %}
+                        <li class="hidden md:block relative p-1">
+                            <a href="/chat">
+                            {% include "ui/chat-icon.html" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if chat_data %}
+                        <li class="block md:hidden">
+                            <a 	href="/chat/{{chat_data['chatroom_id']}}"
+                                class="text-right flex gap-2">
+                                Chat
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="block md:hidden">
+                            <a 	href="/chat"
+                                class="text-right flex gap-2">
+                                Chat
+                            </a>
+                        </li>
+                    {% endif %}
                     <li class="block md:hidden">
                         <a 	href="/profile"
                             class="text-right">
