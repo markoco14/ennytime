@@ -273,24 +273,27 @@ def get_calendar_card_detailed(
         })
 
     if not direct_bae_user:
-        # Just query the current user's shifts
-        user_shifts_query = text("""
-            SELECT etime_shifts.*,
-                etime_shift_types.long_name as long_name,
-                etime_shift_types.short_name as short_name
-            FROM etime_shifts
-            LEFT JOIN etime_shift_types
-            ON etime_shifts.type_id = etime_shift_types.id
-            WHERE etime_shifts.user_id = :user_id
-            AND DATE(etime_shifts.date) = :date_string
-            """)
-
         # query 1 - get the current user's shifts
         get_current_user_shifts_start = time.perf_counter()
-        user_shifts_result = db.execute(
-            user_shifts_query, {"user_id": current_user.id, "date_string": date_string}).fetchall()
+        direct_current_user_shifts = shift_queries.get_shift_for_user_by_date(
+            db=db,
+            user_id=current_user.id,
+            selected_date=date_string
+        )
         get_current_user_shifts_time = time.perf_counter() - get_current_user_shifts_start
         db_trips += 1
+
+        user_shifts_with_type = []
+        for shift, shift_type in direct_current_user_shifts:
+            shift_with_type =ShiftWithType(
+                id=shift.id,
+                type_id=shift.type_id,
+                user_id=shift.user_id,
+                date=shift.date,
+                long_name=shift_type.long_name,
+                short_name=shift_type.short_name
+            ) 
+            user_shifts_with_type.append(shift_with_type)
 
         context = {
             "request": request,
@@ -300,7 +303,7 @@ def get_calendar_card_detailed(
             "written_day": written_day,
             "date": {
                 "date": date_string,
-                "shifts": user_shifts_result,
+                "shifts": user_shifts_with_type,
                 "day_number": day_number,
                 "bae_shifts": [],
             },
