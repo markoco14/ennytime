@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+Time to Say Goodbye
+{% endblock title %}
+{% block header %}
+<header
+		class="md:flex items-center justify-between border-b border-gray-500 px-4 bg-white">
+	{# <div class="py-4 px-2 md:px-0 container mx-auto"> #}
+	<div class="flex items-center justify-between h-20">
+		<span class="text-3xl">Ennytime</span>
+	</div>
+</header>
+{% endblock header %}
+{% block content %}
+<div class="py-16 text-center">
+	{# <img src="{{ url_for('static', path='heart-broken.png') }}" alt="A broken heart cries alone."/> #}
+	{# <img src="{{ url_for('static', path='/heart-broken.png') }}" alt="A broken heart cries alone."/> #}
+	<h1 class="text-4xl text-pink-700 mb-8">We are sorry.</h1>
+	<p class="text-2xl mb-2">Ennytime is undergoing some maintenance right now.</p>
+	<p class="max-w-[60ch] mx-auto">We're working on making the site faster and will be back as soon as possible.</p>
+</div>
+{% endblock content %}

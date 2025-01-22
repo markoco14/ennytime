@@ -56,6 +56,42 @@ class ClosingDownMiddleware(BaseHTTPMiddleware):
         else:
             response = await call_next(request)
             return response
+        
+
+
+class MaintenanceMiddleware(BaseHTTPMiddleware):
+    async def dispatch(
+            self,
+            request: Request,
+            call_next: RequestResponseEndpoint
+    ):
+        if SETTINGS.MAINTENANCE_MODE == "true":
+            logging.info("Maintenance Mode is on")
+            # Allow `/maintenance` to bypass the maintenance check
+            if request.url.path == "/maintenance":
+                logging.info("direct access to maintenance page, allowing")
+                return await call_next(request)
+            
+            if request.headers.get("HX-Request"):      
+                logging.info("attempted hx-request access to resource, redirecting to maintenance page")
+                response = templates.TemplateResponse(
+                    "maintenance.html",
+                    {"request": request}
+                )
+                response.headers["HX-Redirect"] = "/maintenance"
+                return response
+            
+            logging.info("attempted non-hx access to resource, redirecting to maintenance page")
+            return RedirectResponse(url="/maintenance")
+        else:
+            logging.info("Maintenance Mode is off")
+            if request.url.path == "/maintenance":
+                logging.info("attempted access to maintenance page, redirecting to home")
+                return RedirectResponse(url="/")
+            
+            logging.info("attempted access to resource, allowing")
+            response = await call_next(request)
+            return response
 
 
 class SleepMiddleware:
@@ -75,6 +111,7 @@ class SleepMiddleware:
 
 app.add_middleware(SleepMiddleware)
 app.add_middleware(ClosingDownMiddleware)
+app.add_middleware(MaintenanceMiddleware)
 
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
@@ -167,4 +204,12 @@ def search_users_to_share(
         request=request,
         name="profile/search-results.html",
         context=context
+    )
+
+@app.get("/maintenance", response_class=HTMLResponse)
+def maintenance_page(request: Request):
+    """Maintenance page"""
+    return templates.TemplateResponse(
+        request=request,
+        name="maintenance.html"
     )
