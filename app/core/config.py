@@ -16,11 +16,13 @@ class Settings(BaseSettings):
     # Database
 
     ENVIRONMENT: str = os.environ.get('ENVIRONMENT')
+    PROVIDER: str = os.environ.get('PROVIDER')
     CLOSED_DOWN: str = os.environ.get('CLOSED_DOWN')
 
     MAINTENANCE_MODE: str = os.environ.get('MAINTENANCE_MODE')
 
     if ENVIRONMENT == 'dev':
+        print("Dev Local")
         SLEEP_TIME: float = 0.0
         DB_USER: str = os.environ.get('DEV_DB_USER')
         DB_PASSWORD: str = os.environ.get('DEV_DB_PASSWORD')
@@ -28,7 +30,17 @@ class Settings(BaseSettings):
         DB_PORT: str = os.environ.get('DEV_DB_PORT')
         DB_NAME: str = os.environ.get('DEV_DB_NAME')
         DATABASE_URL: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    else:
+    elif ENVIRONMENT == 'prod' and PROVIDER == 'railway':
+        print("Railway")
+        SLEEP_TIME: float = 0.0
+        DB_USER: str = os.environ.get('DB_USER')
+        DB_PASSWORD: str = os.environ.get('DB_PASSWORD')
+        DB_HOST: str = os.environ.get('DB_HOST')
+        DB_PORT: str = os.environ.get('DB_PORT')
+        DB_NAME: str = os.environ.get('DB_NAME')
+        DATABASE_URL: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    elif ENVIRONMENT == 'prod' and PROVIDER == 'digital_ocean':
+        print("Digital Ocean")
         SLEEP_TIME: float = 0.0
         DB_USER: str = os.environ.get('DB_USER')
         DB_PASSWORD: str = os.environ.get('DB_PASSWORD')
