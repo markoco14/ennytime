@@ -33,6 +33,15 @@ class DBChatRoom(Base):
     )
 
 
+class DBChatroomUser(Base):
+    """DB Model for chat users"""
+    __tablename__ = 'etime_chatroom_users'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False, index=True)
+    room_id = Column(String(length=255), nullable=False, index=True)
+
+
 class DBChatMessage(Base):
     """
     DB Model for chat messages

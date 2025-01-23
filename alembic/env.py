@@ -14,7 +14,7 @@ from app.models.user_session_model import DBUserSession
 from app.models.db_shift_type import DbShiftType
 from app.models.db_shift import DbShift
 from app.models.share_model import DbShare
-from app.models.chat_models import DBChatRoom, DBChatMessage
+from app.models.chat_models import DBChatRoom, DBChatroomUser, DBChatMessage
 
 # import app settings
 settings = get_settings()
