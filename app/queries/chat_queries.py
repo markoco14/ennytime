@@ -49,3 +49,18 @@ def get_chatroom_id_with_unread(db: Session, current_user_id: int):
         chatroom_id=db_chat_data[0],
         unread_messages=db_chat_data[2]
     )
+
+def list_chatroom_messages(db: Session, current_user_id: int, room_id: int):
+    """
+    Downloads all of the messages from the user's chatroom.
+    """
+    db_chat_messages = db.query(DBChatMessage
+                                ).join(
+                                    DBChatRoom,
+                                    DBChatRoom.room_id == DBChatMessage.room_id
+                                ).filter(
+                                    DBChatRoom.room_id == room_id,
+                                    DBChatRoom.chat_users.contains(current_user_id),
+                                ).all()
+    
+    return db_chat_messages
