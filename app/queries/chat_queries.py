@@ -3,6 +3,23 @@ from sqlalchemy.orm import Session
 
 from app.models.chat_models import DBChatMessage, DBChatRoom, DBChatroomUser
 
+def get_user_chatroom(db: Session, current_user_id: int, room_id: int):
+    """
+    Returns the chatroom if it exists.
+    """
+    db_chatroom = db.query(
+            DBChatRoom
+        ).join(
+            DBChatroomUser,
+            DBChatroomUser.room_id == DBChatRoom.room_id
+        ).filter(
+            DBChatRoom.room_id == room_id,
+            DBChatRoom.is_active == 1,
+            DBChatroomUser.user_id == current_user_id
+        ).first()
+    
+    return db_chatroom
+
 def get_chatroom_id_with_unread_count(db: Session, current_user_id: int):
     """
     Returns a tuple with a chatroom id (string) and a count of unread messages (int).

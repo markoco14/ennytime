@@ -16,6 +16,7 @@ from app.core.database import get_db
 from app.core.websocket import websocket_manager
 from app.models.chat_models import DBChatRoom, DBChatMessage
 from app.models.user_model import DBUser
+from app.queries import chat_queries
 from app.services import chat_service
 
 router = APIRouter()
@@ -124,22 +125,30 @@ def get_chatroom(
         response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
         return response
-
-    # we get the chat room and the messages
-    # TODO: set up the messages table
-    chat_room = db.query(DBChatRoom).filter(
-        DBChatRoom.room_id == room_id
-    ).first()
-
+    
+    db_chat_room = chat_queries.get_user_chatroom(
+        db=db,
+        current_user_id=current_user.id,
+        room_id=room_id
+        )
+    
+    if not db_chat_room:
+        if request.headers.get("HX-Request"):
+            return JSONResponse(
+                status_code=303,
+                headers={"HX-Redirect": "/"}
+            )
+        return RedirectResponse(url="/", status_code=303)
+    
     messages = db.query(DBChatMessage).filter(
-        DBChatMessage.room_id == room_id).all()
+        DBChatMessage.room_id == db_chat_room.room_id).all()
     
     for message in messages:
         message.created_at = (message.created_at + timedelta(hours=8)).strftime("%b %d %H:%M")
 
     context = {
         "request": request,
-        "chat": chat_room,
+        "chat": db_chat_room,
         "current_user": current_user,
         "messages": messages
     }
