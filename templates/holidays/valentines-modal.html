@@ -8,14 +8,14 @@
         </button>
         <img src="../../../static/img/cupid.png" alt="Cupid aims his bow and arrow" class=" w-[100px] h-[100px] m-auto mb-4">
         <h2 class="px-4 text-center text-rose-700 text-4xl mb-8 font-bold">Happy Valentines Day</h2>
-        <div class="px-4 font-semibold text-rose-900/70 max-w-[400px] mx-auto">
+        <div class="px-4 font-semibold text-center text-rose-900/70 max-w-[400px] mx-auto">
             {% if current_user.display_name %}
             <p class="mb-4 text-xl text-rose-700">Dear {{current_user.display_name}},</p>
             {% else %}
             <p class="mb-4 text-xl text-rose-700">Dear New User,</p>
             {% endif %}
             <p class="mb-2">Happy Valentine's Day from Ennytime <span class="text-red-700">❤️</span></p>
-            <p>Wishing you an amazing year in 2025!</p>
+            <p>Wishing you a year full of love in 2025!</p>
         </div>
     </div>
 </div>
