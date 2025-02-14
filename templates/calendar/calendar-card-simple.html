@@ -41,6 +41,9 @@
 				 class="h-4 w-4 sm:h-8 sm:w-8">
 		</div>
 		{% endif %}
+		{% if selected_month == 2 and date.day_number == 14 %}
+			{% include "ui/icons/valentines-calendar.html" %}
+		{% endif %}
 	</div>
 	{# loading spinner #}
 	<div class="htmx-indicator w-full h-full grid place-content-center">
