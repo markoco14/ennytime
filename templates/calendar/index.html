@@ -21,4 +21,7 @@ Ennytime Couple's Calendar
 {% if (selected_month == 12 and current_day == 31) or (selected_month == 1 and current_day == 1) %}
 {% include "/holidays/nye-modal.html" %}
 {% endif %}
+{% if selected_month == 2 and current_day == 14 %}
+{% include "/holidays/valentines-modal.html" %}
+{% endif %}
 {% endblock content %}

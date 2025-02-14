@@ -1,0 +1,21 @@
+<div class="js-valentines-overlay fixed top-0 left-0 w-full h-full bg-pink-700/70 flex justify-center items-center px-2 sm:px-0 duration-500 ease-in-out opacity-0 stacked">
+    <div class="js-valentines-confetti w-full h-full flex justify-center items-center"></div>
+    <div class="js-valentines-modal relative w-full sm:w-[500px] bg-white rounded-xl py-16 duration-300 ease-in-out opacity-0 translate-y-16">
+        <button class="js-valentines-modal-button absolute top-2 right-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img src="../../../static/img/cupid.png" alt="Cupid aims his bow and arrow" class=" w-[100px] h-[100px] m-auto mb-4">
+        <h2 class="px-4 text-center text-rose-700 text-4xl mb-8 font-bold">Happy Valentines Day</h2>
+        <div class="px-4 font-semibold text-rose-900/70 max-w-[400px] mx-auto">
+            {% if current_user.display_name %}
+            <p class="mb-4 text-xl text-rose-700">Dear {{current_user.display_name}},</p>
+            {% else %}
+            <p class="mb-4 text-xl text-rose-700">Dear New User,</p>
+            {% endif %}
+            <p class="mb-2">Happy Valentine's Day from Ennytime <span class="text-red-700">❤️</span></p>
+            <p>Wishing you an amazing year in 2025!</p>
+        </div>
+    </div>
+</div>
