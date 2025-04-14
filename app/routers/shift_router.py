@@ -100,7 +100,7 @@ def get_shifts_page(
     }
 
     response = templates.TemplateResponse(
-        name="/shifts/pages/setup.html",
+        name="/shifts/setup/index.html",
         context=context
     )
 
