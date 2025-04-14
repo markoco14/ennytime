@@ -40,8 +40,16 @@ def get_calendar_page(
     year: Optional[int] = None,
 ):
     if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
+        if request.headers.get("HX-Request"):
+            response = Response(status_code=401)
+            response.headers["HX-Redirect"] = "/signin"
+            response.delete_cookie("session-id")
+
+            return response
+        
+        response = RedirectResponse(url="/signin", status_code=303)
         response.delete_cookie("session-id")
+
         return response
     
     current_time = datetime.datetime.now()
@@ -148,10 +156,14 @@ def get_simple_calendar_day_card(
 ):
     """Get calendar day card"""
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        if request.headers.get("HX-Request"):
+            response = Response(status_code=401)
+            response.headers["HX-Redirect"] = "/signin"
+            response.delete_cookie("session-id")
+
+            return response
+        
+        response = RedirectResponse(url="/signin", status_code=303)
         response.delete_cookie("session-id")
 
         return response
@@ -233,10 +245,14 @@ def get_calendar_card_detailed(
 ):
     """Get calendar day card"""
     if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
+        if request.headers.get("HX-Request"):
+            response = Response(status_code=401)
+            response.headers["HX-Redirect"] = "/signin"
+            response.delete_cookie("session-id")
+
+            return response
+        
+        response = RedirectResponse(url="/signin", status_code=303)
         response.delete_cookie("session-id")
 
         return response
