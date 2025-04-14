@@ -102,3 +102,12 @@ class CreateShare(BaseModel):
     """Create share"""
     sender_id: int
     receiver_id: int
+
+
+class ShiftWithType(BaseModel):
+    id: int
+    type_id: int
+    user_id: int
+    date: datetime
+    long_name: str
+    short_name: str

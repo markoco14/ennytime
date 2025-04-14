@@ -18,6 +18,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
+from app.handlers.get_calendar import handle_get_calendar
+from app.handlers.get_calendar_card_detail import handle_get_calendar_card_detail
+from app.handlers.get_calendar_card_simple import handle_get_calendar_card_simple
 from app.models.db_shift import DbShift
 from app.models.db_shift_type import DbShiftType
 from app.models.share_model import DbShare
@@ -39,105 +42,7 @@ def get_calendar_page(
     month: Optional[int] = None,
     year: Optional[int] = None,
 ):
-    if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
-        response.delete_cookie("session-id")
-        return response
-    
-    current_time = datetime.datetime.now()
-    current_day = current_time.day
-    selected_year = year or current_time.year
-    selected_month = month or current_time.month
-    selected_month_name = calendar_service.MONTHS[selected_month - 1]
-
-    # handle all birthday logic
-    birthdays = []
-    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=selected_month):
-        birthdays.append({
-            "name": current_user.display_name,
-            "day": current_user.birthday.day
-        })
-
-    # get user who shares their calendar with current user
-    # find the DbShare where current user id is the receiver_id 
-    bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
-        DbShare.receiver_id == current_user.id).first()
-
-    if bae_user:
-        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=selected_month):
-            birthdays.append({
-                "name": bae_user.display_name,
-                "day": bae_user.birthday.day
-            })
-
-    # get previous and next month names for month navigation
-    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
-        current_month=selected_month)
-
-    month_calendar = calendar_service.get_month_calendar(
-        year=selected_year, 
-        month=selected_month
-        )
-
-    month_calendar_dict = dict((str(day), {"date": str(
-        day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
-
-    
-    # gathering user ids to query shift table and get shifts for both users at once
-    user_ids = [current_user.id]
-    if bae_user:
-        user_ids.append(bae_user.id)
-
-    # get the start and end of the month for query filters
-    start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
-    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
-
-    # get shifts for current user and bae user
-    all_shifts = shift_queries.list_shifts_for_couple_by_month(
-        db=db,
-        user_ids=user_ids,
-        start_of_month=start_of_month,
-        end_of_month=end_of_month
-        )
-    
-    # update the calendar dictionary with sorted shifts
-    month_calendar_dict = calendar_shift_service.sort_shifts_by_user(all_shifts=all_shifts, month_calendar_dict=month_calendar_dict, current_user=current_user)
-
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "birthdays": birthdays,
-        "current_day": current_day,
-        "selected_month": selected_month,
-        "selected_month_name": selected_month_name,
-        "selected_year": selected_year,
-        "prev_month_name": prev_month_name,
-        "next_month_name": next_month_name,
-        "month_calendar": list(month_calendar_dict.values()),
-        "days_of_week": calendar_service.DAYS_OF_WEEK,
-    }
-
-    if "hx-request" in request.headers:
-        response = templates.TemplateResponse(
-            name="calendar/fragments/calendar-oob.html",
-            context=context,
-        )
-        return response
-
-    # get chatroom id to link directly from the chat icon
-    # get unread message count so chat icon can display the count on page load
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
-    )
-
-    context.update({"chat_data": user_chat_data})  
-    response = templates.TemplateResponse(
-        name="calendar/index.html",
-        context=context,
-    )
-
-    return response
+    return handle_get_calendar(request, current_user, month, year, db)
 
 @router.get("/calendar-card-simple/{date_string}", response_class=HTMLResponse)
 def get_simple_calendar_day_card(
@@ -146,82 +51,9 @@ def get_simple_calendar_day_card(
         current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
         date_string: str,
 ):
-    """Get calendar day card"""
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-        response.delete_cookie("session-id")
+    return handle_get_calendar_card_simple(request, current_user, date_string, db)
 
-        return response
 
-    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
-        date_string=date_string)
-
-    db_shifts = shift_repository.get_user_shifts_details(
-        db=db, user_id=current_user.id)
-
-    # only need to get an array of shifts
-    # becauase only for one day, not getting whole calendar
-    shifts = []
-    for shift in db_shifts:
-        if str(shift.date.date()) == date_string:
-            shifts.append(shift._asdict())
-
-    bae_shifts = []
-    shared_with_me = share_repository.get_share_by_receiver_id(
-        db=db, receiver_id=current_user.id)
-    if shared_with_me:
-        bae_db_shifts = shift_repository.get_user_shifts_details(
-            db=db, user_id=shared_with_me.sender_id)
-        for shift in bae_db_shifts:
-            if str(shift.date.date()) == date_string:
-                bae_shifts.append(shift)
-
-    birthdays = []
-    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=month_number):
-        birthdays.append({
-            "name": current_user.display_name,
-            "day": current_user.birthday.day
-        })
-
-    if shared_with_me:
-        bae_user = share_repository.get_share_user_with_shifts_by_receiver_id(
-            db=db, share_user_id=shared_with_me.sender_id)
-
-        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=month_number):
-            birthdays.append({
-                "name": bae_user.display_name,
-                "day": bae_user.birthday.day
-            })
-
-    context = {
-        "request": request,
-        "date": {
-            "date": date_string,
-            "shifts": shifts,
-            "day_number": day_number,
-            "bae_shifts": bae_shifts,
-        },
-        "selected_month": month_number,
-        "current_user": current_user,
-        "birthdays": birthdays
-    }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="/calendar/calendar-card-simple.html",
-        context=context,
-    )
-
-class ShiftWithType(BaseModel):
-    id: int
-    type_id: int
-    user_id: int
-    date: datetime.datetime
-    long_name: str
-    short_name: str
 
 
 @router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
@@ -231,154 +63,7 @@ def get_calendar_card_detailed(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     date_string: str,
 ):
-    """Get calendar day card"""
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-        response.delete_cookie("session-id")
-
-        return response
-    
-    db_trips = 0
-
-    year_number, month_number, day_number = calendar_service.extract_date_string_numbers(
-        date_string)
-    date = datetime.date(year_number, month_number, day_number)
-    written_month = date.strftime("%B %d, %Y")
-    written_day = date.strftime("%A")
-
-     # directly get the bae user now.
-    direct_bae_user_start = time.perf_counter()
-    direct_bae_user = db.query(DBUser
-                                ).join(DbShare, DBUser.id == DbShare.sender_id
-                                ).filter(DbShare.receiver_id == current_user.id
-                                ).first()
-    direct_bae_user_time = time.perf_counter() - direct_bae_user_start
-    db_trips += 1
-
-    # organize birthdays
-    birthdays = []
-    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=month_number):
-        birthdays.append({
-            "name": current_user.display_name,
-            "day": current_user.birthday.day
-        })
-
-    if direct_bae_user and direct_bae_user.has_birthday() and direct_bae_user.birthday_in_current_month(current_month=month_number):
-        birthdays.append({
-            "name": direct_bae_user.display_name,
-            "day": direct_bae_user.birthday.day
-        })
-
-    if not direct_bae_user:
-        # query 1 - get the current user's shifts
-        get_current_user_shifts_start = time.perf_counter()
-        direct_current_user_shifts = shift_queries.list_shifts_for_user_by_date(
-            db=db,
-            user_id=current_user.id,
-            selected_date=date_string
-        )
-        get_current_user_shifts_time = time.perf_counter() - get_current_user_shifts_start
-        db_trips += 1
-
-        user_shifts_with_type = []
-        for shift, shift_type in direct_current_user_shifts:
-            shift_with_type =ShiftWithType(
-                id=shift.id,
-                type_id=shift.type_id,
-                user_id=shift.user_id,
-                date=shift.date,
-                long_name=shift_type.long_name,
-                short_name=shift_type.short_name
-            ) 
-            user_shifts_with_type.append(shift_with_type)
-
-        context = {
-            "request": request,
-            "current_user": current_user,
-            "month": month_number,
-            "written_month": written_month,
-            "written_day": written_day,
-            "date": {
-                "date": date_string,
-                "shifts": user_shifts_with_type,
-                "day_number": day_number,
-                "bae_shifts": [],
-            },
-            "selected_month": month_number,
-            "birthdays": birthdays
-        }
-
-        logging.info(f"User: No bae user found.")
-        logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
-        logging.info(f"User: Total time for get user shifts is {get_current_user_shifts_time} seconds.")
-
-        return templates.TemplateResponse(
-            request=request,
-            name="/calendar/calendar-card-detail.html",
-            context=context,
-        )
-    
-    get_both_user_shifts_start = time.perf_counter()
-    shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                    db=db,
-                                                    user_ids=[current_user.id, direct_bae_user.id],
-                                                    selected_date = date_string
-                                                    )
-    get_both_user_shifts_time = time.perf_counter() - get_both_user_shifts_start
-    db_trips += 1
-
-    prepared_current_user_shifts = []
-    prepared_bae_user_shifts = []
-    for shift, shift_tpye in shifts_for_couple:
-        if shift.user_id == current_user.id:
-            prepared_current_user_shifts.append(ShiftWithType(
-                id=shift.id,
-                type_id=shift.type_id,
-                user_id=shift.user_id,
-                date=shift.date,
-                long_name=shift_tpye.long_name,
-                short_name=shift_tpye.short_name
-            ))
-        if shift.user_id == direct_bae_user.id:
-            prepared_bae_user_shifts.append(ShiftWithType(
-                id=shift.id,
-                type_id=shift.type_id,
-                user_id=shift.user_id,
-                date=shift.date,
-                long_name=shift_tpye.long_name,
-                short_name=shift_tpye.short_name
-            ))
-
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "bae_user": direct_bae_user,
-        "month": month_number,
-        "written_month": written_month,
-        "written_day": written_day,
-        "date": {
-            "date": date_string,
-            "shifts": prepared_current_user_shifts,
-            "day_number": day_number,
-            "bae_shifts": prepared_bae_user_shifts,
-        },
-        "selected_month": month_number,
-        "birthdays": birthdays
-    }
-
-    logging.info(f"Total number of db trips is {db_trips} ({db_trips + 1} with user dep).")
-    logging.info(f"Total time for db trips is {direct_bae_user_time + get_both_user_shifts_time} seconds.")
-    logging.info(f"User: Total time for get bae user is {direct_bae_user_time} seconds.")
-    logging.info(f"User: Total time for get both user shifts is {get_both_user_shifts_time} seconds.")
-
-    return templates.TemplateResponse(
-        request=request,
-        name="/calendar/calendar-card-detail.html",
-        context=context,
-    )
+    return handle_get_calendar_card_detail(request, current_user, date_string, db)    
 
 
 @router.get("/calendar/card/detail/{date_string}", response_class=HTMLResponse)

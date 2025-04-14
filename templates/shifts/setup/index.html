@@ -1,15 +1,15 @@
 {% from "macros/spinner.html" import spinner %}
 {% extends "base.html" %}
 {% block title %}
-	Register New Shift
+	Shift Set Up
 {% endblock title %}
 {% block content %}
 <div class="max-w-[800px] mx-auto min-h-[400px] rounded-md px-2">
-	<h1 class="mb-2 text-3xl text-pink-700">Save New Shift</h1>
+	<h1 class="mb-2 text-3xl text-pink-700">Set up your shifts</h1>
 	<p class="mb-4">
-		Save the details of your newest shift with the form below.
+		You haven't registered any shifts yet. Please save your shift information before making your schedule.
 	</p>
 	<hr class="mb-4 border-pink-200"/>
-	{% include "/shifts/fragments/shift-type-form.html" %}
+	{% include "/shifts/new/partials/form.html" %}
 </div>
 {% endblock content %}
