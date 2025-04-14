@@ -1,37 +1,19 @@
 from typing import Annotated
-import re
 
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import Response, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from jinja2_fragments.fastapi import Jinja2Blocks
 from sqlalchemy.orm import Session
 
 from app.auth import auth_service
 from app.core.database import get_db
+from app.handlers.shifts.delete_shift import handle_delete_shift
 from app.handlers.shifts.get_shifts_new import handle_get_shifts_new
 from app.handlers.shifts.get_shifts_page import handle_get_shifts_page
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.handlers.shifts.post_shifts_new import handle_post_shifts_new
 from app.models.user_model import DBUser
-from app.schemas import schemas
-from app.repositories import shift_type_repository
-from app.services import chat_service
 
 router = APIRouter(prefix="/shifts")
-templates = Jinja2Templates(directory="templates")
-block_templates = Jinja2Blocks(directory="templates")
 
-# Custom filter to check if a shift type is in user shifts
-
-
-def is_user_shift(shift_type_id, shifts):
-    return any(shift['type_id'] == shift_type_id for shift in shifts)
-
-
-# Add the custom filter to Jinja2 environment
-templates.env.filters['is_user_shift'] = is_user_shift
-block_templates.env.filters['is_user_shift'] = is_user_shift
 
 @router.get("")
 def get_shifts_page(
@@ -69,21 +51,7 @@ def delete_shift_type(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     shift_type_id: int
 ):
-    """Delete shift type"""
-    response = Response(
-        status_code=200,
-    )
-    shift_type_repository.delete_shift_type_and_relations(
-        db=db,
-        shift_type_id=shift_type_id
-    )
-    
-    shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
-
-    if not shift_types:
-        response.headers["HX-Redirect"] = "/shifts/setup/"
-        
-    return response
+    return handle_delete_shift(request, current_user, shift_type_id, db)
 
 
 @router.get("/setup")
