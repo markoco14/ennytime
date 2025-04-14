@@ -9,7 +9,9 @@ from sqlalchemy.orm import Session
 
 from app.auth import auth_service
 from app.core.database import get_db
+from app.handlers.shifts.get_shifts_new import handle_get_shifts_new
 from app.handlers.shifts.get_shifts_page import handle_get_shifts_page
+from app.handlers.shifts.post_shifts_new import handle_post_shifts_new
 from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import shift_type_repository
@@ -68,40 +70,15 @@ def get_shifts_page(
 
     return response
 
+
 @router.get("/new")
 def get_shift_manager_page(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
-    if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
-        response.delete_cookie("session-id")
-        return response
-    
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
-    )
+    return handle_get_shifts_new(request, current_user, db)
 
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "chat_data": user_chat_data
-    }
-
-    if request.headers.get("HX-Request"):
-        response = templates.TemplateResponse(
-            name="shifts/new/partials/form.html",
-            context=context
-        )
-        return response
-
-    response = templates.TemplateResponse(
-        name="shifts/new/index.html",
-        context=context
-    )
-    return response
 
 @router.post("/new")
 def store_shift_type(
@@ -111,67 +88,7 @@ def store_shift_type(
     shift_name: Annotated[str, Form()],
     date_string: Annotated[str, Form()] = None,
     ):
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-        response.delete_cookie("session-id")
-
-        return response
-    
-    # clean up shift name
-    cleaned_shift_name = shift_name.strip()
-    space_finder_regex = re.compile(r"\s+")
-    cleaned_shift_name = re.sub(space_finder_regex, ' ', cleaned_shift_name)
-   
-    # create short name
-    long_name_split = cleaned_shift_name.split(" ")
-    short_name = ""
-    for part in long_name_split:
-        short_name += part[0].upper()
-
-    # get new shift type data ready
-    new_shift_type = schemas.CreateShiftType(
-        long_name=shift_name,
-        short_name=short_name,
-        user_id=current_user.id
-    )
-
-    # create new shift type or return an error
-    shift_type_repository.create_shift_type(
-        db=db,
-        shift_type=new_shift_type
-    )
-    
-    # TODO: change this to return single shift type and animate it into the list
-    # get the new shift type list
-    shift_types = shift_type_repository.list_user_shift_types(
-        db=db,
-        user_id=current_user.id
-    )
-
-    context = {
-        "request": request,
-        "shift_types": shift_types,
-    }
-
-    hx_current_url = request.headers.get("hx-current-url") or None
-    from_setup_page = "/shifts/setup" in hx_current_url
-    from_new_page = "/shifts/new" in hx_current_url
-    if from_new_page or from_setup_page:
-        response = Response(status_code=303)
-        response.headers["HX-Redirect"] = "/shifts"
-
-        return response
-    
-    context.update({"date_string": date_string})
-    response = templates.TemplateResponse(
-        name="/calendar/fragments/edit-view.html",
-        context=context
-        )
-    
-    return response
+    return handle_post_shifts_new(request, current_user, shift_name, date_string, db)
 
 
 @router.delete("/{shift_type_id}")
