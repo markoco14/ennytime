@@ -11,6 +11,7 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.handlers.shifts.get_shifts_new import handle_get_shifts_new
 from app.handlers.shifts.get_shifts_page import handle_get_shifts_page
+from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.handlers.shifts.post_shifts_new import handle_post_shifts_new
 from app.models.user_model import DBUser
 from app.schemas import schemas
@@ -39,36 +40,6 @@ def get_shifts_page(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
     ):
     return handle_get_shifts_page(request, current_user, db)
-
-
-@router.get("/setup")
-def get_shifts_page(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
-    ):
-    if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
-        response.delete_cookie("session-id")
-        return response
-
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
-    )
-
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "chat_data": user_chat_data,
-    }
-
-    response = templates.TemplateResponse(
-        name="/shifts/setup/index.html",
-        context=context
-    )
-
-    return response
 
 
 @router.get("/new")
@@ -113,3 +84,12 @@ def delete_shift_type(
         response.headers["HX-Redirect"] = "/shifts/setup/"
         
     return response
+
+
+@router.get("/setup")
+def get_shifts_page(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    ):
+    return handle_get_shifts_setup(request, current_user, db)
