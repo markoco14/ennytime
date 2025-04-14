@@ -130,13 +130,13 @@ def get_shift_manager_page(
 
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="shifts/shift-type-form.html",
+            name="shifts/new/partials/form.html",
             context=context
         )
         return response
 
     response = templates.TemplateResponse(
-        name="shifts/pages/new.html",
+        name="shifts/new/index.html",
         context=context
     )
     return response
