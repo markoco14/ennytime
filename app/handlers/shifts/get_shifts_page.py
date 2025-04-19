@@ -38,7 +38,7 @@ def handle_get_shifts_page(request: Request, current_user: DBUser, db: Session):
     
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
-            name="/shifts/partials/list.html",
+            name="/shifts/partials/_shifts.html",
             context=context
         )
 
