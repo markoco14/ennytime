@@ -1,0 +1,27 @@
+<form method="POST"
+    action="/shifts/{{shift_type.id}}/edit"
+    hx-post="/shifts/{{shift_type.id}}/edit"
+    hx-target="this"
+    hx-swap="outerHTML"
+    >
+
+    <div class="grid mb-4">
+        <label class="mb-1">Long Name</label>
+        <input id="long_name"
+            name="long_name"
+            value="{{shift_type.long_name}}"
+            class="border rounded-md px-2 py-1"/>
+    </div>
+
+    <div class="grid mb-4">
+        <label class="mb-1">Short Name</label>
+        <input id="short_name"
+            name="short_name"
+            value="{{shift_type.short_name}}"
+            class="border rounded-md px-2 py-1"/>
+    </div>
+
+    <input type="submit" 
+        class="border rounded-md px-2 py-1 text-pink-50 bg-gradient-to-r from-pink-500 to-pink-600 cursor-pointer hover:from-pink-400 hover:to-pink-500 active:scale-95"/>
+
+</form>
