@@ -41,8 +41,9 @@ def get_calendar_page(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     month: Optional[int] = None,
     year: Optional[int] = None,
+    day: Optional[int] = None,
 ):
-    return handle_get_calendar(request, current_user, month, year, db)
+    return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, day=day, db=db)
 
 @router.get("/calendar-card-simple/{date_string}", response_class=HTMLResponse)
 def get_simple_calendar_day_card(

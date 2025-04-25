@@ -53,30 +53,17 @@
 			<p class="text-xl">{{written_day}}</p>
 		</header>
 		<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
-			<p>The data will go here.</p>
-			{# {% include "/calendar/fragments/detail-view.html" %} #}
+			{% include "/calendar/fragments/detail-view.html" %}
 		</main>
 		<div class="flex gap-4">
-			{# <button 
-				hx-get="/calendar/{{selected_year}}/{{selected_month}}"
-				hx-on::before-request="moveToCalendar(Number(`{{day_number}}`));"
+			<button 
+				hx-get="/calendar-card-simple/{{date.date}}"
+				hx-on::before-request="moveToCalendar(Number(`{{date.day_number}}`));"
 				class="rounded bg-gray-300 px-4 py-1"
 				>
 				Calendar
-			</button> #}
-			{# 
-				HX request disabled on return to calendar view for now.
-				The animation will need some rework.
-				But it should be possible to return the simple card the same way.
-				I'll need to distringuish between hx-request + request simple card
-				and hx-request + change month
-			#}
-			<a 
-				{# hx-get="/calendar/{{selected_year}}/{{selected_month}}"
-				hx-on::before-request="moveToCalendar(Number(`{{day_number}}`));" #}
-				href="/calendar/{{selected_year}}/{{selected_month}}"
-				class="rounded bg-gray-300 px-4 py-1">Calendar</a>
-			{# <button
+			</button>
+			<button
 				id="toggle-button"
 				hx-get="/calendar/card/{{date.date}}/edit"
 				hx-target=".js-card-content"
@@ -86,7 +73,7 @@
 				class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
 				<span class="htmx-indicator-content">Edit</span>
 				<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
-			</button> #}
+			</button>
 		</div>
 	</div>
 </div>

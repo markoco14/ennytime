@@ -3,7 +3,8 @@ Calendar related routes
 """
 import logging
 import datetime
-
+from dataclasses import dataclass
+from typing import Optional
 
 from sqlalchemy.orm import Session
 from fastapi import Request, Response
@@ -16,7 +17,15 @@ from app.models.user_model import DBUser
 from app.queries import shift_queries
 from app.services import calendar_service, calendar_shift_service, chat_service
 
-def handle_get_calendar(request: Request, current_user: DBUser, month: int, year: int, db: Session):
+
+def handle_get_calendar(
+    request: Request,
+    current_user: DBUser,
+    month: int,
+    year: int,
+    db: Session,
+    day: Optional[int] = None,
+):
     if not current_user:
         if request.headers.get("HX-Request"):
             response = Response(status_code=401)
@@ -103,12 +112,21 @@ def handle_get_calendar(request: Request, current_user: DBUser, month: int, year
         "days_of_week": calendar_service.DAYS_OF_WEEK,
     }
 
+    if request.query_params.get("day") and "hx-request" in request.headers:
+        response = templates.TemplateResponse(
+            name="calendar/calendar-card-detail.html",
+            context=context
+        )
+
+        return response
+    
     if "hx-request" in request.headers:
         response = templates.TemplateResponse(
             name="calendar/fragments/calendar-oob.html",
             context=context,
         )
         return response
+    
 
     # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
