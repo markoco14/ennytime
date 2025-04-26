@@ -113,6 +113,23 @@ def handle_get_calendar(
     }
 
     if request.query_params.get("day") and "hx-request" in request.headers:
+        # "request": request,
+        # "current_user": current_user,
+        # "month": month_number,
+        # "written_month": written_month, # April 03, 2025
+        # "written_day": written_day, # Thursday
+        # "date": {
+        #     "date": date_string,
+        #     "shifts": user_shifts_with_type,
+        #     "day_number": day_number,
+        #     "bae_shifts": [],
+        # },
+        # "selected_month": month_number,
+        # "birthdays": birthdays
+        date_object = datetime.date(year=year, month=month, day=day)
+
+        context["date_object"] = date_object
+
         response = templates.TemplateResponse(
             name="calendar/calendar-card-detail.html",
             context=context
