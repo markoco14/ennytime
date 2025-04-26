@@ -1,90 +1,86 @@
 {% from '/macros/spinner.html' import spinner %}
-<div hx-get="/calendar/{{selected_year}}/{{selected_month}}?day={{date.day_number}}"
+<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}?day={{value.date.day}}"
 	hx-push-url="true"
 	 hx-target="this"
 	 hx-swap="outerHTML"
 	 hx-trigger="click"
-	 hx-on::before-request="moveToModal(Number(`{{date.day_number}}`));"
+	 hx-on::before-request="moveToModal(Number(`{{value.date.day}}`));"
 	 class="js-card relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white"
 	 >
 	{# birthdays #}
 	<div class="absolute -top-3 sm:-top-5 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
-		{% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
-		<div class="rounded-full bg-pink-500 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
-			<img 
-				 src="../../../static/birthday-cake.png"
-				 alt="HBD"
-				 class="h-3 w-3 sm:h-5 sm:w-5">
-		</div>
-		{% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
-		<div class="rounded-full bg-pink-300 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
-			<img 
-				 src="../../../static/birthday-cake.png"
-				 alt="HBD"
-				 class="h-3 w-3 sm:h-5 sm:w-5">
-		</div>
-		{% endif %}
+			{% if birthday.name == current_user.display_name and birthday.day == value.date.day %}
+				<div class="rounded-full bg-pink-500 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+					<img 
+						src="../../../static/birthday-cake.png"
+						alt="HBD"
+						class="h-3 w-3 sm:h-5 sm:w-5">
+				</div>
+			{% elif birthday.name != current_user.display_name and birthday.day == value.date.day %}
+				<div class="rounded-full bg-pink-300 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+					<img 
+						src="../../../static/birthday-cake.png"
+						alt="HBD"
+						class="h-3 w-3 sm:h-5 sm:w-5">
+				</div>
+			{% endif %}
 		{% endfor %}
-		{% if selected_month == 12 and date.day_number == 25 %}
-		<div class="rounded-full bg-red-400 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
-			<img 
-				 src="../../../static/christmas-tree-1.png"
-				 alt="MC"
-				 class="h-3 w-3 sm:h-5 sm:w-5">
-		</div>
+		{% if selected_month == 12 and value.date.day == 25 %}
+			<div class="rounded-full bg-red-400 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+				<img 
+					src="../../../static/christmas-tree-1.png"
+					alt="MC"
+					class="h-3 w-3 sm:h-5 sm:w-5">
+			</div>
 		{% endif %}
-		{% if selected_month == 12 and date.day_number == 31 %}
-		<div class="rounded-full bg-sky-900 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
-			<img 
-				 src="../../../static/new-years-eve.png"
-				 alt="HNY"
-				 class="h-4 w-4 sm:h-8 sm:w-8">
-		</div>
+		{% if selected_month == 12 and value.date.day == 31 %}
+			<div class="rounded-full bg-sky-900 h-4 w-4 sm:h-8 sm:w-8 flex justify-center items-center">
+				<img 
+					src="../../../static/new-years-eve.png"
+					alt="HNY"
+					class="h-4 w-4 sm:h-8 sm:w-8">
+			</div>
 		{% endif %}
-		{% if selected_month == 2 and date.day_number == 14 %}
+		{% if selected_month == 2 and value.date.day == 14 %}
 			{% include "ui/icons/valentines-calendar.html" %}
 		{% endif %}
 	</div>
 	{# loading spinner #}
 	<div class="htmx-indicator w-full h-full grid place-content-center">
 		<div class="w-full h-full flex justify-center items-center">
-			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+			{{ spinner('spinner', 'h-6', 'h-6', 'text-black') }}
 		</div>
 	</div>
-	{# day number #}
-	{# shifts #}
 	<div class="htmx-indicator-content grid grid-rows-3 md:gap-2 max-h-[200px]">
-		<span>{{ date.day_number }}</span>
-		{# user shifts #}
-		{% if date.shifts|length == 1%}
-		<ul>
-			<li class="rounded-md bg-pink-500 text-black  ">
-				{{date.shifts[0].short_name}}
-			</li>
-		</ul>
-		{% elif date.shifts|length > 1%}
-		<ul>
-			<li class="rounded-md bg-pink-500 text-black  ">
-				x{{date.shifts|length}}
-			</li>
-		</ul>
+		<span>{{ value.date.day }}</span>
+		{# current user shifts #}
+		{% if value.shifts|length == 1 %}
+			<ul>
+				<li class="rounded-md bg-pink-500 text-black">
+					{{ value.shifts[0].short_name }}
+				</li>
+			</ul>
+		{% elif value.shifts|length > 1 %}
+			<ul>
+				<li class="rounded-md bg-pink-500 text-black">
+					x{{ value.shifts|length }}
+				</li>
+			</ul>
 		{%endif%}
 		{# bae shifts #}
-		{% if date.bae_shifts and date.bae_shifts|length == 1%}
-		<ul class="row-start-3">
-
-			<li class="rounded-md bg-pink-300 text-black  ">
-				{{date.bae_shifts[0].short_name}}
-			</li>
-
-		</ul>
-		{% elif date.bae_shifts and date.bae_shifts|length > 1%}
-		<ul>
-			<li class="rounded-md bg-pink-300 text-black  ">
-				{{date.bae_shifts|length}} shifts
-			</li>
-		</ul>
+		{% if value.bae_shifts and value.bae_shifts|length == 1 %}
+			<ul class="row-start-3">
+				<li class="rounded-md bg-pink-300 text-black">
+					{{ value.bae_shifts[0].short_name }}
+				</li>
+			</ul>
+		{% elif value.bae_shifts and value.bae_shifts|length > 1%}
+			<ul>
+				<li class="rounded-md bg-pink-300 text-black">
+					x{{ value.bae_shifts|length }}
+				</li>
+			</ul>
 		{%endif%}
 	</div>
 </div>

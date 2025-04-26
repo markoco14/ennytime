@@ -56,16 +56,9 @@
 			{% include "/calendar/fragments/detail-view.html" %}
 		</main>
 		<div class="flex gap-4">
-			{# 
-				HX request disabled on return to calendar view for now.
-				The animation will need some rework.
-				But it should be possible to return the simple card the same way.
-				I'll need to distringuish between hx-request + request simple card
-				and hx-request + change month
-			#}
 			<a 
-				{# hx-get="/calendar/{{date_object.year}}/{{date_object.month}}" #}
-				{# hx-on::before-request="moveToCalendar(Number(`{{date_object.day}}`));" #}
+				hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&simple=true"
+				hx-on::before-request="moveToCalendar(Number(`{{date_object.day}}`));"
 				href="/calendar/{{date_object.year}}/{{date_object.month}}"
 				class="rounded bg-gray-300 px-4 py-1">
 				Close

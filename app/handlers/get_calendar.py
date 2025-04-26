@@ -73,8 +73,13 @@ def handle_get_calendar(
         month=selected_month
         )
 
-    month_calendar_dict = dict((str(day), {"date": str(
-        day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
+
+    month_calendar_dict = dict(
+        (str(day), {
+            "date": day,
+            "shifts": [],
+            "bae_shifts": []
+            }) for day in month_calendar)
 
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
@@ -106,9 +111,28 @@ def handle_get_calendar(
         "selected_year": selected_year,
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
-        "month_calendar": list(month_calendar_dict.values()),
+        "month_calendar": month_calendar_dict,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
     }
+
+    if request.query_params.get("day") and request.query_params.get("simple"):
+        date_object = datetime.date(year=year, month=month, day=day)
+        context["date_object"] = date_object
+
+        context["value"] = {
+            "date": date_object,
+            "shifts": [],
+            "bae_shifts": []
+        }
+
+        response = templates.TemplateResponse(
+            name="calendar/calendar-card-simple.html",
+            context=context
+        )
+
+        response.headers["HX-Push-Url"] = f"/calendar/{date_object.year}/{date_object.month}"
+
+        return response
 
     if request.query_params.get("day") and "hx-request" in request.headers:
         date_object = datetime.date(year=year, month=month, day=day)
