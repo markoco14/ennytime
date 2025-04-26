@@ -53,17 +53,9 @@
 			<p class="text-xl">{{date_object.strftime('%A')}}</p>
 		</header>
 		<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
-			<p>The data will go here.</p>
-			{# {% include "/calendar/fragments/detail-view.html" %} #}
+			{% include "/calendar/fragments/detail-view.html" %}
 		</main>
 		<div class="flex gap-4">
-			{# <button 
-				hx-get="/calendar/{{selected_year}}/{{date_object.month}}"
-				hx-on::before-request="moveToCalendar(Number(`{{day_number}}`));"
-				class="rounded bg-gray-300 px-4 py-1"
-				>
-				Calendar
-			</button> #}
 			{# 
 				HX request disabled on return to calendar view for now.
 				The animation will need some rework.
@@ -72,21 +64,23 @@
 				and hx-request + change month
 			#}
 			<a 
-				{# hx-get="/calendar/{{date_object.year}}/{{date_object.month}}"
-				hx-on::before-request="moveToCalendar(Number(`{{date_object.day}}`));" #}
+				{# hx-get="/calendar/{{date_object.year}}/{{date_object.month}}" #}
+				{# hx-on::before-request="moveToCalendar(Number(`{{date_object.day}}`));" #}
 				href="/calendar/{{date_object.year}}/{{date_object.month}}"
-				class="rounded bg-gray-300 px-4 py-1">Close</a>
-			{# <button
-				id="toggle-button"
-				hx-get="/calendar/card/{{date.date}}/edit"
-				hx-target=".js-card-content"
-				hx-indicator="this"
-				hx-swap="innerHTML transition:true"
-				hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
+				class="rounded bg-gray-300 px-4 py-1">
+				Close
+			</a>
+			<a 
+				{# id="toggle-button" #}
+				{# hx-get="/calendar/card/{{date.date}}/edit" #}
+				{# hx-target=".js-card-content" #}
+				{# hx-indicator="this" #}
+				{# hx-swap="innerHTML transition:true" #}
+				{# hx-on::before-request="toggleEnterFromRight('data-js-card-content');" #}
+				href="#"
 				class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
-				<span class="htmx-indicator-content">Edit</span>
-				<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
-			</button> #}
+				Edit
+			</a>
 		</div>
 	</div>
 </div>

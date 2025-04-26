@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 from fastapi import Request, Response
 from fastapi.responses import RedirectResponse
 
-
 from app.core.template_utils import templates
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
@@ -77,7 +76,6 @@ def handle_get_calendar(
     month_calendar_dict = dict((str(day), {"date": str(
         day), "day_number": day.day, "month_number": day.month, "shifts": [], "bae_shifts": []}) for day in month_calendar)
 
-    
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
     if bae_user:
@@ -113,22 +111,22 @@ def handle_get_calendar(
     }
 
     if request.query_params.get("day") and "hx-request" in request.headers:
-        # "request": request,
-        # "current_user": current_user,
-        # "month": month_number,
-        # "written_month": written_month, # April 03, 2025
-        # "written_day": written_day, # Thursday
-        # "date": {
-        #     "date": date_string,
-        #     "shifts": user_shifts_with_type,
-        #     "day_number": day_number,
-        #     "bae_shifts": [],
-        # },
-        # "selected_month": month_number,
-        # "birthdays": birthdays
         date_object = datetime.date(year=year, month=month, day=day)
 
         context["date_object"] = date_object
+        context["bae_user"] = bae_user
+
+        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                db=db,
+                                                user_ids=[current_user.id, bae_user.id],
+                                                selected_date = date_object.strftime("%Y-%m-%d")
+                                                )
+
+        user_shifts = [shift for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+        bae_shifts = [shift for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+
+        context["user_shifts"] = user_shifts
+        context["bae_shifts"] = bae_shifts
 
         response = templates.TemplateResponse(
             name="calendar/calendar-card-detail.html",
@@ -144,7 +142,6 @@ def handle_get_calendar(
         )
         return response
     
-
     # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
     user_chat_data = chat_service.get_user_chat_data(
@@ -152,7 +149,8 @@ def handle_get_calendar(
         current_user_id=current_user.id
     )
 
-    context.update({"chat_data": user_chat_data})  
+    context.update({"chat_data": user_chat_data})
+
     response = templates.TemplateResponse(
         name="calendar/index.html",
         context=context,
