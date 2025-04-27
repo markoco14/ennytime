@@ -25,6 +25,28 @@ def handle_get_calendar(
     db: Session,
     day: Optional[int] = None,
 ):
+    """
+    Handles requests related to viewing the calendar. \n
+    Query params: day, simple \n
+    Hx-request headers \n
+    Render conditions:
+        1. calendar view, standard request, whole page
+        2. calendar view, hx-request, calendar partial
+        3. calendar view, hx-request, simple view partial (animation: close modal and move back to calendar)
+        4. detail view, standard request, whole page with modal open
+        5. detail view, hx-request, detail view partial (animation: open modal and pop out of calendar)
+    Only need to request shifts for whole month in conditions 1, 2, and 4:
+        1. Renders the whole page including the calendar so it needs all the shifts.
+        2. Renders the calendar so it needs all the shifts.
+        4. Renders the modal open but also renders the calendar behind it so it needs all the shifts.
+    Gaurd clauses:
+        1. check for current user
+        2. check if hx-request, day is selected, simple view
+        3. check if hx-request, day is selected, detail view
+        4. check if standard request, day is selected, detail view, get all the shifts
+        5. check if hx-request, calendar view, get all shifts
+        6. check if standard request, calender view, get all shifts
+    """
     if not current_user:
         if request.headers.get("HX-Request"):
             response = Response(status_code=401)
@@ -73,7 +95,6 @@ def handle_get_calendar(
         month=selected_month
         )
 
-
     month_calendar_dict = dict(
         (str(day), {
             "date": day,
@@ -115,7 +136,7 @@ def handle_get_calendar(
         "days_of_week": calendar_service.DAYS_OF_WEEK,
     }
 
-    if request.query_params.get("day") and request.query_params.get("simple"):
+    if "hx-request" in request.headers and request.query_params.get("day") and request.query_params.get("simple"):
         date_object = datetime.date(year=year, month=month, day=day)
         context["date_object"] = date_object
 
@@ -143,7 +164,7 @@ def handle_get_calendar(
 
         return response
 
-    if request.query_params.get("day") and "hx-request" in request.headers:
+    if "hx-request" in request.headers and request.query_params.get("day"):
         date_object = datetime.date(year=year, month=month, day=day)
 
         context["date_object"] = date_object
@@ -166,6 +187,35 @@ def handle_get_calendar(
             context=context
         )
 
+        return response
+    
+    if request.query_params.get("day"):
+        date_object = datetime.date(year=selected_year, month=selected_month, day=day)
+        user_chat_data = chat_service.get_user_chat_data(
+            db=db,
+            current_user_id=current_user.id
+        )
+
+        context.update({"chat_data": user_chat_data})
+        context["date_object"] = date_object
+        context["bae_user"] = bae_user
+
+        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                db=db,
+                                                user_ids=[current_user.id, bae_user.id],
+                                                selected_date = date_object.strftime("%Y-%m-%d")
+                                                )
+
+        user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+        bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+
+        context["user_shifts"] = user_shifts
+        context["bae_shifts"] = bae_shifts
+
+        response = templates.TemplateResponse(
+            name="calendar/index.html",
+            context=context,
+        )
         return response
     
     if "hx-request" in request.headers:
