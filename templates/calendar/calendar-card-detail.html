@@ -53,7 +53,11 @@
 			<p class="text-xl">{{date_object.strftime('%A')}}</p>
 		</header>
 		<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
-			{% include "/calendar/fragments/detail-view.html" %}
+			{% if request.query_params.get("edit") %}
+				{% include "/calendar/fragments/edit-view.html" %}
+			{% else %}
+				{% include "/calendar/fragments/detail-view.html" %}
+			{% endif %}
 		</main>
 		<div class="flex gap-4">
 			<a 
@@ -63,17 +67,34 @@
 				class="rounded bg-gray-300 px-4 py-1">
 				Close
 			</a>
-			<a 
-				id="toggle-button"
-				hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
-				hx-target=".js-card-content"
-				hx-indicator="this"
-				hx-swap="innerHTML transition:true"
-				hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
-				href="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
-				class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
-				Edit
-			</a>
+			{% if request.query_params.get("edit") %}
+				<a 
+					id="toggle-button"
+					hx-swap-oob="true"
+					hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}"
+					hx-target=".js-card-content"
+					hx-indicator="this"
+					hx-swap="innerHTML transition:true"
+					hx-on::before-request="toggleEnterFromLeft('data-js-card-content');"
+					href="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}"
+					class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
+				>
+					<span class="htmx-indicator-content">Back</span>
+					<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+				</a>
+			{% else %}
+				<a 
+					id="toggle-button"
+					hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
+					hx-target=".js-card-content"
+					hx-indicator="this"
+					hx-swap="innerHTML transition:true"
+					hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
+					href="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
+					class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
+					Edit
+				</a>
+			{% endif %}
 		</div>
 	</div>
 </div>

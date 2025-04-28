@@ -202,7 +202,7 @@ def handle_get_calendar(
         context["date_string"] = date_object.strftime("%Y-%m-%d")
 
         response = templates.TemplateResponse(
-            name="calendar/fragments/edit-view.html",
+            name="calendar/fragments/edit-view-oob.html",
             context=context
         )
 
@@ -248,34 +248,59 @@ def handle_get_calendar(
     
     # Full page refresh, modal open, request whole calendar, render details in modal for selected day
     if request.query_params.get("day") and request.query_params.get("edit"):
-        # date_object = datetime.date(year=selected_year, month=selected_month, day=day)
-        # user_chat_data = chat_service.get_user_chat_data(
-        #     db=db,
-        #     current_user_id=current_user.id
-        # )
+        date_object = datetime.date(year=selected_year, month=selected_month, day=day)
+        user_chat_data = chat_service.get_user_chat_data(
+            db=db,
+            current_user_id=current_user.id
+        )
 
-        # context.update({"chat_data": user_chat_data})
-        # context["date_object"] = date_object
-        # context["bae_user"] = bae_user
+        context.update({"chat_data": user_chat_data})
+        context["date_object"] = date_object
+        context["bae_user"] = bae_user
 
-        # shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-        #                                         db=db,
-        #                                         user_ids=[current_user.id, bae_user.id],
-        #                                         selected_date = date_object.strftime("%Y-%m-%d")
-        #                                         )
+        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                db=db,
+                                                user_ids=[current_user.id, bae_user.id],
+                                                selected_date = date_object.strftime("%Y-%m-%d")
+                                                )
 
-        # user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-        # bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+        user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+        bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
-        # context["user_shifts"] = user_shifts
-        # context["bae_shifts"] = bae_shifts
+        context["user_shifts"] = user_shifts
+        context["bae_shifts"] = bae_shifts
 
-        # response = templates.TemplateResponse(
-        #     name="calendar/index.html",
-        #     context=context,
-        # )
-        # return response
-        return "edit view coming"
+        db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+
+        query = text("""
+            SELECT
+                etime_shifts.*
+            FROM etime_shifts
+            WHERE etime_shifts.user_id = :user_id
+            AND etime_shifts.date = :date_string
+            ORDER BY etime_shifts.date
+        """)
+
+        result = db.execute(
+            query,
+            {"user_id": current_user.id,
+            "date_string": date_object.strftime("%Y-%m-%d")
+            }
+        ).fetchall()
+
+        user_shifts = []
+        for row in result:
+            user_shifts.append(row._asdict())
+
+        context["shifts"] = user_shifts
+        context["shift_types"] = db_shift_types
+        context["date_string"] = date_object.strftime("%Y-%m-%d")
+
+        response = templates.TemplateResponse(
+            name="calendar/index.html",
+            context=context,
+        )
+        return response
     
     # Full page refresh, modal open, request whole calendar, render details in modal for selected day
     if request.query_params.get("day"):
