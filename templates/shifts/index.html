@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-Schedule
+Ennytime — Shifts
 {% endblock title %}
 {% block content %}
 <section>
@@ -10,7 +10,7 @@ Schedule
             Manage your work shifts below.
         </p>
         <hr class="mb-4 border-pink-200"/>
-        {% include "shifts/partials/list.html" %}
+        {% include "shifts/partials/_shifts.html" %}
         <a 
             href="/shifts/new"
             hx-get="/shifts/new" 

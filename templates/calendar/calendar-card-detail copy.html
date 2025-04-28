@@ -1,0 +1,79 @@
+{% from '/macros/spinner.html' import spinner%}
+<div class="js-card relative slide-it h-full w-full flex flex-col justify-between md:gap-2"
+	 hx-target="this"
+	 hx-sync="this"
+	 hx-swap="outerHTML"
+	 hx-indicator="this">
+	{# birthdays #}
+	<div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
+		{% for birthday in birthdays %}
+		{% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
+		<div class="rounded-full bg-pink-500 h-8 w-8 flex justify-center items-center">
+			<img src="../../../static/birthday-cake.png"
+				 alt="HBD"
+				 class="h-5 w-5">
+		</div>
+		{% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
+		<div class="rounded-full bg-pink-300 h-8 w-8 flex justify-center items-center">
+			<img src="../../../static/birthday-cake.png"
+				 alt="HBD"
+				 class="h-5 w-5">
+		</div>
+		{% endif %}
+		{% endfor %}
+		{% if selected_month == 12 and date.day_number == 25 %}
+		<div class="rounded-full bg-red-400 h-8 w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/christmas-tree-1.png"
+				 alt="HBD"
+				 class="h-5 w-5">
+		</div>
+		{% endif %}
+		{% if selected_month == 12 and date.day_number == 31 %}
+		<div class="rounded-full bg-sky-900 h-8 w-8 flex justify-center items-center">
+			<img 
+				 src="../../../static/new-years-eve.png"
+				 alt="HBD"
+				 class="h-8 w-8">
+		</div>
+		{% endif %}
+		{% if selected_month == 2 and date.day_number == 14 %}
+			{% include "ui/icons/valentines-calendar-detail.html" %}
+		{% endif %}
+	</div>
+	{# loading spinner #}
+	<div class="htmx-indicator h-full w-full grid">
+		<div class="w-full h-full flex justify-center items-center">
+			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
+		</div>
+	</div>
+	<div class="htmx-indicator-content p-4 md:p-8 h-full flex flex-col justify-between overflow-y-auto">
+		<header>
+			<h3 class="text-3xl">{{written_month}}</h3>
+			<p class="text-xl">{{written_day}}</p>
+		</header>
+		<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
+			{% include "/calendar/fragments/detail-view.html" %}
+		</main>
+		<div class="flex gap-4">
+			<button 
+				hx-get="/calendar-card-simple/{{date.date}}"
+				hx-on::before-request="moveToCalendar(Number(`{{date.day_number}}`));"
+				class="rounded bg-gray-300 px-4 py-1"
+				>
+				Calendar
+			</button>
+			<button
+				id="toggle-button"
+				hx-get="/calendar/card/{{date.date}}/edit"
+				hx-target=".js-card-content"
+				hx-indicator="this"
+				hx-swap="innerHTML transition:true"
+				hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
+				class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
+				<span class="htmx-indicator-content">Edit</span>
+				<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+			</button>
+		</div>
+	</div>
+</div>

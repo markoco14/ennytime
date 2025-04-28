@@ -7,13 +7,13 @@
 	{# birthdays #}
 	<div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
 		{% for birthday in birthdays %}
-		{% if birthday.name == current_user.display_name and birthday.day == date.day_number %}
+		{% if birthday.name == current_user.display_name and birthday.day == date_object.day %}
 		<div class="rounded-full bg-pink-500 h-8 w-8 flex justify-center items-center">
 			<img src="../../../static/birthday-cake.png"
 				 alt="HBD"
 				 class="h-5 w-5">
 		</div>
-		{% elif birthday.name != current_user.display_name and birthday.day == date.day_number %}
+		{% elif birthday.name != current_user.display_name and birthday.day == date_object.day %}
 		<div class="rounded-full bg-pink-300 h-8 w-8 flex justify-center items-center">
 			<img src="../../../static/birthday-cake.png"
 				 alt="HBD"
@@ -21,7 +21,7 @@
 		</div>
 		{% endif %}
 		{% endfor %}
-		{% if selected_month == 12 and date.day_number == 25 %}
+		{% if date_object.month == 12 and date_object.day == 25 %}
 		<div class="rounded-full bg-red-400 h-8 w-8 flex justify-center items-center">
 			<img 
 				 src="../../../static/christmas-tree-1.png"
@@ -29,7 +29,7 @@
 				 class="h-5 w-5">
 		</div>
 		{% endif %}
-		{% if selected_month == 12 and date.day_number == 31 %}
+		{% if date_object.month == 12 and date_object.day == 31 %}
 		<div class="rounded-full bg-sky-900 h-8 w-8 flex justify-center items-center">
 			<img 
 				 src="../../../static/new-years-eve.png"
@@ -37,7 +37,7 @@
 				 class="h-8 w-8">
 		</div>
 		{% endif %}
-		{% if selected_month == 2 and date.day_number == 14 %}
+		{% if date_object.month == 2 and date_object.day == 14 %}
 			{% include "ui/icons/valentines-calendar-detail.html" %}
 		{% endif %}
 	</div>
@@ -49,31 +49,52 @@
 	</div>
 	<div class="htmx-indicator-content p-4 md:p-8 h-full flex flex-col justify-between overflow-y-auto">
 		<header>
-			<h3 class="text-3xl">{{written_month}}</h3>
-			<p class="text-xl">{{written_day}}</p>
+			<h3 class="text-3xl">{{date_object.strftime('%B %d, %Y')}}</h3>
+			<p class="text-xl">{{date_object.strftime('%A')}}</p>
 		</header>
 		<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
-			{% include "/calendar/fragments/detail-view.html" %}
+			{% if request.query_params.get("edit") %}
+				{% include "/calendar/fragments/edit-view.html" %}
+			{% else %}
+				{% include "/calendar/fragments/detail-view.html" %}
+			{% endif %}
 		</main>
 		<div class="flex gap-4">
-			<button 
-				hx-get="/calendar-card-simple/{{date.date}}"
-				hx-on::before-request="moveToCalendar(Number(`{{date.day_number}}`));"
-				class="rounded bg-gray-300 px-4 py-1"
+			<a 
+				hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&simple=true"
+				hx-on::before-request="moveToCalendar(Number(`{{date_object.day}}`));"
+				href="/calendar/{{date_object.year}}/{{date_object.month}}"
+				class="rounded bg-gray-300 px-4 py-1">
+				Close
+			</a>
+			{% if request.query_params.get("edit") %}
+				<a 
+					id="toggle-button"
+					hx-swap-oob="true"
+					hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}"
+					hx-target=".js-card-content"
+					hx-indicator="this"
+					hx-swap="innerHTML transition:true"
+					hx-on::before-request="toggleEnterFromLeft('data-js-card-content');"
+					href="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}"
+					class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
 				>
-				Calendar
-			</button>
-			<button
-				id="toggle-button"
-				hx-get="/calendar/card/{{date.date}}/edit"
-				hx-target=".js-card-content"
-				hx-indicator="this"
-				hx-swap="innerHTML transition:true"
-				hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
-				class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
-				<span class="htmx-indicator-content">Edit</span>
-				<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
-			</button>
+					<span class="htmx-indicator-content">Back</span>
+					<span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+				</a>
+			{% else %}
+				<a 
+					id="toggle-button"
+					hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
+					hx-target=".js-card-content"
+					hx-indicator="this"
+					hx-swap="innerHTML transition:true"
+					hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
+					href="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
+					class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
+					Edit
+				</a>
+			{% endif %}
 		</div>
 	</div>
 </div>
