@@ -1,46 +1,4 @@
-{% if user_shifts|length == 0 and bae_shifts|length == 0 %}
-    {# both no shifts #}
-    <p class="border p-4 rounded-md">You are both free today. Meet up and see the world!</p>
-{% elif user_shifts|length == 0 and bae_shifts|length > 0 %}
-    {# Current user no shifts #}
-    <p class="border p-4 rounded-md">You are free today.</p>
-    {#  bae yes shifts #}
-    <ul class="bg-pink-300  p-4 rounded-md">
-        {% for shift in bae_shifts  %}
-            {% if shift.user_id == bae_user.id %}
-                <p>{{shift.long_name}}</p>
-            {% endif %}	
-        {% endfor %}
-    </ul>
-{% elif user_shifts|length > 0 and bae_shifts|length == 0%}
-    {# Current user yes shifts #}
-    <ul class="bg-pink-500  p-4 rounded-md">
-        {% for shift in user_shifts  %}
-            {% if shift.user_id == current_user.id %}
-                <p>{{shift.long_name}}</p>
-            {% endif %}	
-        {% endfor %}
-    </ul>
-    {# bae no shifts #}
-    <p class="border p-4 rounded-md">{{bae_user.display_name}} is free today.</p>
-{% else %}
-    {# Current user yes shifts #}
-    <ul class="bg-pink-500  p-4 rounded-md">
-        {% for shift in user_shifts  %}
-            {% if shift.user_id == current_user.id %}
-                <p>{{shift.long_name}}</p>
-            {% endif %}	
-        {% endfor %}
-    </ul>
-    {# bae no shifts #}
-    <ul class="bg-pink-300  p-4 rounded-md">
-        {% for shift in bae_shifts  %}
-            {% if shift.user_id == bae_user.id %}
-                <p>{{shift.long_name}}</p>
-            {% endif %}	
-        {% endfor %}
-    </ul>
-{% endif %}
+{% include "/calendar/fragments/detail-view.html" %}
 
 <a 
     id="toggle-button"

@@ -146,14 +146,23 @@ def handle_get_calendar(
         date_object = datetime.date(year=year, month=month, day=day)
         context["date_object"] = date_object
 
-        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                db=db,
-                                                user_ids=[current_user.id, bae_user.id],
-                                                selected_date = date_object.strftime("%Y-%m-%d")
-                                                )
+        if not bae_user:
+            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
+                db=db,
+                user_id=current_user.id,
+                selected_date = date_object.strftime("%Y-%m-%d")
+            )
+            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
+            bae_shifts = []
+        else:
+            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, bae_user.id],
+                                                    selected_date = date_object.strftime("%Y-%m-%d")
+                                                    )
 
-        user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-        bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
         context["value"] = {
             "date": date_object,
@@ -217,14 +226,23 @@ def handle_get_calendar(
         context["date_object"] = date_object
         context["bae_user"] = bae_user
 
-        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                db=db,
-                                                user_ids=[current_user.id, bae_user.id],
-                                                selected_date = date_object.strftime("%Y-%m-%d")
-                                                )
+        if not bae_user:
+            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
+                db=db,
+                user_id=current_user.id,
+                selected_date = date_object.strftime("%Y-%m-%d")
+            )
+            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
+            bae_shifts = []
+        else:
+            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, bae_user.id],
+                                                    selected_date = date_object.strftime("%Y-%m-%d")
+                                                    )
 
-        user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-        bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
         context["user_shifts"] = user_shifts
         context["bae_shifts"] = bae_shifts
@@ -258,14 +276,23 @@ def handle_get_calendar(
         context["date_object"] = date_object
         context["bae_user"] = bae_user
 
-        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                db=db,
-                                                user_ids=[current_user.id, bae_user.id],
-                                                selected_date = date_object.strftime("%Y-%m-%d")
-                                                )
+        if not bae_user:
+            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
+                db=db,
+                user_id=current_user.id,
+                selected_date = date_object.strftime("%Y-%m-%d")
+            )
+            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
+            bae_shifts = []
+        else:
+            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, bae_user.id],
+                                                    selected_date = date_object.strftime("%Y-%m-%d")
+                                                    )
 
-        user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-        bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
         context["user_shifts"] = user_shifts
         context["bae_shifts"] = bae_shifts
@@ -314,14 +341,23 @@ def handle_get_calendar(
         context["date_object"] = date_object
         context["bae_user"] = bae_user
 
-        shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                db=db,
-                                                user_ids=[current_user.id, bae_user.id],
-                                                selected_date = date_object.strftime("%Y-%m-%d")
-                                                )
+        if not bae_user:
+            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
+                db=db,
+                user_id=current_user.id,
+                selected_date = date_object.strftime("%Y-%m-%d")
+            )
+            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
+            bae_shifts = []
+        else:
+            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, bae_user.id],
+                                                    selected_date = date_object.strftime("%Y-%m-%d")
+                                                    )
 
-        user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-        bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
         context["user_shifts"] = user_shifts
         context["bae_shifts"] = bae_shifts
