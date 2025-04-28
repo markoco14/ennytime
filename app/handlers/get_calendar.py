@@ -6,6 +6,7 @@ import datetime
 from dataclasses import dataclass
 from typing import Optional
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from fastapi import Request, Response
 from fastapi.responses import RedirectResponse
@@ -14,6 +15,7 @@ from app.core.template_utils import templates
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
 from app.queries import shift_queries
+from app.repositories import shift_type_repository
 from app.services import calendar_service, calendar_shift_service, chat_service
 
 
@@ -33,12 +35,15 @@ def handle_get_calendar(
         1. calendar view, standard request, whole page
         2. calendar view, hx-request, calendar partial
         3. calendar view, hx-request, simple view partial (animation: close modal and move back to calendar)
-        4. detail view, standard request, whole page with modal open
+        4. detail view, standard request, whole page with modal open to detail view
         5. detail view, hx-request, detail view partial (animation: open modal and pop out of calendar)
-    Only need to request shifts for whole month in conditions 1, 2, and 4:
+        6. edit view, hx-request, edit view partial (animation: slide to edit view)
+        7. edit view, standard request, whole page with modal open to edit view
+    Only need to request shifts for whole month in conditions 1, 2, 4, and 7:
         1. Renders the whole page including the calendar so it needs all the shifts.
         2. Renders the calendar so it needs all the shifts.
         4. Renders the modal open but also renders the calendar behind it so it needs all the shifts.
+        7. Renders the modal open but also renders the calendar behind it so it needs all the shifts
     Gaurd clauses:
         1. check for current user
         2. check if hx-request, day is selected, simple view
@@ -136,6 +141,7 @@ def handle_get_calendar(
         "days_of_week": calendar_service.DAYS_OF_WEEK,
     }
 
+    # Return to calendar animation, closed modal, and request simple calendar card for selected day
     if "hx-request" in request.headers and request.query_params.get("day") and request.query_params.get("simple"):
         date_object = datetime.date(year=year, month=month, day=day)
         context["date_object"] = date_object
@@ -163,7 +169,48 @@ def handle_get_calendar(
         response.headers["HX-Push-Url"] = f"/calendar/{date_object.year}/{date_object.month}"
 
         return response
+    
+    # Slide to edit view animation, request edit view
+    if "hx-request" in request.headers and request.query_params.get("day") and request.query_params.get("edit"):
+        date_object = datetime.date(year=year, month=month, day=day)
+        context["date_object"] = date_object
 
+        db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+
+        query = text("""
+            SELECT
+                etime_shifts.*
+            FROM etime_shifts
+            WHERE etime_shifts.user_id = :user_id
+            AND etime_shifts.date = :date_string
+            ORDER BY etime_shifts.date
+        """)
+
+        result = db.execute(
+            query,
+            {"user_id": current_user.id,
+            "date_string": date_object.strftime("%Y-%m-%d")
+            }
+        ).fetchall()
+
+        user_shifts = []
+        for row in result:
+            user_shifts.append(row._asdict())
+
+        context["shifts"] = user_shifts
+        context["shift_types"] = db_shift_types
+        context["date_string"] = date_object.strftime("%Y-%m-%d")
+
+        response = templates.TemplateResponse(
+            name="calendar/fragments/edit-view.html",
+            context=context
+        )
+
+        response.headers["HX-Push-Url"] = f"/calendar/{date_object.year}/{date_object.month}?day={day}&edit=true"
+
+        return response
+    
+    # Open modal animation, request detail card for selected day
     if "hx-request" in request.headers and request.query_params.get("day"):
         date_object = datetime.date(year=year, month=month, day=day)
 
@@ -182,6 +229,16 @@ def handle_get_calendar(
         context["user_shifts"] = user_shifts
         context["bae_shifts"] = bae_shifts
 
+        if "&edit=true" in request.headers["referer"]:
+            response = templates.TemplateResponse(
+                name="calendar/fragments/detail-view-oob.html",
+                context=context
+            )
+
+            response.headers["Hx-Push-Url"] = f"/calendar/{date_object.year}/{date_object.month}?day={date_object.day}"
+
+            return response        
+
         response = templates.TemplateResponse(
             name="calendar/calendar-card-detail.html",
             context=context
@@ -189,6 +246,38 @@ def handle_get_calendar(
 
         return response
     
+    # Full page refresh, modal open, request whole calendar, render details in modal for selected day
+    if request.query_params.get("day") and request.query_params.get("edit"):
+        # date_object = datetime.date(year=selected_year, month=selected_month, day=day)
+        # user_chat_data = chat_service.get_user_chat_data(
+        #     db=db,
+        #     current_user_id=current_user.id
+        # )
+
+        # context.update({"chat_data": user_chat_data})
+        # context["date_object"] = date_object
+        # context["bae_user"] = bae_user
+
+        # shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+        #                                         db=db,
+        #                                         user_ids=[current_user.id, bae_user.id],
+        #                                         selected_date = date_object.strftime("%Y-%m-%d")
+        #                                         )
+
+        # user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+        # bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+
+        # context["user_shifts"] = user_shifts
+        # context["bae_shifts"] = bae_shifts
+
+        # response = templates.TemplateResponse(
+        #     name="calendar/index.html",
+        #     context=context,
+        # )
+        # return response
+        return "edit view coming"
+    
+    # Full page refresh, modal open, request whole calendar, render details in modal for selected day
     if request.query_params.get("day"):
         date_object = datetime.date(year=selected_year, month=selected_month, day=day)
         user_chat_data = chat_service.get_user_chat_data(
@@ -218,6 +307,7 @@ def handle_get_calendar(
         )
         return response
     
+    # Slide to next month animation, change selected month, request whole calendar
     if "hx-request" in request.headers:
         response = templates.TemplateResponse(
             name="calendar/fragments/calendar-oob.html",

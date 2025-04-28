@@ -1,0 +1,57 @@
+{% if user_shifts|length == 0 and bae_shifts|length == 0 %}
+    {# both no shifts #}
+    <p class="border p-4 rounded-md">You are both free today. Meet up and see the world!</p>
+{% elif user_shifts|length == 0 and bae_shifts|length > 0 %}
+    {# Current user no shifts #}
+    <p class="border p-4 rounded-md">You are free today.</p>
+    {#  bae yes shifts #}
+    <ul class="bg-pink-300  p-4 rounded-md">
+        {% for shift in bae_shifts  %}
+            {% if shift.user_id == bae_user.id %}
+                <p>{{shift.long_name}}</p>
+            {% endif %}	
+        {% endfor %}
+    </ul>
+{% elif user_shifts|length > 0 and bae_shifts|length == 0%}
+    {# Current user yes shifts #}
+    <ul class="bg-pink-500  p-4 rounded-md">
+        {% for shift in user_shifts  %}
+            {% if shift.user_id == current_user.id %}
+                <p>{{shift.long_name}}</p>
+            {% endif %}	
+        {% endfor %}
+    </ul>
+    {# bae no shifts #}
+    <p class="border p-4 rounded-md">{{bae_user.display_name}} is free today.</p>
+{% else %}
+    {# Current user yes shifts #}
+    <ul class="bg-pink-500  p-4 rounded-md">
+        {% for shift in user_shifts  %}
+            {% if shift.user_id == current_user.id %}
+                <p>{{shift.long_name}}</p>
+            {% endif %}	
+        {% endfor %}
+    </ul>
+    {# bae no shifts #}
+    <ul class="bg-pink-300  p-4 rounded-md">
+        {% for shift in bae_shifts  %}
+            {% if shift.user_id == bae_user.id %}
+                <p>{{shift.long_name}}</p>
+            {% endif %}	
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<a 
+    id="toggle-button"
+    hx-swap-oob="true"
+    hx-get="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
+    hx-target=".js-card-content"
+    hx-indicator="this"
+    hx-swap="innerHTML transition:true"
+    hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
+    href="/calendar/{{date_object.year}}/{{date_object.month}}?day={{date_object.day}}&edit=true"
+    class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
+    Edit
+</a>
+
