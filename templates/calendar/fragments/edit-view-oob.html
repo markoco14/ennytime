@@ -1,39 +1,6 @@
 {% from '/macros/spinner.html' import spinner%}
-{% if not shift_types %}
-    {% include "/calendar/fragments/shift-type-form.html" %}
-{% else %}
-    {% for shift_type in shift_types %}
-    {% if shift_type.id | is_user_shift(shifts) %}
-    {% block shift_exists_button scoped %}
-    {% from '/macros/spinner.html' import spinner%}
-    <button hx-delete="/calendar/card/{{date_string}}/edit/{{shift_type.id}}"
-            hx-swap="outerHTML"
-            hx-target="this"
-            hx-indicator="this"
-            class="border border-pink-300 bg-pink-300 py-1 px-2 rounded-md">
-        <span class="htmx-indicator-content">
-            {{shift_type.long_name}}
-        </span>
-        <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-white')}}</span>
-    </button>
-    {% endblock shift_exists_button %}
-    {% else %}
-    {% block no_shift_button scoped %}
-    {% from '/macros/spinner.html' import spinner%}
-    <button hx-post="/calendar/card/{{date_string}}/edit/{{shift_type.id}}"
-            hx-swap="outerHTML"
-            hx-target="this"
-            hx-indicator="this"
-            class="border py-1 px-2 rounded-md">
-        <span class="htmx-indicator-content">
-            {{shift_type.long_name}}
-        </span>
-        <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
-    </button>
-    {% endblock no_shift_button %}
-    {% endif %}
-    {% endfor %}
-{% endif %}
+
+{% include "calendar/fragments/edit-view.html" %}
 
 <a 
     id="toggle-button"
