@@ -7,13 +7,10 @@ from typing import Annotated, Optional
 from pprint import pprint
 import datetime
 
-
-from pydantic import BaseModel
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
-
+from fastapi.responses import HTMLResponse
 
 from app.auth import auth_service
 from app.core.database import get_db
@@ -21,18 +18,14 @@ from app.core.template_utils import templates, block_templates
 from app.handlers.get_calendar import handle_get_calendar
 from app.handlers.get_calendar_card_detail import handle_get_calendar_card_detail
 from app.handlers.get_calendar_card_simple import handle_get_calendar_card_simple
-from app.models.db_shift import DbShift
-from app.models.db_shift_type import DbShiftType
-from app.models.share_model import DbShare
 from app.models.user_model import DBUser
-from app.queries import shift_queries
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
 from app.schemas import schemas
-from app.services import calendar_service, calendar_shift_service, chat_service
-
+from app.services import calendar_service
 
 router = APIRouter()
+
 
 @router.get("/calendar/{year}/{month}", response_class=HTMLResponse)
 def get_calendar_page(
@@ -44,27 +37,6 @@ def get_calendar_page(
     day: Optional[int] = None,
 ):
     return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, day=day, db=db)
-
-@router.get("/calendar-card-simple/{date_string}", response_class=HTMLResponse)
-def get_simple_calendar_day_card(
-        request: Request,
-        db: Annotated[Session, Depends(get_db)],
-        current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-        date_string: str,
-):
-    return handle_get_calendar_card_simple(request, current_user, date_string, db)
-
-
-
-
-@router.get("/calendar-card-detail/{date_string}", response_class=HTMLResponse)
-def get_calendar_card_detailed(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    date_string: str,
-):
-    return handle_get_calendar_card_detail(request, current_user, date_string, db)    
 
 
 @router.get("/calendar/card/detail/{date_string}", response_class=HTMLResponse)
