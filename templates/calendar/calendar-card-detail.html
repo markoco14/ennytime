@@ -6,21 +6,20 @@
 	 hx-indicator="this">
 	{# birthdays #}
 	<div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
-		{% for birthday in birthdays %}
-		{% if birthday.name == current_user.display_name and birthday.day == date_object.day %}
+		{% if current_user.birthday and current_user.birthday.day == date_object.day and current_user.birthday.month == date_object.month %}
 		<div class="rounded-full bg-pink-500 h-8 w-8 flex justify-center items-center">
 			<img src="../../../static/birthday-cake.png"
 				 alt="HBD"
 				 class="h-5 w-5">
 		</div>
-		{% elif birthday.name != current_user.display_name and birthday.day == date_object.day %}
+		{% endif %}
+		{% if bae_user and bae_user.birthday and bae_user.birthday.day == date_object.day and bae_user.birthday.month == date_object.month %}
 		<div class="rounded-full bg-pink-300 h-8 w-8 flex justify-center items-center">
 			<img src="../../../static/birthday-cake.png"
 				 alt="HBD"
 				 class="h-5 w-5">
 		</div>
 		{% endif %}
-		{% endfor %}
 		{% if date_object.month == 12 and date_object.day == 25 %}
 		<div class="rounded-full bg-red-400 h-8 w-8 flex justify-center items-center">
 			<img 

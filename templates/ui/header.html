@@ -22,7 +22,7 @@
                     <span hx-get="/unread"
                         hx-target="find div"
                         hx-swap="outerHTML"
-                        hx-trigger="every 8s"
+                        {# hx-trigger="every 8s" #}
                         class="md:hidden relative p-1"
                         >
                         <a href="/chat/{{chat_data['chatroom_id']}}">
@@ -104,7 +104,7 @@
                         <li hx-get="/unread"
                             hx-target="find div"
                             hx-swap="outerHTML"
-                            hx-trigger="every 8s"
+                            {# hx-trigger="every 8s" #}
                             class="hidden md:block relative p-1"
                             >
                             <a href="/chat/{{chat_data['chatroom_id']}}">

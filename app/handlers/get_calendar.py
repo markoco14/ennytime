@@ -71,25 +71,12 @@ def handle_get_calendar(
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
 
-    # handle all birthday logic
-    birthdays = []
-    if current_user.has_birthday() and current_user.birthday_in_current_month(current_month=selected_month):
-        birthdays.append({
-            "name": current_user.display_name,
-            "day": current_user.birthday.day
-        })
 
     # get user who shares their calendar with current user
     # find the DbShare where current user id is the receiver_id 
     bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
         DbShare.receiver_id == current_user.id).first()
-
-    if bae_user:
-        if bae_user.has_birthday() and bae_user.birthday_in_current_month(current_month=selected_month):
-            birthdays.append({
-                "name": bae_user.display_name,
-                "day": bae_user.birthday.day
-            })
+    
 
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
@@ -99,12 +86,14 @@ def handle_get_calendar(
     context = {
         "request": request,
         "current_user": current_user,
-        "birthdays": birthdays,
+        "bae_user": bae_user,
+        # "birthdays": birthdays,
         "current_day": current_day,
         "selected_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
     }
+
     
     # Return to calendar animation, closed modal, and request simple calendar card for selected day
     if "hx-request" in request.headers and request.query_params.get("day") and request.query_params.get("simple"):
