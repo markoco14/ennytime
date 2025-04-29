@@ -91,41 +91,10 @@ def handle_get_calendar(
                 "day": bae_user.birthday.day
             })
 
-    # get previous and next month names for month navigation
-    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
-        current_month=selected_month)
-
-    month_calendar = calendar_service.get_month_calendar(
-        year=selected_year, 
-        month=selected_month
-        )
-
-    month_calendar_dict = dict(
-        (str(day), {
-            "date": day,
-            "shifts": [],
-            "bae_shifts": []
-            }) for day in month_calendar)
-
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
     if bae_user:
         user_ids.append(bae_user.id)
-
-    # get the start and end of the month for query filters
-    start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
-    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
-
-    # get shifts for current user and bae user
-    all_shifts = shift_queries.list_shifts_for_couple_by_month(
-        db=db,
-        user_ids=user_ids,
-        start_of_month=start_of_month,
-        end_of_month=end_of_month
-        )
-    
-    # update the calendar dictionary with sorted shifts
-    month_calendar_dict = calendar_shift_service.sort_shifts_by_user(all_shifts=all_shifts, month_calendar_dict=month_calendar_dict, current_user=current_user)
 
     context = {
         "request": request,
@@ -135,12 +104,8 @@ def handle_get_calendar(
         "selected_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
-        "prev_month_name": prev_month_name,
-        "next_month_name": next_month_name,
-        "month_calendar": month_calendar_dict,
-        "days_of_week": calendar_service.DAYS_OF_WEEK,
     }
-
+    
     # Return to calendar animation, closed modal, and request simple calendar card for selected day
     if "hx-request" in request.headers and request.query_params.get("day") and request.query_params.get("simple"):
         date_object = datetime.date(year=year, month=month, day=day)
@@ -263,6 +228,45 @@ def handle_get_calendar(
         )
 
         return response
+    
+    month_calendar = calendar_service.get_month_calendar(
+        year=selected_year, 
+        month=selected_month
+        )
+
+    month_calendar_dict = dict(
+        (str(day), {
+            "date": day,
+            "shifts": [],
+            "bae_shifts": []
+            }) for day in month_calendar)
+    
+    # get the start and end of the month for query filters
+    start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
+    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
+
+    # get shifts for current user and bae user
+    all_shifts = shift_queries.list_shifts_for_couple_by_month(
+        db=db,
+        user_ids=user_ids,
+        start_of_month=start_of_month,
+        end_of_month=end_of_month
+        )
+    
+    # update the calendar dictionary with sorted shifts
+    month_calendar_dict = calendar_shift_service.sort_shifts_by_user(
+        all_shifts=all_shifts,
+        month_calendar_dict=month_calendar_dict,
+        current_user=current_user)
+    
+    # get previous and next month names for month navigation
+    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
+        current_month=selected_month)
+
+    context["days_of_week"] = calendar_service.DAYS_OF_WEEK
+    context["month_calendar"] = month_calendar_dict
+    context["prev_month_name"] = prev_month_name
+    context["next_month_name"] = next_month_name
     
     # Full page refresh, modal open, request whole calendar, render details in modal for selected day
     if request.query_params.get("day") and request.query_params.get("edit"):
