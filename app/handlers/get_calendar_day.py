@@ -28,29 +28,24 @@ def handle_get_calendar_day(
     db: Session,
 ):
     """
-    Handles requests related to viewing the calendar. \n
-    Query params: day, simple \n
+    Handles requests related to viewing a selected day on the calendar. \n
+    Query params: edit \n
     Hx-request headers \n
     Render conditions:
-        1. calendar view, standard request, whole page
-        2. calendar view, hx-request, calendar partial
-        3. calendar view, hx-request, simple view partial (animation: close modal and move back to calendar)
-        4. detail view, standard request, whole page with modal open to detail view
-        5. detail view, hx-request, detail view partial (animation: open modal and pop out of calendar)
-        6. edit view, hx-request, edit view partial (animation: slide to edit view)
-        7. edit view, standard request, whole page with modal open to edit view
+        1. simple view, hx-request, animation: closes modal and card moves back to calendar
+        2. detail view, standard request, whole page with modal open to detail view
+        3. detail view, hx-request, animation: opens modal and card moves from calendar to modal
+        4. edit view, hx-request, animation: slide to edit view
+        5. edit view, standard request, whole page with modal open to edit view
     Only need to request shifts for whole month in conditions 1, 2, 4, and 7:
-        1. Renders the whole page including the calendar so it needs all the shifts.
-        2. Renders the calendar so it needs all the shifts.
-        4. Renders the modal open but also renders the calendar behind it so it needs all the shifts.
-        7. Renders the modal open but also renders the calendar behind it so it needs all the shifts
+        2. Renders the modal open to detail view but also renders the calendar behind it so it needs all the shifts.
+        5. Renders the modal open to edit view but also renders the calendar behind it so it needs all the shifts
     Gaurd clauses:
         1. check for current user
-        2. check if hx-request, day is selected, simple view
-        3. check if hx-request, day is selected, detail view
-        4. check if standard request, day is selected, detail view, get all the shifts
-        5. check if hx-request, calendar view, get all shifts
-        6. check if standard request, calender view, get all shifts
+        2. check if hx-request and simple view
+        3. check if hx-request and edit view
+        4. check if hx-request (this is detail view)
+        5. check if edit in query params (standard request)
     """
     if not current_user:
         if request.headers.get("HX-Request"):
@@ -70,7 +65,6 @@ def handle_get_calendar_day(
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
-
 
     # get user who shares their calendar with current user
     # find the DbShare where current user id is the receiver_id 

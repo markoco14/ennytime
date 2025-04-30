@@ -33,23 +33,9 @@ def handle_get_calendar(
     Render conditions:
         1. calendar view, standard request, whole page
         2. calendar view, hx-request, calendar partial
-        3. calendar view, hx-request, simple view partial (animation: close modal and move back to calendar)
-        4. detail view, standard request, whole page with modal open to detail view
-        5. detail view, hx-request, detail view partial (animation: open modal and pop out of calendar)
-        6. edit view, hx-request, edit view partial (animation: slide to edit view)
-        7. edit view, standard request, whole page with modal open to edit view
-    Only need to request shifts for whole month in conditions 1, 2, 4, and 7:
-        1. Renders the whole page including the calendar so it needs all the shifts.
-        2. Renders the calendar so it needs all the shifts.
-        4. Renders the modal open but also renders the calendar behind it so it needs all the shifts.
-        7. Renders the modal open but also renders the calendar behind it so it needs all the shifts
     Gaurd clauses:
         1. check for current user
-        2. check if hx-request, day is selected, simple view
-        3. check if hx-request, day is selected, detail view
-        4. check if standard request, day is selected, detail view, get all the shifts
-        5. check if hx-request, calendar view, get all shifts
-        6. check if standard request, calender view, get all shifts
+        2. check if hx-request, calendar view, get all shifts
     """
     if not current_user:
         if request.headers.get("HX-Request"):
@@ -69,7 +55,6 @@ def handle_get_calendar(
     selected_year = year or current_time.year
     selected_month = month or current_time.month
     selected_month_name = calendar_service.MONTHS[selected_month - 1]
-
 
     # get user who shares their calendar with current user
     # find the DbShare where current user id is the receiver_id 
