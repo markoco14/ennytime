@@ -1,5 +1,5 @@
 {% from '/macros/spinner.html' import spinner %}
-<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}?day={{value.date.day}}"
+<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}/{{value.date.day}}"
 	hx-push-url="true"
 	 hx-target="this"
 	 hx-swap="outerHTML"

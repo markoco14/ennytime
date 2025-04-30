@@ -13,7 +13,7 @@
 					{{value.date.day}}
 				</div>
 			</div>
-		{% elif request.query_params.get("day") and request.query_params.get("day")|int == value.date.day %}
+		{% elif request.path_params.get("day") and request.path_params.get("day")|int == value.date.day %}
 			<div id="container-{{value.date.day}}" class="min-h-[48px] border-gray-900 bg-white md:border-gray-900 md:rounded-md"></div>
 		{% else %}
 			<div id="container-{{value.date.day}}" class="min-h-[48px] border-gray-900 bg-whitemd:border-gray-900 md:rounded-md">
