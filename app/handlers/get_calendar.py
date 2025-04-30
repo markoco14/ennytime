@@ -77,7 +77,6 @@ def handle_get_calendar(
     bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
         DbShare.receiver_id == current_user.id).first()
     
-
     # gathering user ids to query shift table and get shifts for both users at once
     user_ids = [current_user.id]
     if bae_user:
@@ -94,7 +93,6 @@ def handle_get_calendar(
         "selected_year": selected_year,
     }
 
-    
     # Return to calendar animation, closed modal, and request simple calendar card for selected day
     if "hx-request" in request.headers and request.query_params.get("day") and request.query_params.get("simple"):
         date_object = datetime.date(year=year, month=month, day=day)
@@ -106,6 +104,11 @@ def handle_get_calendar(
                 user_id=current_user.id,
                 selected_date = date_object.strftime("%Y-%m-%d")
             )
+            
+            for shift in db_user_shifts:
+                shift[0].short_name = shift[1].short_name
+                shift[0].long_name = shift[1].long_name
+
             user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
             bae_shifts = []
         else:
@@ -114,6 +117,10 @@ def handle_get_calendar(
                                                     user_ids=[current_user.id, bae_user.id],
                                                     selected_date = date_object.strftime("%Y-%m-%d")
                                                     )
+            
+            for shift in shifts_for_couple:
+                shift[0].short_name = shift[1].short_name
+                shift[0].long_name = shift[1].long_name
 
             user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
             bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
@@ -186,6 +193,11 @@ def handle_get_calendar(
                 user_id=current_user.id,
                 selected_date = date_object.strftime("%Y-%m-%d")
             )
+
+            for shift in db_user_shifts:
+                shift[0].short_name = shift[1].short_name
+                shift[0].long_name = shift[1].long_name
+            
             user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
             bae_shifts = []
         else:
@@ -194,7 +206,11 @@ def handle_get_calendar(
                                                     user_ids=[current_user.id, bae_user.id],
                                                     selected_date = date_object.strftime("%Y-%m-%d")
                                                     )
-
+            
+            for shift in shifts_for_couple:
+                shift[0].short_name = shift[1].short_name
+                shift[0].long_name = shift[1].long_name
+            
             user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
             bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
