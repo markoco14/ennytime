@@ -1,12 +1,8 @@
 """
 Calendar related routes
 """
-import logging
 import datetime
-from dataclasses import dataclass
-from typing import Optional
 
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 from fastapi import Request, Response
 from fastapi.responses import RedirectResponse
@@ -15,15 +11,14 @@ from app.core.template_utils import templates
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
 from app.queries import shift_queries
-from app.repositories import shift_type_repository
 from app.services import calendar_service, calendar_shift_service, chat_service
 
 
 def handle_get_calendar(
     request: Request,
     current_user: DBUser,
-    month: int,
     year: int,
+    month: int,
     db: Session,
 ):
     """
@@ -36,6 +31,18 @@ def handle_get_calendar(
     Gaurd clauses:
         1. check for current user
         2. check if hx-request, calendar view, get all shifts
+    Response Context:
+        - request
+        - current_user (always needed for header)
+        - bae_user (always needed)
+        - selected_month (still needed for simple and detail cards, but can get rid of soon)
+        - selected_year (still needed for simple and detail cards, but can get rid of soon)
+        - days_of_week
+        - month_calendar
+        - current_date_object
+        - prev_month_object
+        - next_month_object
+        - chat_date (optional, only if not hx-response)
     """
     if not current_user:
         if request.headers.get("HX-Request"):
@@ -50,11 +57,12 @@ def handle_get_calendar(
 
         return response
     
-    current_time = datetime.datetime.now()
-    current_day = current_time.day
-    selected_year = year or current_time.year
-    selected_month = month or current_time.month
-    selected_month_name = calendar_service.MONTHS[selected_month - 1]
+    current_date_object = datetime.datetime.now()
+    prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
+    next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
+    
+    selected_year = year or current_date_object.year
+    selected_month = month or current_date_object.month
 
     # get user who shares their calendar with current user
     # find the DbShare where current user id is the receiver_id 
@@ -65,17 +73,6 @@ def handle_get_calendar(
     user_ids = [current_user.id]
     if bae_user:
         user_ids.append(bae_user.id)
-
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "bae_user": bae_user,
-        # "birthdays": birthdays,
-        "current_day": current_day,
-        "selected_month": selected_month,
-        "selected_month_name": selected_month_name,
-        "selected_year": selected_year,
-    }
     
     month_calendar = calendar_service.get_month_calendar(
         year=selected_year, 
@@ -107,17 +104,22 @@ def handle_get_calendar(
         month_calendar_dict=month_calendar_dict,
         current_user=current_user)
     
-    # get previous and next month names for month navigation
-    prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
-        current_month=selected_month)
+    context = {
+        "request": request,
+        "current_user": current_user,
+        "bae_user": bae_user,
+        "selected_month": selected_month,
+        "selected_year": selected_year,
+        "days_of_week": calendar_service.DAYS_OF_WEEK,
+        "month_calendar": month_calendar_dict,
+        "current_date_object": datetime.date(year=year, month=month, day=1),
+        "prev_month_object": prev_month_object,
+        "next_month_object": next_month_object,
+    }
 
-    context["days_of_week"] = calendar_service.DAYS_OF_WEEK
-    context["month_calendar"] = month_calendar_dict
-    context["prev_month_name"] = prev_month_name
-    context["next_month_name"] = next_month_name
-    
     # Slide to next month animation, change selected month, request whole calendar
     if "hx-request" in request.headers:
+        """No chat data needed because partial response"""
         response = templates.TemplateResponse(
             name="calendar/fragments/calendar-oob.html",
             context=context,
