@@ -3,8 +3,6 @@ Calendar related routes
 """
 import logging
 import datetime
-from dataclasses import dataclass
-from typing import Optional
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -76,19 +74,25 @@ def handle_get_calendar_day(
     if bae_user:
         user_ids.append(bae_user.id)
 
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "bae_user": bae_user,
-        # "birthdays": birthdays,
-        "current_day": current_day,
-        "selected_month": selected_month,
-        "selected_month_name": selected_month_name,
-        "selected_year": selected_year,
-    }
 
     # Return to calendar animation, closed modal, and request simple calendar card for selected day
     if "hx-request" in request.headers and request.query_params.get("simple"):
+        """Response context:
+            - request
+            - current_user
+            - bae_user
+            - selected_month (holds the selected month, might not be necessary)
+            - date_object (date constructed from current year, month, day)
+            - value (date, shifts, bae_shifts)
+            """
+
+        context = {
+            "request": request,
+            "current_user": current_user,
+            "bae_user": bae_user,
+            "selected_month": selected_month,
+        }
+        
         date_object = datetime.date(year=year, month=month, day=day)
         context["date_object"] = date_object
 
@@ -133,9 +137,27 @@ def handle_get_calendar_day(
         response.headers["HX-Push-Url"] = f"/calendar/{date_object.year}/{date_object.month}"
 
         return response
-    
+
     # Slide to edit view animation, request edit view
     if "hx-request" in request.headers and request.query_params.get("edit"):
+        """Response context:
+            - request
+            - current_user
+            - bae_user
+            - selected_month (holds the selected month, might not be necessary)
+            - date_object (date constructed from current year, month, day)
+            - shifts
+            - shift_types
+            - date_string
+            """
+        
+        context = {
+            "request": request,
+            "current_user": current_user,
+            "bae_user": bae_user,
+            "selected_month": selected_month,
+        }
+
         date_object = datetime.date(year=year, month=month, day=day)
         context["date_object"] = date_object
 
@@ -176,6 +198,22 @@ def handle_get_calendar_day(
     
     # Open modal animation, request detail card for selected day
     if "hx-request" in request.headers:
+        """Response context:
+            - request
+            - current_user
+            - bae_user
+            - selected_month (holds the selected month, might not be necessary)
+            - date_object (date constructed from current year, month, day)
+            - value (date, shifts, bae_shifts)
+            """
+        
+        context = {
+            "request": request,
+            "current_user": current_user,
+            "bae_user": bae_user,
+            "selected_month": selected_month,
+        }
+
         date_object = datetime.date(year=year, month=month, day=day)
 
         context["date_object"] = date_object
@@ -227,6 +265,31 @@ def handle_get_calendar_day(
         )
 
         return response
+    
+    """Response context:
+            - request
+            - current_user
+            - bae_user
+            - selected_month (holds the selected month, might not be necessary)
+            - current_day
+            - selected_month_name
+            - selected_year
+            - days_of_week
+            - month_calendar
+            - prev_month_name
+            - next_month_name
+            """
+    
+    context = {
+        "request": request,
+        "current_user": current_user,
+        "bae_user": bae_user,
+        "selected_month": selected_month,
+    }
+    
+    context["current_day"] = current_day
+    context["selected_month_name"] = selected_month_name
+    context["selected_year"] = selected_year
     
     month_calendar = calendar_service.get_month_calendar(
         year=selected_year, 
