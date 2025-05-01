@@ -3,12 +3,12 @@
 <a 
     id="toggle-button"
     hx-swap-oob="true"
-    hx-get="/calendar/{{date_object.year}}/{{date_object.month}}/{{date_object.day}}?edit=true"
+    hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?edit=true"
     hx-target=".js-card-content"
     hx-indicator="this"
     hx-swap="innerHTML transition:true"
     hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
-    href="/calendar/{{date_object.year}}/{{date_object.month}}/{{date_object.day}}?edit=true"
+    href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?edit=true"
     class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
     Edit
 </a>

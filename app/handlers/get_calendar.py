@@ -35,14 +35,13 @@ def handle_get_calendar(
         - request
         - current_user (always needed for header)
         - bae_user (always needed)
-        - selected_month (still needed for simple and detail cards, but can get rid of soon)
-        - selected_year (still needed for simple and detail cards, but can get rid of soon)
-        - days_of_week
-        - month_calendar
-        - current_date_object
+        - days_of_week (for calendar heading)
+        - month_calendar (dictionary to hold calendar data)
+        - current_date_object (used to track what day it currently is, useful for rendering related to holidays)
+        - current_month_object (used to render the calendar)
         - prev_month_object
         - next_month_object
-        - chat_date (optional, only if not hx-response)
+        - chat_data (optional, only if not hx-response)
     """
     if not current_user:
         if request.headers.get("HX-Request"):
@@ -58,12 +57,10 @@ def handle_get_calendar(
         return response
     
     current_date_object = datetime.datetime.now()
+    current_month_object = datetime.date(year=year, month=month, day=1)
     prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
     next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
     
-    selected_year = year or current_date_object.year
-    selected_month = month or current_date_object.month
-
     # get user who shares their calendar with current user
     # find the DbShare where current user id is the receiver_id 
     bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
@@ -75,8 +72,8 @@ def handle_get_calendar(
         user_ids.append(bae_user.id)
     
     month_calendar = calendar_service.get_month_calendar(
-        year=selected_year, 
-        month=selected_month
+        year=current_month_object.year, 
+        month=current_month_object.month
         )
 
     month_calendar_dict = dict(
@@ -87,8 +84,8 @@ def handle_get_calendar(
             }) for day in month_calendar)
     
     # get the start and end of the month for query filters
-    start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
-    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
+    start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
+    end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
 
     # get shifts for current user and bae user
     all_shifts = shift_queries.list_shifts_for_couple_by_month(
@@ -108,11 +105,10 @@ def handle_get_calendar(
         "request": request,
         "current_user": current_user,
         "bae_user": bae_user,
-        "selected_month": selected_month,
-        "selected_year": selected_year,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "month_calendar": month_calendar_dict,
-        "current_date_object": datetime.date(year=year, month=month, day=1),
+        "current_date_object": current_date_object,
+        "current_month_object": current_month_object,
         "prev_month_object": prev_month_object,
         "next_month_object": next_month_object,
     }
