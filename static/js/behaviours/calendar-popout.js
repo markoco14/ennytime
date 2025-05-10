@@ -1,5 +1,28 @@
 gsap.registerPlugin(Flip);
 
+function animateToModal(dayNumber) {
+	let simpleCard = document.getElementById(`simple-${dayNumber}`);
+	let detailCard = document.getElementById(`detail-${dayNumber}`);
+
+	let state = Flip.getState([simpleCard, detailCard], { props: "opacity, width, height"});
+
+	detailCard.classList.remove('opacity-0');
+	simpleCard.classList.add('opacity-0');
+
+	requestAnimationFrame(() => {
+		Flip.from(state, {
+			duration: 0.4,
+			ease: "power1.inOut",
+			onComplete: () => {
+				let detailContent = detailCard.firstElementChild;
+				detailContent.classList.remove("invisible");
+				simpleCard.remove();
+			}
+		});
+	})
+
+}
+
 			function moveToModal(day_number) {
 				const calendarCard = document.getElementById(
 					`day-${day_number}`

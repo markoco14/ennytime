@@ -1,12 +1,12 @@
 {% from '/macros/spinner.html' import spinner %}
-<div id="day-{{value.date.day}}" class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white z-50">
+<div id="simple-{{value.date.day}}" data-flip-id="{{value.date.day}}" class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white z-50">
 	<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}/{{value.date.day}}"
 		hx-push-url="true"
 		hx-target="main"
 		hx-swap="beforeend"
 		{# hx-swap="outerHTML" #}
 		hx-trigger="click"
-		hx-on::after-request="console.log('request finished'); document.querySelector('#day-{{value.date.day}}').remove();"
+		hx-on::after-request="animateToModal({{value.date.day}});"
 		{# hx-on::before-request="moveToModal(Number(`{{value.date.day}}`));" #}
 		class="js-card relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white"
 		>
