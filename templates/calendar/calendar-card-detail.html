@@ -1,7 +1,7 @@
 {% from '/macros/spinner.html' import spinner%}
 <div id="overlay" class="stacked fixed top-0 left-0 w-full h-full">
 	<div id="backdrop" class="w-full h-full bg-black/70"></div>
-    <div id="modal" class="w-full max-w-[500px] aspect-square">
+    <div id="modal" class="w-full max-w-[500px] aspect-square px-2 sm:px-0">
 		<div id="detail-{{request.path_params.get('day')}}" 
 			data-flip-id="{{request.path_params.get('day')}}"
 			class="grid place-items-center w-full h-full md:border-gray-900 prop bg-white z-50 rounded-md {% if request.headers.get('hx-request') %}opacity-0{% endif %}">
@@ -69,7 +69,7 @@
 							hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?simple=true"
 							hx-target="#container-{{selected_date_object.day}}"
 							hx-swap="innerHTML"
-							hx-on::after-request="console.log('request finished'); document.querySelector('#overlay').remove();"
+							hx-on::after-request="animateToCalendar(Number(`{{selected_date_object.day}}`))"
 							{# hx-on::before-request="moveToCalendar(Number(`{{selected_date_object.day}}`));" #}
 							href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}"
 							class="rounded bg-gray-300 px-4 py-1">

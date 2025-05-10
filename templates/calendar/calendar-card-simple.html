@@ -1,5 +1,7 @@
 {% from '/macros/spinner.html' import spinner %}
-<div id="simple-{{value.date.day}}" data-flip-id="{{value.date.day}}" class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white z-50">
+<div id="simple-{{value.date.day}}"
+	data-flip-id="{{value.date.day}}"
+	class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white z-50 {% if request.headers.get('hx-request') and request.query_params.get('simple') %}opacity-0{% endif %}">
 	<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}/{{value.date.day}}"
 		hx-push-url="true"
 		hx-target="main"
@@ -8,7 +10,7 @@
 		hx-trigger="click"
 		hx-on::after-request="animateToModal({{value.date.day}});"
 		{# hx-on::before-request="moveToModal(Number(`{{value.date.day}}`));" #}
-		class="js-card relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white"
+		class="js-card relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900 text-center cursor-pointer md:p-2 bg-white {% if request.headers.get('hx-request') and request.query_params.get('simple') %}invisible{% endif %}"
 		>
 		{# birthdays #}
 		<div class="absolute -top-3 sm:-top-5 w-full flex justify-center gap-2">

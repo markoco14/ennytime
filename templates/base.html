@@ -41,16 +41,31 @@
 					-ms-overflow-style: none;  /* IE and Edge */
 					scrollbar-width: none;  /* Firefox */
 				}
-				
+
 				#overlay #backdrop {
 					opacity: 1;
 					transition: opacity 0.2s ease-in;
 				}
 				
+				#overlay.htmx-swapping #backdrop {
+					opacity: 0;
+				}
+
 				#overlay.htmx-added #backdrop {
 					opacity: 0;
 				}
 
+				#backdrop.closing {
+					animation-name: fadeOut;
+					animation-duration: 300ms;
+					animation-timing-function: ease;
+				}
+
+				@keyframes fadeOut {
+					0% { opacity: 1;}
+					100% { opacity: 0; }
+				}
+				
 				.js-card.htmx-added {
 					opacity: 0;
 				}

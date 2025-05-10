@@ -20,7 +20,29 @@ function animateToModal(dayNumber) {
 			}
 		});
 	})
+}
 
+function animateToCalendar(dayNumber) {
+	let backdrop = document.getElementById("backdrop");
+	backdrop.classList.add("closing");
+
+	let simpleCard = document.getElementById(`simple-${dayNumber}`);
+	let detailCard = document.getElementById(`detail-${dayNumber}`);
+
+	let state = Flip.getState([detailCard, simpleCard], { props: "opacity, width, height"});
+
+	detailCard.classList.add('opacity-0')
+	simpleCard.classList.remove('opacity-0')
+
+	Flip.from(state, {
+		duration: 0.3,
+		absolute: true,
+		ease: "power1.inOut",
+		onComplete: () => {
+			let simpleContent = simpleCard.firstElementChild;
+			simpleContent.classList.remove("invisible")
+			document.querySelector('#overlay').remove()}
+	})
 }
 
 			function moveToModal(day_number) {
