@@ -4,6 +4,7 @@
     id="toggle-button"
     hx-swap-oob="true"
     hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}/edit"
+    hx-push-url="true"
     hx-target=".js-card-content"
     hx-indicator="this"
     hx-swap="innerHTML transition:true"
