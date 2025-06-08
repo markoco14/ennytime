@@ -134,7 +134,7 @@ def handle_get_calendar_day_edit(
         return response
 
     # Slide to edit view animation, request edit view
-    if "hx-request" in request.headers and request.query_params.get("edit"):
+    if "hx-request" in request.headers and "edit" in request.url.path:
         """Response context:
             - request
             - current_user
@@ -181,8 +181,6 @@ def handle_get_calendar_day_edit(
             name="calendar/fragments/edit-view-oob.html",
             context=context
         )
-
-        response.headers["HX-Push-Url"] = f"/calendar/{selected_date_object.year}/{selected_date_object.month}/{day}?edit=true"
 
         return response
     
