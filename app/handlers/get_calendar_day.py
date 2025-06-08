@@ -27,23 +27,15 @@ def handle_get_calendar_day(
 ):
     """
     Handles requests related to viewing a selected day on the calendar. \n
-    Query params: edit \n
-    Hx-request headers \n
     Render conditions:
         1. simple view, hx-request, animation: closes modal and card moves back to calendar
         2. detail view, standard request, whole page with modal open to detail view
         3. detail view, hx-request, animation: opens modal and card moves from calendar to modal
-        4. edit view, hx-request, animation: slide to edit view
-        5. edit view, standard request, whole page with modal open to edit view
-    Only need to request shifts for whole month in conditions 1, 2, 4, and 7:
-        2. Renders the modal open to detail view but also renders the calendar behind it so it needs all the shifts.
-        5. Renders the modal open to edit view but also renders the calendar behind it so it needs all the shifts
     Gaurd clauses:
         1. check for current user
         2. check if hx-request and simple view
-        3. check if hx-request and edit view
-        4. check if hx-request (this is detail view)
-        5. check if edit in query params (standard request)
+        3. check if hx-request (this is detail view)
+    Base condition renders whole calendar with modal open set to detail view
     """
     if not current_user:
         if request.headers.get("HX-Request"):
