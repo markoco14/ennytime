@@ -294,7 +294,7 @@ def handle_get_calendar_day_edit(
         current_user=current_user)
     
     # Full page refresh, modal open, request whole calendar, render details in modal for selected day
-    if request.query_params.get("edit"):
+    if "edit" in request.url.path:
         selected_date_object = datetime.date(year=current_month_object.year, month=current_month_object.month, day=day)
         user_chat_data = chat_service.get_user_chat_data(
             db=db,
