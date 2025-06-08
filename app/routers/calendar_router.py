@@ -19,6 +19,7 @@ from app.handlers.get_calendar import handle_get_calendar
 from app.handlers.get_calendar_card_detail import handle_get_calendar_card_detail
 from app.handlers.get_calendar_card_simple import handle_get_calendar_card_simple
 from app.handlers.get_calendar_day import handle_get_calendar_day
+from app.handlers.get_calendar_day_edit import handle_get_calendar_day_edit
 from app.models.user_model import DBUser
 from app.repositories import share_repository, shift_repository
 from app.repositories import shift_type_repository
@@ -48,3 +49,15 @@ def get_calendar_day(
     day: int
 ):
     return handle_get_calendar_day(request=request, current_user=current_user, year=year, month=month, day=day, db=db)
+
+
+@router.get("/calendar/{year}/{month}/{day}/edit")
+def get_calendar_day_edit(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
+    year: int,
+    month: int,
+    day: int
+):
+    return handle_get_calendar_day_edit(request=request, current_user=current_user, year=year, month=month, day=day, db=db)
