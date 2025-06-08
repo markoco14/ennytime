@@ -52,7 +52,7 @@
 			<p class="text-xl">{{selected_date_object.strftime('%A')}}</p>
 		</header>
 		<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
-			{% if request.query_params.get("edit") %}
+			{% if "edit" in request.url.path %}
 				{% include "/calendar/fragments/edit-view.html" %}
 			{% else %}
 				{% include "/calendar/fragments/detail-view.html" %}
@@ -66,7 +66,7 @@
 				class="rounded bg-gray-300 px-4 py-1">
 				Close
 			</a>
-			{% if request.query_params.get("edit") %}
+			{% if "edit" in request.url.path %}
 				<a 
 					id="toggle-button"
 					hx-swap-oob="true"
@@ -84,12 +84,13 @@
 			{% else %}
 				<a 
 					id="toggle-button"
-					hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?edit=true"
+					hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}/edit"
+					hx-push-url="true"
 					hx-target=".js-card-content"
 					hx-indicator="this"
 					hx-swap="innerHTML transition:true"
 					hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
-					href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?edit=true"
+					href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}/edit"
 					class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
 					Edit
 				</a>

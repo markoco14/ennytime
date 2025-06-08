@@ -17,7 +17,7 @@ from app.repositories import shift_type_repository
 from app.services import calendar_service, calendar_shift_service, chat_service
 
 
-def handle_get_calendar_day(
+def handle_get_calendar_day_edit(
     request: Request,
     current_user: DBUser,
     year: int,
@@ -26,16 +26,14 @@ def handle_get_calendar_day(
     db: Session,
 ):
     """
-    Handles requests related to viewing a selected day on the calendar. \n
-    Render conditions:
-        1. simple view, hx-request, animation: closes modal and card moves back to calendar
-        2. detail view, standard request, whole page with modal open to detail view
-        3. detail view, hx-request, animation: opens modal and card moves from calendar to modal
-    Gaurd clauses:
-        1. check for current user
-        2. check if hx-request and simple view
-        3. check if hx-request (this is detail view)
-    Base condition renders whole calendar with modal open set to detail view
+        Handles requests related to viewing a selected day on the calendar.\n
+        Render conditions:
+            1. edit view, hx-request, animation: slide to edit view
+            2. edit view, standard request, whole page with modal open to edit view
+        Gaurd clauses:
+            1. check for current user (denies access if no user)
+            2. check if hx-request (only renders edit view oob)
+        Base condition is render whole calendar with modal open and set to edit view
     """
     if not current_user:
         if request.headers.get("HX-Request"):
@@ -66,66 +64,7 @@ def handle_get_calendar_day(
     if bae_user:
         user_ids.append(bae_user.id)
 
-    # Return to calendar animation, closed modal, and request simple calendar card for selected day
-    if "hx-request" in request.headers and request.query_params.get("simple"):
-        """Response context:
-            - request
-            - current_user
-            - bae_user
-            - selected_month (holds the selected month, might not be necessary)
-            - selected_date_object (date constructed from current year, month, day)
-            - value (date, shifts, bae_shifts)
-            """        
-        if not bae_user:
-            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
-                db=db,
-                user_id=current_user.id,
-                selected_date = selected_date_object.strftime("%Y-%m-%d")
-            )
-            
-            for shift in db_user_shifts:
-                shift[0].short_name = shift[1].short_name
-                shift[0].long_name = shift[1].long_name
-
-            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
-            bae_shifts = []
-        else:
-            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                    db=db,
-                                                    user_ids=[current_user.id, bae_user.id],
-                                                    selected_date = selected_date_object.strftime("%Y-%m-%d")
-                                                    )
-            
-            for shift in shifts_for_couple:
-                shift[0].short_name = shift[1].short_name
-                shift[0].long_name = shift[1].long_name
-
-            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
-
-        context = {
-            "request": request,
-            "current_user": current_user,
-            "bae_user": bae_user,
-            "current_month_object": current_month_object,
-            "value": {
-                "date": selected_date_object,
-                "shifts": user_shifts,
-                "bae_shifts": bae_shifts,
-                "selected_date_object": selected_date_object
-            }
-        }
-
-        response = templates.TemplateResponse(
-            name="calendar/calendar-card-simple.html",
-            context=context
-        )
-
-        response.headers["HX-Push-Url"] = f"/calendar/{selected_date_object.year}/{selected_date_object.month}"
-
-        return response
-    
-    # Open modal animation, request detail card for selected day
+    # Slide to edit view animation, request edit view
     if "hx-request" in request.headers:
         """Response context:
             - request
@@ -133,56 +72,44 @@ def handle_get_calendar_day(
             - bae_user
             - selected_month (holds the selected month, might not be necessary)
             - selected_date_object (date constructed from current year, month, day)
-            - value (date, shifts, bae_shifts)
+            - shifts
+            - shift_types
+            - date_string
             """
-        if not bae_user:
-            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
-                db=db,
-                user_id=current_user.id,
-                selected_date = selected_date_object.strftime("%Y-%m-%d")
-            )
+        db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
 
-            for shift in db_user_shifts:
-                shift[0].short_name = shift[1].short_name
-                shift[0].long_name = shift[1].long_name
-            
-            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
-            bae_shifts = []
-        else:
-            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
-                                                    db=db,
-                                                    user_ids=[current_user.id, bae_user.id],
-                                                    selected_date = selected_date_object.strftime("%Y-%m-%d")
-                                                    )
-            
-            for shift in shifts_for_couple:
-                shift[0].short_name = shift[1].short_name
-                shift[0].long_name = shift[1].long_name
-            
-            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
-            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+        query = text("""
+            SELECT
+                etime_shifts.*
+            FROM etime_shifts
+            WHERE etime_shifts.user_id = :user_id
+            AND etime_shifts.date = :date_string
+            ORDER BY etime_shifts.date
+        """)
+
+        result = db.execute(
+            query,
+            {"user_id": current_user.id,
+            "date_string": selected_date_object.strftime("%Y-%m-%d")
+            }
+        ).fetchall()
+
+        user_shifts = []
+        for row in result:
+            user_shifts.append(row._asdict())
 
         context = {
             "request": request,
             "current_user": current_user,
             "bae_user": bae_user,
             "selected_date_object": selected_date_object,
-            "user_shifts": user_shifts,
-            "bae_shifts": bae_shifts
+            "shifts": user_shifts,
+            "shift_types": db_shift_types,
+            "date_string": selected_date_object.strftime("%Y-%m-%d")
         }
 
-        if "edit" in request.headers["referer"]:
-            response = templates.TemplateResponse(
-                name="calendar/fragments/detail-view-oob.html",
-                context=context
-            )
-
-            response.headers["Hx-Push-Url"] = f"/calendar/{selected_date_object.year}/{selected_date_object.month}/{selected_date_object.day}"
-
-            return response        
-
         response = templates.TemplateResponse(
-            name="calendar/calendar-card-detail.html",
+            name="calendar/fragments/edit-view-oob.html",
             context=context
         )
 
@@ -257,10 +184,27 @@ def handle_get_calendar_day(
         user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
         bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
 
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
-    )
+    db_shift_types = shift_type_repository.list_user_shift_types(db=db, user_id=current_user.id)
+
+    query = text("""
+        SELECT
+            etime_shifts.*
+        FROM etime_shifts
+        WHERE etime_shifts.user_id = :user_id
+        AND etime_shifts.date = :date_string
+        ORDER BY etime_shifts.date
+    """)
+
+    result = db.execute(
+        query,
+        {"user_id": current_user.id,
+        "date_string": selected_date_object.strftime("%Y-%m-%d")
+        }
+    ).fetchall()
+
+    user_shifts = []
+    for row in result:
+        user_shifts.append(row._asdict())
 
     context = {
         "request": request,
@@ -275,12 +219,14 @@ def handle_get_calendar_day(
         "chat_data": user_chat_data,
         "user_shifts": user_shifts,
         "bae_shifts": bae_shifts,
-        "chat_data": user_chat_data
+        "shifts": user_shifts,
+        "shift_types": db_shift_types,
+        "date_string": selected_date_object.strftime("%Y-%m-%d")
     }
-    
+
     response = templates.TemplateResponse(
         name="calendar/index.html",
         context=context,
     )
-    
     return response
+
