@@ -182,7 +182,7 @@ def handle_get_calendar_day(
             return response        
 
         response = templates.TemplateResponse(
-            name="calendar/calendar-card-detail.html",
+            name="calendar/_detail-modal.html",
             context=context
         )
 
