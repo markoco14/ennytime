@@ -31,6 +31,25 @@
 					grid-row: 1 / -1;
 					grid-column: 1 / -1;
 				}
+
+				#overlay.htmx-added > #backdrop {
+					opacity: 0;
+				}
+
+				#backdrop {
+					opacity: 1;
+					transition: opacity 0.3s ease-in;
+				}
+
+				#overlay.htmx-added > #modal {
+					opacity: 0;
+				}
+
+				#modal {
+					opacity: 1;
+					transition: opacity 0.3s ease-in;
+				}
+				
 				.no-scrollbar::-webkit-scrollbar {
 					display: none;
 				}

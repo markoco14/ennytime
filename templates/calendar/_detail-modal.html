@@ -1,7 +1,8 @@
 <div id="overlay"
-    class="p-2 sm:p-0 grid place-items-center fixed top-0 left-0 w-full h-full bg-black/60 transition-all duration-400 ease-in-out">
+    class="p-2 sm:p-0 stacked fixed top-0 left-0 w-full h-full">
+    <div id="backdrop" class="w-full h-full bg-black/60"></div>
     <div id="modal"
-        class="w-full max-w-[500px] aspect-square">
+        class="w-full max-w-[500px] aspect-square z-10">
         <div id="day-{{request.path_params.get('day')}}"
                 class="grid place-items-center w-full h-full md:border-gray-900 prop bg-white z-50 rounded-md">
             {% include "/calendar/calendar-card-detail.html" %}
