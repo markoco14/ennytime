@@ -1,6 +1,7 @@
 """
 Calendar related routes
 """
+import json
 import logging
 import datetime
 
@@ -116,12 +117,10 @@ def handle_get_calendar_day(
             }
         }
 
-        response = templates.TemplateResponse(
-            name="calendar/calendar-card-simple.html",
-            context=context
-        )
+        response = Response(status_code=200)
 
         response.headers["HX-Push-Url"] = f"/calendar/{selected_date_object.year}/{selected_date_object.month}"
+        response.headers["HX-Trigger"] = json.dumps({"showCard": f"{day}"})
 
         return response
     

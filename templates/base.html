@@ -232,6 +232,11 @@
 				message = JSON.parse(event.detail.xhr.response).message
 				alert(message);
 			});
+			
+			document.body.addEventListener("showCard", (event) => {
+				let container = htmx.find(`#container-${event.detail.value}`)
+				htmx.removeClass(container, 'opacity-0')
+			})
 		</script>
 	</body>
 </html>

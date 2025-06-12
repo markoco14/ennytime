@@ -14,7 +14,7 @@
 		{% elif request.path_params.get("day") and request.path_params.get("day")|int == value.date.day %}
 			<div id="container-{{value.date.day}}" class="min-h-[48px] border-gray-900 bg-white md:border-gray-900 md:rounded-md"></div>
 		{% else %}
-			<div id="container-{{value.date.day}}" class="min-h-[48px] border-gray-900 bg-white md:border-gray-900 md:rounded-md">
+			<div id="container-{{value.date.day}}" class="min-h-[48px] border-gray-900 bg-white md:border-gray-900 md:rounded-md transition-opacity duration-300 ease-in-out">
 				<div id="day-{{value.date.day}}" class="grid place-items-center w-full h-full border md:border-gray-900 prop h-full bg-white z-50">
 					{% include '/calendar/calendar-card-simple.html'%}
 				</div>

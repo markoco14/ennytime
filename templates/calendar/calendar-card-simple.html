@@ -4,6 +4,7 @@
 	 hx-target="main"
 	 hx-swap="beforeend"
 	 hx-trigger="click"
+	 hx-on::after-request="let container = htmx.find('#container-{{value.date.day}}'); htmx.addClass(container, 'opacity-0')"
 	 {# hx-on::before-request="moveToModal(Number(`{{value.date.day}}`));" #}
 	 class="js-card relative grid w-full h-full max-w-[200px] m-auto rounded-md text-gray-900  text-center cursor-pointer md:p-2 bg-white"
 	 >
