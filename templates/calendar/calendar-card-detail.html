@@ -55,6 +55,7 @@
 			<a 
 				hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?simple=true"
 				hx-target="#overlay"
+				hx-indicator=".page-indicator"
 				hx-swap="delete swap:300ms"
 				href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}"
 				class="rounded bg-gray-300 px-4 py-1">
