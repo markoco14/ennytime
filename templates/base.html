@@ -36,6 +36,10 @@
 					opacity: 0;
 				}
 
+				#overlay.htmx-swapping > #backdrop {
+					opacity: 0;
+				}
+
 				#backdrop {
 					opacity: 1;
 					transition: opacity 0.3s ease-in;
@@ -45,19 +49,25 @@
 					opacity: 0;
 				}
 
+				#overlay.htmx-swapping > #modal {
+					opacity: 0;
+				}
+
 				#modal {
 					opacity: 1;
-					transition: opacity 0.3s ease-in;
+					transition: opacity 0.2s ease-in;
 				}
 				
 				.no-scrollbar::-webkit-scrollbar {
 					display: none;
 				}
+
 				/* Hide scrollbar for IE, Edge and Firefox */
 				.no-scrollbar {
 					-ms-overflow-style: none;  /* IE and Edge */
 					scrollbar-width: none;  /* Firefox */
 				}
+
 				.js-card.htmx-added {
 					opacity: 0;
 				}

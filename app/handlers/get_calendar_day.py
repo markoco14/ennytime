@@ -2,10 +2,8 @@
 Calendar related routes
 """
 import json
-import logging
 import datetime
 
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 from fastapi import Request, Response
 from fastapi.responses import RedirectResponse
@@ -14,7 +12,6 @@ from app.core.template_utils import templates
 from app.models.share_model import DbShare
 from app.models.user_model import DBUser
 from app.queries import shift_queries
-from app.repositories import shift_type_repository
 from app.services import calendar_service, calendar_shift_service, chat_service
 
 
