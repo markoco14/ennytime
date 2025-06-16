@@ -48,8 +48,6 @@ def handle_get_calendar_day(
 
         return response
     
-
-
     if "hx-request" in request.headers and request.query_params.get("simple"):
         current_date_object = datetime.datetime.now()
         selected_date_object = datetime.date(year=year, month=month, day=day)
@@ -122,6 +120,100 @@ def handle_get_calendar_day(
 
         return response
 
+    elif "hx-request" in request.headers and request.query_params.get("response") == "loader":
+        current_date_object = datetime.datetime.now()
+        selected_date_object = datetime.date(year=year, month=month, day=day)
+        current_month_object = datetime.date(year=year, month=month, day=1)
+        prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
+        next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
+        
+        # get user who shares their calendar with current user
+        # find the DbShare where current user id is the receiver_id 
+        bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
+            DbShare.receiver_id == current_user.id).first()
+        
+        # gathering user ids to query shift table and get shifts for both users at once
+        user_ids = [current_user.id]
+        if bae_user:
+            user_ids.append(bae_user.id)
+
+        response = templates.TemplateResponse(
+            request=request,
+            name="/calendar/_detail-modal-loader.html",
+            context={
+                "current_user": current_user,
+                "selected_date_object": selected_date_object
+                }
+        )
+
+        return response
+    
+    elif "hx-request" in request.headers and request.query_params.get("response") == "details":
+        current_date_object = datetime.datetime.now()
+        selected_date_object = datetime.date(year=year, month=month, day=day)
+        current_month_object = datetime.date(year=year, month=month, day=1)
+        prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
+        next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
+
+        # get user who shares their calendar with current user
+        # find the DbShare where current user id is the receiver_id 
+        bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
+            DbShare.receiver_id == current_user.id).first()
+        
+        # gathering user ids to query shift table and get shifts for both users at once
+        user_ids = [current_user.id]
+        if bae_user:
+            user_ids.append(bae_user.id)
+
+        """Response context:
+            - request
+            - current_user
+            - bae_user
+            - selected_month (holds the selected month, might not be necessary)
+            - selected_date_object (date constructed from current year, month, day)
+            - value (date, shifts, bae_shifts)
+            """
+        if not bae_user:
+            db_user_shifts = shift_queries.list_shifts_for_user_by_date(
+                db=db,
+                user_id=current_user.id,
+                selected_date = selected_date_object.strftime("%Y-%m-%d")
+            )
+
+            for shift in db_user_shifts:
+                shift[0].short_name = shift[1].short_name
+                shift[0].long_name = shift[1].long_name
+            
+            user_shifts = user_shifts = [shift[0] for shift in db_user_shifts if shift[0].user_id == current_user.id]
+            bae_shifts = []
+        else:
+            shifts_for_couple = shift_queries.list_shifts_for_couple_by_date(
+                                                    db=db,
+                                                    user_ids=[current_user.id, bae_user.id],
+                                                    selected_date = selected_date_object.strftime("%Y-%m-%d")
+                                                    )
+            
+            for shift in shifts_for_couple:
+                shift[0].short_name = shift[1].short_name
+                shift[0].long_name = shift[1].long_name
+            
+            user_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == current_user.id]
+            bae_shifts = [shift[0] for shift in shifts_for_couple if shift[0].user_id == bae_user.id]
+
+
+        response = templates.TemplateResponse(
+            request=request,
+            name="/calendar/_detail-view-main.html",
+            context={
+                "current_user": current_user,
+                "user_shifts": user_shifts,
+                "bae_user": bae_user,
+                "bae_shifts": bae_shifts,
+                "selected_date_object": selected_date_object,
+            }
+        )
+
+        return response
 
     elif "hx-request" in request.headers:
         current_date_object = datetime.datetime.now()

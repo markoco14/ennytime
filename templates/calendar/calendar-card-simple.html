@@ -1,5 +1,5 @@
-<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}/{{value.date.day}}"
-	hx-push-url="true"
+<div hx-get="/calendar/{{value.date.year}}/{{value.date.month}}/{{value.date.day}}?response=loader"
+	hx-push-url="/calendar/{{value.date.year}}/{{value.date.month}}/{{value.date.day}}"
 	 hx-target="main"
 	 hx-swap="beforeend"
 	 hx-trigger="click"
