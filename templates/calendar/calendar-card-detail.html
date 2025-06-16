@@ -53,7 +53,7 @@
 		</main>
 		<div class="flex gap-4">
 			<a 
-				hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?simple=true"
+				hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?response=simple"
 				hx-target="#overlay"
 				hx-indicator=".page-indicator"
 				hx-swap="delete swap:300ms"

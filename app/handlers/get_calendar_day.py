@@ -48,7 +48,7 @@ def handle_get_calendar_day(
 
         return response
     
-    if "hx-request" in request.headers and request.query_params.get("simple"):
+    if "hx-request" in request.headers and request.query_params.get("response") == "simple":
         current_date_object = datetime.datetime.now()
         selected_date_object = datetime.date(year=year, month=month, day=day)
         current_month_object = datetime.date(year=year, month=month, day=1)
