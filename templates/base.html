@@ -31,14 +31,43 @@
 					grid-row: 1 / -1;
 					grid-column: 1 / -1;
 				}
+
+				#overlay.htmx-added > #backdrop {
+					opacity: 0;
+				}
+
+				#overlay.htmx-swapping > #backdrop {
+					opacity: 0;
+				}
+
+				#backdrop {
+					opacity: 1;
+					transition: opacity 0.3s ease-in;
+				}
+
+				#overlay.htmx-added > #modal {
+					opacity: 0;
+				}
+
+				#overlay.htmx-swapping > #modal {
+					opacity: 0;
+				}
+
+				#modal {
+					opacity: 1;
+					transition: opacity 0.2s ease-in;
+				}
+				
 				.no-scrollbar::-webkit-scrollbar {
 					display: none;
 				}
+
 				/* Hide scrollbar for IE, Edge and Firefox */
 				.no-scrollbar {
 					-ms-overflow-style: none;  /* IE and Edge */
 					scrollbar-width: none;  /* Firefox */
 				}
+
 				.js-card.htmx-added {
 					opacity: 0;
 				}
@@ -232,6 +261,11 @@
 				message = JSON.parse(event.detail.xhr.response).message
 				alert(message);
 			});
+			
+			document.body.addEventListener("showCard", (event) => {
+				let container = htmx.find(`#container-${event.detail.value}`)
+				htmx.removeClass(container, 'opacity-0')
+			})
 		</script>
 	</body>
 </html>

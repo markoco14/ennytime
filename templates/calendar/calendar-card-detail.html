@@ -1,9 +1,8 @@
-{% from '/macros/spinner.html' import spinner%}
 <div class="js-card relative slide-it h-full w-full flex flex-col justify-between md:gap-2"
 	 hx-target="this"
 	 hx-sync="this"
 	 hx-swap="outerHTML"
-	 hx-indicator="this">
+	 >
 	{# birthdays #}
 	<div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
 		{% if current_user.birthday and current_user.birthday.day == selected_date_object.day and current_user.birthday.month == selected_date_object.month %}
@@ -40,13 +39,7 @@
 			{% include "ui/icons/valentines-calendar-detail.html" %}
 		{% endif %}
 	</div>
-	{# loading spinner #}
-	<div class="htmx-indicator h-full w-full grid">
-		<div class="w-full h-full flex justify-center items-center">
-			{{spinner('spinner', 'h-6', 'h-6', 'text-black')}}
-		</div>
-	</div>
-	<div class="htmx-indicator-content p-4 md:p-8 h-full flex flex-col justify-between overflow-y-auto">
+	<div class="p-4 md:p-8 h-full flex flex-col justify-between overflow-y-auto">
 		<header>
 			<h3 class="text-3xl">{{selected_date_object.strftime('%B %d, %Y')}}</h3>
 			<p class="text-xl">{{selected_date_object.strftime('%A')}}</p>
@@ -60,8 +53,10 @@
 		</main>
 		<div class="flex gap-4">
 			<a 
-				hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?simple=true"
-				hx-on::before-request="moveToCalendar(Number(`{{selected_date_object.day}}`));"
+				hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?response=simple"
+				hx-target="#overlay"
+				hx-indicator=".page-indicator"
+				hx-swap="delete swap:300ms"
 				href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}"
 				class="rounded bg-gray-300 px-4 py-1">
 				Close

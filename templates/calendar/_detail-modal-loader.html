@@ -1,0 +1,107 @@
+<div id="overlay"
+    class="stacked fixed top-0 left-0 w-full h-full">
+    <div id="backdrop" class="w-full h-full bg-black/60"></div>
+    <div id="modal"
+        class="w-full max-w-[500px] aspect-square z-10 mx-2 sm:mx-0">
+        <div id="day-{{request.path_params.get('day')}}"
+                class="grid place-items-center w-full h-full md:border-gray-900 prop bg-white z-50 rounded-md">
+            <div class="js-card relative slide-it h-full w-full flex flex-col justify-between md:gap-2"
+                hx-target="this"
+                hx-sync="this"
+                hx-swap="outerHTML"
+                >
+                {# birthdays #}
+                <div class="absolute -top-5 left-0 w-full flex justify-center gap-2">
+                    {% if current_user.birthday and current_user.birthday.day == selected_date_object.day and current_user.birthday.month == selected_date_object.month %}
+                    <div class="rounded-full bg-pink-500 h-8 w-8 flex justify-center items-center">
+                        <img src="../../../static/birthday-cake.png"
+                            alt="HBD"
+                            class="h-5 w-5">
+                    </div>
+                    {% endif %}
+                    {% if bae_user and bae_user.birthday and bae_user.birthday.day == selected_date_object.day and bae_user.birthday.month == selected_date_object.month %}
+                    <div class="rounded-full bg-pink-300 h-8 w-8 flex justify-center items-center">
+                        <img src="../../../static/birthday-cake.png"
+                            alt="HBD"
+                            class="h-5 w-5">
+                    </div>
+                    {% endif %}
+                    {% if selected_date_object.month == 12 and selected_date_object.day == 25 %}
+                    <div class="rounded-full bg-red-400 h-8 w-8 flex justify-center items-center">
+                        <img 
+                            src="../../../static/christmas-tree-1.png"
+                            alt="HBD"
+                            class="h-5 w-5">
+                    </div>
+                    {% endif %}
+                    {% if selected_date_object.month == 12 and selected_date_object.day == 31 %}
+                    <div class="rounded-full bg-sky-900 h-8 w-8 flex justify-center items-center">
+                        <img 
+                            src="../../../static/new-years-eve.png"
+                            alt="HBD"
+                            class="h-8 w-8">
+                    </div>
+                    {% endif %}
+                    {% if selected_date_object.month == 2 and selected_date_object.day == 14 %}
+                        {% include "ui/icons/valentines-calendar-detail.html" %}
+                    {% endif %}
+                </div>
+                <div class="p-4 md:p-8 h-full flex flex-col justify-between overflow-y-auto">
+                    <header>
+                        <h3 class="text-3xl">{{selected_date_object.strftime('%B %d, %Y')}}</h3>
+                        <p class="text-xl">{{selected_date_object.strftime('%A')}}</p>
+                    </header>
+                    <div hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?response=details"
+                        hx-trigger="revealed"
+                        hx-target="this"
+                        hx-swap="outerHTML"
+                        class="flex flex-col gap-2"
+                        >
+                        <div class="bg-pink-500/50 rounded-md animate-pulse h-[56px]"></div>
+                        <div class="bg-pink-300/50 rounded-md animate-pulse h-[56px]"></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <a 
+                            hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}?response=simple"
+                            hx-target="#overlay"
+                            hx-indicator=".page-indicator"
+                            hx-swap="delete swap:300ms"
+                            href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}"
+                            class="rounded bg-gray-300 px-4 py-1">
+                            Close
+                        </a>
+                        {% if "edit" in request.url.path %}
+                            <a 
+                                id="toggle-button"
+                                hx-swap-oob="true"
+                                hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}"
+                                hx-target=".js-card-content"
+                                hx-indicator="this"
+                                hx-swap="innerHTML transition:true"
+                                hx-on::before-request="toggleEnterFromLeft('data-js-card-content');"
+                                href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}?day={{selected_date_object.day}}"
+                                class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1"
+                            >
+                                <span class="htmx-indicator-content">Back</span>
+                                <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-blue-100')}}</span>
+                            </a>
+                        {% else %}
+                            <a 
+                                id="toggle-button"
+                                hx-get="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}/edit"
+                                hx-push-url="true"
+                                hx-target=".js-card-content"
+                                hx-indicator="this"
+                                hx-swap="innerHTML transition:true"
+                                hx-on::before-request="toggleEnterFromRight('data-js-card-content');"
+                                href="/calendar/{{selected_date_object.year}}/{{selected_date_object.month}}/{{selected_date_object.day}}/edit"
+                                class="flex justify-center items-center rounded bg-blue-500 text-white px-4 py-1">
+                                Edit
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

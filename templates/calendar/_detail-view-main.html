@@ -1,0 +1,7 @@
+<main data-js-card-content class="js-card-content flex flex-col gap-2 h-full justify-center overflow-y-auto">
+    {% if "edit" in request.url.path %}
+        {% include "/calendar/fragments/edit-view.html" %}
+    {% else %}
+        {% include "/calendar/fragments/detail-view.html" %}
+    {% endif %}
+</main>
