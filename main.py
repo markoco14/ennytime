@@ -12,6 +12,8 @@ from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import RequestResponseEndpoint
 
+from router import router as app_router
+
 from app.auth import auth_router, auth_service
 from app.core.database import get_db
 from app.core.config import get_settings
@@ -33,6 +35,8 @@ SETTINGS = get_settings()
 
 
 app = FastAPI()
+
+app.include_router(app_router)
 
 logging.basicConfig(
     level=logging.INFO,  # Ensure INFO level messages are captured
@@ -132,38 +136,6 @@ handler = Mangum(app)
 @app.exception_handler(404)
 async def custom_404_handler(request, __):
     return templates.TemplateResponse("not-found.html", {"request": request})
-
-
-@app.get("/", response_class=HTMLResponse)
-def index(
-    request: Request,
-    response: Response,
-    month: Optional[int] = None,
-    year: Optional[int] = None,
-    current_user=Depends(auth_service.user_dependency)
-):
-    """Index page"""
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-        response.delete_cookie("session-id")
-
-        return response
-    
-    current_time = datetime.datetime.now()
-    selected_year = year or current_time.year
-    selected_month = month or current_time.month
-    
-    # HX-Redirect required for hx-request
-    if "hx-request" in request.headers:
-        response = Response(status_code=303)
-        response.headers["HX-Redirect"] = f"/calendar/{selected_year}/{selected_month}"
-        return response
-    
-    # Can use FastAPI Redirect with standard http request
-    return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
 
 
 @app.post("/search", response_class=HTMLResponse)
