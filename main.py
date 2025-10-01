@@ -22,7 +22,6 @@ from app.repositories import user_repository
 from app.routers import (
     admin_router,
     calendar_router,
-    profile_router,
     share_router,
     chat_router,
     onboard_router
@@ -117,7 +116,6 @@ app.add_middleware(MaintenanceMiddleware)
 
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
-app.include_router(profile_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 app.include_router(chat_router.router)

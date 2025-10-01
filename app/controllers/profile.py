@@ -1,7 +1,7 @@
 from collections import namedtuple
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -9,8 +9,8 @@ from sqlalchemy.exc import IntegrityError
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app.repositories import shift_type_repository
-from app.repositories import user_repository, share_repository
+
+from app.repositories import user_repository
 from app.schemas import schemas
 from app.services import chat_service
 from app.models.user_model import DBUser
@@ -20,8 +20,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/profile", response_class=HTMLResponse | Response)
-def get_profile_page(
+def index(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user=Depends(auth_service.user_dependency)
@@ -91,8 +90,7 @@ def get_profile_page(
     )
 
 
-@router.get("/profile/display-name/{user_id}", response_class=HTMLResponse | Response)
-def get_display_name_widget(
+def display_name(
     request: Request,
     user_id: int,
     current_user=Depends(auth_service.user_dependency)
@@ -132,8 +130,7 @@ def update_entity(original_entity, update_data: dict[str, any]):
     return original_entity
 
 
-@router.put("/profile/display-name/edit/{user_id}", response_class=HTMLResponse | Response)
-def update_user_contact(
+def update(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -219,8 +216,7 @@ def update_user_contact(
     )
 
 
-@router.get("/profile/display-name/edit/{user_id}", response_class=HTMLResponse | Response)
-def get_edit_display_name_widget(
+def edit(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -253,8 +249,7 @@ def get_edit_display_name_widget(
     )
 
 
-@router.get("/birthday/{user_id}", response_class=HTMLResponse | Response)
-def get_birthday_widget(
+def birthday(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)]
@@ -297,8 +292,7 @@ def get_birthday_widget(
     )
 
 
-@router.put("/birthday/{user_id}", response_class=HTMLResponse | Response)
-def update_user_birthday(
+def update_birthday(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -347,8 +341,7 @@ def update_user_birthday(
     )
 
 
-@router.get("/birthday/{user_id}/edit", response_class=HTMLResponse | Response)
-def get_edit_birthday_widget(
+def birthday_edit(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)]
@@ -387,8 +380,7 @@ def get_edit_birthday_widget(
     )
 
 
-@router.get("/username/{user_id}", response_class=HTMLResponse | Response)
-def get_username_widget(
+def username(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -420,8 +412,7 @@ def get_username_widget(
     )
 
 
-@router.put("/username/{user_id}", response_class=HTMLResponse | Response)
-def update_username_widget(
+def update_username(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -455,8 +446,7 @@ def update_username_widget(
         context=context
     )
 
-@router.post("/username-unique", response_class=HTMLResponse)
-def validate_username(
+def unique(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     app_username: Annotated[str, Form()] = "",
