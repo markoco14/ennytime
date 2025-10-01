@@ -29,28 +29,6 @@ from app.services import calendar_service
 router = APIRouter()
 
 
-@router.get("/calendar/{year}/{month}", response_class=HTMLResponse)
-def get_calendar_page(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    month: Optional[int] = None,
-    year: Optional[int] = None,
-):
-    return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, db=db)
-
-@router.get("/calendar/{year}/{month}/{day}")
-def get_calendar_day(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    year: int,
-    month: int,
-    day: int
-):
-    return handle_get_calendar_day(request=request, current_user=current_user, year=year, month=month, day=day, db=db)
-
-
 @router.get("/calendar/{year}/{month}/{day}/edit")
 def get_calendar_day_edit(
     request: Request,
