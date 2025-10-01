@@ -17,8 +17,7 @@ from app.services import calendar_service, chat_service
 
 router = APIRouter(prefix="/scheduling")
 
-@router.get("", response_class=HTMLResponse)
-def get_scheduling_index_page(
+def index(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
@@ -44,8 +43,7 @@ def get_scheduling_index_page(
     return RedirectResponse(status_code=303, url=f"/scheduling/{selected_year}/{selected_month}")
     
     
-@router.get("/{year}/{month}", response_class=HTMLResponse)
-def get_scheduling_index_page(
+def month(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
@@ -184,8 +182,7 @@ def get_scheduling_index_page(
     )
 
 
-@router.post("/{date}/{type_id}", response_class=HTMLResponse)
-async def add_shift_to_date(
+async def create(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     date: str,
@@ -232,8 +229,7 @@ async def add_shift_to_date(
     )
 
 
-@router.delete("/{date}/{type_id}", response_class=HTMLResponse)
-async def delete_shift_for_date(
+async def delete(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     date: str,

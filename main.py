@@ -25,7 +25,6 @@ from app.routers import (
     profile_router,
     share_router,
     chat_router,
-    scheduling_router,
     onboard_router
 )
 
@@ -122,7 +121,6 @@ app.include_router(profile_router.router)
 app.include_router(calendar_router.router)
 app.include_router(share_router.router)
 app.include_router(chat_router.router)
-app.include_router(scheduling_router.router)
 app.include_router(onboard_router.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
