@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
@@ -104,4 +104,44 @@ def reject(
             "request": request,
             "message": "Calendar share request rejected."
         },
+    )
+
+
+def search(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    search_username: Annotated[str, Form()] = "",
+    current_user=Depends(auth_service.user_dependency)
+):
+    """ Returns a list of users that match the search string. """
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+
+    if search_username == "":
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/search-results.html",
+            context={"request": request, "matched_user": ""}
+        )
+
+    matched_user = user_repository.get_user_by_username(
+        db=db,
+        username=search_username
+    )
+
+    context = {
+        "request": request,
+        "matched_user": matched_user
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/search-results.html",
+        context=context
     )

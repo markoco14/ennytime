@@ -15,9 +15,9 @@ routes = [
     ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(auth_service.user_dependency)]),   # User
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               [Depends(auth_service.user_dependency)]),   # User
 
-    ("GET", "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, [Depends(auth_service.user_dependency)]),
-    ("POST", "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, [Depends(auth_service.user_dependency)]),
-    ("DELETE", "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, [Depends(auth_service.user_dependency)]),
+    ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, [Depends(auth_service.user_dependency)]),
+    ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, [Depends(auth_service.user_dependency)]),
+    ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, [Depends(auth_service.user_dependency)]),
 
 
     ("GET",     "/shifts",                              shifts.index,               [Depends(auth_service.user_dependency)]),   # User
@@ -47,11 +47,12 @@ routes = [
     ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        [Depends(auth_service.user_dependency)]),   # user?
     ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      [Depends(auth_service.user_dependency)]),   # in_relationship?
     ("DELETE",  "/reject-calendar/{share_id}",          relationships.reject,       [Depends(auth_service.user_dependency)]),   # in_relationship?
+    ("POST",    "/search",                              relationships.search,       [Depends(auth_service.user_dependency)]),   # user?
 
-    ("GET", "/admin",   admin.index, [Depends(auth_service.user_dependency)]),
-    ("GET", "/admin/users", admin.list_users, [Depends(auth_service.user_dependency)]),
-    ("GET", "/admin/user-signins", admin.list_user_signins, [Depends(auth_service.user_dependency)]),
-    ("DELETE", "/admin/users/{user_id}", admin.delete_user, [Depends(auth_service.user_dependency)]),
+    ("GET",     "/admin",                               admin.index,                [Depends(auth_service.user_dependency)]),
+    ("GET",     "/admin/users",                         admin.list_users,           [Depends(auth_service.user_dependency)]),
+    ("GET",     "/admin/user-signins",                  admin.list_user_signins,    [Depends(auth_service.user_dependency)]),
+    ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          [Depends(auth_service.user_dependency)]),
 ]
 
 for method, path, handler, deps in routes:

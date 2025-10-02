@@ -1,23 +1,19 @@
 """Main file to hold app and api routes"""
 import logging
-from typing import Annotated
 import time
 
-from fastapi import Depends, FastAPI, Request, Form
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from mangum import Mangum
-from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import RequestResponseEndpoint
 
 from router import router as app_router
 
-from app.auth import auth_router, auth_service
-from app.core.database import get_db
+from app.auth import auth_router
 from app.core.config import get_settings
 from app.core.template_utils import templates
-from app.repositories import user_repository
 from app.routers import (
     chat_router,
     onboard_router
@@ -125,45 +121,6 @@ async def custom_404_handler(request, __):
     return templates.TemplateResponse("not-found.html", {"request": request})
 
 
-@app.post("/search", response_class=HTMLResponse)
-def search_users_to_share(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    search_username: Annotated[str, Form()] = "",
-    current_user=Depends(auth_service.user_dependency)
-):
-    """ Returns a list of users that match the search string. """
-    if not current_user:
-        response = templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html"
-        )
-        response.delete_cookie("session-id")
-
-        return response
-
-    if search_username == "":
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/search-results.html",
-            context={"request": request, "matched_user": ""}
-        )
-
-    matched_user = user_repository.get_user_by_username(
-        db=db,
-        username=search_username
-    )
-
-    context = {
-        "request": request,
-        "matched_user": matched_user
-    }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="profile/search-results.html",
-        context=context
-    )
 
 @app.get("/maintenance", response_class=HTMLResponse)
 def maintenance_page(request: Request):
