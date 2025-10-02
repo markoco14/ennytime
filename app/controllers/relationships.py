@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
@@ -17,8 +17,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/share-calendar/{receiver_id}", response_class=HTMLResponse | Response)
-def share_calendar(
+def share(
     request: Request,
     receiver_id: int,
     db: Annotated[Session, Depends(get_db)],
@@ -73,7 +72,6 @@ def share_calendar(
     )
 
 
-@router.delete("/share-calendar/{share_id}", response_class=HTMLResponse)
 def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id: int):
     """Unshare calendar page"""
     # return "Unshared"
@@ -91,8 +89,7 @@ def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id:
     )
 
 
-@router.delete("/reject-calendar/{share_id}", response_class=HTMLResponse)
-def reject_calendar_share(
+def reject(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     share_id: int
@@ -107,4 +104,44 @@ def reject_calendar_share(
             "request": request,
             "message": "Calendar share request rejected."
         },
+    )
+
+
+def search(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    search_username: Annotated[str, Form()] = "",
+    current_user=Depends(auth_service.user_dependency)
+):
+    """ Returns a list of users that match the search string. """
+    if not current_user:
+        response = templates.TemplateResponse(
+            request=request,
+            name="website/web-home.html"
+        )
+        response.delete_cookie("session-id")
+
+        return response
+
+    if search_username == "":
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/search-results.html",
+            context={"request": request, "matched_user": ""}
+        )
+
+    matched_user = user_repository.get_user_by_username(
+        db=db,
+        username=search_username
+    )
+
+    context = {
+        "request": request,
+        "matched_user": matched_user
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/search-results.html",
+        context=context
     )

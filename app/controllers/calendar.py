@@ -1,36 +1,25 @@
 """
 Calendar related routes
 """
-import logging
-import time
 from typing import Annotated, Optional
-from pprint import pprint
 import datetime
 
-from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi import Depends, Request, Response
 
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
 from app.handlers.get_calendar import handle_get_calendar
-from app.handlers.get_calendar_card_detail import handle_get_calendar_card_detail
-from app.handlers.get_calendar_card_simple import handle_get_calendar_card_simple
 from app.handlers.get_calendar_day import handle_get_calendar_day
 from app.handlers.get_calendar_day_edit import handle_get_calendar_day_edit
 from app.models.user_model import DBUser
-from app.repositories import share_repository, shift_repository
+from app.repositories import shift_repository
 from app.repositories import shift_type_repository
 from app.schemas import schemas
-from app.services import calendar_service
-
-router = APIRouter()
 
 
-@router.get("/calendar/{year}/{month}", response_class=HTMLResponse)
-def get_calendar_page(
+def month(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
@@ -39,8 +28,8 @@ def get_calendar_page(
 ):
     return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, db=db)
 
-@router.get("/calendar/{year}/{month}/{day}")
-def get_calendar_day(
+
+def day(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
@@ -51,7 +40,6 @@ def get_calendar_day(
     return handle_get_calendar_day(request=request, current_user=current_user, year=year, month=month, day=day, db=db)
 
 
-@router.get("/calendar/{year}/{month}/{day}/edit")
 def get_calendar_day_edit(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -63,7 +51,6 @@ def get_calendar_day_edit(
     return handle_get_calendar_day_edit(request=request, current_user=current_user, year=year, month=month, day=day, db=db)
 
 
-@router.post("/calendar/card/{date_string}/edit/{shift_type_id}")
 def get_calendar_card_edit(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -79,7 +66,7 @@ def get_calendar_card_edit(
         response.delete_cookie("session-id")
 
         return response
-     # check if shift already exists
+    # check if shift already exists
     # if exists delete, user will already have clicked a confirm on the frontend
 
     date_segments = date_string.split("-")
@@ -109,8 +96,6 @@ def get_calendar_card_edit(
     )
 
 
-
-@router.delete("/calendar/card/{date_string}/edit/{shift_type_id}", response_class=HTMLResponse)
 async def delete_shift_for_date(
     request: Request,
     db: Annotated[Session, Depends(get_db)],

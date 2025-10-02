@@ -17,8 +17,7 @@ from app.models.user_model import DBUser
 router = APIRouter(prefix="/shifts")
 
 
-@router.get("")
-def get_shifts_page(
+def index(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
@@ -26,8 +25,7 @@ def get_shifts_page(
     return handle_get_shifts_page(request, current_user, db)
 
 
-@router.get("/new")
-def get_shift_manager_page(
+def new(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
@@ -35,8 +33,7 @@ def get_shift_manager_page(
     return handle_get_shifts_new(request, current_user, db)
 
 
-@router.post("/new")
-def store_shift_type(
+def create(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
@@ -45,8 +42,7 @@ def store_shift_type(
     ):
     return handle_post_shifts_new(request, current_user, shift_name, date_string, db)
 
-@router.get("/{shift_type_id}/edit")
-def get_edit_shift(
+def edit(
     request: Request,
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     db: Annotated[Session, Depends(get_db)],
@@ -76,8 +72,7 @@ def get_edit_shift(
 
     return response
 
-@router.post("/{shift_type_id}/edit")
-def edit_shift(
+def update(
     request: Request,
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     db: Annotated[Session, Depends(get_db)],
@@ -120,8 +115,7 @@ def edit_shift(
     return response
 
 
-@router.delete("/{shift_type_id}")
-def delete_shift_type(
+def delete(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
@@ -130,8 +124,7 @@ def delete_shift_type(
     return handle_delete_shift(request, current_user, shift_type_id, db)
 
 
-@router.get("/setup")
-def get_shifts_page(
+def setup(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
