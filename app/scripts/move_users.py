@@ -11,7 +11,7 @@ def move_users():
     with src_engine.connect() as src_conn, sqlite3.connect("db.sqlite3") as dest_conn:
         src_cursor = src_conn.execution_options(stream_results=True).execute(
             text("""
-            SELECT display_name, first_name, last_name, email, hashed_password, is_superuser, is_admin, is_active, is_verified, verified_at, created_at, updated_at, birthday, username FROM etime_users;
+            SELECT id, display_name, first_name, last_name, email, hashed_password, is_superuser, is_admin, is_active, is_verified, verified_at, created_at, updated_at, birthday, username FROM etime_users;
         """))
 
         dest_cursor = dest_conn.cursor()
@@ -28,8 +28,8 @@ def move_users():
 
             dest_cursor.executemany("""
                 INSERT INTO users (
-                    display_name, first_name, last_name, email, hashed_password, is_superuser, is_admin, is_active, is_verified, verified_at, created_at, updated_at, birthday, username
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    id, display_name, first_name, last_name, email, hashed_password, is_superuser, is_admin, is_active, is_verified, verified_at, created_at, updated_at, birthday, username
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, new_rows)
             
             dest_conn.commit()
