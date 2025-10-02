@@ -4,3 +4,4 @@ __pycache__
 dep
 lambda_artifact.zip
 development
+db.sqlite3
