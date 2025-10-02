@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.auth import auth_service
-from app.controllers import calendar, public, relationships, schedule, shifts , profile
+from app.controllers import admin, calendar, public, relationships, schedule, shifts , profile
 
 # from controllers import classes, public
 # from dependencies import requires_owner, requires_user
@@ -42,6 +42,11 @@ routes = [
     ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        [Depends(auth_service.user_dependency)]),   # user?
     ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      [Depends(auth_service.user_dependency)]),   # in_relationship?
     ("DELETE",  "/reject-calendar/{share_id}",          relationships.reject,       [Depends(auth_service.user_dependency)]),   # in_relationship?
+
+    ("GET", "/admin",   admin.index, [Depends(auth_service.user_dependency)]),
+    ("GET", "/admin/users", admin.list_users, [Depends(auth_service.user_dependency)]),
+    ("GET", "/admin/user-signins", admin.list_user_signins, [Depends(auth_service.user_dependency)]),
+    ("DELETE", "/admin/users/{user_id}", admin.delete_user, [Depends(auth_service.user_dependency)]),
 ]
 
 for method, path, handler, deps in routes:

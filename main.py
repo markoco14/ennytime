@@ -1,10 +1,9 @@
 """Main file to hold app and api routes"""
-import datetime
 import logging
-from typing import Annotated, Optional
+from typing import Annotated
 import time
 
-from fastapi import Depends, FastAPI, Request, Form, Response
+from fastapi import Depends, FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from mangum import Mangum
@@ -20,7 +19,6 @@ from app.core.config import get_settings
 from app.core.template_utils import templates
 from app.repositories import user_repository
 from app.routers import (
-    admin_router,
     calendar_router,
     chat_router,
     onboard_router
@@ -114,7 +112,6 @@ app.add_middleware(ClosingDownMiddleware)
 app.add_middleware(MaintenanceMiddleware)
 
 app.include_router(auth_router.router)
-app.include_router(admin_router.router)
 app.include_router(calendar_router.router)
 app.include_router(chat_router.router)
 app.include_router(onboard_router.router)

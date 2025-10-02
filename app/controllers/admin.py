@@ -22,8 +22,7 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("", response_class=HTMLResponse | RedirectResponse)
-def read_admin_home_page(
+def index(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user=Depends(auth_service.user_dependency)
@@ -59,7 +58,6 @@ def read_admin_home_page(
     )
 
 
-@router.get("/users", response_class=HTMLResponse)
 def list_users(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -101,7 +99,6 @@ def list_users(
     )
 
 
-@router.get("/user-signins", response_class=HTMLResponse)
 def list_user_signins(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -146,7 +143,6 @@ def list_user_signins(
     )
 
 
-@router.delete("/users/{user_id}", response_class=JSONResponse)
 def delete_user(
     request: Request,
     user_id: int,
