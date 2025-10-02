@@ -15,6 +15,11 @@ routes = [
     ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(auth_service.user_dependency)]),   # User
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               [Depends(auth_service.user_dependency)]),   # User
 
+    ("GET", "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, [Depends(auth_service.user_dependency)]),
+    ("POST", "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, [Depends(auth_service.user_dependency)]),
+    ("DELETE", "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, [Depends(auth_service.user_dependency)]),
+
+
     ("GET",     "/shifts",                              shifts.index,               [Depends(auth_service.user_dependency)]),   # User
     ("GET",     "/shifts/new",                          shifts.new,                 [Depends(auth_service.user_dependency)]),   # User
     ("POST",    "/shifts/new",                          shifts.create,              [Depends(auth_service.user_dependency)]),   # User

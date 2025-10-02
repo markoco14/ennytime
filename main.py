@@ -19,7 +19,6 @@ from app.core.config import get_settings
 from app.core.template_utils import templates
 from app.repositories import user_repository
 from app.routers import (
-    calendar_router,
     chat_router,
     onboard_router
 )
@@ -112,7 +111,6 @@ app.add_middleware(ClosingDownMiddleware)
 app.add_middleware(MaintenanceMiddleware)
 
 app.include_router(auth_router.router)
-app.include_router(calendar_router.router)
 app.include_router(chat_router.router)
 app.include_router(onboard_router.router)
 
