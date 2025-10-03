@@ -27,7 +27,7 @@ routes = [
     ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, [Depends(auth_service.user_dependency)]),
 
 
-    ("GET",     "/shifts",                              shifts.index,               [Depends(auth_service.user_dependency)]),   # User
+    ("GET",     "/shifts",                              shifts.index,               [Depends(requires_user)]),   # User
     ("GET",     "/shifts/new",                          shifts.new,                 [Depends(auth_service.user_dependency)]),   # User
     ("POST",    "/shifts/new",                          shifts.create,              [Depends(auth_service.user_dependency)]),   # User
     ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(auth_service.user_dependency)]),   # Owner?

@@ -1,28 +1,63 @@
+import sqlite3
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, Request, Response
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates
+from app.dependencies import requires_user
 from app.handlers.shifts.delete_shift import handle_delete_shift
 from app.handlers.shifts.get_shifts_new import handle_get_shifts_new
-from app.handlers.shifts.get_shifts_page import handle_get_shifts_page
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.handlers.shifts.post_shifts_new import handle_post_shifts_new
 from app.models.db_shift_type import DbShiftType
 from app.models.user_model import DBUser
+from app.structs.structs import ShiftRow
 
 router = APIRouter(prefix="/shifts")
 
 
 def index(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    lite_user=Depends(requires_user),
     ):
-    return handle_get_shifts_page(request, current_user, db)
+    if not lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
+        
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?", (lite_user[0], ))
+        shifts_rows = [ShiftRow(*row) for row in cursor.fetchall()]
+
+    context = {
+        "current_user": lite_user,
+        "shifts": shifts_rows,
+    }
+    
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            request=request,
+            name="/shifts/partials/_shifts.html",
+            context=context
+        )
+
+        return response
+
+
+    response = templates.TemplateResponse(
+        request=request,
+        name="/shifts/index.html",
+        context=context
+    )
+
+    return response
 
 
 def new(
