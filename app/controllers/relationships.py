@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
@@ -23,6 +23,10 @@ def share(
     db: Annotated[Session, Depends(get_db)],
     current_user=Depends(auth_service.user_dependency)
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     """Share calendar page"""
     if not current_user:
         response = JSONResponse(
@@ -75,6 +79,10 @@ def share(
 def unshare(request: Request, db: Annotated[Session, Depends(get_db)], share_id: int):
     """Unshare calendar page"""
     # return "Unshared"
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     try:
         share_repository.delete_share(db=db, share_id=share_id)
     except IntegrityError:
@@ -94,6 +102,10 @@ def reject(
     db: Annotated[Session, Depends(get_db)],
     share_id: int
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     """Delete the calendar share entity in DB"""
     share_repository.delete_share(db=db, share_id=share_id)
 
@@ -113,6 +125,10 @@ def search(
     search_username: Annotated[str, Form()] = "",
     current_user=Depends(auth_service.user_dependency)
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     """ Returns a list of users that match the search string. """
     if not current_user:
         response = templates.TemplateResponse(
