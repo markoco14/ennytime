@@ -29,8 +29,8 @@ routes = [
     ("GET",     "/shifts",                              shifts.index,               [Depends(requires_user)]),   # User
     ("GET",     "/shifts/new",                          shifts.new,                 [Depends(requires_user)]),   # User
     ("POST",    "/shifts/new",                          shifts.create,              [Depends(requires_user)]),   # User
-    ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(auth_service.user_dependency)]),   # Owner?
-    ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              [Depends(auth_service.user_dependency)]),   # Owner?
+    ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(requires_user)]),   # Owner?
+    ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              [Depends(requires_user)]),   # Owner?
     ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              [Depends(auth_service.user_dependency)]),   # Owner?
     ("GET",     "/shifts/setup",                        shifts.setup,               [Depends(auth_service.user_dependency)]),   # User
 
