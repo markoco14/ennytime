@@ -1,3 +1,4 @@
+import re
 import sqlite3
 from typing import Annotated
 
@@ -10,21 +11,19 @@ from app.core.database import get_db
 from app.core.template_utils import templates
 from app.dependencies import requires_user
 from app.handlers.shifts.delete_shift import handle_delete_shift
-from app.handlers.shifts.get_shifts_new import handle_get_shifts_new
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
-from app.handlers.shifts.post_shifts_new import handle_post_shifts_new
 from app.models.db_shift_type import DbShiftType
 from app.models.user_model import DBUser
-from app.structs.structs import ShiftRow
+from app.structs.structs import ShiftCreate, ShiftRow
 
 router = APIRouter(prefix="/shifts")
 
 
 def index(
     request: Request,
-    lite_user=Depends(requires_user),
+    current_user=Depends(requires_user),
     ):
-    if not lite_user:
+    if not current_user:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/signin"})
         else:
@@ -33,11 +32,11 @@ def index(
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
-        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?", (lite_user[0], ))
+        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?", (current_user[0], ))
         shifts_rows = [ShiftRow(*row) for row in cursor.fetchall()]
 
     context = {
-        "current_user": lite_user,
+        "current_user": current_user,
         "shifts": shifts_rows,
     }
     
@@ -62,20 +61,71 @@ def index(
 
 def new(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
+    current_user=Depends(requires_user),
     ):
-    return handle_get_shifts_new(request, current_user, db)
+    if not current_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
+
+    context = {
+        "request": request,
+        "current_user": current_user,
+    }
+
+    if request.headers.get("HX-Request"):
+        response = templates.TemplateResponse(
+            name="shifts/new/partials/form.html",
+            context=context
+        )
+        return response
+
+    response = templates.TemplateResponse(
+        name="shifts/new/index.html",
+        context=context
+    )
+    return response
 
 
 def create(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     shift_name: Annotated[str, Form()],
-    date_string: Annotated[str, Form()] = None,
+    current_user=Depends(requires_user)
     ):
-    return handle_post_shifts_new(request, current_user, shift_name, date_string, db)
+    if not current_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
+    
+    # clean up shift name
+    cleaned_shift_name = shift_name.strip()
+    space_finder_regex = re.compile(r"\s+")
+    cleaned_shift_name = re.sub(space_finder_regex, ' ', cleaned_shift_name)
+   
+    # create short name
+    long_name_split = cleaned_shift_name.split(" ")
+    short_name = ""
+    for part in long_name_split:
+        short_name += part[0].upper()
+
+    new_shift = ShiftCreate(
+        long_name=shift_name,
+        short_name=short_name,
+        user_id=current_user[0]
+    )
+
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO shifts (long_name, short_name, user_id) VALUES (?, ?, ?);", (new_shift.long_name, new_shift.short_name, new_shift.user_id))
+
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": f"/shifts"})
+    else:
+        return RedirectResponse(status_code=303, url=f"/shifts")
+
 
 def edit(
     request: Request,
