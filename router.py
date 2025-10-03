@@ -2,23 +2,24 @@ from fastapi import APIRouter, Depends
 
 from app.auth import auth_service
 from app.controllers import admin, auth, calendar, public, relationships, schedule, shifts , profile
+from app import dependencies
 
 # from controllers import classes, public
-# from dependencies import requires_owner, requires_user
+from app.dependencies import requires_guest, requires_user
 
 router = APIRouter()
 
 # routes follow ('method', 'path', 'endpoint/handler', 'dependencies')
 routes = [
-    ("GET",     "/",                                    public.index,               [Depends(auth_service.requires_guest)]),   # None
+    ("GET",     "/",                                    public.index,               [Depends(requires_guest)]),   # None
 
-    ("GET",     "/signup",                              auth.get_signup_page,       [Depends(auth_service.requires_guest)]),
-    ("POST",    "/signup",                              auth.signup,                [Depends(auth_service.requires_guest)]),
-    ("GET",     "/signin",                              auth.get_signin_page,       [Depends(auth_service.requires_guest)]),
-    ("POST",    "/signin",                              auth.signin,                [Depends(auth_service.requires_guest)]),
-    ("GET",     "/signout",                             auth.signout,               [Depends(auth_service.requires_user)]),
+    ("GET",     "/signup",                              auth.get_signup_page,       [Depends(requires_guest)]),
+    ("POST",    "/signup",                              auth.signup,                [Depends(requires_guest)]),
+    ("GET",     "/signin",                              auth.get_signin_page,       [Depends(requires_guest)]),
+    ("POST",    "/signin",                              auth.signin,                [Depends(requires_guest)]),
+    ("GET",     "/signout",                             auth.signout,               [Depends(requires_user)]),
 
-    ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(auth_service.requires_user)]),   # User
+    ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(requires_user)]),   # User
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               [Depends(auth_service.user_dependency)]),   # User
 
     ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, [Depends(auth_service.user_dependency)]),

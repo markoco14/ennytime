@@ -8,6 +8,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from fastapi import Depends, Request, Response
 
+from app import dependencies
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
@@ -19,12 +20,12 @@ from app.repositories import shift_repository
 from app.repositories import shift_type_repository
 from app.schemas import schemas
 from app.services import calendar_service
-
+from app.dependencies import requires_user
 
 def month(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    lite_user=Depends(auth_service.requires_user),
+    lite_user=Depends(requires_user),
     month: Optional[int] = None,
     year: Optional[int] = None,
 ):

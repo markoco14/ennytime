@@ -18,6 +18,7 @@ from app.schemas import schemas
 from app.repositories import session_repository
 
 from app.repositories import user_repository
+from app.dependencies import requires_guest, requires_user
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -25,7 +26,7 @@ templates = Jinja2Templates(directory="templates")
 
 def get_signup_page(
     request: Request,
-    lite_user=Depends(auth_service.requires_guest)
+    lite_user=Depends(requires_guest)
 ):
     """Go to the sign up page"""
     current_time = datetime.datetime.now()
@@ -48,7 +49,7 @@ def get_signup_page(
 
 def get_signin_page(
     request: Request,
-    lite_user=Depends(auth_service.requires_guest),
+    lite_user=Depends(requires_guest),
 ):
     """Go to the sign in page"""
     current_time = datetime.datetime.now()
@@ -140,7 +141,7 @@ def signup(
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
-    lite_user=Depends(auth_service.requires_guest),
+    lite_user=Depends(requires_guest),
     ):
     """Sign up a user"""
     # check if user exists
@@ -228,7 +229,7 @@ def signin(
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
-    lite_user=Depends(auth_service.requires_guest),
+    lite_user=Depends(requires_guest),
     ):
     """Sign in a user"""
     current_time = datetime.datetime.now()
@@ -344,7 +345,7 @@ def signin(
 
 def signout(
         request: Request, 
-        lite_user=Depends(auth_service.requires_user),
+        lite_user=Depends(requires_user),
         ):
     """Sign out a user"""
     if not lite_user:

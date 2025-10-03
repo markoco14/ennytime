@@ -8,13 +8,14 @@ from fastapi.responses import RedirectResponse
 from app.auth import auth_service
 from app.core.template_utils import templates
 
+from app.dependencies import requires_guest
 
 def index(
     request: Request,
     response: Response,
     month: Optional[int] = None,
     year: Optional[int] = None,
-    lite_user=Depends(auth_service.requires_guest)
+    lite_user=Depends(requires_guest)
 ):
     """Index page"""
     current_time = datetime.datetime.now()
