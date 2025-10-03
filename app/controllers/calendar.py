@@ -25,7 +25,7 @@ from app.dependencies import requires_user
 def month(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    lite_user=Depends(requires_user),
+    current_user=Depends(requires_user),
     month: Optional[int] = None,
     year: Optional[int] = None,
 ):
@@ -51,7 +51,7 @@ def month(
         - next_month_object
         - chat_data (optional, only if not hx-response)
     """
-    if not lite_user:
+    if not current_user:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/"})
         else:
@@ -117,7 +117,7 @@ def month(
     
     context = {
         "request": request,
-        "current_user": None,
+        "current_user": current_user,
         "bae_user": None,
         "days_of_week": calendar_service.DAYS_OF_WEEK,
         "month_calendar": month_calendar_dict,
@@ -151,7 +151,7 @@ def month(
     )
 
     return response
-    # return handle_get_calendar(request=request, current_user=lite_user, month=month, year=year, db=db)
+    # return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, db=db)
 
 
 def day(
