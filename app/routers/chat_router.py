@@ -29,7 +29,11 @@ def get_chat(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
-):
+):  
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     if not current_user:
         response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
@@ -82,6 +86,10 @@ def create_new_chat(
     receiver_id: int,
     db: Annotated[Session, Depends(get_db)],
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     """Create a new chat room for the couple"""
     if not auth_service.get_session_cookie(request.cookies):
         return templates.TemplateResponse(
@@ -121,6 +129,10 @@ def get_chatroom(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     if not current_user:
         response = RedirectResponse(status_code=303, url="/")
         response.delete_cookie("session-id")
@@ -159,46 +171,47 @@ def get_chatroom(
     )
 
 
-@router.websocket("/ws/chat/{room_id}/{user_id}")
-async def multi_websocket_endpoint(
-    websocket: WebSocket,
-    room_id: str,
-    user_id: int,
-    db: Annotated[Session, Depends(get_db)]
-):
-    await websocket_manager.connect_chatroom(
-        websocket=websocket,
-        room_id=room_id,
-        user_id=user_id
-    )
-    try:
-        while True:
-            data = await websocket.receive_text()
-            message = json.loads(data)['message']
-            db_message = DBChatMessage(
-                room_id=room_id,
-                message=message,
-                sender_id=user_id
-            )
-            db.add(db_message)
-            db.commit()
-            db.refresh(db_message)
-            message_data = {
-                "id": db_message.id,
-                "sender_id": db_message.sender_id,
-                "message": db_message.message,
-                "is_read": db_message.is_read,
-                "created_at": str((db_message.created_at + timedelta(hours=8)).strftime("%b %d %H:%M"))
-            }
-            await websocket_manager.broadcast_chatroom(
-                message=json.dumps(message_data),
-                room_id=room_id
-            )
-    except WebSocketDisconnect:
-        await websocket_manager.disconnect_chatroom(
-            websocket=websocket,
-            room_id=room_id
-        )
+# @router.websocket("/ws/chat/{room_id}/{user_id}")
+# async def multi_websocket_endpoint(
+#     websocket: WebSocket,
+#     room_id: str,
+#     user_id: int,
+#     db: Annotated[Session, Depends(get_db)]
+# ):
+    
+#     await websocket_manager.connect_chatroom(
+#         websocket=websocket,
+#         room_id=room_id,
+#         user_id=user_id
+#     )
+#     try:
+#         while True:
+#             data = await websocket.receive_text()
+#             message = json.loads(data)['message']
+#             db_message = DBChatMessage(
+#                 room_id=room_id,
+#                 message=message,
+#                 sender_id=user_id
+#             )
+#             db.add(db_message)
+#             db.commit()
+#             db.refresh(db_message)
+#             message_data = {
+#                 "id": db_message.id,
+#                 "sender_id": db_message.sender_id,
+#                 "message": db_message.message,
+#                 "is_read": db_message.is_read,
+#                 "created_at": str((db_message.created_at + timedelta(hours=8)).strftime("%b %d %H:%M"))
+#             }
+#             await websocket_manager.broadcast_chatroom(
+#                 message=json.dumps(message_data),
+#                 room_id=room_id
+#             )
+#     except WebSocketDisconnect:
+#         await websocket_manager.disconnect_chatroom(
+#             websocket=websocket,
+#             room_id=room_id
+#         )
 
 
 @router.get("/read-status/{message_id}", response_class=HTMLResponse)
@@ -208,6 +221,10 @@ async def set_message_to_read(
     db: Annotated[Session, Depends(get_db)],
     current_user=Depends(auth_service.user_dependency)
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     if not current_user:
         response = JSONResponse(
             status_code=401,
@@ -253,6 +270,10 @@ def get_unread_messages(
     db: Annotated[Session, Depends(get_db)],
     current_user=Depends(auth_service.user_dependency)
 ):
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-redirect": "/"})
+    else:
+        return RedirectResponse(status_code=303, url="/")
     if not current_user:
         context = {
             "current_user": current_user,
