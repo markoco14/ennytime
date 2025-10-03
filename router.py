@@ -2,10 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.auth import auth_service
 from app.controllers import admin, auth, calendar, public, relationships, schedule, shifts , profile
-from app import dependencies
-
-# from controllers import classes, public
-from app.dependencies import requires_guest, requires_user
+from app.dependencies import requires_guest, requires_shift_owner, requires_user
 
 router = APIRouter()
 
@@ -29,8 +26,8 @@ routes = [
     ("GET",     "/shifts",                              shifts.index,               [Depends(requires_user)]),   # User
     ("GET",     "/shifts/new",                          shifts.new,                 [Depends(requires_user)]),   # User
     ("POST",    "/shifts/new",                          shifts.create,              [Depends(requires_user)]),   # User
-    ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(requires_user)]),   # Owner?
-    ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              [Depends(requires_user)]),   # Owner?
+    ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(requires_shift_owner)]),
+    ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              [Depends(requires_shift_owner)]),
     ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              [Depends(auth_service.user_dependency)]),   # Owner?
     ("GET",     "/shifts/setup",                        shifts.setup,               [Depends(auth_service.user_dependency)]),   # User
 

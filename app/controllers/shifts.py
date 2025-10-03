@@ -9,10 +9,9 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates
-from app.dependencies import requires_user
+from app.dependencies import requires_shift_owner, requires_user
 from app.handlers.shifts.delete_shift import handle_delete_shift
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
-from app.models.db_shift_type import DbShiftType
 from app.models.user_model import DBUser
 from app.structs.structs import ShiftCreate, ShiftRow
 
@@ -130,13 +129,15 @@ def create(
 def edit(
     request: Request,
     shift_type_id: int,
-    current_user=Depends(requires_user)
+    current_user=Depends(requires_shift_owner)
 ):
     if not current_user:
         if request.headers.get("hx-request"):
-            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+            response = Response(status_code=200, header={"hx-redirect": f"/signin"})
         else:
-            return RedirectResponse(status_code=303, url=f"/signin")
+            response = RedirectResponse(status_code=303, url=f"/signin")
+        
+        return response
       
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")    
@@ -165,7 +166,7 @@ def edit(
 async def update(
     request: Request,
     shift_type_id: int,
-    current_user=Depends(requires_user)
+    current_user=Depends(requires_shift_owner)
 ):  
     """
     Updates the user's shift. Receives form fields:
