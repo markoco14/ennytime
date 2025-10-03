@@ -10,9 +10,9 @@ router = APIRouter()
 
 # routes follow ('method', 'path', 'endpoint/handler', 'dependencies')
 routes = [
-    ("GET",     "/",                                    public.index,               [Depends(auth_service.user_dependency)]),   # None
+    ("GET",     "/",                                    public.index,               [Depends(auth_service.requires_guest)]),   # None
 
-    ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(auth_service.user_dependency)]),   # User
+    ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(auth_service.requires_user)]),   # User
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               [Depends(auth_service.user_dependency)]),   # User
 
     ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, [Depends(auth_service.user_dependency)]),

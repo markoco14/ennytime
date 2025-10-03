@@ -1,7 +1,10 @@
 """User authentication routes"""
 
-import random
+import datetime
+import sqlite3
+import time
 from typing import Annotated
+import uuid
 
 
 from fastapi import APIRouter, Depends, Form, Request, Response
@@ -11,7 +14,6 @@ from sqlalchemy.orm import Session
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app.models.user_signin_model import DBUserSignin, SigninStatus
 from app.schemas import schemas
 from app.repositories import session_repository
 
@@ -263,29 +265,51 @@ def signin(
     # store user session
     session_repository.create_session(db=db, session=new_session)
     
-    ip_address = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
-    user_agent = request.headers.get("User-Agent")
+    # ip_address = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
+    # user_agent = request.headers.get("User-Agent")
 
-    user_signin = DBUserSignin(
-        user_id=db_user.id,  # Assuming you have the current user info
-        ip_address=ip_address,
-        user_agent=user_agent,
-        status = SigninStatus.SUCCESS
-    )
+    # user_signin = DBUserSignin(
+    #     user_id=db_user.id,  # Assuming you have the current user info
+    #     ip_address=ip_address,
+    #     user_agent=user_agent,
+    #     status = SigninStatus.SUCCESS
+    # )
 
-    db.add(user_signin)
-    db.commit()
-    db.refresh(user_signin)
+    # db.add(user_signin)
+    # db.commit()
+    # db.refresh(user_signin)
+
+    # we need to write to sqlite now
+    # 1. get the user with sqlite
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, display_name, email, is_admin, birthday, username FROM users WHERE email = ?", (email, ))
+        lite_user = cursor.fetchone()
+
+    # 2. store a session in sqlite db
+    # user = UserRow(id=user[0], email=user[1])
+    token = str(uuid.uuid4())
+    expires_at = int(time.time()) + 3600
+    new_session = (token, lite_user[0], expires_at)
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", new_session)
+    
 
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
-        value=session_cookie,
+        value=token,
         httponly=True,
         secure=True,
         samesite="Lax"
     )
-    response.headers["HX-Redirect"] = "/"
+    current_time = datetime.datetime.now()
+    selected_year = current_time.year
+    selected_month = current_time.month
+    response.headers["HX-Redirect"] = f"/calendar/{selected_year}/{selected_month}"
     return response
 
 

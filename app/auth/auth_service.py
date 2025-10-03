@@ -2,6 +2,7 @@
 import re
 from datetime import datetime, timedelta, timezone
 import secrets
+import sqlite3
 import time
 from typing import Dict
 import logging
@@ -91,6 +92,43 @@ def get_current_session_user(db: Session, cookies: Dict[str, str]):
 
     return db_user
 
+def requires_guest(request: Request):
+    session_id = request.cookies.get("session-id")
+
+    if not session_id:
+        logging.info("User dependency no session id found")
+        return None
+    
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
+        session = cursor.fetchone()
+        
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        user = cursor.fetchone()
+
+    return user
+
+def requires_user(request: Request):
+    session_id = request.cookies.get("session-id")
+
+    if not session_id:
+        logging.info("User dependency no session id found")
+        return None
+    
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
+        session = cursor.fetchone()
+        
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        user = cursor.fetchone()
+
+    return user
+
+
 
 def user_dependency(request: Request, db: Session = Depends(get_db)):
     session_id = request.cookies.get("session-id")
@@ -119,4 +157,3 @@ def update_user_password(db: Session, user_id: int, new_password: str):
     db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
     db_user.hashed_password = hashed_password
     db.commit()
-    print("Password updated")
