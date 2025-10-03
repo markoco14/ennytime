@@ -22,122 +22,142 @@ from app.repositories import user_repository
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-@router.get("/signup", response_class=HTMLResponse)
+
 def get_signup_page(
     request: Request,
-    current_user=Depends(auth_service.user_dependency)
+    lite_user=Depends(auth_service.requires_guest)
 ):
     """Go to the sign up page"""
-    if current_user:
-        return RedirectResponse(url="/")
+    current_time = datetime.datetime.now()
+    selected_year = current_time.year
+    selected_month = current_time.month
+
+    if lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/calendar/{selected_year}/{selected_month}"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
 
     response = templates.TemplateResponse(
         request=request,
         name="auth/signup.html"
     )
-    if request.cookies.get("session-id"):
-        response.delete_cookie("session-id")
 
     return response
 
-@router.get("/signin", response_class=HTMLResponse)
+
 def get_signin_page(
     request: Request,
-    current_user=Depends(auth_service.user_dependency)
+    lite_user=Depends(auth_service.requires_guest),
 ):
     """Go to the sign in page"""
-    if current_user:
-        return RedirectResponse(url="/")
+    current_time = datetime.datetime.now()
+    selected_year = current_time.year
+    selected_month = current_time.month
+
+    if lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/calendar/{selected_year}/{selected_month}"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
 
     response = templates.TemplateResponse(
         request=request,
         name="auth/signin.html"
     )
-    if request.cookies.get("session-id"):
-        response.delete_cookie("session-id")
+
     return response
 
-@router.post("/user/email", response_class=HTMLResponse)
-def validate_email(
-    request: Request,
-    username: Annotated[str, Form(...)] = ''
-):
-    email = username
-    context = {
-        "request": request,
-        "email_error": "",
-        "previous_email": email
-    }
+
+# def validate_email(
+#     request: Request,
+#     username: Annotated[str, Form(...)] = ''
+# ):
+#     email = username
+#     context = {
+#         "request": request,
+#         "email_error": "",
+#         "previous_email": email
+#     }
     
-    if email == '':
-        response = templates.TemplateResponse(
-            name="/auth/forms/email-input.html",
-            context=context
-            )
-        return response
+#     if email == '':
+#         response = templates.TemplateResponse(
+#             name="/auth/forms/email-input.html",
+#             context=context
+#             )
+#         return response
         
-    if not auth_service.is_valid_email(email=email):
-        context.update({"email_error": "Please enter a valid email."})
-        response = templates.TemplateResponse(
-            name="/auth/forms/email-input.html",
-            context=context
-            )
-        return response
+#     if not auth_service.is_valid_email(email=email):
+#         context.update({"email_error": "Please enter a valid email."})
+#         response = templates.TemplateResponse(
+#             name="/auth/forms/email-input.html",
+#             context=context
+#             )
+#         return response
     
-    response = templates.TemplateResponse(
-        name="/auth/forms/email-input.html",
-        context=context
-        )
-    return response
+#     response = templates.TemplateResponse(
+#         name="/auth/forms/email-input.html",
+#         context=context
+#         )
+#     return response
 
 
-@router.post("/user/password", response_class=HTMLResponse)
-def validate_password(
-    request: Request,
-    password: Annotated[str, Form(...)] = ''
-):
-    context = {
-        "request": request,
-        "password_error": "",
-        "previous_password": password
-    }
+# def validate_password(
+#     request: Request,
+#     password: Annotated[str, Form(...)] = ''
+# ):
+#     context = {
+#         "request": request,
+#         "password_error": "",
+#         "previous_password": password
+#     }
 
-    if password == '':
-        response = templates.TemplateResponse(
-            name="/auth/forms/password-input.html",
-            context=context
-            )
-        return response
+#     if password == '':
+#         response = templates.TemplateResponse(
+#             name="/auth/forms/password-input.html",
+#             context=context
+#             )
+#         return response
     
-    if len(password) < 8:
-        context.update({"password_error": "Password must be at least 8 characters long"})
-        response = templates.TemplateResponse(
-            name="/auth/forms/password-input.html",
-            context=context
-            )
-        return response
+#     if len(password) < 8:
+#         context.update({"password_error": "Password must be at least 8 characters long"})
+#         response = templates.TemplateResponse(
+#             name="/auth/forms/password-input.html",
+#             context=context
+#             )
+#         return response
     
-    response = templates.TemplateResponse(
-            name="/auth/forms/password-input.html",
-            context=context
-            )
-    return response    
+#     response = templates.TemplateResponse(
+#             name="/auth/forms/password-input.html",
+#             context=context
+#             )
+#     return response    
 
-@router.post("/signup", response_class=Response)
+
 def signup(
     request: Request,
     response: Response,
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency),
+    lite_user=Depends(auth_service.requires_guest),
     ):
     """Sign up a user"""
     # check if user exists
-    if current_user:
-        response = Response(status_code=303, content="Redirecting...")
-        response.headers["HX-Redirect"] = "/"
-        return response
+    current_time = datetime.datetime.now()
+    selected_year = current_time.year
+    selected_month = current_time.month
+
+    if lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/calendar/{selected_year}/{selected_month}"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
+        
+    # if current_user:
+    #     response = Response(status_code=303, content="Redirecting...")
+    #     response.headers["HX-Redirect"] = "/"
+    #     return response
     
     # store username in email for readability
     email = username
@@ -202,21 +222,30 @@ def signup(
     return response
 
 
-@router.post("/signin", response_class=Response)
 def signin(
     request: Request,
     response: Response,
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency),
+    lite_user=Depends(auth_service.requires_guest),
     ):
     """Sign in a user"""
+    current_time = datetime.datetime.now()
+    selected_year = current_time.year
+    selected_month = current_time.month
+
+    if lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/calendar/{selected_year}/{selected_month}"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
+        
     # check if user exists
-    if current_user:
-        response = Response(status_code=303, content="Redirecting...")
-        response.headers["HX-Redirect"] = "/"
-        return response
+    # if current_user:
+    #     response = Response(status_code=303, content="Redirecting...")
+    #     response.headers["HX-Redirect"] = "/"
+    #     return response
     # for readability
     email=username
 
@@ -313,14 +342,28 @@ def signin(
     return response
 
 
-@router.get("/signout", response_class=HTMLResponse)
-def signout(request: Request, response: Response, db: Annotated[Session, Depends(get_db)],):
+def signout(
+        request: Request, 
+        lite_user=Depends(auth_service.requires_user),
+        ):
     """Sign out a user"""
+    if not lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
+        
     session_id = request.cookies.get("session-id")
     if session_id:
-        session_repository.destroy_session(db=db, session_id=session_id)
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_key=ON;")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
 
-    response = Response(status_code=200)
+    if request.headers.get("hx-request"):
+        response = Response(status_code=200, headers={"hx-redirect": "/signin"})
+    else:
+        response = RedirectResponse(status_code=303, url="/signin")
+
     response.delete_cookie(key="session-id")
-    response.headers["HX-Redirect"] = "/signin"
     return response
