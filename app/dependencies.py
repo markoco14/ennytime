@@ -4,6 +4,8 @@ import logging
 
 from fastapi import Request
 
+from app.structs.structs import UserRow
+
 
 def requires_guest(request: Request):
     """Checks for a session and returns a guest user"""
@@ -39,7 +41,7 @@ def requires_user(request: Request):
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
-        user = cursor.fetchone()
+        user = UserRow(*cursor.fetchone())
 
     return user
 
