@@ -13,6 +13,7 @@ from app.dependencies import requires_shift_owner, requires_user
 from app.handlers.shifts.delete_shift import handle_delete_shift
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.models.user_model import DBUser
+from app.repositories import shift_type_repository
 from app.structs.structs import ShiftCreate, ShiftRow
 
 router = APIRouter(prefix="/shifts")
@@ -202,11 +203,26 @@ async def update(
 
 def delete(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    shift_type_id: int
+    shift_type_id: int,
+    current_user=Depends(requires_shift_owner)
 ):
-    return handle_delete_shift(request, current_user, shift_type_id, db)
+    """Delete shift type"""
+    if not current_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
+        
+
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE FROM shifts WHERE id = ?", (shift_type_id, ))
+        except Exception as e:
+            print(f"there was an error deleting shift: {shift_type_id}: {e}")
+
+    return Response(status_code=200)
 
 
 def setup(

@@ -23,12 +23,12 @@ routes = [
     ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, [Depends(auth_service.user_dependency)]),
     ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, [Depends(auth_service.user_dependency)]),
 
-    ("GET",     "/shifts",                              shifts.index,               [Depends(requires_user)]),   # User
-    ("GET",     "/shifts/new",                          shifts.new,                 [Depends(requires_user)]),   # User
-    ("POST",    "/shifts/new",                          shifts.create,              [Depends(requires_user)]),   # User
+    ("GET",     "/shifts",                              shifts.index,               [Depends(requires_user)]),
+    ("GET",     "/shifts/new",                          shifts.new,                 [Depends(requires_user)]),
+    ("POST",    "/shifts/new",                          shifts.create,              [Depends(requires_user)]),
     ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(requires_shift_owner)]),
     ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              [Depends(requires_shift_owner)]),
-    ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              [Depends(auth_service.user_dependency)]),   # Owner?
+    ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              [Depends(requires_shift_owner)]),
     ("GET",     "/shifts/setup",                        shifts.setup,               [Depends(auth_service.user_dependency)]),   # User
 
     ("GET",     "/scheduling",                          schedule.index,             [Depends(auth_service.user_dependency)]),   # user
