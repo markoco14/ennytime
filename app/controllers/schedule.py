@@ -10,6 +10,7 @@ from sqlalchemy import text
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
+from app.dependencies import requires_user
 from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository
@@ -23,11 +24,13 @@ def index(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     year: Optional[int] = None,
     month: Optional[int] = None,
+    lite_user=Depends(requires_user),
 ):
-    if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
-        response.delete_cookie("session-id")
-        return response
+    if not lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
     
     current_time = datetime.datetime.now()
     selected_year = year or current_time.year
@@ -49,27 +52,24 @@ def month(
     current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     year: Optional[int] = None,
     month: Optional[int] = None,
+    lite_user=Depends(requires_user),
 ):
-    if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
-        response.delete_cookie("session-id")
-        return response
+    if not lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
     
     context = {
-        "request": request,
-        "current_user": current_user
+        "current_user": lite_user
     }
 
     # TODO: check first if there are any shift types.
     shift_types = shift_type_repository.list_user_shift_types(
-        db=db, user_id=current_user.id)
-    if not shift_types:
-        response = RedirectResponse(status_code=303, url="/shifts/setup") 
-        return response
-    
-    # TODO:if no shift types, return page with shift type form or info about
-
-    # TODO: if shift types send the page
+        db=db, user_id=lite_user.id)
+    # if not shift_types:
+    #     response = RedirectResponse(status_code=303, url="/shifts/setup") 
+    #     return response
     
     # need to handle the case where year and month are not provided
     current_time = datetime.datetime.now()
@@ -79,7 +79,7 @@ def month(
 
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
         current_month=selected_month)
-
+    
     month_calendar = calendar_service.get_month_date_list(
         year=selected_year,
         month=selected_month
@@ -129,7 +129,7 @@ def month(
 
     result = db.execute(
         query,
-        {"user_id": current_user.id,
+        {"user_id": lite_user.id,
          "start_of_month": start_of_month,
          "end_of_month": end_of_month}
     ).fetchall()
@@ -148,16 +148,10 @@ def month(
 
             calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
 
-    # get chatroom id to link directly from the chat icon
-    # get unread message count so chat icon can display the count on page load
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
-    )
 
     context = {
         "request": request,
-        "current_user": current_user,
+        "current_user": lite_user,
         "selected_month": selected_month,
         "selected_month_name": selected_month_name,
         "selected_year": selected_year,
@@ -166,17 +160,18 @@ def month(
         "month_calendar": calendar_date_list,
         "shift_types": shift_types,
         "user_shifts": user_shifts,
-        "chat_data": user_chat_data
     }
 
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse(
+            request=request,
             name="scheduling/fragments/schedule-list-oob.html",
             context=context
         )
 
 
     return templates.TemplateResponse(
+        request=request,
         name="scheduling/index.html",
         context=context
     )
