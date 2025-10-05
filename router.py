@@ -47,7 +47,7 @@ routes = [
     ("GET",     "/birthday/{user_id}/edit",             users.birthday_edit,        [Depends(auth_service.user_dependency)]),   # owner?
     ("GET",     "/username/{user_id}",                  users.username,             [Depends(auth_service.user_dependency)]),   # owner?
     ("PUT",     "/username/{user_id}",                  users.update_username,      [Depends(auth_service.user_dependency)]),   # owner?
-    ("POST",    "/username-unique",                     users.unique,               [Depends(auth_service.user_dependency)]),   # owner?
+    ("POST",    "/username-unique",                     users.unique,               [Depends(requires_user)]),   # owner?
 
     ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        [Depends(auth_service.user_dependency)]),   # user?
     ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      [Depends(auth_service.user_dependency)]),   # in_relationship?

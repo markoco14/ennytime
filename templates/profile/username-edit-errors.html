@@ -1,7 +1,7 @@
 {% from "macros/spinner.html" import spinner %}
 <form 
 	class="py-2 flex flex-col gap-2"
-	hx-put="/username/{{user.id}}"
+	hx-put="/users/{{current_user.id}}"
 	hx-target="this"
 	hx-swap="outerHTML"
 	>

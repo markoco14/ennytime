@@ -72,17 +72,14 @@ async def update(
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()
             cursor.execute("UPDATE users SET display_name = ? WHERE id = ?;", (form_data.get("display_name"), user_id, ))
-            cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (user_id, ))
-            updated_user = UserRow(*cursor.fetchone())
-            
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/profile-page.html",
-            headers={"hx-reselect": "#display_name", "hx-reswap": "outerHTML"},
-            context=ProfilePage(
-                current_user=updated_user
-            )
-        )
+        return Response(status_code=200, headers={"hx-refresh": "true"})
+    
+    if form_data.get("app_username"):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET username = ? WHERE id = ?;", (form_data.get("app_username"), user_id, ))
+        return Response(status_code=200, headers={"hx-refresh": "true"})
     
 
     return "ok"
@@ -447,20 +444,20 @@ def unique(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
     app_username: Annotated[str, Form()] = "",
-    current_user=Depends(auth_service.user_dependency)    
+    current_user=Depends(requires_user),  
 ):
     if not current_user:
-        response = RedirectResponse(url="/signin")
+        if request.headers.get("hx-request"):
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
+        else:
+            response = RedirectResponse(status_code=303, url=f"/signin")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
 
-    if current_user == None:
-        return Response(status_code=403)
-
     context = {
         "request": request,
-        "user": current_user,
+        "current_user": current_user,
     }
 
     if app_username == "":
