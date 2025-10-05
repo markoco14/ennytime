@@ -1,19 +1,12 @@
 
 import sqlite3
-from typing import Annotated, Optional
 import datetime
+
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import Response, RedirectResponse
 
-from sqlalchemy.orm import Session
-
-from app.auth import auth_service
-from app.core.database import get_db
-from app.core.template_utils import templates, block_templates
+from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
-from app.models.user_model import DBUser
-from app.schemas import schemas
-from app.repositories import shift_repository, shift_type_repository
 from app.services import calendar_service
 
 router = APIRouter(prefix="/scheduling")
@@ -161,10 +154,22 @@ async def create(
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO schedules (shift_id, user_id, date) VALUES (?, ?, ?)", (form_data.get("shift"), lite_user.id, date,))
+        cursor.execute("INSERT INTO schedules (shift_id, user_id, date) VALUES (?, ?, ?);", (form_data.get("shift"), lite_user.id, date,))
+        row_id = cursor.lastrowid
         
     if request.headers.get("hx-request"):
-        return Response(status_code=200, headers={"hx-refresh": "true"})
+        commitment = (row_id, )
+        with sqlite3.connect("db.sqlite3") as conn:
+                conn.execute("PRAGMA foreign_keys=ON;")
+                cursor = conn.cursor()
+                cursor.execute("SELECT id, short_name FROM shifts WHERE id = ?;", (form_data.get("shift"), ))
+                shift = cursor.fetchone()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="scheduling/fragments/shift-exists-button.html",
+            context={"commitment": commitment, "shift": shift}
+        )
     else:
         return RedirectResponse(status_code=303, url="/scheduling")
 
@@ -185,9 +190,27 @@ async def delete(
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
+
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE id = ?;", (schedule_id, ))
+        schedule_row = cursor.fetchone()
+
         cursor.execute("DELETE FROM schedules WHERE id = ?;", (schedule_id, ))
-        
+    
     if request.headers.get("hx-request"):
-        return Response(status_code=200, headers={"hx-refresh": "true"})
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, short_name FROM shifts WHERE id =?;", (schedule_row[1], ))
+            shift_row = cursor.fetchone()
+
+        date_obj = datetime.datetime.strptime(schedule_row[3], "%Y-%m-%d %H:%M:%S").date()
+
+
+        response = templates.TemplateResponse(
+            request=request,
+            name="scheduling/fragments/no-shift-button.html",
+            context={"date": date_obj, "shift": shift_row}
+        )
+        return response
     else:
         return RedirectResponse(status_code=303, url="/scheduling")

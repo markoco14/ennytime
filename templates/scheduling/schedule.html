@@ -1,3 +1,4 @@
+{% from '/macros/spinner.html' import spinner%}
 <div class="max-w-[800px] mx-auto px-2">
     <h1 class="mb-2 text-3xl text-pink-700">Your Schedule</h1>
     <p class="mb-4">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.
@@ -15,28 +16,9 @@
                 {% for shift in lite_shifts %}
                     {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift[0]) %}
                         {% set commitment = commitments[date.strftime("%Y-%m-%d")][shift[0]] %}
-                        <button 
-                            hx-delete="/scheduling/{{commitment[0]}}"
-                            hx-swap="outerHTML"
-                            class="bg-pink-500 border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-                            <span class="htmx-indicator-content">{{shift[1]}}</span>
-                        </button>
+                        {% include "/scheduling/fragments/shift-exists-button.html" %}
                     {% else %}
-                        <form action="/scheduling" method="POST">
-                            <div class="sr-only">
-                                <label for="date-{{date.strftime('%Y-%m-%d')}}">Date</label>
-                                <input id="date-{{date.strftime('%Y-%m-%d')}}" name="date" type="date" value="{{date}}"/>
-                            </div>
-                            <div class="sr-only">
-                                <label for="shift-{{shift[0]}}">Shift</label>
-                                <input id="shift-{{shift[0]}}" name="shift" type="number" value="{{shift[0]}}">
-                            </div>
-                            <button
-                                type="submit"
-                                class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-                                <span class="htmx-indicator-content">{{shift[1]}}</span>
-                            </button>
-                        </form>                    
+                        {% include "/scheduling/fragments/no-shift-button.html" %}
                     {% endif %}
                 {% endfor %}
             </div>
