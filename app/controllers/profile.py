@@ -24,7 +24,6 @@ templates = Jinja2Templates(directory="templates")
 
 def index(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
     current_user=Depends(requires_user),
 ):
     """Profile page"""
@@ -39,21 +38,9 @@ def index(
 
     context = ProfilePage(
         current_user=current_user,
-        user=current_user,
-        display_name=None,
-        username=None,
-        birthday=None
     )
+    
 
-    if current_user.display_name:
-        context["display_name"] = current_user.display_name
-
-    if current_user.username:
-        context["username"] = current_user.username
-
-    if current_user.birthday:
-        context["birthday"] = current_user.birthday
-        
     return templates.TemplateResponse(
         request=request,
         name="profile/profile-page.html",

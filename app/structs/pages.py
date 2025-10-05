@@ -16,7 +16,3 @@ class ScheduleMonthPage(TypedDict):
 
 class ProfilePage(TypedDict):
     current_user: UserRow
-    user: UserRow
-    display_name: str
-    username: str
-    birthday: str
