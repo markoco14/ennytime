@@ -67,6 +67,10 @@ def requires_shift_owner(request: Request, shift_type_id: int):
         shift = cursor.fetchone()
 
     if user[0] != shift[0]:
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
         return None
 
     return user
@@ -93,6 +97,10 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
         schedule = cursor.fetchone()
 
     if user[0] != schedule[0]:
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
         return None
 
     return user
