@@ -104,3 +104,28 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
         return None
 
     return user
+
+
+def requires_profile_owner(request: Request, user_id: int) -> UserRow:
+    session_id = request.cookies.get("session-id")
+    if not session_id:
+        logging.info("User dependency no session id found")
+        return None
+    
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
+        session = cursor.fetchone()
+        
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
+        user = UserRow(*cursor.fetchone())
+
+    if user[0] != user_id:
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
+        return None
+
+    return user

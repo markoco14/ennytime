@@ -33,7 +33,7 @@ Ennytime Profile Page
 					<p>This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other users.</p>
 					<div class="flex items-center">
 						<input 
-							hx-put="/profile/display-name/edit/{{current_user.id}}"
+							hx-put="/users/{{current_user.id}}"
 							hx-trigger="keyup changed delay:1s"
 							hx-swap="outerHTML"
 							hx-indicator="next span"

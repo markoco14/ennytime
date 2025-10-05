@@ -1,4 +1,5 @@
 from collections import namedtuple
+import sqlite3
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -10,19 +11,20 @@ from sqlalchemy.exc import IntegrityError
 from app.auth import auth_service
 from app.core.database import get_db
 
-from app.dependencies import requires_user
+from app.dependencies import requires_profile_owner, requires_user
 from app.repositories import user_repository
 from app.schemas import schemas
 from app.services import chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
 from app.structs.pages import ProfilePage
+from app.structs.structs import UserRow
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-def index(
+def profile(
     request: Request,
     current_user=Depends(requires_user),
 ):
@@ -47,6 +49,43 @@ def index(
         context=context
     )
 
+
+async def update(
+    request: Request,
+    user_id: int,
+    current_user=Depends(requires_profile_owner),
+):  
+    """Updates a user resource"""
+    if not current_user:
+        if request.headers.get("hx-request"):
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
+        else:
+            response = RedirectResponse(status_code=303, url=f"/signin")
+        if request.cookies.get("session-id"):
+            response.delete_cookie("session-id")
+        return response
+    
+    form_data = await request.form()
+    
+    if form_data.get("display_name"):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET display_name = ? WHERE id = ?;", (form_data.get("display_name"), user_id, ))
+            cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (user_id, ))
+            updated_user = UserRow(*cursor.fetchone())
+            
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/profile-page.html",
+            headers={"hx-reselect": "#display_name", "hx-reswap": "outerHTML"},
+            context=ProfilePage(
+                current_user=updated_user
+            )
+        )
+    
+
+    return "ok"
 
 def display_name(
     request: Request,
@@ -88,7 +127,7 @@ def update_entity(original_entity, update_data: dict[str, any]):
     return original_entity
 
 
-def update(
+def update_display_name(
     request: Request,
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
