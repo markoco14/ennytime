@@ -20,10 +20,6 @@ router = APIRouter(prefix="/scheduling")
 
 def index(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    year: Optional[int] = None,
-    month: Optional[int] = None,
     lite_user=Depends(requires_user),
 ):
     if not lite_user:
@@ -33,23 +29,21 @@ def index(
             return RedirectResponse(status_code=303, url=f"/signin")
     
     current_time = datetime.datetime.now()
-    selected_year = year or current_time.year
-    selected_month = month or current_time.month
-    
+
     # HX-Redirect required for hx-request
     if "hx-request" in request.headers:
         response = Response(status_code=303)
-        response.headers["HX-Redirect"] = f"/scheduling/{selected_year}/{selected_month}"
+        response.headers["HX-Redirect"] = f"/scheduling/{current_time.year}/{current_time.month}"
         return response
     
     # Can use FastAPI Redirect with standard http request
-    return RedirectResponse(status_code=303, url=f"/scheduling/{selected_year}/{selected_month}")
+    return RedirectResponse(status_code=303, url=f"/scheduling/{current_time.year}/{current_time.month}")
     
     
 def month(
     request: Request,
-    year: Optional[int] = None,
-    month: Optional[int] = None,
+    year: int,
+    month: int,
     lite_user=Depends(requires_user),
 ):
     if not lite_user:
@@ -63,22 +57,16 @@ def month(
     }
 
     # need to handle the case where year and month are not provided
-    current_time = datetime.datetime.now()
-    selected_year = year or current_time.year
-    selected_month = month or current_time.month
-    selected_month_name = calendar_service.MONTHS[selected_month - 1]
+    current_date = datetime.date(year=year, month=month, day=1)
 
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
-        current_month=selected_month)
-    
-    month_calendar = calendar_service.get_month_date_list(
-        year=selected_year,
-        month=selected_month
-    )
+        current_month=month)
+
+    month_calendar = calendar_service.get_month_date_list(year=year, month=month)
 
     # calendar_date_list is a list of dictionaries
     # the keys are date_strings to make matching shifts easier
-    # ie; "2021-09-01": {"more keys": "more values"}
+    # ie; "2021-09-01": datetime.date()
     calendar_date_list = {}
 
     # because month calendar year/month/day are numbers
@@ -95,18 +83,14 @@ def month(
         
         date_object = datetime.date(year=date[0], month=date[1], day=date[2])
         date_dict = {
-            f"{year_string}-{month_string}-{day_string}": {
-                "date_string": f"{date_object.year}-{month_string}-{day_string}",
-                "day_of_week": str(calendar_service.Weekday(date[3])),
-                "date_object": date_object
-            }
+            f"{year_string}-{month_string}-{day_string}": date_object
         }
-        if date[1] == selected_month:
+        if date[1] == month:
             calendar_date_list.update(date_dict)
 
     # get the start and end of the month for query filters
-    start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
-    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)  
+    start_of_month = calendar_service.get_start_of_month(year=year, month=month)
+    end_of_month = calendar_service.get_end_of_month(year=year, month=month)  
 
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
@@ -128,9 +112,9 @@ def month(
     context = {
         "request": request,
         "current_user": lite_user,
-        "selected_month": selected_month,
-        "selected_month_name": selected_month_name,
-        "selected_year": selected_year,
+        "selected_month": month,
+        "selected_month_name": current_date.strftime("%B"),
+        "selected_year": year,
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
         "month_calendar": calendar_date_list,

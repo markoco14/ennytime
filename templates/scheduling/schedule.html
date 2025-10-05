@@ -4,18 +4,16 @@
     </p>
     <hr class="mb-4 border-pink-200"/>
     {% include "scheduling/fragments/scheduling-controls.html" %}
-    
     <ul class="divide-y js-schedule" data-js-schedule>
-        {% for date in month_calendar.values() %}
+        {% for key, date in month_calendar.items() %}
         <li class="py-2">
             <p class="text-pink-600 text-semibold text-lg">
-                <span class="text-2xl text-center md:text-left">{{date.date_object.strftime("%A")}}</span>
-                <span class="text-md text-gray-700 text-center md:text-left">({{date.date_object.strftime("%B")}} {{date.date_object.day}})</span>
+                <span class="text-2xl text-center md:text-left">{{date.strftime("%A")}}</span>
+                <span class="text-md text-gray-700 text-center md:text-left">({{date.strftime("%B")}} {{date.day}})</span>
             </p>
             <div class="flex flex-wrap gap-2 p-2 border rounded-md">
                 {% for shift in lite_shifts %}
-                {# 2 conditions: if shift is scheduled or not #}
-                    {% if commitments.get(date.date_string) and commitments.get(date.date_string)[1] == shift[0]%}
+                    {% if commitments.get(date.strftime("%Y-%m-%d")) and commitments.get(date.strftime("%Y-%m-%d"))[1] == shift[0]%}
                         <button class="bg-pink-500 border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
                             <span class="htmx-indicator-content">{{shift[1]}}</span>
                         </button>
