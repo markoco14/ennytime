@@ -1,11 +1,11 @@
 
+import sqlite3
 from typing import Annotated, Optional
 import datetime
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse, Response, RedirectResponse
+from fastapi.responses import Response, RedirectResponse
 
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 
 from app.auth import auth_service
 from app.core.database import get_db
@@ -14,7 +14,7 @@ from app.dependencies import requires_user
 from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository
-from app.services import calendar_service, chat_service
+from app.services import calendar_service
 
 router = APIRouter(prefix="/scheduling")
 
@@ -48,8 +48,6 @@ def index(
     
 def month(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
     year: Optional[int] = None,
     month: Optional[int] = None,
     lite_user=Depends(requires_user),
@@ -64,13 +62,6 @@ def month(
         "current_user": lite_user
     }
 
-    # TODO: check first if there are any shift types.
-    shift_types = shift_type_repository.list_user_shift_types(
-        db=db, user_id=lite_user.id)
-    # if not shift_types:
-    #     response = RedirectResponse(status_code=303, url="/shifts/setup") 
-    #     return response
-    
     # need to handle the case where year and month are not provided
     current_time = datetime.datetime.now()
     selected_year = year or current_time.year
@@ -115,39 +106,24 @@ def month(
 
     # get the start and end of the month for query filters
     start_of_month = calendar_service.get_start_of_month(year=selected_year, month=selected_month)
-    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)
+    end_of_month = calendar_service.get_end_of_month(year=selected_year, month=selected_month)  
 
-    query = text("""
-        SELECT
-            etime_shifts.*
-        FROM etime_shifts
-        WHERE etime_shifts.user_id = :user_id
-        AND etime_shifts.date >= :start_of_month
-        AND etime_shifts.date <= :end_of_month
-        ORDER BY etime_shifts.date
-    """)
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
 
-    result = db.execute(
-        query,
-        {"user_id": lite_user.id,
-         "start_of_month": start_of_month,
-         "end_of_month": end_of_month}
-    ).fetchall()
-    user_shifts = []
-    for row in result:
-        user_shifts.append(row._asdict())
+        # get shift types
+        cursor.execute("SELECT id, short_name FROM shifts WHERE user_id = ?;", (lite_user.id,))
+        lite_shifts = cursor.fetchall()
 
-    # here is the problem
-    # overwriting the previous shift when there are 2
-    # only 1 being packed and sent
-    for shift in user_shifts:
-        key_to_find = f"{shift['date'].date()}"
-        if key_to_find in calendar_date_list:
-            if not calendar_date_list[f"{key_to_find}"].get("shifts"):
-                calendar_date_list[f"{key_to_find}"]["shifts"] = []
-
-            calendar_date_list[f"{key_to_find}"]["shifts"].append(shift)
-
+        # get schedules for month
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, lite_user[0]))
+        lite_schedule = cursor.fetchall()
+    
+    # repackage schedule as dict with dates as .get() accessible keys
+    commitments = {}
+    for commitment in lite_schedule:
+        commitments[commitment[3].split( )[0]] = commitment
 
     context = {
         "request": request,
@@ -158,8 +134,8 @@ def month(
         "prev_month_name": prev_month_name,
         "next_month_name": next_month_name,
         "month_calendar": calendar_date_list,
-        "shift_types": shift_types,
-        "user_shifts": user_shifts,
+        "lite_shifts": lite_shifts,
+        "commitments": commitments
     }
 
     if request.headers.get("HX-Request"):
@@ -168,7 +144,6 @@ def month(
             name="scheduling/fragments/schedule-list-oob.html",
             context=context
         )
-
 
     return templates.TemplateResponse(
         request=request,
