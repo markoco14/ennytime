@@ -10,11 +10,13 @@ from sqlalchemy.exc import IntegrityError
 from app.auth import auth_service
 from app.core.database import get_db
 
+from app.dependencies import requires_user
 from app.repositories import user_repository
 from app.schemas import schemas
 from app.services import chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
+from app.structs.pages import ProfilePage
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -23,65 +25,34 @@ templates = Jinja2Templates(directory="templates")
 def index(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
+    current_user=Depends(requires_user),
 ):
     """Profile page"""
     if not current_user:
-        response = RedirectResponse(status_code=303, url="/")
+        if request.headers.get("hx-request"):
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
+        else:
+            response = RedirectResponse(status_code=303, url=f"/signin")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
 
-
-    # get chatroom id to link directly from the chat icon
-    # get unread message count so chat icon can display the count on page load
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
+    context = ProfilePage(
+        current_user=current_user,
+        user=current_user,
+        display_name=None,
+        username=None,
+        birthday=None
     )
 
-    context = {
-        "current_user": current_user,
-        "request": request,
-        "user": current_user,
-        "chat_data": user_chat_data
-    }
+    if current_user.display_name:
+        context["display_name"] = current_user.display_name
 
-    # get the user object for the person that the current user has shared their calendar with
-    current_user_sent_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.receiver_id).filter(
-        DbShare.sender_id == current_user.id).first()
-    
-    if current_user_sent_share:
-        current_user_sent_share = namedtuple(
-            'ShareWithUser', ['share', 'user'])(*current_user_sent_share)
-        context.update(
-            {"current_user_sent_share": current_user_sent_share})
+    if current_user.username:
+        context["username"] = current_user.username
 
-    # get the user object for the person that has shared their calendar with the current user
-    current_user_received_share = db.query(DbShare, DBUser).join(DBUser, DBUser.id == DbShare.sender_id).filter(
-        DbShare.receiver_id == current_user.id).first()
-
-    if current_user_received_share:
-        current_user_received_share = namedtuple(
-            'ShareWithUser', ['share', 'user'])(*current_user_received_share)
-        context.update(
-            {"current_user_received_share": current_user_received_share})
-
-
-    if current_user.display_name is None:
-        context.update({"display_name": ""})
-    else:
-        context.update({"display_name": current_user.display_name})
-    
-    if current_user.username is None:
-        context.update({"username": ""})
-    else:
-        context.update({"username": current_user.username})
-
-    if current_user.birthday is None:
-        context.update({"birthday": "yyyy-MM-dd"})
-    else:
-        context.update({"birthday": current_user.birthday})
+    if current_user.birthday:
+        context["birthday"] = current_user.birthday
         
     return templates.TemplateResponse(
         request=request,

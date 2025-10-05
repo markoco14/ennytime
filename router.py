@@ -36,7 +36,7 @@ routes = [
     ("POST",    "/scheduling",                          schedule.create,            [Depends(requires_user)]),   # user
     ("DELETE",  "/scheduling/{schedule_id}",            schedule.delete,            [Depends(requires_schedule_owner)]),   # owner?
 
-    ("GET",     "/profile",                             profile.index,              [Depends(auth_service.user_dependency)]),   # user
+    ("GET",     "/profile",                             profile.index,              [Depends(requires_user)]),   # user
     ("GET",     "/profile/display-name/{user_id}",      profile.display_name,       [Depends(auth_service.user_dependency)]),   # owner?
     ("PUT",     "/profile/display-name/edit/{user_id}", profile.update,             [Depends(auth_service.user_dependency)]),   # owner?
     ("GET",     "/profile/display-name/edit/{user_id}", profile.edit,               [Depends(auth_service.user_dependency)]),   # owner?

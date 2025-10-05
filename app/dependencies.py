@@ -40,7 +40,7 @@ def requires_user(request: Request) -> UserRow:
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
         user = UserRow(*cursor.fetchone())
 
     return user
