@@ -138,49 +138,27 @@ def month(
 
 async def create(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    date: str,
-    type_id: int
+    lite_user=Depends(requires_user),
 ):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
+    if not lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
 
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
-
-    # check if shift already exists
-    # if exists delete, user will already have clicked a confirm on the frontend
-
-    date_segments = date.split("-")
-    db_shift = schemas.CreateShift(
-        type_id=type_id,
-        user_id=current_user.id,
-        date=datetime.datetime(int(date_segments[0]), int(
-            date_segments[1]), int(date_segments[2]))
-    )
-
-    new_shift = shift_repository.create_shift(db=db, shift=db_shift)
-
-    shift_type = shift_type_repository.get_user_shift_type(
-        db=db, user_id=current_user.id, shift_type_id=type_id)
-
-    context = {
-        "current_user": current_user,
-        "request": request,
-        "date": {"date_string": date},
-        "shifts": [new_shift],
-        "type": shift_type
-    }
-
-    return templates.TemplateResponse(
-        name="/scheduling/fragments/shift-exists-button.html",
-        context=context,
-    )
+    form_data = await request.form()
+    date = form_data.get("date")
+    date = f"{date} 00:00:00"
+    
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO schedules (shift_id, user_id, date) VALUES (?, ?, ?)", (form_data.get("shift"), lite_user.id, date,))
+        
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-refresh": "true"})
+    else:
+        return RedirectResponse(status_code=303, url="/scheduling")
 
 
 async def delete(
@@ -202,4 +180,4 @@ async def delete(
     if request.headers.get("hx-request"):
         return Response(status_code=200, headers={"hx-refresh": "true"})
     else:
-        return RedirectResponse(status_code=303, url="/schedule")
+        return RedirectResponse(status_code=303, url="/scheduling")

@@ -20,14 +20,22 @@
                             class="bg-pink-500 border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
                             <span class="htmx-indicator-content">{{shift[1]}}</span>
                         </button>
-                    {% else %}                     
-                        <button
-                            hx-post="/scheduling/{{date.strftime('%Y-%m-%d')}}/{{shift[0]}}"
-                            hx-swap="outerHTML"
-                            hx-on::before-request="this.classList.add('bg-pink-100')"
-                            class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-                            <span class="htmx-indicator-content">{{shift[1]}}</span>
-                        </button>
+                    {% else %}
+                        <form action="/scheduling" method="POST">
+                            <div class="sr-only">
+                                <label for="date-{{date.strftime('%Y-%m-%d')}}">Date</label>
+                                <input id="date-{{date.strftime('%Y-%m-%d')}}" name="date" type="date" value="{{date}}"/>
+                            </div>
+                            <div class="sr-only">
+                                <label for="shift-{{shift[0]}}">Shift</label>
+                                <input id="shift-{{shift[0]}}" name="shift" type="number" value="{{shift[0]}}">
+                            </div>
+                            <button
+                                type="submit"
+                                class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+                                <span class="htmx-indicator-content">{{shift[1]}}</span>
+                            </button>
+                        </form>                    
                     {% endif %}
                 {% endfor %}
             </div>

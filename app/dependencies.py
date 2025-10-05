@@ -72,7 +72,7 @@ def requires_shift_owner(request: Request, shift_type_id: int):
     return user
 
 
-def requires_schedule_owner(request: Request, schedule_id: int):
+def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
     """Checks for a session and checks the user owns the resource before returns an authenticated user"""
     session_id = request.cookies.get("session-id")
 
@@ -87,7 +87,7 @@ def requires_schedule_owner(request: Request, schedule_id: int):
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
-        user = cursor.fetchone()
+        user = UserRow(*cursor.fetchone())
 
         cursor.execute("SELECT user_id FROM schedules WHERE id = ?", (schedule_id, ))
         schedule = cursor.fetchone()

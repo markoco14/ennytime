@@ -31,9 +31,9 @@ routes = [
     ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              [Depends(requires_shift_owner)]),
     ("GET",     "/shifts/setup",                        shifts.setup,               [Depends(auth_service.user_dependency)]),   # User
 
-    ("GET",     "/scheduling",                          schedule.index,             [Depends(auth_service.user_dependency)]),   # user
-    ("GET",     "/scheduling/{year}/{month}",           schedule.month,             [Depends(auth_service.user_dependency)]),   # user
-    ("POST",    "/scheduling/{date}/{type_id}",         schedule.create,            [Depends(auth_service.user_dependency)]),   # user
+    ("GET",     "/scheduling",                          schedule.index,             [Depends(requires_user)]),   # user
+    ("GET",     "/scheduling/{year}/{month}",           schedule.month,             [Depends(requires_user)]),   # user
+    ("POST",    "/scheduling",                          schedule.create,            [Depends(requires_user)]),   # user
     ("DELETE",  "/scheduling/{schedule_id}",            schedule.delete,            [Depends(requires_schedule_owner)]),   # owner?
 
     ("GET",     "/profile",                             profile.index,              [Depends(auth_service.user_dependency)]),   # user
