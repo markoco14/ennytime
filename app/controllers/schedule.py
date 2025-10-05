@@ -103,11 +103,13 @@ def month(
         # get schedules for month
         cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, lite_user[0]))
         lite_schedule = cursor.fetchall()
-    
+
     # repackage schedule as dict with dates as .get() accessible keys
     commitments = {}
     for commitment in lite_schedule:
-        commitments[commitment[3].split( )[0]] = commitment
+        date_key = commitment[3].split()[0]
+        shift_id = commitment[1]
+        commitments.setdefault(date_key, {})[shift_id] = commitment
 
     context = {
         "request": request,
