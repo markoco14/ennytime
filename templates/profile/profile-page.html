@@ -89,7 +89,7 @@ Ennytime Profile Page
 						special someone, your birthday will also appear on their calendar. </p>
 					<div class="flex items-center">
 						<input 
-							hx-put="/birthday/{{current_user.id}}"
+							hx-put="/users/{{current_user.id}}"
 							hx-target="this"
 							hx-swap="outerHTML"
 							hx-on::after-settle="displaySuccess('birthday-success')"

@@ -81,6 +81,13 @@ async def update(
             cursor.execute("UPDATE users SET username = ? WHERE id = ?;", (form_data.get("app_username"), user_id, ))
         return Response(status_code=200, headers={"hx-refresh": "true"})
     
+    if form_data.get("birthday"):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET birthday = ? WHERE id = ?;", (form_data.get("birthday"), user_id, ))
+        return Response(status_code=200, headers={"hx-refresh": "true"})
+    
 
     return "ok"
 
