@@ -24,9 +24,11 @@ def index(
 ):
     if not lite_user:
         if request.headers.get("hx-request"):
-            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
         else:
-            return RedirectResponse(status_code=303, url=f"/signin")
+            response = RedirectResponse(status_code=303, url=f"/signin")
+        response.delete_cookie("session-id")
+        return response
     
     current_time = datetime.datetime.now()
 
@@ -48,9 +50,11 @@ def month(
 ):
     if not lite_user:
         if request.headers.get("hx-request"):
-            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
         else:
-            return RedirectResponse(status_code=303, url=f"/signin")
+            response = RedirectResponse(status_code=303, url=f"/signin")
+        response.delete_cookie("session-id")
+        return response
     
     context = {
         "current_user": lite_user
@@ -141,12 +145,14 @@ def month(
 async def create(
     request: Request,
     lite_user=Depends(requires_user),
-):
+):  
     if not lite_user:
         if request.headers.get("hx-request"):
-            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
         else:
-            return RedirectResponse(status_code=303, url=f"/signin")
+            response = RedirectResponse(status_code=303, url=f"/signin")
+        response.delete_cookie("session-id")
+        return response
 
     form_data = await request.form()
     date = form_data.get("date")
@@ -170,9 +176,11 @@ async def delete(
 ):  
     if not lite_user:
         if request.headers.get("hx-request"):
-            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+            response = Response(status_code=200, headers={"hx-redirect": f"/signin"})
         else:
-            return RedirectResponse(status_code=303, url=f"/signin")
+            response = RedirectResponse(status_code=303, url=f"/signin")
+        response.delete_cookie("session-id")
+        return response
         
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
