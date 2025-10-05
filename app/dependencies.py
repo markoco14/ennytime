@@ -26,7 +26,7 @@ def requires_guest(request: Request):
 
     return user
 
-def requires_user(request: Request):
+def requires_user(request: Request) -> UserRow:
     """Checks for a session and returns an authenticated user"""
     session_id = request.cookies.get("session-id")
 
