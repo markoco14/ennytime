@@ -1,22 +1,24 @@
 {% from '/macros/spinner.html' import spinner%}
 <div class="grid grid-cols-2 max-w-[250px] mx-auto gap-2">
     {% if selected_month == 1 %}
-    <a hx-get="/scheduling/{{selected_year-1}}/12"
+    <a  
         href="/scheduling/{{selected_year-1}}/12"
-        hx-target="[data-js-schedule]"
-        hx-swap="outerHTML transition:true"
-        hx-indicator="this"
-        hx-push-url="true"
-        hx-on::before-request="toggleEnterFromLeft('data-js-schedule');"
+        {# hx-get="/scheduling/{{selected_year-1}}/12" #}
+        {# hx-target="[data-js-schedule]" #}
+        {# hx-swap="outerHTML transition:true" #}
+        {# hx-indicator="this" #}
+        {# hx-push-url="true" #}
+        {# hx-on::before-request="toggleEnterFromLeft('data-js-schedule');" #}
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% else %}
-    <a  hx-get="/scheduling/{{selected_year}}/{{selected_month-1}}"
+    <a  
         href="/scheduling/{{selected_year}}/{{selected_month-1}}"
-        hx-target="[data-js-schedule]"
-        hx-swap="outerHTML transition:true"
-        hx-indicator="this"
-        hx-push-url="true"
-        hx-on::before-request="toggleEnterFromLeft('data-js-schedule');"
+        {# hx-get="/scheduling/{{selected_year}}/{{selected_month-1}}" #}
+        {# hx-target="[data-js-schedule]" #}
+        {# hx-swap="outerHTML transition:true" #}
+        {# hx-indicator="this" #}
+        {# hx-push-url="true" #}
+        {# hx-on::before-request="toggleEnterFromLeft('data-js-schedule');" #}
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% endif%}
         <span class="htmx-indicator-content">
@@ -28,22 +30,24 @@
     </a>
     <!-- if end of year -->
     {% if selected_month == 12 %}
-    <a  hx-get="/scheduling/{{selected_year+1}}/1"
+    <a  
         href="/scheduling/{{selected_year+1}}/1"
-        hx-target="[data-js-schedule]"
-        hx-swap="outerHTML transition:true"
-        hx-indicator="this"
-        hx-push-url="true"
-        hx-on::before-request="toggleEnterFromRight('data-js-schedule');"
+        {# hx-get="/scheduling/{{selected_year+1}}/1" #}
+        {# hx-target="[data-js-schedule]" #}
+        {# hx-swap="outerHTML transition:true" #}
+        {# hx-indicator="this" #}
+        {# hx-push-url="true" #}
+        {# hx-on::before-request="toggleEnterFromRight('data-js-schedule');" #}
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% else %}
-    <a  hx-get="/scheduling/{{selected_year}}/{{selected_month+1}}"
+    <a  
         href="/scheduling/{{selected_year}}/{{selected_month+1}}"
-        hx-target="[data-js-schedule]"
-        hx-swap="outerHTML transition:true"
-        hx-indicator="this"
-        hx-push-url="true"
-        hx-on::before-request="toggleEnterFromRight('data-js-schedule');"
+        {# hx-get="/scheduling/{{selected_year}}/{{selected_month+1}}" #}
+        {# hx-target="[data-js-schedule]" #}
+        {# hx-swap="outerHTML transition:true" #}
+        {# hx-indicator="this" #}
+        {# hx-push-url="true" #}
+        {# hx-on::before-request="toggleEnterFromRight('data-js-schedule');" #}
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% endif %}
         <span class="htmx-indicator-content">
