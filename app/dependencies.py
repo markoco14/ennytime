@@ -70,3 +70,29 @@ def requires_shift_owner(request: Request, shift_type_id: int):
         return None
 
     return user
+
+
+def requires_schedule_owner(request: Request, commitment_id: int):
+    """Checks for a session and checks the user owns the resource before returns an authenticated user"""
+    session_id = request.cookies.get("session-id")
+
+    if not session_id:
+        logging.info("User dependency no session id found")
+        return None
+    
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
+        session = cursor.fetchone()
+        
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        user = cursor.fetchone()
+
+        cursor.execute("SELECT user_id FROM schedules WHERE id = ?", (commitment_id, ))
+        commitment = cursor.fetchone()
+
+    if user[0] != commitment[0]:
+        return None
+
+    return user
