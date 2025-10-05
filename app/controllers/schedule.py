@@ -8,6 +8,7 @@ from fastapi.responses import Response, RedirectResponse
 from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
 from app.services import calendar_service
+from app.structs.pages import ScheduleMonthPage
 
 router = APIRouter(prefix="/scheduling")
 
@@ -108,18 +109,15 @@ def month(
         shift_id = commitment[1]
         commitments.setdefault(date_key, {})[shift_id] = commitment
 
-    context = {
-        "request": request,
-        "current_user": lite_user,
-        "selected_month": month,
-        "selected_month_name": current_date.strftime("%B"),
-        "selected_year": year,
-        "prev_month_name": prev_month_name,
-        "next_month_name": next_month_name,
-        "month_calendar": calendar_date_list,
-        "lite_shifts": lite_shifts,
-        "commitments": commitments
-    }
+    context = ScheduleMonthPage(
+        current_date=current_date,
+        current_user=lite_user,
+        prev_month_name=prev_month_name,
+        next_month_name=next_month_name,
+        month_calendar=calendar_date_list,
+        lite_shifts=lite_shifts,
+        commitments=commitments
+    )
 
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse(

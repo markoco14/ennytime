@@ -1,9 +1,9 @@
 {% from '/macros/spinner.html' import spinner%}
 <div class="grid grid-cols-2 max-w-[250px] mx-auto gap-2">
-    {% if selected_month == 1 %}
+    {% if current_date.month == 1 %}
     <a  
-        href="/scheduling/{{selected_year-1}}/12"
-        {# hx-get="/scheduling/{{selected_year-1}}/12" #}
+        href="/scheduling/{{current_date.year-1}}/12"
+        {# hx-get="/scheduling/{{current_date.year-1}}/12" #}
         {# hx-target="[data-js-schedule]" #}
         {# hx-swap="outerHTML transition:true" #}
         {# hx-indicator="this" #}
@@ -12,8 +12,8 @@
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% else %}
     <a  
-        href="/scheduling/{{selected_year}}/{{selected_month-1}}"
-        {# hx-get="/scheduling/{{selected_year}}/{{selected_month-1}}" #}
+        href="/scheduling/{{current_date.year}}/{{current_date.month-1}}"
+        {# hx-get="/scheduling/{{current_date.year}}/{{current_date.month-1}}" #}
         {# hx-target="[data-js-schedule]" #}
         {# hx-swap="outerHTML transition:true" #}
         {# hx-indicator="this" #}
@@ -29,10 +29,10 @@
         </span>
     </a>
     <!-- if end of year -->
-    {% if selected_month == 12 %}
+    {% if current_date.month == 12 %}
     <a  
-        href="/scheduling/{{selected_year+1}}/1"
-        {# hx-get="/scheduling/{{selected_year+1}}/1" #}
+        href="/scheduling/{{current_date.year+1}}/1"
+        {# hx-get="/scheduling/{{current_date.year+1}}/1" #}
         {# hx-target="[data-js-schedule]" #}
         {# hx-swap="outerHTML transition:true" #}
         {# hx-indicator="this" #}
@@ -41,8 +41,8 @@
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% else %}
     <a  
-        href="/scheduling/{{selected_year}}/{{selected_month+1}}"
-        {# hx-get="/scheduling/{{selected_year}}/{{selected_month+1}}" #}
+        href="/scheduling/{{current_date.year}}/{{current_date.month+1}}"
+        {# hx-get="/scheduling/{{current_date.year}}/{{current_date.month+1}}" #}
         {# hx-target="[data-js-schedule]" #}
         {# hx-swap="outerHTML transition:true" #}
         {# hx-indicator="this" #}
