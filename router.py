@@ -39,14 +39,6 @@ routes = [
 
     ("GET",     "/profile",                             users.profile,              [Depends(requires_user)]),   # user
     ("PUT",     "/users/{user_id}",                     users.update,               [Depends(requires_profile_owner)]),
-    ("GET",     "/profile/display-name/{user_id}",      users.display_name,         [Depends(auth_service.user_dependency)]),   # owner?
-    ("PUT",     "/profile/display-name/edit/{user_id}", users.update,               [Depends(auth_service.user_dependency)]),   # owner?
-    ("GET",     "/profile/display-name/edit/{user_id}", users.edit,                 [Depends(auth_service.user_dependency)]),   # owner?
-    ("GET",     "/birthday/{user_id}",                  users.birthday,             [Depends(auth_service.user_dependency)]),   # owner?
-    ("PUT",     "/birthday/{user_id}",                  users.update_birthday,      [Depends(auth_service.user_dependency)]),   # owner?
-    ("GET",     "/birthday/{user_id}/edit",             users.birthday_edit,        [Depends(auth_service.user_dependency)]),   # owner?
-    ("GET",     "/username/{user_id}",                  users.username,             [Depends(auth_service.user_dependency)]),   # owner?
-    ("PUT",     "/username/{user_id}",                  users.update_username,      [Depends(auth_service.user_dependency)]),   # owner?
     ("POST",    "/username-unique",                     users.unique,               [Depends(requires_user)]),   # owner?
 
     ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        [Depends(auth_service.user_dependency)]),   # user?
