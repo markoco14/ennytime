@@ -14,11 +14,18 @@
             <div class="flex flex-wrap gap-2 p-2 border rounded-md">
                 {% for shift in lite_shifts %}
                     {% if commitments.get(date.strftime("%Y-%m-%d")) and commitments.get(date.strftime("%Y-%m-%d"))[1] == shift[0]%}
-                        <button class="bg-pink-500 border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+                        <button 
+                            hx-delete="/scheduling/{{commitments.get(date.strftime('%Y-%m-%d'))[0]}}"
+                            hx-swap="outerHTML"
+                            class="bg-pink-500 border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
                             <span class="htmx-indicator-content">{{shift[1]}}</span>
                         </button>
                     {% else %}                     
-                        <button class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+                        <button
+                            hx-post="/scheduling/{{date.strftime('%Y-%m-%d')}}/{{shift[0]}}"
+                            hx-swap="outerHTML"
+                            hx-on::before-request="this.classList.add('bg-pink-100')"
+                            class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
                             <span class="htmx-indicator-content">{{shift[1]}}</span>
                         </button>
                     {% endif %}

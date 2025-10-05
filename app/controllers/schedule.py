@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
-from app.dependencies import requires_user
+from app.dependencies import requires_schedule_owner, requires_user
 from app.models.user_model import DBUser
 from app.schemas import schemas
 from app.repositories import shift_repository, shift_type_repository
@@ -185,44 +185,21 @@ async def create(
 
 async def delete(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    date: str,
-    type_id: int
-):
-    if not auth_service.get_session_cookie(request.cookies):
-        return templates.TemplateResponse(
-            request=request,
-            name="website/web-home.html",
-            headers={"HX-Redirect": "/"},
-        )
-
-    current_user = auth_service.get_current_session_user(
-        db=db,
-        cookies=request.cookies)
-
-    # check if shift already exists
-    # if exists delete, user will already have clicked a confirm on the frontend
-    date_segments = date.split("-")
-    date_object = datetime.datetime(
-        int(date_segments[0]), int(date_segments[1]), int(date_segments[2]))
-
-    existing_shift = shift_repository.get_user_shift(
-        db=db, user_id=current_user.id, type_id=type_id, date_object=date_object)
-
-    if not existing_shift:
-        return Response(status_code=404)
-
-    shift_repository.delete_user_shift(db=db, shift_id=existing_shift.id)
-    shift_type = shift_type_repository.get_user_shift_type(
-        db=db, user_id=current_user.id, shift_type_id=type_id)
-    context = {
-        "current_user": current_user,
-        "request": request,
-        "date": {"date_string": date},
-        "type": shift_type
-    }
-
-    return block_templates.TemplateResponse(
-        name="scheduling/fragments/no-shift-button.html",
-        context=context,
-    )
+    schedule_id: int,
+    lite_user=Depends(requires_schedule_owner)
+):  
+    if not lite_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/signin"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/signin")
+        
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM schedules WHERE id = ?;", (schedule_id, ))
+        
+    if request.headers.get("hx-request"):
+        return Response(status_code=200, headers={"hx-refresh": "true"})
+    else:
+        return RedirectResponse(status_code=303, url="/schedule")
