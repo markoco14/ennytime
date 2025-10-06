@@ -23,8 +23,10 @@ def get_calendar(
             return Response(status_code=200, header={"hx-redirect": f"/"})
         else:
             return RedirectResponse(status_code=303, url=f"/")
-
-    current_month_object = datetime.date(year=year, month=month, day=1)
+    if not day:
+        day = 1
+        
+    current_month_object = datetime.date(year=year, month=month, day=day)
 
     # for calendar controls
     prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
