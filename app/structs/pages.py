@@ -1,7 +1,7 @@
 import datetime
 from typing import TypedDict
 
-from app.structs.structs import ShiftRow, UserRow
+from app.structs.structs import ScheduleRow, ShiftRow, UserRow
 
 class CalendarMonthPage(TypedDict):
     current_user: UserRow
@@ -11,7 +11,7 @@ class CalendarMonthPage(TypedDict):
     days_of_week: list[str]
     month_calendar: dict
     shifts: dict
-    commitments: dict
+    schedules: dict
     bae_shifts: dict
     bae_commitments: dict
 
@@ -21,8 +21,16 @@ class ScheduleMonthPage(TypedDict):
     prev_month_name: str
     next_month_name: str
     month_calendar: dict
-    lite_shifts: list[any]
-    commitments: dict
+    shifts: list[any]
+    schedules: dict
+
+class YesShiftBtn(TypedDict):
+    shift: ShiftRow
+    schedule: ScheduleRow
+    
+class NoShiftBtn(TypedDict):
+    date: datetime.date
+    shift: ShiftRow
 
 
 class ProfilePage(TypedDict):

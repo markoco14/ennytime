@@ -76,11 +76,11 @@ def month(
 
         # get current user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
-        shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+        shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
 
         # get current user bae_schedules for month
         cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
-        schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+        schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
 
         # get bae user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
@@ -92,15 +92,15 @@ def month(
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
     shifts_dict = {}
-    for shift in shifts:
+    for shift in shift_rows:
         shifts_dict[shift.id] = shift
         
     # repackage current user schedule as dict with dates as keys to access with .get()
-    commitments = {}
-    for commitment in schedules:
-        date_key = commitment[3].split()[0]
-        shift_id = commitment[1]
-        commitments.setdefault(date_key, {})[shift_id] = commitment
+    schedules = {}
+    for schedule in schedule_rows:
+        date_key = schedule[3].split()[0]
+        shift_id = schedule[1]
+        schedules.setdefault(date_key, {})[shift_id] = schedule
 
     # repackage bae shifts as dict with shift ids as keys to access with .get()
     bae_shifts_dict = {}
@@ -109,10 +109,10 @@ def month(
 
     # repackage bae schedule as dict with dates as keys to access with .get()
     bae_commitments = {}
-    for commitment in bae_schedules:
-        date_key = commitment[3].split()[0]
-        shift_id = commitment[1]
-        bae_commitments.setdefault(date_key, {})[shift_id] = commitment
+    for schedule in bae_schedules:
+        date_key = schedule[3].split()[0]
+        shift_id = schedule[1]
+        bae_commitments.setdefault(date_key, {})[shift_id] = schedule
 
     context = CalendarMonthPage(
         current_user=current_user,
@@ -122,7 +122,7 @@ def month(
         next_month_object=next_month_object,
         month_calendar=month_calendar_dict,
         shifts=shifts_dict,
-        commitments=commitments,
+        schedules=schedules,
         bae_shifts=bae_shifts_dict,
         bae_commitments=bae_commitments
     )
@@ -149,8 +149,8 @@ def day(
             return Response(status_code=200, header={"hx-redirect": f"/"})
         else:
             return RedirectResponse(status_code=303, url=f"/")
-    day = day if day else 1
-    current_month_object = datetime.date(year=year, month=month, day=day)
+
+    current_month_object = datetime.date(year=year, month=month, day=1)
 
     # for calendar controls
     prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
@@ -190,11 +190,11 @@ def day(
 
         # get current user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
-        shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+        shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
 
         # get current user bae_schedules for month
         cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
-        schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+        schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
 
         # get bae user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
@@ -206,15 +206,15 @@ def day(
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
     shifts_dict = {}
-    for shift in shifts:
+    for shift in shift_rows:
         shifts_dict[shift.id] = shift
         
     # repackage current user schedule as dict with dates as keys to access with .get()
-    commitments = {}
-    for commitment in schedules:
-        date_key = commitment[3].split()[0]
-        shift_id = commitment[1]
-        commitments.setdefault(date_key, {})[shift_id] = commitment
+    schedules = {}
+    for schedule in schedule_rows:
+        date_key = schedule[3].split()[0]
+        shift_id = schedule[1]
+        schedules.setdefault(date_key, {})[shift_id] = schedule
 
     # repackage bae shifts as dict with shift ids as keys to access with .get()
     bae_shifts_dict = {}
@@ -223,10 +223,10 @@ def day(
 
     # repackage bae schedule as dict with dates as keys to access with .get()
     bae_commitments = {}
-    for commitment in bae_schedules:
-        date_key = commitment[3].split()[0]
-        shift_id = commitment[1]
-        bae_commitments.setdefault(date_key, {})[shift_id] = commitment
+    for schedule in bae_schedules:
+        date_key = schedule[3].split()[0]
+        shift_id = schedule[1]
+        bae_commitments.setdefault(date_key, {})[shift_id] = schedule
 
     context = CalendarMonthPage(
         current_user=current_user,
@@ -236,7 +236,7 @@ def day(
         next_month_object=next_month_object,
         month_calendar=month_calendar_dict,
         shifts=shifts_dict,
-        commitments=commitments,
+        schedules=schedules,
         bae_shifts=bae_shifts_dict,
         bae_commitments=bae_commitments
     )
@@ -262,8 +262,8 @@ def edit(
             return Response(status_code=200, header={"hx-redirect": f"/"})
         else:
             return RedirectResponse(status_code=303, url=f"/")
-    day = day if day else 1
-    current_month_object = datetime.date(year=year, month=month, day=day)
+
+    current_month_object = datetime.date(year=year, month=month, day=1)
 
     # for calendar controls
     prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
@@ -303,11 +303,11 @@ def edit(
 
         # get current user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
-        shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+        shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
 
         # get current user bae_schedules for month
         cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
-        schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+        schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
 
         # get bae user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
@@ -319,15 +319,15 @@ def edit(
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
     shifts_dict = {}
-    for shift in shifts:
+    for shift in shift_rows:
         shifts_dict[shift.id] = shift
         
     # repackage current user schedule as dict with dates as keys to access with .get()
-    commitments = {}
-    for commitment in schedules:
-        date_key = commitment[3].split()[0]
-        shift_id = commitment[1]
-        commitments.setdefault(date_key, {})[shift_id] = commitment
+    schedules = {}
+    for schedule in schedule_rows:
+        date_key = schedule[3].split()[0]
+        shift_id = schedule[1]
+        schedules.setdefault(date_key, {})[shift_id] = schedule
 
     # repackage bae shifts as dict with shift ids as keys to access with .get()
     bae_shifts_dict = {}
@@ -336,10 +336,10 @@ def edit(
 
     # repackage bae schedule as dict with dates as keys to access with .get()
     bae_commitments = {}
-    for commitment in bae_schedules:
-        date_key = commitment[3].split()[0]
-        shift_id = commitment[1]
-        bae_commitments.setdefault(date_key, {})[shift_id] = commitment
+    for schedule in bae_schedules:
+        date_key = schedule[3].split()[0]
+        shift_id = schedule[1]
+        bae_commitments.setdefault(date_key, {})[shift_id] = schedule
 
     context = CalendarMonthPage(
         current_user=current_user,
@@ -349,7 +349,7 @@ def edit(
         next_month_object=next_month_object,
         month_calendar=month_calendar_dict,
         shifts=shifts_dict,
-        commitments=commitments,
+        schedules=schedules,
         bae_shifts=bae_shifts_dict,
         bae_commitments=bae_commitments
     )

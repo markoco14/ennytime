@@ -13,9 +13,19 @@
         <label for="shift-{{shift.id}}">Shift</label>
         <input id="shift-{{shift.id}}" name="shift" type="number" value="{{shift.id}}">
     </div>
+    {% if request.path_params.get('day') %}
+    <button
+        type="submit"
+        class="w-full text-center border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+    {% elif 'edit' in request.headers.get('referer') %}
+    <button
+        type="submit"
+        class="w-full text-center border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+    {% else %}
     <button
         type="submit"
         class="border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
+    {% endif %}
         <span class="htmx-indicator-content">{{shift.short_name}}</span>
         <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
     </button>

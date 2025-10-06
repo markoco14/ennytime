@@ -30,22 +30,22 @@
                                 <div class="grid grid-rows-3 gap-2 text-center min-h-[72px] border md:border-gray-900 md:rounded bg-white md:p-2">
                                     <h2 class="row-start-1">{{value.day}}</h2>
                                     {# current user schedule #}
-                                    {% if commitments.get(value.strftime(date_key)) %}
-                                        {% set commitment = commitments.get(value.strftime(date_key)) %}
-                                        {% if commitment|length >= 2  %}
-                                            <div class="row-start-2 bg-pink-500 rounded-md">x{{commitment|length}}</div>
+                                    {% if schedules.get(value.strftime(date_key)) %}
+                                        {% set schedule = schedules.get(value.strftime(date_key)) %}
+                                        {% if schedule|length >= 2  %}
+                                            <div class="row-start-2 bg-pink-500 rounded-md">x{{schedule|length}}</div>
                                         {% else %}
-                                            {% set shift_id = commitment.keys()|list|first %}
+                                            {% set shift_id = schedule.keys()|list|first %}
                                             <div class="row-start-2 bg-pink-500 rounded-md">{{shifts.get(shift_id).short_name}}</div>
                                         {% endif %}
                                     {% endif %}
                                     {# bae user schedule #}
                                     {% if bae_commitments.get(value.strftime(date_key)) %}
-                                        {% set commitment = bae_commitments.get(value.strftime(date_key)) %}
-                                        {% if commitment|length >= 2  %}
-                                            <div class="row-start-3 bg-pink-300 rounded-md">x{{commitment|length}}</div>
+                                        {% set schedule = bae_commitments.get(value.strftime(date_key)) %}
+                                        {% if schedule|length >= 2  %}
+                                            <div class="row-start-3 bg-pink-300 rounded-md">x{{schedule|length}}</div>
                                         {% else %}
-                                            {% set shift_id = commitment.keys()|list|first %}
+                                            {% set shift_id = schedule.keys()|list|first %}
                                             <div class="row-start-3 bg-pink-300 rounded-md">{{bae_shifts.get(shift_id).short_name}}</div>
                                         {% endif %}
                                     {% endif %}
@@ -68,68 +68,42 @@
                 {% if "edit" in request.path %}
                     <ul>
                     {% for shift in shifts.values() %}
-                        {% if commitments.get(current_month.strftime("%Y-%m-%d")) and commitments.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
-                            {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
-                            <li class="mb-2">
-                                <button 
-                                    hx-delete="/scheduling/{{commitment[0]}}"
-                                    hx-swap="outerHTML"
-                                    class="w-full text-center border border-pink-500 bg-pink-500 py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-                                    <span class="htmx-indicator-content">{{shift[1]}}</span>
-                                    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
-                                </button>
+                        {% if schedules.get(current_month.strftime("%Y-%m-%d")) and schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                            {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                            <li class="mb-2 *:w-full">
+                                {% include "/scheduling/fragments/shift-exists-button.html" %}
                             </li>
                         {% else %}
-                            {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d"))%}
+                            {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d"))%}
                             {% set date = current_month %}
-                            <li class="mb-2">
-                                <form 
-                                    action="/scheduling"
-                                    method="POST"
-                                    hx-post="/scheduling"
-                                    hx-swap="outerHTML"
-                                    >
-                                    <div class="sr-only">
-                                        <label for="date-{{date.strftime('%Y-%m-%d')}}">Date</label>
-                                        <input id="date-{{date.strftime('%Y-%m-%d')}}" name="date" type="date" value="{{date}}"/>
-                                    </div>
-                                    <div class="sr-only">
-                                        <label for="shift-{{shift[0]}}">Shift</label>
-                                        <input id="shift-{{shift[0]}}" name="shift" type="number" value="{{shift[0]}}">
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        class="w-full text-center border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-                                        <span class="htmx-indicator-content">{{shift[1]}}</span>
-                                        <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
-                                    </button>
-                                </form>
+                            <li class="mb-2 *:w-full">
+                                {% include "/scheduling/fragments/no-shift-button.html" %}
                             </li>
                         {% endif %}
                     {% endfor %}
                     </ul>
                 {% else %}
                     {# current user schedule #}
-                    {% if commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% if commitment|length >= 2  %}
-                                {% for shift in commitment  %}
+                    {% if schedules.get(current_month.strftime("%Y-%m-%d")) %}
+                        {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d")) %}
+                        {% if schedule|length >= 2  %}
+                                {% for shift in schedule  %}
                                     <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(shift).long_name}}</div>
                                 {% endfor %}
                         {% else %}
-                            {% set shift_id = commitment.keys()|list|first %}
+                            {% set shift_id = schedule.keys()|list|first %}
                             <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(shift_id).long_name}}</div>
                         {% endif %}
                     {% endif %}
                     {# bae user schedule #}
                     {% if bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% set commitment = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% if commitment|length >= 2  %}
-                            {% for shift in commitment  %}
+                        {% set schedule = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                        {% if schedule|length >= 2  %}
+                            {% for shift in schedule  %}
                                 <div class="bg-pink-300 rounded-md p-4 mb-2">{{shifts.get(shift).long_name}}</div>
                             {% endfor %}
                         {% else %}
-                            {% set shift_id = commitment.keys()|list|first %}
+                            {% set shift_id = schedule.keys()|list|first %}
                             <div class="bg-pink-300 rounded-md p-4 mb-2">{{bae_shifts.get(shift_id).long_name}}</div>
                         {% endif %}
                     {% endif %}
