@@ -47,15 +47,6 @@ def month(
         cursor = conn.cursor()
         cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
         bae_user = UserRow(*cursor.fetchone())
-    # get user who shares their calendar with current user
-    # find the DbShare where current user id is the receiver_id 
-    # bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
-        # DbShare.receiver_id == current_user.id).first()
-    
-    # gathering user ids to query shift table and get shifts for both users at once
-    # user_ids = [current_user.id]
-    # if bae_user:
-    #     user_ids.append(bae_user.id)
     
     month_calendar = calendar_service.get_month_calendar(
         year=current_month_object.year, 
@@ -161,15 +152,6 @@ def day(
         cursor = conn.cursor()
         cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
         bae_user = UserRow(*cursor.fetchone())
-    # get user who shares their calendar with current user
-    # find the DbShare where current user id is the receiver_id 
-    # bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
-        # DbShare.receiver_id == current_user.id).first()
-    
-    # gathering user ids to query shift table and get shifts for both users at once
-    # user_ids = [current_user.id]
-    # if bae_user:
-    #     user_ids.append(bae_user.id)
     
     month_calendar = calendar_service.get_month_calendar(
         year=current_month_object.year, 
@@ -274,15 +256,6 @@ def edit(
         cursor = conn.cursor()
         cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
         bae_user = UserRow(*cursor.fetchone())
-    # get user who shares their calendar with current user
-    # find the DbShare where current user id is the receiver_id 
-    # bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
-        # DbShare.receiver_id == current_user.id).first()
-    
-    # gathering user ids to query shift table and get shifts for both users at once
-    # user_ids = [current_user.id]
-    # if bae_user:
-    #     user_ids.append(bae_user.id)
     
     month_calendar = calendar_service.get_month_calendar(
         year=current_month_object.year, 
