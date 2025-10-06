@@ -3,6 +3,11 @@ from typing import TypedDict
 
 from app.structs.structs import UserRow
 
+class CalendarMonthPage(TypedDict):
+    current_user: UserRow
+    current_month: datetime.date
+    days_of_week: list[str]
+    month_calendar: dict
 
 class ScheduleMonthPage(TypedDict):
     current_date: datetime.date
