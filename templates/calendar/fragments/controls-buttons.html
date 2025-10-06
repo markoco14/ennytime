@@ -1,24 +1,26 @@
 {% from '/macros/spinner.html' import spinner%}
 <div class="grid grid-cols-2 max-w-[250px] mx-auto gap-2">
-    <a hx-get="/calendar/{{prev_month_object.year}}/{{prev_month_object.month}}"
+    <a 
         href="/calendar/{{prev_month_object.year}}/{{prev_month_object.month}}"
-        hx-target=".js-calendar"
-        hx-swap="outerHTML transition:true"
-        hx-indicator=".page-indicator"
-        hx-push-url="true"
-        hx-on::before-request="toggleEnterFromLeft('data-js-calendar');"
+        {# hx-get="/calendar/{{prev_month_object.year}}/{{prev_month_object.month}}" #}
+        {# hx-target=".js-calendar" #}
+        {# hx-swap="outerHTML transition:true" #}
+        {# hx-indicator=".page-indicator" #}
+        {# hx-push-url="true" #}
+        {# hx-on::before-request="toggleEnterFromLeft('data-js-calendar');" #}
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
         <span class="htmx-indicator-content">
             {{prev_month_object.strftime("%B")}}
         </span>
     </a>
-    <a  hx-get="/calendar/{{next_month_object.year}}/{{next_month_object.month}}"
+    <a  
         href="/calendar/{{next_month_object.year}}/{{next_month_object.month}}"
-        hx-target=".js-calendar"
-        hx-swap="outerHTML transition:true"
-        hx-indicator=".page-indicator"
-        hx-push-url="true"
-        hx-on::before-request="toggleEnterFromRight('data-js-calendar');"
+        {# hx-get="/calendar/{{next_month_object.year}}/{{next_month_object.month}}" #}
+        {# hx-target=".js-calendar" #}
+        {# hx-swap="outerHTML transition:true" #}
+        {# hx-indicator=".page-indicator" #}
+        {# hx-push-url="true" #}
+        {# hx-on::before-request="toggleEnterFromRight('data-js-calendar');" #}
         class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
 
         <span class="htmx-indicator-content">

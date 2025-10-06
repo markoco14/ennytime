@@ -1,15 +1,12 @@
 <form method="POST"
-    action="/shifts/{{shift_type.id}}/edit"
-    hx-post="/shifts/{{shift_type.id}}/edit"
-    hx-target="this"
-    hx-swap="outerHTML"
+    action="/shifts/{{shift.id}}/edit"
     >
 
     <div class="grid mb-4">
         <label class="mb-1">Long Name</label>
         <input id="long_name"
             name="long_name"
-            value="{{shift_type.long_name}}"
+            value="{{shift.long_name}}"
             class="border rounded-md px-2 py-1"/>
     </div>
 
@@ -17,7 +14,7 @@
         <label class="mb-1">Short Name</label>
         <input id="short_name"
             name="short_name"
-            value="{{shift_type.short_name}}"
+            value="{{shift.short_name}}"
             class="border rounded-md px-2 py-1"/>
     </div>
 

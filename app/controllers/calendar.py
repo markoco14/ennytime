@@ -10,34 +10,51 @@ from fastapi import Depends, Request, Response
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
-from app.handlers.get_calendar import handle_get_calendar
-from app.handlers.get_calendar_day import handle_get_calendar_day
+from app.handlers.calendar.get_calendar import get_calendar
 from app.handlers.get_calendar_day_edit import handle_get_calendar_day_edit
 from app.models.user_model import DBUser
 from app.repositories import shift_repository
 from app.repositories import shift_type_repository
 from app.schemas import schemas
-
+from app.dependencies import requires_user
 
 def month(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    month: Optional[int] = None,
-    year: Optional[int] = None,
-):
-    return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, db=db)
+    month: int,
+    year: int,
+    day: Optional[int] = None,
+    current_user=Depends(requires_user),
+):  
+    if not day:
+        day = None
+
+    return get_calendar(request=request, year=year, month=month, day=day, current_user=current_user)
 
 
 def day(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)],
-    year: int,
     month: int,
-    day: int
+    year: int,
+    day: int,
+    current_user=Depends(requires_user),
 ):
-    return handle_get_calendar_day(request=request, current_user=current_user, year=year, month=month, day=day, db=db)
+    if not day:
+        day = None
+
+    return get_calendar(request=request, year=year, month=month, day=day, current_user=current_user)
+
+
+def edit(
+    request: Request,
+    month: int,
+    year: int,
+    day: int,
+    current_user=Depends(requires_user),
+):
+    if not day:
+        day = None
+
+    return get_calendar(request=request, year=year, month=month, day=day, current_user=current_user)
 
 
 def get_calendar_day_edit(

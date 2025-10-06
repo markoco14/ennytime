@@ -1,9 +1,40 @@
 {% extends "base.html" %}
+{% from '/macros/spinner.html' import spinner%}
 {% block title %}
 Schedule
 {% endblock title %}
 {% block content %}
 <section>
-{% include "scheduling/schedule.html" %}
+    <div class="max-w-[800px] mx-auto px-2">
+        <h1 class="mb-2 text-3xl text-pink-700">Your Schedule</h1>
+        {% if shifts|length == 0 %}
+        <p>You have no shifts. <a href="/shifts/new" class="text-pink-700 underline underline-offset-2">Create your first shift.</a></p>
+        {% else %}
+        <p class="mb-4">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.
+        </p>
+        <hr class="mb-4 border-pink-200"/>
+        {% include "scheduling/fragments/scheduling-controls.html" %}
+        <ul class="divide-y js-schedule" data-js-schedule>
+            {% for key, date in month_calendar.items() %}
+            <li class="py-2">
+                <p class="text-pink-600 text-semibold text-lg">
+                    <span class="text-2xl text-center md:text-left">{{date.strftime("%A")}}</span>
+                    <span class="text-md text-gray-700 text-center md:text-left">({{date.strftime("%B")}} {{date.day}})</span>
+                </p>
+                <div class="flex flex-wrap gap-2 p-2 border rounded-md">
+                        {% for shift in shifts %}
+                            {% if schedules.get(date.strftime("%Y-%m-%d"), {}).get(shift[0]) %}
+                                {% set schedule = schedules[date.strftime("%Y-%m-%d")][shift[0]] %}
+                                {% include "/scheduling/fragments/shift-exists-button.html" %}
+                            {% else %}
+                                {% include "/scheduling/fragments/no-shift-button.html" %}
+                            {% endif %}
+                        {% endfor %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 </section>
 {% endblock content %}

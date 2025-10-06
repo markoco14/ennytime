@@ -2,6 +2,7 @@
 import re
 from datetime import datetime, timedelta, timezone
 import secrets
+import sqlite3
 import time
 from typing import Dict
 import logging
@@ -119,4 +120,3 @@ def update_user_password(db: Session, user_id: int, new_password: str):
     db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
     db_user.hashed_password = hashed_password
     db.commit()
-    print("Password updated")

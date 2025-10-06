@@ -1,20 +1,24 @@
 {% from '/macros/spinner.html' import spinner%}
-<ul class="flex flex-col gap-2 w-full mb-8">
-    {% for shift in shift_types %}
-    <li class="js-shift-li flex justify-between p-2 rounded-md border border-pink-300">
-        <span>
-            {{ shift.long_name }} ({{ shift.short_name }})
-        </span>
-        <div class="flex gap-2">
-            <a href="/shifts/{{shift.id}}/edit" hx-get="/shifts/{{shift.id}}/edit" hx-target="closest body" hx-swap="innerHTML" class="underline underline-offset-2 hover:text-blue-500 active:scale-95 duration-200 ease-in-out">Edit</a>
-            <button hx-delete="/shifts/{{shift.id}}"
-                    hx-swap="delete swap:700ms"
-                    hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
-                    class="flex gap-2 justify-center items-center underline underline-offset-2 hover:text-red-500">
-                <span class="htmx-indicator-content">Delete</span>
-                <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
-            </button>
-        </div>
-    </li>
-    {% endfor %}
-</ul>
+    {% if shifts %}
+    <ul class="flex flex-col gap-2 w-full mb-8">
+        {% for shift in shifts %}
+        <li class="js-shift-li flex justify-between p-2 rounded-md border border-pink-300">
+            <span>
+                {{ shift.long_name }} ({{ shift.short_name }})
+            </span>
+            <div class="flex gap-2">
+                <a href="/shifts/{{shift.id}}/edit" class="underline underline-offset-2 hover:text-blue-500 active:scale-95 duration-200 ease-in-out">Edit</a>
+                <button hx-delete="/shifts/{{shift.id}}"
+                        hx-swap="delete swap:700ms"
+                        hx-confirm="Are you sure? This will delete {{shift.type}} from this list and your calendar."
+                        class="flex gap-2 justify-center items-center underline underline-offset-2 hover:text-red-500">
+                    <span class="htmx-indicator-content">Delete</span>
+                    <span class="htmx-indicator">{{spinner('spinner', 'h-5', 'h-5', 'text-pink-500')}}</span>
+                </button>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p class="mb-8">You have no shifts. Safe some so you can add them to your calendar.</p>
+    {% endif %}
