@@ -21,7 +21,7 @@ from app.schemas import schemas
 from app.services import calendar_service
 from app.dependencies import requires_user
 from app.structs.pages import CalendarMonthPage
-from app.structs.structs import ScheduleRow, ShiftRow
+from app.structs.structs import ScheduleRow, ShiftRow, UserRow
 
 def month(
     request: Request,
@@ -63,6 +63,11 @@ def month(
     prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
     next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
     
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
+        bae_user = UserRow(*cursor.fetchone())
     # get user who shares their calendar with current user
     # find the DbShare where current user id is the receiver_id 
     # bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
@@ -90,25 +95,54 @@ def month(
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
 
-        # get shift types
+        # get current user shift types
         cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
         shifts = [ShiftRow(*row) for row in cursor.fetchall()]
 
-        # get schedules for month
+        # get current user bae_schedules for month
         cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
         schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
 
-    # repackage shifts as dict with shift ids as keys to access with .get()
+        # get bae user shift types
+        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
+        bae_shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+
+        # get bae user schedules for month
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, bae_user.id))
+        bae_schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+
+    # repackage current user shifts as dict with shift ids as keys to access with .get()
     shifts_dict = {}
     for shift in shifts:
         shifts_dict[shift.id] = shift
-
-    # repackage schedule as dict with dates as keys to access with .get()
+        
+    # repackage current user schedule as dict with dates as keys to access with .get()
     commitments = {}
     for commitment in schedules:
         date_key = commitment[3].split()[0]
         shift_id = commitment[1]
         commitments.setdefault(date_key, {})[shift_id] = commitment
+
+    # repackage bae shifts as dict with shift ids as keys to access with .get()
+    bae_shifts_dict = {}
+    for shift in bae_shifts:
+        bae_shifts_dict[shift.id] = shift
+
+    for key, value in bae_shifts_dict.items():
+        print("key", key)
+        print("value", value)
+
+    # repackage bae schedule as dict with dates as keys to access with .get()
+    bae_commitments = {}
+    for commitment in bae_schedules:
+        date_key = commitment[3].split()[0]
+        shift_id = commitment[1]
+        bae_commitments.setdefault(date_key, {})[shift_id] = commitment
+
+    for key, value in bae_commitments.items():
+        print("key", key)
+        print("value", value)
+
 
     context = CalendarMonthPage(
         current_user=current_user,
@@ -118,7 +152,9 @@ def month(
         next_month_object=next_month_object,
         month_calendar=month_calendar_dict,
         shifts=shifts_dict,
-        commitments=commitments
+        commitments=commitments,
+        bae_shifts=bae_shifts_dict,
+        bae_commitments=bae_commitments
     )
 
     response = templates.TemplateResponse(

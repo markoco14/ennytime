@@ -3,17 +3,17 @@
 {% block title %}Ennytime Couple's Calendar{% endblock title %}
 {% block content %}
     <section class="py-4">
-        <div class="container mx-auto px-2">
+        <div class="max-w-[1000px] mx-auto px-2">
             <div id="calendar-heading" class="mb-4">
                 <h1 class="text-5xl text-center mb-4">{{current_month.strftime("%B, %Y")}}</h1>
                 {% include "/calendar/fragments/controls-buttons.html" %}
             </div>
             <div data-js-calendar class="js-calendar grid grid-cols-7 border border-collapse border-gray-300 md:border-0 md:gap-2">
-                {# render calendar day headings #}
+                {# calendar day headings #}
                 {% for day_name in days_of_week %}
                     <div class="text-center text-xl font-bold">{{ day_name }}</div>
                 {% endfor %}
-                {# render calendar cards #}
+                {# calendar cards #}
                 {% for value in month_calendar.values() %}
                     {% if value.month != current_month.month %}
                     <div class="text-center min-h-[72px] md:border border-gray-400 md:rounded bg-gray-200">
@@ -21,16 +21,26 @@
                     </div>
                     {% else %}
                         {% set date_key = value.strftime("%Y-%m-%d") %}
-                        <div class="text-center min-h-[72px] border md:border-gray-900 md:rounded bg-white md:px-2">
-                            <h2>{{value.day}}</h2>
-                            {# {{commitments.get(value.strftime("%Y-%m-%d"))}} #}
+                        <div class="grid grid-rows-3 gap-2 text-center min-h-[72px] border md:border-gray-900 md:rounded bg-white md:p-2">
+                            <h2 class="row-start-1">{{value.day}}</h2>
+                            {# current user schedule #}
                             {% if commitments.get(value.strftime(date_key)) %}
                                 {% set commitment = commitments.get(value.strftime(date_key)) %}
                                 {% if commitment|length >= 2  %}
-                                    <div class="bg-pink-500 rounded-md">x{{commitment|length}}</div>
+                                    <div class="row-start-2 bg-pink-500 rounded-md">x{{commitment|length}}</div>
                                 {% else %}
                                     {% set shift_id = commitment.keys()|list|first %}
-                                    <div class="bg-pink-500 rounded-md">{{shifts.get(shift_id).short_name}}</div>
+                                    <div class="row-start-2 bg-pink-500 rounded-md">{{shifts.get(shift_id).short_name}}</div>
+                                {% endif %}
+                            {% endif %}
+                            {# bae user schedule #}
+                            {% if bae_commitments.get(value.strftime(date_key)) %}
+                                {% set commitment = bae_commitments.get(value.strftime(date_key)) %}
+                                {% if commitment|length >= 2  %}
+                                    <div class="row-start-3 bg-pink-300 rounded-md">x{{commitment|length}}</div>
+                                {% else %}
+                                    {% set shift_id = commitment.keys()|list|first %}
+                                    <div class="row-start-3 bg-pink-300 rounded-md">{{bae_shifts.get(shift_id).short_name}}</div>
                                 {% endif %}
                             {% endif %}
                         </div>

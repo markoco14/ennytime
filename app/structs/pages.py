@@ -12,6 +12,8 @@ class CalendarMonthPage(TypedDict):
     month_calendar: dict
     shifts: dict
     commitments: dict
+    bae_shifts: dict
+    bae_commitments: dict
 
 class ScheduleMonthPage(TypedDict):
     current_date: datetime.date
