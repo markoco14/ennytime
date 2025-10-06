@@ -1,6 +1,7 @@
 """
 Calendar related routes
 """
+import sqlite3
 from typing import Annotated, Optional
 import datetime
 
@@ -21,13 +22,14 @@ from app.repositories import shift_type_repository
 from app.schemas import schemas
 from app.services import calendar_service
 from app.dependencies import requires_user
+from app.structs.pages import CalendarMonthPage
+from app.structs.structs import ScheduleRow, ShiftRow
 
 def month(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
+    month: int,
+    year: int,
     current_user=Depends(requires_user),
-    month: Optional[int] = None,
-    year: Optional[int] = None,
 ):
     """
     Handles requests related to viewing the calendar. \n
@@ -89,52 +91,59 @@ def month(
         year=current_month_object.year, 
         month=current_month_object.month
         )
+    
 
-    month_calendar_dict = dict(
-        (str(day), {
-            "date": day,
-            "shifts": [],
-            "bae_shifts": []
-            }) for day in month_calendar)
+    month_calendar_dict = {}
+    for date in month_calendar:
+        month_calendar_dict[date] = date
     
     # get the start and end of the month for query filters
     start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
     end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
 
-    # get shifts for current user and bae user
-    # all_shifts = shift_queries.list_shifts_for_couple_by_month(
-    #     db=db,
-    #     user_ids=user_ids,
-    #     start_of_month=start_of_month,
-    #     end_of_month=end_of_month
-    #     )
-    
-    # update the calendar dictionary with sorted shifts
-    # month_calendar_dict = calendar_shift_service.sort_shifts_by_user(
-    #     all_shifts=all_shifts,
-    #     month_calendar_dict=month_calendar_dict,
-    #     current_user=current_user)
-    
-    context = {
-        "request": request,
-        "current_user": current_user,
-        "bae_user": None,
-        "days_of_week": calendar_service.DAYS_OF_WEEK,
-        "month_calendar": month_calendar_dict,
-        "current_date_object": current_date_object,
-        "current_month_object": current_month_object,
-        "prev_month_object": prev_month_object,
-        "next_month_object": next_month_object,
-    }
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
 
+        # get shift types
+        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
+        shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+
+        # get schedules for month
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
+        schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+
+    # repackage shifts as dict with shift ids as keys to access with .get()
+    shifts_dict = {}
+    for shift in shifts:
+        shifts_dict[shift.id] = shift
+
+    # repackage schedule as dict with dates as keys to access with .get()
+    commitments = {}
+    for commitment in schedules:
+        date_key = commitment[3].split()[0]
+        shift_id = commitment[1]
+        commitments.setdefault(date_key, {})[shift_id] = commitment
+
+    context = CalendarMonthPage(
+        current_user=current_user,
+        days_of_week=calendar_service.DAYS_OF_WEEK,
+        current_month=datetime.date(year=year, month=month, day=1),
+        month_calendar=month_calendar_dict,
+        shifts=shifts_dict,
+        commitments=commitments
+    )
+
+
+    
     # Slide to next month animation, change selected month, request whole calendar
-    if "hx-request" in request.headers:
-        """No chat data needed because partial response"""
-        response = templates.TemplateResponse(
-            name="calendar/fragments/calendar-oob.html",
-            context=context,
-        )
-        return response
+    # if "hx-request" in request.headers:
+    #     """No chat data needed because partial response"""
+    #     response = templates.TemplateResponse(
+    #         name="calendar/fragments/calendar-oob.html",
+    #         context=context,
+    #     )
+    #     return response
     
     # get chatroom id to link directly from the chat icon
     # get unread message count so chat icon can display the count on page load
@@ -146,12 +155,12 @@ def month(
     # context.update({"chat_data": user_chat_data})
 
     response = templates.TemplateResponse(
-        name="calendar/index.html",
+        request=request,
+        name="calendar/v2/index.html",
         context=context,
     )
 
     return response
-    # return handle_get_calendar(request=request, current_user=current_user, month=month, year=year, db=db)
 
 
 def day(

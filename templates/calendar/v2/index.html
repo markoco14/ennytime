@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from '/macros/spinner.html' import spinner%}
+{% block title %}Ennytime Couple's Calendar{% endblock title %}
+{% block content %}
+    <section class="py-4">
+        <div class="container mx-auto px-2">
+            <h1 class="text-5xl text-center mb-4">{{current_month.strftime("%B, %Y")}}</h1>
+            <div data-js-calendar class="js-calendar grid grid-cols-7 border border-collapse border-gray-300 md:border-0 md:gap-2">
+                {# render calendar day headings #}
+                {% for day_name in days_of_week %}
+                    <div class="text-center text-xl font-bold">{{ day_name }}</div>
+                {% endfor %}
+                {# render calendar cards #}
+                {% for value in month_calendar.values() %}
+                    {% if value.month != current_month.month %}
+                    <div class="text-center min-h-[72px] md:border border-gray-400 md:rounded bg-gray-200">
+                        <h2>{{value.day}}</h2>
+                    </div>
+                    {% else %}
+                        {% set date_key = value.strftime("%Y-%m-%d") %}
+                        <div class="text-center min-h-[72px] border md:border-gray-900 md:rounded bg-white  px-2">
+                            <h2>{{value.day}}</h2>
+                            {# {{commitments.get(value.strftime("%Y-%m-%d"))}} #}
+                            {% if commitments.get(value.strftime(date_key)) %}
+                                {% set commitment = commitments.get(value.strftime(date_key)) %}
+                                {% if commitment|length >= 2  %}
+                                    <div class="bg-pink-500 rounded-md">x{{commitment|length}}</div>
+                                {% else %}
+                                    {% set shift_id = commitment.keys()|list|first %}
+                                    <div class="bg-pink-500 rounded-md">{{shifts.get(shift_id).short_name}}</div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+    </section>
+{% endblock content %}
