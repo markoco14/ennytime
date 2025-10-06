@@ -16,7 +16,8 @@ dialog[open] {
 }
 
 dialog[open] > * {
-display: block;}
+    display: block;
+}
 
 dialog::backdrop {
     background-color: rgb(102,102,102);

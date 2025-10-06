@@ -258,6 +258,119 @@ def day(
 
     return response
 
+def edit(
+    request: Request,
+    month: int,
+    year: int,
+    day: int,
+    current_user=Depends(requires_user),
+):
+    """Returns calendar day view."""
+    if not current_user:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/")
+    day = day if day else 1
+    current_month_object = datetime.date(year=year, month=month, day=day)
+
+    # for calendar controls
+    prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
+    next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
+    
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
+        bae_user = UserRow(*cursor.fetchone())
+    # get user who shares their calendar with current user
+    # find the DbShare where current user id is the receiver_id 
+    # bae_user = db.query(DBUser).join(DbShare, DBUser.id == DbShare.sender_id).filter(
+        # DbShare.receiver_id == current_user.id).first()
+    
+    # gathering user ids to query shift table and get shifts for both users at once
+    # user_ids = [current_user.id]
+    # if bae_user:
+    #     user_ids.append(bae_user.id)
+    
+    month_calendar = calendar_service.get_month_calendar(
+        year=current_month_object.year, 
+        month=current_month_object.month
+        )
+    
+    month_calendar_dict = {}
+    for date in month_calendar:
+        month_calendar_dict[date] = date
+    
+    # get the start and end of the month for query filters
+    start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
+    end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
+
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+
+        # get current user shift types
+        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
+        shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+
+        # get current user bae_schedules for month
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
+        schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+
+        # get bae user shift types
+        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
+        bae_shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+
+        # get bae user schedules for month
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, bae_user.id))
+        bae_schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+
+    # repackage current user shifts as dict with shift ids as keys to access with .get()
+    shifts_dict = {}
+    for shift in shifts:
+        shifts_dict[shift.id] = shift
+        
+    # repackage current user schedule as dict with dates as keys to access with .get()
+    commitments = {}
+    for commitment in schedules:
+        date_key = commitment[3].split()[0]
+        shift_id = commitment[1]
+        commitments.setdefault(date_key, {})[shift_id] = commitment
+
+    # repackage bae shifts as dict with shift ids as keys to access with .get()
+    bae_shifts_dict = {}
+    for shift in bae_shifts:
+        bae_shifts_dict[shift.id] = shift
+
+    # repackage bae schedule as dict with dates as keys to access with .get()
+    bae_commitments = {}
+    for commitment in bae_schedules:
+        date_key = commitment[3].split()[0]
+        shift_id = commitment[1]
+        bae_commitments.setdefault(date_key, {})[shift_id] = commitment
+
+    context = CalendarMonthPage(
+        current_user=current_user,
+        days_of_week=calendar_service.DAYS_OF_WEEK,
+        current_month=current_month_object,
+        prev_month_object=prev_month_object,
+        next_month_object=next_month_object,
+        month_calendar=month_calendar_dict,
+        shifts=shifts_dict,
+        commitments=commitments,
+        bae_shifts=bae_shifts_dict,
+        bae_commitments=bae_commitments
+    )
+
+    response = templates.TemplateResponse(
+        request=request,
+        name="calendar/v2/index.html",
+        context=context,
+    )
+
+    return response
+
 
 def get_calendar_day_edit(
     request: Request,
