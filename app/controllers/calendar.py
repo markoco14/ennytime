@@ -2,18 +2,16 @@
 Calendar related routes
 """
 import sqlite3
-from typing import Annotated, Optional
+from typing import Annotated
 import datetime
 
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from fastapi import Depends, Request, Response
 
-from app import dependencies
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates, block_templates
-from app.handlers.get_calendar import handle_get_calendar
 from app.handlers.get_calendar_day import handle_get_calendar_day
 from app.handlers.get_calendar_day_edit import handle_get_calendar_day_edit
 from app.models.user_model import DBUser
@@ -58,22 +56,10 @@ def month(
             return Response(status_code=200, header={"hx-redirect": f"/"})
         else:
             return RedirectResponse(status_code=303, url=f"/")
-    # return "ok"
-    # if not current_user:
-    #     if request.headers.get("HX-Request"):
-    #         response = Response(status_code=401)
-    #         response.headers["HX-Redirect"] = "/signin"
-    #         response.delete_cookie("session-id")
 
-    #         return response
-        
-    #     response = RedirectResponse(url="/signin", status_code=303)
-    #     response.delete_cookie("session-id")
-
-    #     return response
-    
-    current_date_object = datetime.datetime.now()
     current_month_object = datetime.date(year=year, month=month, day=1)
+
+    # for calendar controls
     prev_month_object = datetime.date(year=year if month != 1 else year - 1, month=month - 1 if month != 1 else 12, day=1)
     next_month_object = datetime.date(year=year if month != 12 else year + 1, month=month + 1 if month != 12 else 1, day=1)
     
@@ -92,7 +78,6 @@ def month(
         month=current_month_object.month
         )
     
-
     month_calendar_dict = {}
     for date in month_calendar:
         month_calendar_dict[date] = date
@@ -128,31 +113,13 @@ def month(
     context = CalendarMonthPage(
         current_user=current_user,
         days_of_week=calendar_service.DAYS_OF_WEEK,
-        current_month=datetime.date(year=year, month=month, day=1),
+        current_month=current_month_object,
+        prev_month_object=prev_month_object,
+        next_month_object=next_month_object,
         month_calendar=month_calendar_dict,
         shifts=shifts_dict,
         commitments=commitments
     )
-
-
-    
-    # Slide to next month animation, change selected month, request whole calendar
-    # if "hx-request" in request.headers:
-    #     """No chat data needed because partial response"""
-    #     response = templates.TemplateResponse(
-    #         name="calendar/fragments/calendar-oob.html",
-    #         context=context,
-    #     )
-    #     return response
-    
-    # get chatroom id to link directly from the chat icon
-    # get unread message count so chat icon can display the count on page load
-    # user_chat_data = chat_service.get_user_chat_data(
-    #     db=db,
-    #     current_user_id=current_user.id
-    # )
-
-    # context.update({"chat_data": user_chat_data})
 
     response = templates.TemplateResponse(
         request=request,

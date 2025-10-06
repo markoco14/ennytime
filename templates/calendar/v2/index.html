@@ -4,7 +4,10 @@
 {% block content %}
     <section class="py-4">
         <div class="container mx-auto px-2">
-            <h1 class="text-5xl text-center mb-4">{{current_month.strftime("%B, %Y")}}</h1>
+            <div id="calendar-heading" class="mb-4">
+                <h1 class="text-5xl text-center mb-4">{{current_month.strftime("%B, %Y")}}</h1>
+                {% include "/calendar/fragments/controls-buttons.html" %}
+            </div>
             <div data-js-calendar class="js-calendar grid grid-cols-7 border border-collapse border-gray-300 md:border-0 md:gap-2">
                 {# render calendar day headings #}
                 {% for day_name in days_of_week %}
@@ -18,7 +21,7 @@
                     </div>
                     {% else %}
                         {% set date_key = value.strftime("%Y-%m-%d") %}
-                        <div class="text-center min-h-[72px] border md:border-gray-900 md:rounded bg-white  px-2">
+                        <div class="text-center min-h-[72px] border md:border-gray-900 md:rounded bg-white md:px-2">
                             <h2>{{value.day}}</h2>
                             {# {{commitments.get(value.strftime("%Y-%m-%d"))}} #}
                             {% if commitments.get(value.strftime(date_key)) %}

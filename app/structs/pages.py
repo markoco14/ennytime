@@ -6,6 +6,8 @@ from app.structs.structs import ShiftRow, UserRow
 class CalendarMonthPage(TypedDict):
     current_user: UserRow
     current_month: datetime.date
+    prev_month_object: datetime.date
+    next_month_object: datetime.date
     days_of_week: list[str]
     month_calendar: dict
     shifts: dict
