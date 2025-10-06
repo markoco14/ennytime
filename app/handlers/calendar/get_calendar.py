@@ -34,7 +34,8 @@ def get_calendar(
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
         cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
-        bae_user = UserRow(*cursor.fetchone())
+        bae_row = cursor.fetchone()
+        bae_user = UserRow(*bae_row) if bae_row else None
     
     month_calendar = calendar_service.get_month_calendar(
         year=current_month_object.year, 
@@ -49,6 +50,7 @@ def get_calendar(
     start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
     end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
 
+
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
@@ -60,14 +62,18 @@ def get_calendar(
         # get current user bae_schedules for month
         cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
         schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
+        
+        bae_shifts = []
+        bae_schedules = []
 
-        # get bae user shift types
-        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
-        bae_shifts = [ShiftRow(*row) for row in cursor.fetchall()]
+        if bae_user:
+            # get bae user shift types
+            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (bae_user.id,))
+            bae_shifts = [ShiftRow(*row) for row in cursor.fetchall()]
 
-        # get bae user schedules for month
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, bae_user.id))
-        bae_schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
+            # get bae user schedules for month
+            cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, bae_user.id))
+            bae_schedules = [ScheduleRow(*row) for row in cursor.fetchall()]
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
     shifts_dict = {}
