@@ -21,9 +21,7 @@
                     </div>
                     {% else %}
                         {% if request.path_params.get("day") and value.day == request.path_params.get("day")|int %}
-                            <div class="text-center min-h-[72px] md:border border-gray-400 md:rounded bg-gray-200 md:p-2">
-                                <h2>{{value.day}}</h2>
-                            </div>
+                            <div class="text-center min-h-[72px]"></div>
                         {% else %}
                             {% set date_key = value.strftime("%Y-%m-%d") %}
                             <a id="day-{{value.day}}" href="/calendar/{{current_month.year}}/{{current_month.month}}/{{value.day}}">
@@ -59,66 +57,70 @@
     </section>
     {% if request.path_params.get("day") %}
         {% set day = request.path_params.get("day") %}
-        <dialog id="day-{{current_month.day}}" class="flex flex-col justify-between p-4">
-            <header>
-                <h2 class="text-3xl">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
-                <p class="text-xl">{{current_month.strftime("%A")}}</p>
-            </header>
-            <div class="overflow-y-auto py-2 mb-4">
-                {% if "edit" in request.path %}
-                    <ul>
-                    {% for shift in shifts.values() %}
-                        {% if schedules.get(current_month.strftime("%Y-%m-%d")) and schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
-                            {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
-                            <li class="mb-2 *:w-full">
-                                {% include "/scheduling/fragments/shift-exists-button.html" %}
-                            </li>
-                        {% else %}
-                            {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d"))%}
-                            {% set date = current_month %}
-                            <li class="mb-2 *:w-full">
-                                {% include "/scheduling/fragments/no-shift-button.html" %}
-                            </li>
+        <div class="absolute top-0 left-0 w-full h-full grid place-content-center bg-gray-700/60">
+        {# <dialog id="day-{{current_month.day}}" class="flex flex-col justify-between p-4"> #}
+            <dialog open class="z-10 m-0 top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] bg-white w-[95%] max-w-[500px] aspect-square p-4 md:p-8 rounded-md flex flex-col justify-between shadow-lg">
+                <header>
+                    <h2 class="text-3xl">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
+                    <p class="text-xl">{{current_month.strftime("%A")}}</p>
+                </header>
+                <main class="overflow-y-auto py-2 mb-4">
+                    {% if "edit" in request.path %}
+                        <ul>
+                        {% for shift in shifts.values() %}
+                            {% if schedules.get(current_month.strftime("%Y-%m-%d")) and schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                                {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                                <li class="mb-2 *:w-full">
+                                    {% include "/scheduling/fragments/shift-exists-button.html" %}
+                                </li>
+                            {% else %}
+                                {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d"))%}
+                                {% set date = current_month %}
+                                <li class="mb-2 *:w-full">
+                                    {% include "/scheduling/fragments/no-shift-button.html" %}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        {# current user schedule #}
+                        {% if schedules.get(current_month.strftime("%Y-%m-%d")) %}
+                            {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d")) %}
+                            {% if schedule|length >= 2  %}
+                                    {% for shift in schedule  %}
+                                        <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(shift).long_name}}</div>
+                                    {% endfor %}
+                            {% else %}
+                                {% set shift_id = schedule.keys()|list|first %}
+                                <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(shift_id).long_name}}</div>
+                            {% endif %}
                         {% endif %}
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    {# current user schedule #}
-                    {% if schedules.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% set schedule = schedules.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% if schedule|length >= 2  %}
+                        {# bae user schedule #}
+                        {% if bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                            {% set schedule = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                            {% if schedule|length >= 2  %}
                                 {% for shift in schedule  %}
-                                    <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(shift).long_name}}</div>
+                                    <div class="bg-pink-300 rounded-md p-4 mb-2">{{shifts.get(shift).long_name}}</div>
                                 {% endfor %}
-                        {% else %}
-                            {% set shift_id = schedule.keys()|list|first %}
-                            <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(shift_id).long_name}}</div>
+                            {% else %}
+                                {% set shift_id = schedule.keys()|list|first %}
+                                <div class="bg-pink-300 rounded-md p-4 mb-2">{{bae_shifts.get(shift_id).long_name}}</div>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
-                    {# bae user schedule #}
-                    {% if bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% set schedule = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                        {% if schedule|length >= 2  %}
-                            {% for shift in schedule  %}
-                                <div class="bg-pink-300 rounded-md p-4 mb-2">{{shifts.get(shift).long_name}}</div>
-                            {% endfor %}
-                        {% else %}
-                            {% set shift_id = schedule.keys()|list|first %}
-                            <div class="bg-pink-300 rounded-md p-4 mb-2">{{bae_shifts.get(shift_id).long_name}}</div>
-                        {% endif %}
+                </main>
+                <footer>
+                    {% if "edit" in request.path %}
+                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="inline-block rounded bg-gray-300 px-4 py-1">Close</a>
+                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}" class="inline-block rounded bg-blue-300 px-4 py-1">Back</a>
+                    {% else %}
+                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="inline-block rounded bg-gray-300 px-4 py-1">Close</a>
+                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}/edit" class="inline-block rounded bg-blue-300 px-4 py-1">Edit</a>
                     {% endif %}
-                {% endif %}
-            </div>
-            <div>
-                {% if "edit" in request.path %}
-                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="inline-block rounded bg-gray-300 px-4 py-1">Close</a>
-                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}" class="inline-block rounded bg-blue-300 px-4 py-1">Back</a>
-                {% else %}
-                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="inline-block rounded bg-gray-300 px-4 py-1">Close</a>
-                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}/edit" class="inline-block rounded bg-blue-300 px-4 py-1">Edit</a>
-                {% endif %}
-            </div>
-        </dialog>
+                </footer>
+            </dialog>
+        </div>
+        {# </dialog> #}
     {% endif %}
     <script>
         document.addEventListener("DOMContentLoaded", (e) => {
