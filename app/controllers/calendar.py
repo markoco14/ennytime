@@ -107,21 +107,12 @@ def month(
     for shift in bae_shifts:
         bae_shifts_dict[shift.id] = shift
 
-    for key, value in bae_shifts_dict.items():
-        print("key", key)
-        print("value", value)
-
     # repackage bae schedule as dict with dates as keys to access with .get()
     bae_commitments = {}
     for commitment in bae_schedules:
         date_key = commitment[3].split()[0]
         shift_id = commitment[1]
         bae_commitments.setdefault(date_key, {})[shift_id] = commitment
-
-    for key, value in bae_commitments.items():
-        print("key", key)
-        print("value", value)
-
 
     context = CalendarMonthPage(
         current_user=current_user,
