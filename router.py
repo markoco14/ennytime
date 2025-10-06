@@ -17,7 +17,7 @@ routes = [
     ("GET",     "/signout",                             auth.signout,               requires_user),
 
     ("GET",     "/calendar/{year}/{month}",             calendar.month,             requires_user),   # User
-    ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               auth_service.user_dependency),   # User
+    ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               requires_user),   # User
 
     ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, auth_service.user_dependency),
     ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, auth_service.user_dependency),
