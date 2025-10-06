@@ -1,0 +1,12 @@
+dialog {
+    background-color: white;
+    width: 500px;
+    aspect-ratio: 1/1;
+    border-radius: 0.5rem;
+    border: 0;
+}
+
+dialog::backdrop {
+    background-color: rgb(102,102,102);
+    opacity: 0.7;
+}
