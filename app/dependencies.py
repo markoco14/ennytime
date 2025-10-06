@@ -21,7 +21,7 @@ def requires_guest(request: Request):
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
         user = cursor.fetchone()
 
     return user
@@ -60,7 +60,7 @@ def requires_shift_owner(request: Request, shift_type_id: int):
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
         user = cursor.fetchone()
 
         cursor.execute("SELECT user_id FROM shifts WHERE id = ?", (shift_type_id, ))
@@ -90,7 +90,7 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username FROM users WHERE id = ?", (session[0],))
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
         user = UserRow(*cursor.fetchone())
 
         cursor.execute("SELECT user_id FROM schedules WHERE id = ?", (schedule_id, ))
