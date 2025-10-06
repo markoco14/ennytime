@@ -66,6 +66,9 @@
                 </header>
                 <main class="overflow-y-auto py-2 mb-4">
                     {% if "edit" in request.path %}
+                        {% if shifts|length == 0 %}
+                        <p>You have no shifts. <a href="/shifts/new" class="text-pink-700 underline underline-offset-2">Create your first shift.</a></p>
+                        {% else %}
                         <ul>
                         {% for shift in shifts.values() %}
                             {% if schedules.get(current_month.strftime("%Y-%m-%d")) and schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
@@ -82,6 +85,7 @@
                             {% endif %}
                         {% endfor %}
                         </ul>
+                        {% endif %}
                     {% else %}
                         {# current user schedule #}
                         {% if schedules.get(current_month.strftime("%Y-%m-%d")) %}
