@@ -8,56 +8,55 @@ router = APIRouter()
 
 # routes follow ('method', 'path', 'endpoint/handler', 'dependencies')
 routes = [
-    ("GET",     "/",                                    public.index,               [Depends(requires_guest)]),   # None
+    ("GET",     "/",                                    public.index,               requires_guest),   # None
 
-    ("GET",     "/signup",                              auth.get_signup_page,       [Depends(requires_guest)]),
-    ("POST",    "/signup",                              auth.signup,                [Depends(requires_guest)]),
-    ("GET",     "/signin",                              auth.get_signin_page,       [Depends(requires_guest)]),
-    ("POST",    "/signin",                              auth.signin,                [Depends(requires_guest)]),
-    ("GET",     "/signout",                             auth.signout,               [Depends(requires_user)]),
+    ("GET",     "/signup",                              auth.get_signup_page,       requires_guest),
+    ("POST",    "/signup",                              auth.signup,                requires_guest),
+    ("GET",     "/signin",                              auth.get_signin_page,       requires_guest),
+    ("POST",    "/signin",                              auth.signin,                requires_guest),
+    ("GET",     "/signout",                             auth.signout,               requires_user),
 
-    ("GET",     "/calendar/{year}/{month}",             calendar.month,             [Depends(requires_user)]),   # User
-    ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               [Depends(auth_service.user_dependency)]),   # User
+    ("GET",     "/calendar/{year}/{month}",             calendar.month,             requires_user),   # User
+    ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               auth_service.user_dependency),   # User
 
-    ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, [Depends(auth_service.user_dependency)]),
-    ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, [Depends(auth_service.user_dependency)]),
-    ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, [Depends(auth_service.user_dependency)]),
+    ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.get_calendar_day_edit, auth_service.user_dependency),
+    ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, auth_service.user_dependency),
+    ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, auth_service.user_dependency),
 
-    ("GET",     "/shifts",                              shifts.index,               [Depends(requires_user)]),
-    ("GET",     "/shifts/new",                          shifts.new,                 [Depends(requires_user)]),
-    ("POST",    "/shifts/new",                          shifts.create,              [Depends(requires_user)]),
-    ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                [Depends(requires_shift_owner)]),
-    ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              [Depends(requires_shift_owner)]),
-    ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              [Depends(requires_shift_owner)]),
-    ("GET",     "/shifts/setup",                        shifts.setup,               [Depends(auth_service.user_dependency)]),   # User
+    ("GET",     "/shifts",                              shifts.index,               requires_user),
+    ("GET",     "/shifts/new",                          shifts.new,                 requires_user),
+    ("POST",    "/shifts/new",                          shifts.create,              requires_user),
+    ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                requires_shift_owner),
+    ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              requires_shift_owner),
+    ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              requires_shift_owner),
+    ("GET",     "/shifts/setup",                        shifts.setup,               auth_service.user_dependency),   # User
 
-    ("GET",     "/scheduling",                          schedule.index,             [Depends(requires_user)]),   # user
-    ("GET",     "/scheduling/{year}/{month}",           schedule.month,             [Depends(requires_user)]),   # user
-    ("POST",    "/scheduling",                          schedule.create,            [Depends(requires_user)]),   # user
-    ("DELETE",  "/scheduling/{schedule_id}",            schedule.delete,            [Depends(requires_schedule_owner)]),   # owner?
+    ("GET",     "/scheduling",                          schedule.index,             requires_user),   # user
+    ("GET",     "/scheduling/{year}/{month}",           schedule.month,             requires_user),   # user
+    ("POST",    "/scheduling",                          schedule.create,            requires_user),   # user
+    ("DELETE",  "/scheduling/{schedule_id}",            schedule.delete,            requires_schedule_owner),   # owner?
 
 
-    ("GET",     "/profile",                             users.profile,              [Depends(requires_user)]),   # user
-    ("PUT",     "/users/{user_id}",                     users.update,               [Depends(requires_profile_owner)]),
-    ("POST",    "/username-unique",                     users.unique,               [Depends(requires_user)]),   # owner?
+    ("GET",     "/profile",                             users.profile,              requires_user),   # user
+    ("PUT",     "/users/{user_id}",                     users.update,               requires_profile_owner),
+    ("POST",    "/username-unique",                     users.unique,               requires_user),   # owner?
 
-    ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        [Depends(auth_service.user_dependency)]),   # user?
-    ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      [Depends(auth_service.user_dependency)]),   # in_relationship?
-    ("DELETE",  "/reject-calendar/{share_id}",          relationships.reject,       [Depends(auth_service.user_dependency)]),   # in_relationship?
-    ("POST",    "/search",                              relationships.search,       [Depends(auth_service.user_dependency)]),   # user?
+    ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        auth_service.user_dependency),   # user?
+    ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      auth_service.user_dependency),   # in_relationship?
+    ("DELETE",  "/reject-calendar/{share_id}",          relationships.reject,       auth_service.user_dependency),   # in_relationship?
+    ("POST",    "/search",                              relationships.search,       auth_service.user_dependency),   # user?
 
-    ("GET",     "/admin",                               admin.index,                [Depends(auth_service.user_dependency)]),
-    ("GET",     "/admin/users",                         admin.list_users,           [Depends(auth_service.user_dependency)]),
-    ("GET",     "/admin/user-signins",                  admin.list_user_signins,    [Depends(auth_service.user_dependency)]),
-    ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          [Depends(auth_service.user_dependency)]),
+    ("GET",     "/admin",                               admin.index,                auth_service.user_dependency),
+    ("GET",     "/admin/users",                         admin.list_users,           auth_service.user_dependency),
+    ("GET",     "/admin/user-signins",                  admin.list_user_signins,    auth_service.user_dependency),
+    ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          auth_service.user_dependency),
 ]
 
-for method, path, handler, deps in routes:
+for method, path, handler, _ in routes:
     router.add_api_route(
         path=path,
         endpoint=handler,
         methods=[method],
-        dependencies=deps or None
     )
 
 
