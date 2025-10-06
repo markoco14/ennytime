@@ -8,20 +8,18 @@ import uuid
 
 
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.auth import auth_service
 from app.core.database import get_db
-from app.schemas import schemas
-from app.repositories import session_repository
+from app.core.template_utils import templates
 
 from app.repositories import user_repository
 from app.dependencies import requires_guest, requires_user
+from app.structs.structs import UserRow
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 
 def get_signup_page(
@@ -178,7 +176,13 @@ def signup(
         context.update({"password_error": "Password must be at least 8 characters long."})
 
     # check if email already exists for this app
-    if user_repository.get_user_by_email(db=db, email=email):
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, display_name, email, is_admin, birthday, username FROM users WHERE email = ?", (email, ))
+        user_row = cursor.fetchone()
+
+    if user_row:
         context.update({"form_error": "Invalid email or password"})
 
     if context.get("form_error") or context.get("email_error") or context.get("password_error"):
@@ -187,39 +191,36 @@ def signup(
             context=context)
         
         return response
+    
     # Hash password
     hashed_password = auth_service.get_password_hash(password)
     
-    # give the user a display name
-    # display_name = f"NewUser{random.randint(1, 10000)}"
-    
-    # create new user with encrypted password
-    new_user = schemas.CreateUserHashed(email=email, hashed_password=hashed_password)
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users (email, hashed_password) VALUES (?, ?);", (email, hashed_password))
+        new_user_id = cursor.lastrowid
 
-    # add user to USERS
-    app_user = user_repository.create_user(db=db, user=new_user)
-    # USERS.update({email: new_user})
-
-    # return response with session cookie and redirect to index
-    session_cookie = auth_service.generate_session_token()
-    new_session = schemas.CreateUserSession(
-        session_id=session_cookie,
-        user_id=app_user.id,
-        expires_at=auth_service.generate_session_expiry()
-    )
-    # store user session
-    session_repository.create_session(db=db, session=new_session)
+    token = str(uuid.uuid4())
+    expires_at = int(time.time()) + 3600
+    new_session = (token, new_user_id, expires_at)
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys=ON;")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", new_session)
     
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
-        value=session_cookie,
+        value=token,
         httponly=True,
         secure=True,
         samesite="Lax"
     )
-    response.headers["HX-Redirect"] = "/quick-setup/shifts"
-
+    current_time = datetime.datetime.now()
+    selected_year = current_time.year
+    selected_month = current_time.month
+    response.headers["HX-Redirect"] = f"/calendar/{selected_year}/{selected_month}"
     return response
 
 
@@ -229,24 +230,19 @@ def signin(
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
     db: Annotated[Session, Depends(get_db)],
-    lite_user=Depends(requires_guest),
+    current_user=Depends(requires_guest),
     ):
     """Sign in a user"""
     current_time = datetime.datetime.now()
     selected_year = current_time.year
     selected_month = current_time.month
 
-    if lite_user:
+    if current_user:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/calendar/{selected_year}/{selected_month}"})
         else:
             return RedirectResponse(status_code=303, url=f"/calendar/{selected_year}/{selected_month}")
-        
-    # check if user exists
-    # if current_user:
-    #     response = Response(status_code=303, content="Redirecting...")
-    #     response.headers["HX-Redirect"] = "/"
-    #     return response
+
     # for readability
     email=username
 
@@ -284,50 +280,20 @@ def signin(
         
         return response
 
-    # return response with session cookie and redirect to index
-    session_cookie = auth_service.generate_session_token()
-    session_expiry = auth_service.generate_session_expiry()
-    new_session = schemas.CreateUserSession(
-        session_id=session_cookie,
-        user_id=db_user.id,
-        expires_at=session_expiry
-    )
-    # store user session
-    session_repository.create_session(db=db, session=new_session)
-    
-    # ip_address = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
-    # user_agent = request.headers.get("User-Agent")
-
-    # user_signin = DBUserSignin(
-    #     user_id=db_user.id,  # Assuming you have the current user info
-    #     ip_address=ip_address,
-    #     user_agent=user_agent,
-    #     status = SigninStatus.SUCCESS
-    # )
-
-    # db.add(user_signin)
-    # db.commit()
-    # db.refresh(user_signin)
-
-    # we need to write to sqlite now
-    # 1. get the user with sqlite
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
         cursor.execute("SELECT id, display_name, email, is_admin, birthday, username FROM users WHERE email = ?", (email, ))
-        lite_user = cursor.fetchone()
+        current_user = UserRow(*cursor.fetchone())
 
-    # 2. store a session in sqlite db
-    # user = UserRow(id=user[0], email=user[1])
     token = str(uuid.uuid4())
     expires_at = int(time.time()) + 3600
-    new_session = (token, lite_user[0], expires_at)
+    new_session = (token, current_user.id, expires_at)
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", new_session)
     
-
     response = Response(status_code=200)
     response.set_cookie(
         key="session-id",
@@ -345,10 +311,10 @@ def signin(
 
 def signout(
         request: Request, 
-        lite_user=Depends(requires_user),
+        current_user=Depends(requires_user),
         ):
     """Sign out a user"""
-    if not lite_user:
+    if not current_user:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/signin"})
         else:
