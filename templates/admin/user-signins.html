@@ -15,19 +15,28 @@ Ennytime Profile Page
 			<div class="relative w-full overflow-auto">
 				<table class="w-full caption-bottom text-sm">
 					<thead class="[&amp;_tr]:border-b">
-						{{heading_row(headings)}}
+						<tr>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Display Name</th>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Date</th>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Time</th>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Status</th>
+							{# <th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Actions</th> #}
+						</tr>
 					</thead>
 					<tbody class="[&amp;_tr:last-child]:border-0">
-						{% for signin in user_signins %}
+						{% for signin in signins %}
 						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
 							<td class="p-4 align-middle">
-								{{signin.DBUser.display_name}}
+								{{signin.display_name}}
 							</td>
 							<td>
-								{{signin.DBUserSignin.signin_at}}
+								{{signin.created_at.strftime("%Y-%m-%d")}}
 							</td>
 							<td>
-                                {{signin.DBUserSignin.status.value.capitalize()}}
+								{{signin.created_at.strftime("%H:%M:%S")}}
+							</td>
+							<td>
+                                {{signin.status.capitalize()}}
 							</td>
 						</tr>
 						{% endfor %}

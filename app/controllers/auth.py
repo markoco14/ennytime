@@ -225,6 +225,11 @@ def signin(
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", new_session)
+
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys = ON;")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO user_signins (user_id, status) VALUES (?, ?);", (current_user.id, "SUCCESS"))
     
     response = Response(status_code=200)
     response.set_cookie(
