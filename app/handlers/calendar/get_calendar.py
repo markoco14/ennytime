@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import Request
 from fastapi.responses import Response, RedirectResponse
 from app.core.template_utils import templates, block_templates
+from app.new_models.user import User
 from app.services import calendar_service
 from app.structs.pages import CalendarMonthPage
 from app.structs.structs import ScheduleRow, ShiftRow, UserRow
@@ -14,7 +15,7 @@ def get_calendar(
     request: Request,
     year: int,
     month: int,
-    current_user: UserRow,
+    current_user: User,
     day: Optional[int] = None
     ):
     """Returns calendar month view."""
@@ -62,7 +63,7 @@ def get_calendar(
         shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
 
         # get current user bae_schedules for month
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user[0]))
+        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user.id))
         schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
         
         bae_shifts = []
