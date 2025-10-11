@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.auth import auth_service
 from app.core.database import get_db
 
+from app.dependencies import requires_admin
 from app.models.user_model import DBUser
 from app.models.user_signin_model import DBUserSignin
 from app.repositories import user_repository as UserRepository
@@ -25,17 +26,13 @@ templates = Jinja2Templates(directory="templates")
 def index(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
+    current_user=Depends(requires_admin)
 ):
     """Returns admin section home page"""
     if not current_user:
         response = RedirectResponse(status_code=303, url="/")
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
-        return response
-
-    if not current_user.is_admin:
-        response = RedirectResponse(status_code=303, url="/")
         return response
 
     # get chatroom id to link directly from the chat icon
@@ -58,10 +55,10 @@ def index(
     )
 
 
-def list_users(
+def users(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
+    current_user=Depends(requires_admin)
 ):
     """List users"""
     if not current_user:
@@ -69,11 +66,7 @@ def list_users(
         if request.cookies.get("session-id"):
             response.delete_cookie("session-id")
         return response
-
-    if not current_user.is_admin:
-        response = RedirectResponse(status_code=303, url="/")
-        return response
-
+    
     users = UserRepository.list_users(db=db)
     headings = ["Display name", "Email", "Username", "Actions"]
 
@@ -99,10 +92,10 @@ def list_users(
     )
 
 
-def list_user_signins(
+def signins(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
+    current_user=Depends(requires_admin)
 ):
     """List users"""
     if not current_user:
@@ -111,9 +104,6 @@ def list_user_signins(
             response.delete_cookie("session-id")
         return response
 
-    if not current_user.is_admin:
-        response = RedirectResponse(status_code=303, url="/")
-        return response
     user_signins = db.query(DBUserSignin, UserRepository.DBUser).join(DBUser, DBUserSignin.user_id == DBUser.id).order_by(DBUserSignin.signin_at).all()
 
     for signin in user_signins:
@@ -143,27 +133,27 @@ def list_user_signins(
     )
 
 
-def delete_user(
-    request: Request,
-    user_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    current_user=Depends(auth_service.user_dependency)
-):
-    if not current_user:
-        response = RedirectResponse(url="/signin")
-        if request.cookies.get("session-id"):
-            response.delete_cookie("session-id")
-        return response
+# def delete_user(
+#     request: Request,
+#     user_id: int,
+#     db: Annotated[Session, Depends(get_db)],
+#     current_user=Depends(auth_service.user_dependency)
+# ):
+#     if not current_user:
+#         response = RedirectResponse(url="/signin")
+#         if request.cookies.get("session-id"):
+#             response.delete_cookie("session-id")
+#         return response
 
-    if not current_user.is_admin:
-        response = JSONResponse(status_code=401, content="Unauthorized")
-        return response
+#     if not current_user.is_admin:
+#         response = JSONResponse(status_code=401, content="Unauthorized")
+#         return response
 
-    db_user = UserRepository.get_user_by_id(
-        db=db, user_id=user_id)
+#     db_user = UserRepository.get_user_by_id(
+#         db=db, user_id=user_id)
 
-    db.delete(db_user)
-    db.commit()
+#     db.delete(db_user)
+#     db.commit()
 
-    return Response(status_code=200)
+#     return Response(status_code=200)
 

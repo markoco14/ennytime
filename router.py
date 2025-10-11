@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.auth import auth_service
 from app.controllers import admin, auth, calendar, public, relationships, schedule, shifts , users
-from app.dependencies import requires_profile_owner, requires_schedule_owner, requires_guest, requires_shift_owner, requires_user
+from app.dependencies import requires_admin, requires_profile_owner, requires_schedule_owner, requires_guest, requires_shift_owner, requires_user
 
 router = APIRouter()
 
@@ -42,15 +42,15 @@ routes = [
     ("PUT",     "/users/{user_id}",                     users.update,               requires_profile_owner),
     ("POST",    "/username-unique",                     users.unique,               requires_user),   # owner?
 
-    ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        auth_service.user_dependency),   # user?
-    ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      auth_service.user_dependency),   # in_relationship?
-    ("DELETE",  "/reject-calendar/{share_id}",          relationships.reject,       auth_service.user_dependency),   # in_relationship?
-    ("POST",    "/search",                              relationships.search,       auth_service.user_dependency),   # user?
+    # ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        auth_service.user_dependency),   # user?
+    # ("DELETE",  "/share-calendar/{share_id}",           relationships.unshare,      auth_service.user_dependency),   # in_relationship?
+    # ("DELETE",  "/reject-calendar/{share_id}",          relationships.reject,       auth_service.user_dependency),   # in_relationship?
+    # ("POST",    "/search",                              relationships.search,       auth_service.user_dependency),   # user?
 
-    ("GET",     "/admin",                               admin.index,                auth_service.user_dependency),
-    ("GET",     "/admin/users",                         admin.list_users,           auth_service.user_dependency),
-    ("GET",     "/admin/user-signins",                  admin.list_user_signins,    auth_service.user_dependency),
-    ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          auth_service.user_dependency),
+    ("GET",     "/admin",                               admin.index,                requires_admin),
+    ("GET",     "/admin/users",                         admin.users,                requires_admin),
+    ("GET",     "/admin/signins",                       admin.signins,              requires_admin),
+    # ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          auth_service.user_dependency),
 ]
 
 for method, path, handler, _ in routes:
