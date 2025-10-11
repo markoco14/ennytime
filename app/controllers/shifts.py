@@ -14,6 +14,7 @@ from app.handlers.shifts.delete_shift import handle_delete_shift
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.models.user_model import DBUser
 from app.new_models.shift import Shift
+from app.new_models.user import User
 from app.repositories import shift_type_repository
 from app.viewmodels.structs import ShiftCreate, ShiftRow
 
@@ -22,7 +23,7 @@ router = APIRouter(prefix="/shifts")
 
 def index(
     request: Request,
-    current_user=Depends(requires_user),
+    current_user: Annotated[User, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -58,7 +59,7 @@ def index(
 
 def new(
     request: Request,
-    current_user=Depends(requires_user),
+    current_user: Annotated[User, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -66,21 +67,18 @@ def new(
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
 
-    context = {
-        "request": request,
-        "current_user": current_user,
-    }
-
     if request.headers.get("HX-Request"):
         response = templates.TemplateResponse(
+            request=request,
             name="shifts/new/partials/form.html",
-            context=context
+            context={"current_user": current_user}
         )
         return response
 
     response = templates.TemplateResponse(
+        request=request,
         name="shifts/new/index.html",
-        context=context
+        context={"current_user": current_user}
     )
     return response
 
@@ -88,7 +86,7 @@ def new(
 def create(
     request: Request,
     shift_name: Annotated[str, Form()],
-    current_user=Depends(requires_user)
+    current_user: Annotated[User, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
