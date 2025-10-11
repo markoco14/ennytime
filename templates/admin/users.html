@@ -15,7 +15,12 @@ Ennytime Profile Page
 			<div class="relative w-full overflow-auto">
 				<table class="w-full caption-bottom text-sm">
 					<thead class="[&amp;_tr]:border-b">
-						{{heading_row(headings)}}
+						<tr>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Display Name</th>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Email</th>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Username</th>
+							{# <th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Actions</th> #}
+						</tr>
 					</thead>
 					<tbody class="[&amp;_tr:last-child]:border-0"
 						   hx-confirm="Are you sure?"
@@ -24,17 +29,17 @@ Ennytime Profile Page
 						{% for user in users %}
 						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
 							<td class="p-4 align-middle">
-								{{user.display_name}}
+								{{user["display_name"]}}
 							</td>
 							<td>
-								{{user.email}}
+								{{user["email"]}}
 							</td>
 							<td>
-								{{user.username}}
+								{{user["username"]}}
 							</td>
-							<td class="p-4 align-middle flex justify-end gap-2">
+							{# <td class="p-4 align-middle flex justify-end gap-2">
 								<button hx-delete="/admin/users/{{user.id}}">delete</button>
-							</td>
+							</td> #}
 						</tr>
 						{% endfor %}
 					</tbody>
