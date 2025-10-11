@@ -18,11 +18,7 @@ routes = [
 
     ("GET",     "/calendar/{year}/{month}",             calendar.month,             requires_user),   # User
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               requires_user),   # User
-
     ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.edit,              requires_user),
-    # ("POST",     "/calendar/{year}/{month}/{day}/scheduling",  calendar.get_calendar_day_edit, auth_service.user_dependency), refresh or redirect to cal/day/edit view
-    # ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, auth_service.user_dependency),
-    # ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, auth_service.user_dependency),
 
     ("GET",     "/shifts",                              shifts.index,               requires_user),
     ("GET",     "/shifts/new",                          shifts.new,                 requires_user),
