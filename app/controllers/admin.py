@@ -1,12 +1,12 @@
 """ Admin routes """
 from datetime import timedelta
+import sqlite3
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from app.auth import auth_service
 from app.core.database import get_db
 
 from app.dependencies import requires_admin
@@ -67,22 +67,19 @@ def users(
             response.delete_cookie("session-id")
         return response
     
-    users = UserRepository.list_users(db=db)
-    headings = ["Display name", "Email", "Username", "Actions"]
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, display_name, email, username FROM users;")
+        rows = cursor.fetchall()
 
-    # get chatroom id to link directly from the chat icon
-    # get unread message count so chat icon can display the count on page load
-    user_chat_data = chat_service.get_user_chat_data(
-        db=db,
-        current_user_id=current_user.id
-    )
+    headings = ["Display name", "Email", "Username", "Actions"]
 
     context = {
         "current_user": current_user,
         "request": request,
-        "users": users,
+        "users": rows,
         "headings": headings,
-        "chat_data": user_chat_data
     }
 
     return templates.TemplateResponse(
