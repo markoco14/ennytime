@@ -24,9 +24,10 @@ class User:
     def get(cls, user_id):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys = ON;")
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             row = cursor.execute("SELECT * FROM users WHERE id = ?;", (user_id, )).fetchone()
-            user = User(*row)
+            user = User(**row)
             return user
 
 
