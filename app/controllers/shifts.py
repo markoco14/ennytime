@@ -13,8 +13,9 @@ from app.dependencies import requires_shift_owner, requires_user
 from app.handlers.shifts.delete_shift import handle_delete_shift
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.models.user_model import DBUser
+from app.new_models.shift import Shift
 from app.repositories import shift_type_repository
-from app.structs.structs import ShiftCreate, ShiftRow
+from app.viewmodels.structs import ShiftCreate, ShiftRow
 
 router = APIRouter(prefix="/shifts")
 
@@ -29,11 +30,7 @@ def index(
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
         
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?", (current_user[0], ))
-        shifts_rows = [ShiftRow(*row) for row in cursor.fetchall()]
+    shifts_rows = Shift.get_user_shifts(user_id=current_user.id)
 
     context = {
         "current_user": current_user,
