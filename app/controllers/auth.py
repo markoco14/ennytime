@@ -14,7 +14,7 @@ from app.auth import auth_service
 from app.core.template_utils import templates
 
 from app.dependencies import requires_guest, requires_user
-from app.structs.structs import UserLoginRow, UserRow
+from app.viewmodels.structs import UserLoginRow, UserRow
 
 router = APIRouter()
 

@@ -8,7 +8,7 @@ from app.core.template_utils import templates, block_templates
 from app.new_models.user import User
 from app.services import calendar_service
 from app.structs.pages import CalendarMonthPage
-from app.structs.structs import ScheduleRow, ShiftRow, UserRow
+from app.viewmodels.structs import ScheduleRow, ShiftRow, UserRow
 
 
 def get_calendar(

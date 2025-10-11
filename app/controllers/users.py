@@ -18,7 +18,7 @@ from app.services import chat_service
 from app.models.user_model import DBUser
 from app.models.share_model import DbShare
 from app.structs.pages import ProfilePage
-from app.structs.structs import UserRow
+from app.viewmodels.structs import UserRow
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

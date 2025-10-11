@@ -5,7 +5,7 @@ import logging
 from fastapi import Request
 
 from app.new_models.user import User
-from app.structs.structs import UserRow
+from app.viewmodels.structs import UserRow
 
 
 def requires_guest(request: Request):

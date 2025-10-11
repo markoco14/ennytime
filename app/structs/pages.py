@@ -1,7 +1,7 @@
 import datetime
 from typing import TypedDict
 
-from app.structs.structs import ScheduleRow, ShiftRow, UserRow
+from app.viewmodels.structs import ScheduleRow, ShiftRow, UserRow
 
 class CalendarMonthPage(TypedDict):
     current_user: UserRow
