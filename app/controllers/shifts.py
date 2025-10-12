@@ -3,15 +3,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
 
-from app.auth import auth_service
-from app.core.database import get_db
+
 from app.core.template_utils import templates
 from app.dependencies import requires_shift_owner, requires_user
-
-from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
-from app.models.user_model import DBUser
 from app.new_models.shift import Shift
 from app.viewmodels.user import CurrentUser
 
@@ -124,6 +119,7 @@ def edit(
         return response
 
     db_shift = Shift.get(shift_id=shift_type_id)
+
     if not db_shift:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/shifts"})
@@ -164,6 +160,13 @@ async def update(
             return RedirectResponse(status_code=303, url=f"/shifts/{shift_type_id}/edit")
         
     db_shift = Shift.get(shift_id=shift_type_id)
+
+    if not db_shift:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, headers={"Hx-Redirect": "/shifts"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/shifts")
+        
     db_shift.update(long_name=long_name, short_name=short_name)
         
     if request.headers.get("hx-request"):
@@ -185,14 +188,13 @@ def delete(
             return RedirectResponse(status_code=303, url=f"/signin")
         
     db_shift = Shift.get(shift_id=shift_type_id)
+
+    if not db_shift:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, headers={"Hx-Redirect": "/shifts"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/shifts")
+        
     db_shift.delete()
 
     return Response(status_code=200)
-
-
-def setup(
-    request: Request,
-    db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[DBUser, Depends(auth_service.user_dependency)]
-    ):
-    return handle_get_shifts_setup(request, current_user, db)

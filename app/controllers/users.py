@@ -3,12 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
 
-from app.core.database import get_db
 from app.dependencies import requires_profile_owner, requires_user
 from app.new_models.user import User
-from app.models.user_model import DBUser
 from app.structs.pages import ProfilePage
 
 router = APIRouter()
@@ -70,7 +67,6 @@ async def update(
     
 def unique(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
     app_username: Annotated[str, Form()] = "",
     current_user=Depends(requires_user),  
 ):
@@ -100,7 +96,7 @@ def unique(
         return Response(status_code=200, headers={"hx-refresh": "true"})
 
     username_taken = User.username_exists(username=app_username)
-    
+
     context = {
         "request": request,
         "current_user": current_user,

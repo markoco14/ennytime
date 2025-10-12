@@ -2,9 +2,11 @@
 import datetime
 import sqlite3
 from typing import Optional
+
 from fastapi import Request
 from fastapi.responses import Response, RedirectResponse
-from app.core.template_utils import templates, block_templates
+
+from app.core.template_utils import templates
 from app.new_models.user import User
 from app.services import calendar_service
 from app.structs.pages import CalendarMonthPage

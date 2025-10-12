@@ -26,7 +26,6 @@ routes = [
     ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                requires_shift_owner),
     ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              requires_shift_owner),
     ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              requires_shift_owner),
-    ("GET",     "/shifts/setup",                        shifts.setup,               auth_service.user_dependency),   # User
 
     ("GET",     "/scheduling",                          schedule.index,             requires_user),   # user
     ("GET",     "/scheduling/{year}/{month}",           schedule.month,             requires_user),   # user
@@ -46,7 +45,6 @@ routes = [
     ("GET",     "/admin",                               admin.index,                requires_admin),
     ("GET",     "/admin/users",                         admin.users,                requires_admin),
     ("GET",     "/admin/signins",                       admin.signins,              requires_admin),
-    # ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          auth_service.user_dependency),
 ]
 
 for method, path, handler, _ in routes:

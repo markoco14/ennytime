@@ -6,13 +6,11 @@ import time
 from typing import Annotated
 import uuid
 
-
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import RedirectResponse
 
 from app.auth import auth_service
 from app.core.template_utils import templates
-
 from app.dependencies import requires_guest, requires_user
 from app.viewmodels.structs import UserLoginRow, UserRow
 
