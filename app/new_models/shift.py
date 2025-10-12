@@ -11,7 +11,7 @@ class Shift:
     user_id: int
 
     @classmethod
-    def get_user_shifts(cls, user_id: int):
+    def list_user_shifts(cls, user_id: int):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()

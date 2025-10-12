@@ -1,5 +1,4 @@
 import re
-import sqlite3
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, Request, Response
@@ -10,13 +9,11 @@ from app.auth import auth_service
 from app.core.database import get_db
 from app.core.template_utils import templates
 from app.dependencies import requires_shift_owner, requires_user
-from app.handlers.shifts.delete_shift import handle_delete_shift
+
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.models.user_model import DBUser
 from app.new_models.shift import Shift
 from app.new_models.user import User
-from app.repositories import shift_type_repository
-from app.viewmodels.structs import ShiftCreate, ShiftRow
 
 router = APIRouter(prefix="/shifts")
 
@@ -31,7 +28,7 @@ def index(
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
         
-    shifts_rows = Shift.get_user_shifts(user_id=current_user.id)
+    shifts_rows = Shift.list_user_shifts(user_id=current_user.id)
 
     context = {
         "current_user": current_user,
@@ -125,25 +122,19 @@ def edit(
             response = RedirectResponse(status_code=303, url=f"/signin")
         
         return response
-      
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")    
-        cursor = conn.cursor()
-        try:
-            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?", (shift_type_id, ))
-            shift = ShiftRow(*cursor.fetchone())
-        except Exception as e:
-            print(f"no shift found: {e}")
-            if request.headers.get("hx-request"):
-                return Response(status_code=200, header={"hx-redirect": f"/shifts"})
-            else:
-                return RedirectResponse(status_code=303, url=f"/shifts")
+
+    db_shift = Shift.get(shift_id=shift_type_id)
+    if not db_shift:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, header={"hx-redirect": f"/shifts"})
+        else:
+            return RedirectResponse(status_code=303, url=f"/shifts")
 
     response = templates.TemplateResponse(
+        request=request,
         name="shifts/edit/index.html",
         context={
-            "request": request,
-            "shift": shift,
+            "shift": db_shift,
             "current_user": current_user
         }
     )
@@ -155,11 +146,7 @@ async def update(
     shift_type_id: int,
     current_user=Depends(requires_shift_owner)
 ):  
-    """
-    Updates the user's shift. Receives form fields:
-        long_name
-        short_name
-    """
+    """Updates the user's shift. Receives long_name and short_name form fields"""
     if not current_user:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/signin"})
@@ -176,10 +163,8 @@ async def update(
         else:
             return RedirectResponse(status_code=303, url=f"/shifts/{shift_type_id}/edit")
         
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")    
-        cursor = conn.cursor()
-        cursor.execute("UPDATE shifts SET long_name=?, short_name=? WHERE id = ?", (long_name, short_name, shift_type_id, ))
+    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift.update(long_name=long_name, short_name=short_name)
         
     if request.headers.get("hx-request"):
         return Response(status_code=200, headers={"Hx-Refresh": "true"})
