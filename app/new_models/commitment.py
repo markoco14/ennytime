@@ -19,7 +19,7 @@ class Commitment:
             cursor = conn.cursor()
             row = cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE id = ?;", (commitment_id, )).fetchone()
 
-            return ScheduleRow(
+            return Commitment(
                 id=row["id"],
                 shift_id=row["shift_id"],
                 user_id=row["user_id"],
@@ -39,4 +39,11 @@ class Commitment:
                 return row_id
             
             return None
+        
+
+    def delete(self):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM schedules WHERE id = ?;", (self.id, ))
        
