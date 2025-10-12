@@ -1,14 +1,17 @@
 import sqlite3
 import datetime
+from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.responses import Response, RedirectResponse
 
 from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
+from app.new_models.commitment import Commitment
 from app.services import calendar_service
 from app.structs.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
 from app.viewmodels.structs import ScheduleRow, ShiftRow
+from app.viewmodels.user import CurrentUser
 
 
 def index(
@@ -133,7 +136,7 @@ def month(
 
 async def create(
     request: Request,
-    current_user=Depends(requires_user),
+    current_user: Annotated[CurrentUser, Depends(requires_user)],
 ):  
     if not current_user:
         if request.headers.get("hx-request"):
@@ -144,21 +147,24 @@ async def create(
         return response
 
     form_data = await request.form()
+    shift_id = form_data.get("shift")
     date = form_data.get("date")
     date = f"{date} 00:00:00"
+
+    if not shift_id or not date:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, headers={"hx-refresh": "true"})
+        else:
+            return RedirectResponse(status_code=303, url="/scheduling")
     
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO schedules (shift_id, user_id, date) VALUES (?, ?, ?);", (form_data.get("shift"), current_user.id, date,))
-        row_id = cursor.lastrowid
-        schedule_row = ScheduleRow(id=row_id, shift_id=form_data.get("shift"), user_id=current_user.id, date=date)
+    commitment_id = Commitment.create(shift_id=shift_id, user_id=current_user.id, date=date, return_id=True)
+    schedule_row =  Commitment.get(commitment_id=commitment_id)
         
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
                 conn.execute("PRAGMA foreign_keys=ON;")
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (form_data.get("shift"), ))
+                cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (shift_id, ))
                 shift_row = ShiftRow(*cursor.fetchone())
 
         return templates.TemplateResponse(
