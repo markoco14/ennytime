@@ -19,3 +19,13 @@ class Shift:
             shifts_rows = [ShiftRow(*row) for row in cursor.fetchall()]
 
         return shifts_rows
+    
+    @classmethod
+    def create(cls, long_name: str, short_name: str, user_id: int):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO shifts (long_name, short_name, user_id) VALUES (?, ?, ?);", (long_name, short_name, user_id))
+            row_id = cursor.lastrowid
+
+        return row_id
