@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
 
+from app.viewmodels.user import CurrentUser
+
 @dataclass
 class User:
     id: int
@@ -21,13 +23,18 @@ class User:
     updated_at: datetime
 
     @classmethod
-    def get(cls, user_id):
+    def get_current_user(cls, user_id):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys = ON;")
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            row = cursor.execute("SELECT * FROM users WHERE id = ?;", (user_id, )).fetchone()
-            user = User(**row)
+            row = cursor.execute("SELECT id, display_name, email, birthday, username, is_admin FROM users WHERE id = ?;", (user_id, )).fetchone()
+
+            if not row:
+                return None
+
+            user = CurrentUser.from_row(row=row)
+
             return user
 
 

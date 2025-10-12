@@ -13,14 +13,14 @@ from app.dependencies import requires_shift_owner, requires_user
 from app.handlers.shifts.get_shifts_setup import handle_get_shifts_setup
 from app.models.user_model import DBUser
 from app.new_models.shift import Shift
-from app.new_models.user import User
+from app.viewmodels.user import CurrentUser
 
 router = APIRouter(prefix="/shifts")
 
 
 def index(
     request: Request,
-    current_user: Annotated[User, Depends(requires_user)]
+    current_user: Annotated[CurrentUser, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -56,7 +56,7 @@ def index(
 
 def new(
     request: Request,
-    current_user: Annotated[User, Depends(requires_user)]
+    current_user: Annotated[CurrentUser, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -83,7 +83,7 @@ def new(
 def create(
     request: Request,
     shift_name: Annotated[str, Form()],
-    current_user: Annotated[User, Depends(requires_user)]
+    current_user: Annotated[CurrentUser, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -113,7 +113,7 @@ def create(
 def edit(
     request: Request,
     shift_type_id: int,
-    current_user=Depends(requires_shift_owner)
+    current_user: Annotated[CurrentUser, Depends(requires_shift_owner)]
 ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -144,7 +144,7 @@ def edit(
 async def update(
     request: Request,
     shift_type_id: int,
-    current_user=Depends(requires_shift_owner)
+    current_user: Annotated[CurrentUser, Depends(requires_shift_owner)]
 ):  
     """Updates the user's shift. Receives long_name and short_name form fields"""
     if not current_user:
@@ -175,7 +175,7 @@ async def update(
 def delete(
     request: Request,
     shift_type_id: int,
-    current_user=Depends(requires_shift_owner)
+    current_user: Annotated[CurrentUser, Depends(requires_shift_owner)]
 ):
     """Delete shift type"""
     if not current_user:

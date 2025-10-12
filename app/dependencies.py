@@ -6,9 +6,10 @@ from fastapi import Request
 
 from app.new_models.user import User
 from app.viewmodels.structs import UserRow
+from app.viewmodels.user import CurrentUser
 
 
-def requires_guest(request: Request):
+def requires_guest(request: Request) -> CurrentUser:
     """Checks for a session and returns a guest user"""
     session_id = request.cookies.get("session-id")
 
@@ -22,11 +23,11 @@ def requires_guest(request: Request):
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-    user = User.get(user_id=session[0])
+    user = User.get_current_user(user_id=session[0])
 
     return user
 
-def requires_user(request: Request) -> User:
+def requires_user(request: Request) -> CurrentUser:
     """Checks for a session and returns an authenticated user"""
     session_id = request.cookies.get("session-id")
 
@@ -40,7 +41,7 @@ def requires_user(request: Request) -> User:
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-    user = User.get(user_id=session[0])
+    user = User.get_current_user(user_id=session[0])
 
     return user
 
