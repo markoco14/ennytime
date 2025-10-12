@@ -191,24 +191,25 @@ async def delete(
             response = RedirectResponse(status_code=303, url=f"/signin")
         response.delete_cookie("session-id")
         return response
+    
+    db_commitment = Commitment.get(commitment_id=schedule_id)
+
+    if not db_commitment:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, headers={"hx-refresh": "true"})
+        else:
+            return RedirectResponse(status_code=303, url="/scheduling")
         
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE id = ?;", (schedule_id, ))
-        schedule_row = ScheduleRow(*cursor.fetchone())
-
-        cursor.execute("DELETE FROM schedules WHERE id = ?;", (schedule_id, ))
+    db_commitment.delete()
     
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()
-            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id =?;", (schedule_row[1], ))
+            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (db_commitment.shift_id, ))
             shift_row = ShiftRow(*cursor.fetchone())
 
-        date_obj = datetime.datetime.strptime(schedule_row[3], "%Y-%m-%d %H:%M:%S").date()
+        date_obj = datetime.datetime.strptime(db_commitment.date, "%Y-%m-%d %H:%M:%S").date()
 
         response = templates.TemplateResponse(
             request=request,
