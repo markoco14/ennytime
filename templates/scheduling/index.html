@@ -24,7 +24,7 @@ Schedule
                 <div class="flex flex-wrap gap-2 p-2 border rounded-md">
                         {% for shift in shifts %}
                             {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift[0]) %}
-                                {% set schedule = commitments[date.strftime("%Y-%m-%d")][shift[0]] %}
+                                {% set commitment = commitments[date.strftime("%Y-%m-%d")][shift[0]] %}
                                 {% include "/scheduling/fragments/shift-exists-button.html" %}
                             {% else %}
                                 {% include "/scheduling/fragments/no-shift-button.html" %}

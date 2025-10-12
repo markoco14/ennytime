@@ -89,14 +89,14 @@ def month(
     end_of_month = calendar_service.get_end_of_month(year=year, month=month)  
 
     shift_rows = Shift.list_user_shifts(user_id=current_user.id)
-    schedule_rows = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
+    db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage schedule as dict with dates as .get() accessible keys
     commitments = {}
-    for schedule in schedule_rows:
-        date_key = schedule.date.strftime("%Y-%m-%d")
-        shift_id = schedule.shift_id
-        commitments.setdefault(date_key, {})[shift_id] = schedule
+    for commitment in db_commitments:
+        date_key = commitment.date.strftime("%Y-%m-%d")
+        shift_id = commitment.shift_id
+        commitments.setdefault(date_key, {})[shift_id] = commitment
 
     context = ScheduleMonthPage(
         current_date=current_date,
@@ -146,7 +146,7 @@ async def create(
             return RedirectResponse(status_code=303, url="/scheduling")
     
     commitment_id = Commitment.create(shift_id=shift_id, user_id=current_user.id, date=date, return_id=True)
-    schedule_row =  Commitment.get(commitment_id=commitment_id)
+    db_commitment = Commitment.get(commitment_id=commitment_id)
         
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
@@ -160,7 +160,7 @@ async def create(
             name="scheduling/fragments/shift-exists-button.html",
             context=YesShiftBtn(
                 shift=shift_row,
-                schedule=schedule_row
+                commitment=db_commitment
             )
         )
     else:

@@ -1,6 +1,6 @@
 {% from '/macros/spinner.html' import spinner%}
 <button 
-    hx-delete="/scheduling/{{schedule.id}}"
+    hx-delete="/scheduling/{{commitment.id}}"
     hx-swap="outerHTML"
     class="border border-pink-500 bg-pink-500 py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
     <span class="htmx-indicator-content">{{shift.short_name}}</span>
