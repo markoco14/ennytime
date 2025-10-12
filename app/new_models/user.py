@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
 
+from fastapi.datastructures import FormData
+
 from app.viewmodels.user import CurrentUser
 
 @dataclass
@@ -37,4 +39,37 @@ class User:
 
             return user
 
+    @classmethod
+    def get(cls, user_id):
+        """Returns User instance."""
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys = ON;")
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            row = cursor.execute("SELECT * FROM users WHERE id = ?;", (user_id, )).fetchone()
 
+            if not row:
+                return None
+
+            user = User(**row)
+
+            return user
+
+    def update(self, form_data: FormData):
+        if form_data.get("display_name"):
+            with sqlite3.connect("db.sqlite3") as conn:
+                conn.execute("PRAGMA foreign_keys=ON;")
+                cursor = conn.cursor()
+                cursor.execute("UPDATE users SET display_name = ? WHERE id = ?;", (form_data.get("display_name"), self.id))
+            
+        if form_data.get("app_username"):
+            with sqlite3.connect("db.sqlite3") as conn:
+                conn.execute("PRAGMA foreign_keys=ON;")
+                cursor = conn.cursor()
+                cursor.execute("UPDATE users SET username = ? WHERE id = ?;", (form_data.get("app_username"), self.id))
+        
+        if form_data.get("birthday"):
+            with sqlite3.connect("db.sqlite3") as conn:
+                conn.execute("PRAGMA foreign_keys=ON;")
+                cursor = conn.cursor()
+                cursor.execute("UPDATE users SET birthday = ? WHERE id = ?;", (form_data.get("birthday"), self.id))
