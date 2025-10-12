@@ -18,11 +18,7 @@ routes = [
 
     ("GET",     "/calendar/{year}/{month}",             calendar.month,             requires_user),   # User
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               requires_user),   # User
-
     ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.edit,              requires_user),
-    # ("POST",     "/calendar/{year}/{month}/{day}/scheduling",  calendar.get_calendar_day_edit, auth_service.user_dependency), refresh or redirect to cal/day/edit view
-    # ("POST",    "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.get_calendar_card_edit, auth_service.user_dependency),
-    # ("DELETE",  "/calendar/card/{date_string}/edit/{shift_type_id}", calendar.delete_shift_for_date, auth_service.user_dependency),
 
     ("GET",     "/shifts",                              shifts.index,               requires_user),
     ("GET",     "/shifts/new",                          shifts.new,                 requires_user),
@@ -30,7 +26,6 @@ routes = [
     ("GET",     "/shifts/{shift_type_id}/edit",         shifts.edit,                requires_shift_owner),
     ("POST",    "/shifts/{shift_type_id}/edit",         shifts.update,              requires_shift_owner),
     ("DELETE",  "/shifts/{shift_type_id}",              shifts.delete,              requires_shift_owner),
-    ("GET",     "/shifts/setup",                        shifts.setup,               auth_service.user_dependency),   # User
 
     ("GET",     "/scheduling",                          schedule.index,             requires_user),   # user
     ("GET",     "/scheduling/{year}/{month}",           schedule.month,             requires_user),   # user
@@ -50,7 +45,6 @@ routes = [
     ("GET",     "/admin",                               admin.index,                requires_admin),
     ("GET",     "/admin/users",                         admin.users,                requires_admin),
     ("GET",     "/admin/signins",                       admin.signins,              requires_admin),
-    # ("DELETE",  "/admin/users/{user_id}",               admin.delete_user,          auth_service.user_dependency),
 ]
 
 for method, path, handler, _ in routes:

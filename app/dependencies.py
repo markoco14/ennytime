@@ -4,10 +4,12 @@ import logging
 
 from fastapi import Request
 
-from app.structs.structs import UserRow
+from app.new_models.user import User
+from app.viewmodels.structs import UserRow
+from app.viewmodels.user import CurrentUser
 
 
-def requires_guest(request: Request):
+def requires_guest(request: Request) -> CurrentUser:
     """Checks for a session and returns a guest user"""
     session_id = request.cookies.get("session-id")
 
@@ -21,12 +23,11 @@ def requires_guest(request: Request):
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = cursor.fetchone()
+    user = User.get_current_user(user_id=session[0])
 
     return user
 
-def requires_user(request: Request) -> UserRow:
+def requires_user(request: Request) -> CurrentUser:
     """Checks for a session and returns an authenticated user"""
     session_id = request.cookies.get("session-id")
 
@@ -40,8 +41,7 @@ def requires_user(request: Request) -> UserRow:
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
+    user = User.get_current_user(user_id=session[0])
 
     return user
 

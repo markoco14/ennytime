@@ -1,4 +1,3 @@
-
 import sqlite3
 import datetime
 
@@ -9,7 +8,7 @@ from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
 from app.services import calendar_service
 from app.structs.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
-from app.structs.structs import ScheduleRow, ShiftRow
+from app.viewmodels.structs import ScheduleRow, ShiftRow
 
 
 def index(
