@@ -199,14 +199,8 @@ def delete(
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
         
-
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        try:
-            cursor.execute("DELETE FROM shifts WHERE id = ?", (shift_type_id, ))
-        except Exception as e:
-            print(f"there was an error deleting shift: {shift_type_id}: {e}")
+    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift.delete()
 
     return Response(status_code=200)
 
