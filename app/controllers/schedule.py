@@ -92,11 +92,11 @@ def month(
     schedule_rows = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage schedule as dict with dates as .get() accessible keys
-    schedules = {}
+    commitments = {}
     for schedule in schedule_rows:
         date_key = schedule.date.strftime("%Y-%m-%d")
         shift_id = schedule.shift_id
-        schedules.setdefault(date_key, {})[shift_id] = schedule
+        commitments.setdefault(date_key, {})[shift_id] = schedule
 
     context = ScheduleMonthPage(
         current_date=current_date,
@@ -105,7 +105,7 @@ def month(
         next_month_name=next_month_name,
         month_calendar=calendar_date_list,
         shifts=shift_rows,
-        schedules=schedules
+        commitments=commitments
     )
 
     if request.headers.get("HX-Request"):
