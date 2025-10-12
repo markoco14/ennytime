@@ -12,6 +12,26 @@ class Commitment:
     date: datetime
 
     @classmethod
+    def list_month_for_user(cls, start_of_month: datetime, end_of_month: datetime, user_id: int):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("""SELECT id, shift_id, user_id, date
+                            FROM schedules 
+                            WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;
+                            """,
+                           (start_of_month, end_of_month, user_id))
+            rows = [Commitment(
+                id=row["id"],
+                shift_id=row["shift_id"],
+                user_id=row["user_id"],
+                date=datetime.strptime(row["date"], "%Y-%m-%d %H:%M:%S")
+            ) for row in cursor.fetchall()]
+
+        return rows
+    
+    @classmethod
     def get(cls, commitment_id: int):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
