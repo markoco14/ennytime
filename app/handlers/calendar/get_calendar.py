@@ -7,6 +7,8 @@ from fastapi import Request
 from fastapi.responses import Response, RedirectResponse
 
 from app.core.template_utils import templates
+from app.new_models.commitment import Commitment
+from app.new_models.shift import Shift
 from app.new_models.user import User
 from app.services import calendar_service
 from app.structs.pages import CalendarMonthPage
@@ -55,18 +57,12 @@ def get_calendar(
     start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
     end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
 
-
+    db_shifts = Shift.list_user_shifts(user_id=current_user.id)
+    db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
+    
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
         cursor = conn.cursor()
-
-        # get current user shift types
-        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
-        shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
-
-        # get current user bae_schedules for month
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user.id))
-        schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
         
         bae_shifts = []
         bae_schedules = []
@@ -82,15 +78,15 @@ def get_calendar(
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
     shifts_dict = {}
-    for shift in shift_rows:
+    for shift in db_shifts:
         shifts_dict[shift.id] = shift
         
     # repackage current user schedule as dict with dates as keys to access with .get()
-    schedules = {}
-    for schedule in schedule_rows:
-        date_key = schedule[3].split()[0]
-        shift_id = schedule[1]
-        schedules.setdefault(date_key, {})[shift_id] = schedule
+    commitments = {}
+    for commitment in db_commitments:
+        date_key = commitment[3].split()[0]
+        shift_id = commitment[1]
+        commitments.setdefault(date_key, {})[shift_id] = commitment
 
     # repackage bae shifts as dict with shift ids as keys to access with .get()
     bae_shifts_dict = {}
@@ -112,7 +108,7 @@ def get_calendar(
         next_month_object=next_month_object,
         month_calendar=month_calendar_dict,
         shifts=shifts_dict,
-        schedules=schedules,
+        commitments=commitments,
         bae_shifts=bae_shifts_dict,
         bae_commitments=bae_commitments
     )
