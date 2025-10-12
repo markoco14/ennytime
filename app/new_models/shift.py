@@ -46,6 +46,12 @@ class Shift:
 
         return row_id
     
+    def update(self, long_name: str, short_name: str):
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("UPDATE shifts SET long_name = ?, short_name = ? WHERE id = ?;", (long_name, short_name, self.id))
+    
     def delete(self):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
