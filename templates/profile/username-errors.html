@@ -3,7 +3,7 @@
 		<span>{{username}} is already taken</span>
 		<button id="close-username"
 				type="button"
-				hx-get="/username/{{user.id}}"
+				hx-get="/username/{{current_user.id}}"
 				hx-indicator="#close-username"
 				class="grow-0 flex justify-center items-center">
 			<img width="16"
@@ -21,7 +21,7 @@
 		<span>{{username}} is already yours</span>
 		<button id="close-username"
 				type="button"
-				hx-get="/username/{{user.id}}"
+				hx-get="/username/{{current_user.id}}"
 				hx-indicator="#close-username"
 				class="grow-0 flex justify-center items-center">
 			<img width="16"
@@ -39,7 +39,7 @@
 		<span>Username can't be empty</span>
 		<button id="close-username"
 				type="button"
-				hx-get="/username/{{user.id}}"
+				hx-get="/username/{{current_user.id}}"
 				hx-indicator="#close-username"
 				class="grow-0 flex justify-center items-center">
 			<img width="16"

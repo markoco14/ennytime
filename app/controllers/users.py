@@ -1,24 +1,15 @@
-from collections import namedtuple
-import sqlite3
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
-from app.auth import auth_service
 from app.core.database import get_db
-
 from app.dependencies import requires_profile_owner, requires_user
-from app.repositories import user_repository
-from app.schemas import schemas
-from app.services import chat_service
+from app.new_models.user import User
 from app.models.user_model import DBUser
-from app.models.share_model import DbShare
 from app.structs.pages import ProfilePage
-from app.viewmodels.structs import UserRow
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -66,32 +57,17 @@ async def update(
         return response
     
     form_data = await request.form()
-    
-    if form_data.get("display_name"):
-        with sqlite3.connect("db.sqlite3") as conn:
-            conn.execute("PRAGMA foreign_keys=ON;")
-            cursor = conn.cursor()
-            cursor.execute("UPDATE users SET display_name = ? WHERE id = ?;", (form_data.get("display_name"), user_id, ))
-        return Response(status_code=200, headers={"hx-refresh": "true"})
-    
-    if form_data.get("app_username"):
-        with sqlite3.connect("db.sqlite3") as conn:
-            conn.execute("PRAGMA foreign_keys=ON;")
-            cursor = conn.cursor()
-            cursor.execute("UPDATE users SET username = ? WHERE id = ?;", (form_data.get("app_username"), user_id, ))
-        return Response(status_code=200, headers={"hx-refresh": "true"})
-    
-    if form_data.get("birthday"):
-        with sqlite3.connect("db.sqlite3") as conn:
-            conn.execute("PRAGMA foreign_keys=ON;")
-            cursor = conn.cursor()
-            cursor.execute("UPDATE users SET birthday = ? WHERE id = ?;", (form_data.get("birthday"), user_id, ))
-        return Response(status_code=200, headers={"hx-refresh": "true"})
-    
 
-    return "ok"
+    if not form_data.get("display_name") and not form_data.get("app_username") and not form_data.get("birthday"):
+        return Response(status_code=200, headers={"hx-refresh": "true"})
 
 
+    db_user = User.get(user_id=user_id)
+    db_user.update(form_data=form_data)
+    
+    return Response(status_code=200, headers={"hx-refresh": "true"})
+
+    
 def unique(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -107,22 +83,12 @@ def unique(
             response.delete_cookie("session-id")
         return response
 
-    context = {
-        "request": request,
-        "current_user": current_user,
-    }
-
     if app_username == "":
-        context.update({"is_empty_username": True})
-        if current_user.username:
-            context.update({
-                "username": current_user.username
-            })
-        else:
-            context.update({
-                "username": ""
-            })
-
+        context = {
+            "username": current_user.username if current_user.username else "",
+            "current_user": current_user,
+            "is_empty_username": True
+        }
 
         return templates.TemplateResponse(
             request=request,
@@ -131,16 +97,7 @@ def unique(
         )
 
     if app_username == current_user.username:
-        context.update({
-            "username": app_username,
-            "is_users_username": True
-        })
-
-        return templates.TemplateResponse(
-            request=request,
-            name="profile/username-edit-errors.html",
-            context=context
-        )
+        return Response(status_code=200, headers={"hx-refresh": "true"})
 
     db_username = db.query(DBUser).filter(
         DBUser.username == app_username).first()
@@ -150,10 +107,12 @@ def unique(
     else:
         username_taken = True
 
-    context.update({          
+    context = {
+        "request": request,
+        "current_user": current_user,
         "username": app_username,
         "is_username_taken": username_taken
-    })
+    }
 
     return templates.TemplateResponse(
         request=request,
