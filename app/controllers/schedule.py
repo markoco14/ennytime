@@ -88,7 +88,7 @@ def month(
     start_of_month = calendar_service.get_start_of_month(year=year, month=month)
     end_of_month = calendar_service.get_end_of_month(year=year, month=month)  
 
-    shift_rows = Shift.list_user_shifts(user_id=current_user.id)
+    db_shifts = Shift.list_user_shifts(user_id=current_user.id)
     db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage schedule as dict with dates as .get() accessible keys
@@ -104,7 +104,7 @@ def month(
         prev_month_name=prev_month_name,
         next_month_name=next_month_name,
         month_calendar=calendar_date_list,
-        shifts=shift_rows,
+        shifts=db_shifts,
         commitments=commitments
     )
 

@@ -15,8 +15,8 @@ class Shift:
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()
-            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?", (user_id, ))
-            shifts_rows = [ShiftRow(*row) for row in cursor.fetchall()]
+            cursor.execute("SELECT id, long_name, short_name, user_id FROM shifts WHERE user_id = ?", (user_id, ))
+            shifts_rows = [Shift(*row) for row in cursor.fetchall()]
 
         return shifts_rows
     
