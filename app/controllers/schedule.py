@@ -8,9 +8,10 @@ from fastapi.responses import Response, RedirectResponse
 from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
 from app.new_models.commitment import Commitment
+from app.new_models.shift import Shift
 from app.services import calendar_service
 from app.structs.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
-from app.viewmodels.structs import ScheduleRow, ShiftRow
+from app.viewmodels.structs import ShiftRow
 from app.viewmodels.user import CurrentUser
 
 
@@ -52,7 +53,6 @@ def month(
         response.delete_cookie("session-id")
         return response
     
-    # need to handle the case where year and month are not provided
     current_date = datetime.date(year=year, month=month, day=1)
 
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
@@ -88,26 +88,14 @@ def month(
     start_of_month = calendar_service.get_start_of_month(year=year, month=month)
     end_of_month = calendar_service.get_end_of_month(year=year, month=month)  
 
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-
-        # get shift types
-        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
-        shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
-
-        # get schedules for month
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user.id))
-        schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
-
-    # don't need to package shifts the same way as in calendar
-    # rendering directly from a list is fine
+    shift_rows = Shift.list_user_shifts(user_id=current_user.id)
+    schedule_rows = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage schedule as dict with dates as .get() accessible keys
     schedules = {}
     for schedule in schedule_rows:
-        date_key = schedule[3].split()[0]
-        shift_id = schedule[1]
+        date_key = schedule.date.strftime("%Y-%m-%d")
+        shift_id = schedule.shift_id
         schedules.setdefault(date_key, {})[shift_id] = schedule
 
     context = ScheduleMonthPage(
