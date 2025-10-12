@@ -54,6 +54,16 @@ class User:
             user = User(**row)
 
             return user
+        
+    @classmethod
+    def username_exists(cls, username) -> bool:
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys = ON;")
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            row = cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE username = ?);", (username, )).fetchone()
+            
+            return bool(row[0])
 
     def update(self, form_data: FormData):
         if form_data.get("display_name"):

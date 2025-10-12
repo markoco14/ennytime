@@ -99,14 +99,8 @@ def unique(
     if app_username == current_user.username:
         return Response(status_code=200, headers={"hx-refresh": "true"})
 
-    db_username = db.query(DBUser).filter(
-        DBUser.username == app_username).first()
-
-    if not db_username:
-        username_taken = False
-    else:
-        username_taken = True
-
+    username_taken = User.username_exists(username=app_username)
+    print(username_taken)
     context = {
         "request": request,
         "current_user": current_user,
