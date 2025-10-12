@@ -100,7 +100,7 @@ def unique(
         return Response(status_code=200, headers={"hx-refresh": "true"})
 
     username_taken = User.username_exists(username=app_username)
-    print(username_taken)
+    
     context = {
         "request": request,
         "current_user": current_user,
