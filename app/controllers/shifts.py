@@ -105,16 +105,7 @@ def create(
     for part in long_name_split:
         short_name += part[0].upper()
 
-    new_shift = ShiftCreate(
-        long_name=shift_name,
-        short_name=short_name,
-        user_id=current_user[0]
-    )
-
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO shifts (long_name, short_name, user_id) VALUES (?, ?, ?);", (new_shift.long_name, new_shift.short_name, new_shift.user_id))
+    Shift.create(long_name=cleaned_shift_name, short_name=short_name, user_id=current_user.id)
 
     if request.headers.get("hx-request"):
         return Response(status_code=200, headers={"hx-redirect": f"/shifts"})
