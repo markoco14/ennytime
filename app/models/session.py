@@ -39,3 +39,15 @@ class Session:
             conn.execute("PRAGMA foreign_key=ON;")
             cursor = conn.cursor()
             cursor.execute("DELETE FROM sessions WHERE id = ?", (self.id, ))
+
+
+    # def generate_session_token():
+        # return secrets.token_hex(16)
+
+    # def generate_session_expiry():
+    #     return datetime.now(tz=timezone.utc) + timedelta(days=3)
+
+    # def is_session_expired(expires_at: datetime):
+    #     if expires_at < datetime.now(tz=timezone.utc):
+    #         return True
+    #     return False
