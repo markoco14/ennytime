@@ -1,14 +1,18 @@
 import sqlite3
 import datetime
+from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.responses import Response, RedirectResponse
 
 from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
+from app.new_models.commitment import Commitment
+from app.new_models.shift import Shift
 from app.services import calendar_service
 from app.structs.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
-from app.viewmodels.structs import ScheduleRow, ShiftRow
+from app.viewmodels.structs import ShiftRow
+from app.viewmodels.user import CurrentUser
 
 
 def index(
@@ -49,7 +53,6 @@ def month(
         response.delete_cookie("session-id")
         return response
     
-    # need to handle the case where year and month are not provided
     current_date = datetime.date(year=year, month=month, day=1)
 
     prev_month_name, next_month_name = calendar_service.get_prev_and_next_month_names(
@@ -85,27 +88,15 @@ def month(
     start_of_month = calendar_service.get_start_of_month(year=year, month=month)
     end_of_month = calendar_service.get_end_of_month(year=year, month=month)  
 
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-
-        # get shift types
-        cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE user_id = ?;", (current_user.id,))
-        shift_rows = [ShiftRow(*row) for row in cursor.fetchall()]
-
-        # get schedules for month
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE DATE(date) BETWEEN DATE(?) and DATE(?) AND user_id = ?;", (start_of_month, end_of_month, current_user.id))
-        schedule_rows = [ScheduleRow(*row) for row in cursor.fetchall()]
-
-    # don't need to package shifts the same way as in calendar
-    # rendering directly from a list is fine
+    db_shifts = Shift.list_user_shifts(user_id=current_user.id)
+    db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage schedule as dict with dates as .get() accessible keys
-    schedules = {}
-    for schedule in schedule_rows:
-        date_key = schedule[3].split()[0]
-        shift_id = schedule[1]
-        schedules.setdefault(date_key, {})[shift_id] = schedule
+    commitments = {}
+    for commitment in db_commitments:
+        date_key = commitment.date.strftime("%Y-%m-%d")
+        shift_id = commitment.shift_id
+        commitments.setdefault(date_key, {})[shift_id] = commitment
 
     context = ScheduleMonthPage(
         current_date=current_date,
@@ -113,8 +104,8 @@ def month(
         prev_month_name=prev_month_name,
         next_month_name=next_month_name,
         month_calendar=calendar_date_list,
-        shifts=shift_rows,
-        schedules=schedules
+        shifts=db_shifts,
+        commitments=commitments
     )
 
     if request.headers.get("HX-Request"):
@@ -133,7 +124,7 @@ def month(
 
 async def create(
     request: Request,
-    current_user=Depends(requires_user),
+    current_user: Annotated[CurrentUser, Depends(requires_user)],
 ):  
     if not current_user:
         if request.headers.get("hx-request"):
@@ -144,21 +135,24 @@ async def create(
         return response
 
     form_data = await request.form()
+    shift_id = form_data.get("shift")
     date = form_data.get("date")
     date = f"{date} 00:00:00"
+
+    if not shift_id or not date:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, headers={"hx-refresh": "true"})
+        else:
+            return RedirectResponse(status_code=303, url="/scheduling")
     
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO schedules (shift_id, user_id, date) VALUES (?, ?, ?);", (form_data.get("shift"), current_user.id, date,))
-        row_id = cursor.lastrowid
-        schedule_row = ScheduleRow(id=row_id, shift_id=form_data.get("shift"), user_id=current_user.id, date=date)
+    commitment_id = Commitment.create(shift_id=shift_id, user_id=current_user.id, date=date, return_id=True)
+    db_commitment = Commitment.get(commitment_id=commitment_id)
         
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
                 conn.execute("PRAGMA foreign_keys=ON;")
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (form_data.get("shift"), ))
+                cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (shift_id, ))
                 shift_row = ShiftRow(*cursor.fetchone())
 
         return templates.TemplateResponse(
@@ -166,7 +160,7 @@ async def create(
             name="scheduling/fragments/shift-exists-button.html",
             context=YesShiftBtn(
                 shift=shift_row,
-                schedule=schedule_row
+                commitment=db_commitment
             )
         )
     else:
@@ -185,24 +179,25 @@ async def delete(
             response = RedirectResponse(status_code=303, url=f"/signin")
         response.delete_cookie("session-id")
         return response
+    
+    db_commitment = Commitment.get(commitment_id=schedule_id)
+
+    if not db_commitment:
+        if request.headers.get("hx-request"):
+            return Response(status_code=200, headers={"hx-refresh": "true"})
+        else:
+            return RedirectResponse(status_code=303, url="/scheduling")
         
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT id, shift_id, user_id, date FROM schedules WHERE id = ?;", (schedule_id, ))
-        schedule_row = ScheduleRow(*cursor.fetchone())
-
-        cursor.execute("DELETE FROM schedules WHERE id = ?;", (schedule_id, ))
+    db_commitment.delete()
     
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()
-            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id =?;", (schedule_row[1], ))
+            cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (db_commitment.shift_id, ))
             shift_row = ShiftRow(*cursor.fetchone())
 
-        date_obj = datetime.datetime.strptime(schedule_row[3], "%Y-%m-%d %H:%M:%S").date()
+        date_obj = datetime.datetime.strptime(db_commitment.date, "%Y-%m-%d %H:%M:%S").date()
 
         response = templates.TemplateResponse(
             request=request,
