@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.chat_models import DBChatMessage, DBChatRoom, DBChatroomUser
+from app.old_models.chat_models import DBChatMessage, DBChatRoom, DBChatroomUser
 
 def get_user_chatroom(db: Session, current_user_id: int, room_id: int):
     """

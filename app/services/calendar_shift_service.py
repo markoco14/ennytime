@@ -2,9 +2,9 @@ import datetime
 from typing import List, Tuple
 from sqlalchemy.orm import Session
 
-from app.models.db_shift import DbShift
-from app.models.db_shift_type import DbShiftType
-from app.models.user_model import DBUser
+from app.old_models.db_shift import DbShift
+from app.old_models.db_shift_type import DbShiftType
+from app.old_models.user_model import DBUser
 
 
 def sort_shifts_by_user(all_shifts: List[Tuple[DbShift, DbShiftType]], month_calendar_dict, current_user: DBUser) -> dict:

@@ -14,8 +14,8 @@ from sqlalchemy.sql import text
 from app.auth import auth_service
 from app.core.database import get_db
 from app.core.websocket import websocket_manager
-from app.models.chat_models import DBChatRoom, DBChatMessage
-from app.models.user_model import DBUser
+from app.old_models.chat_models import DBChatRoom, DBChatMessage
+from app.old_models.user_model import DBUser
 from app.queries import chat_queries
 from app.services import chat_service
 

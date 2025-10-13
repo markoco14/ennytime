@@ -6,7 +6,7 @@ import datetime
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from app.models.db_shift import DbShift
+from app.old_models.db_shift import DbShift
 from app.schemas import schemas
 
 

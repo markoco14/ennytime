@@ -12,8 +12,8 @@ from fastapi import Depends, Request
 
 from passlib.context import CryptContext
 from app.core.database import get_db
-from app.models.user_model import DBUser
-from app.models.user_session_model import DBUserSession
+from app.old_models.user_model import DBUser
+from app.old_models.user_session_model import DBUserSession
 from app.repositories import session_repository
 
 from app.repositories import user_repository

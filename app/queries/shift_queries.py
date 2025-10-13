@@ -2,8 +2,8 @@ import datetime
 from typing import List, Tuple
 from sqlalchemy.orm import Session
 
-from app.models.db_shift import DbShift
-from app.models.db_shift_type import DbShiftType
+from app.old_models.db_shift import DbShift
+from app.old_models.db_shift_type import DbShiftType
 
 
 def list_shifts_for_user_by_date(

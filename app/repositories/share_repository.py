@@ -1,8 +1,8 @@
 
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
-from app.models.share_model import DbShare
-from app.models.user_model import DBUser
+from app.old_models.share_model import DbShare
+from app.old_models.user_model import DBUser
 from app.schemas import schemas
 
 

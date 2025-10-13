@@ -1,7 +1,7 @@
 """CRUD functions for sessions table"""
 from sqlalchemy.orm import Session
 
-from app.models.user_session_model import DBUserSession
+from app.old_models.user_session_model import DBUserSession
 from app.schemas import schemas
 
 def get_session_by_session_id(db: Session, session_id: str):

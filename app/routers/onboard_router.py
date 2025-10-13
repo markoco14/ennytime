@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.core.template_utils import templates
 from app.repositories import shift_type_repository
 from app.schemas import schemas
-from app.models.user_model import DBUser
+from app.old_models.user_model import DBUser
 from app.services import calendar_service
 
 router = APIRouter(prefix="/quick-setup")
