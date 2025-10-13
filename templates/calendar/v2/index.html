@@ -70,20 +70,21 @@
                     <p class="text-xl">{{current_month.strftime("%A")}}</p>
                 </header>
                 <main class="overflow-y-auto py-2 mb-4">
+                    {# Calendar Day Edit View #}
                     {% if "edit" in request.path %}
                         {% if shifts|length == 0 %}
                         <p>You have no shifts. <a href="/shifts/new" class="text-pink-700 underline underline-offset-2">Create your first shift.</a></p>
                         {% else %}
                         <ul>
+                        {% set date_key = current_month.strftime("%Y-%m-%d") %}
+                        {% set date = current_month%}
                         {% for shift in shifts.values() %}
-                            {% if commitments.get(current_month.strftime("%Y-%m-%d")) and commitments.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
-                                {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                            {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
+                                {% set commitment = commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
                                 <li class="mb-2 *:w-full">
                                     {% include "/scheduling/fragments/shift-exists-button.html" %}
                                 </li>
                             {% else %}
-                                {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d"))%}
-                                {% set date = current_month %}
                                 <li class="mb-2 *:w-full">
                                     {% include "/scheduling/fragments/no-shift-button.html" %}
                                 </li>
@@ -91,6 +92,8 @@
                         {% endfor %}
                         </ul>
                         {% endif %}
+                        
+                    {# Calendar Day Schedule View #}
                     {% else %}
                         {# current user schedule #}
                         {% if commitments.get(current_month.strftime("%Y-%m-%d")) %}

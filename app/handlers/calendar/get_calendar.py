@@ -66,10 +66,11 @@ def get_calendar(
         shifts_dict[shift.id] = shift
         
     # repackage current user schedule as dict with dates as keys to access with .get()
+    # because neeed to match with shifts in edit view, use shift.id as the key
     commitments = {}
     for commitment in db_commitments:
         date_key = commitment.date.strftime("%Y-%m-%d")
-        shift_id = commitment.id
+        shift_id = commitment.shift_id
         commitments.setdefault(date_key, {})[shift_id] = commitment
     
     if bae_user:
