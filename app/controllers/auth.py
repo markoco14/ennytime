@@ -12,6 +12,8 @@ from fastapi.responses import RedirectResponse
 from app.auth import auth_service
 from app.core.template_utils import templates
 from app.dependencies import requires_guest, requires_user
+from app.models.session import Session
+from app.viewmodels.session import SessionCreate
 from app.viewmodels.structs import UserLoginRow, UserRow
 
 router = APIRouter()
@@ -128,11 +130,13 @@ def signup(
 
     token = str(uuid.uuid4())
     expires_at = int(time.time()) + 3600
-    new_session = (token, new_user_id, expires_at)
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", new_session)
+    # use new_user_id from INSERT user
+    session_create = SessionCreate(
+        token=token,
+        user_id=new_user_id,
+        expires_at=expires_at
+    )
+    Session.create(data=session_create)
     
     response = Response(status_code=200)
     response.set_cookie(
@@ -218,11 +222,13 @@ def signin(
 
     token = str(uuid.uuid4())
     expires_at = int(time.time()) + 3600
-    new_session = (token, current_user.id, expires_at)
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", new_session)
+    # use current_user because available
+    session_create = SessionCreate(
+        token=token,
+        user_id=current_user.id,
+        expires_at=expires_at
+    )
+    Session.create(data=session_create)
 
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys = ON;")
@@ -256,11 +262,12 @@ def signout(
             return RedirectResponse(status_code=303, url=f"/signin")
         
     session_id = request.cookies.get("session-id")
-    if session_id:
-        with sqlite3.connect("db.sqlite3") as conn:
-            conn.execute("PRAGMA foreign_key=ON;")
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
+
+    db_session = Session.get_by_token(token=session_id)
+    if not db_session:
+        return RedirectResponse(status_code=303, url="/")
+    
+    db_session.delete()
 
     if request.headers.get("hx-request"):
         response = Response(status_code=200, headers={"hx-redirect": "/signin"})
