@@ -7,9 +7,9 @@ from fastapi import Request
 from fastapi.responses import Response, RedirectResponse
 
 from app.core.template_utils import templates
-from app.new_models.commitment import Commitment
-from app.new_models.shift import Shift
-from app.new_models.user import User
+from app.models.commitment import Commitment
+from app.models.shift import Shift
+from app.models.user import User
 from app.services import calendar_service
 from app.structs.pages import CalendarMonthPage
 from app.viewmodels.structs import ScheduleRow, ShiftRow, UserRow

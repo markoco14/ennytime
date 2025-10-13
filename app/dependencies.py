@@ -4,7 +4,7 @@ import logging
 
 from fastapi import Request
 
-from app.new_models.user import User
+from app.models.user import User
 from app.viewmodels.structs import UserRow
 from app.viewmodels.user import CurrentUser
 

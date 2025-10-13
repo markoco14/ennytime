@@ -7,8 +7,8 @@ from fastapi.responses import Response, RedirectResponse
 
 from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
-from app.new_models.commitment import Commitment
-from app.new_models.shift import Shift
+from app.models.commitment import Commitment
+from app.models.shift import Shift
 from app.services import calendar_service
 from app.structs.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
 from app.viewmodels.structs import ShiftRow

@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 
 from app.core.template_utils import templates
 from app.dependencies import requires_shift_owner, requires_user
-from app.new_models.shift import Shift
+from app.models.shift import Shift
 from app.viewmodels.user import CurrentUser
 
 router = APIRouter(prefix="/shifts")
