@@ -1,17 +1,5 @@
-from collections import namedtuple
-
-from typing import Annotated
-from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import APIRouter
 from fastapi.templating import Jinja2Templates
-
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from app.auth import auth_service
-from app.core.database import get_db
-from app.repositories import share_repository, user_repository
-
-from app.schemas import schemas
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
