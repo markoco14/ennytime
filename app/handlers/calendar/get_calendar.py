@@ -73,17 +73,17 @@ def get_calendar(
         shift_id = commitment.shift_id
         commitments.setdefault(date_key, {})[shift_id] = commitment
     
+    bae_shifts_dict = {}
+    bae_commitments = {}
     if bae_user:
         bae_db_shifts = Shift.list_user_shifts(user_id=bae_user.id)
         bae_db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=bae_user.id)
 
         # repackage bae shifts as dict with shift ids as keys to access with .get()
-        bae_shifts_dict = {}
         for shift in bae_db_shifts:
             bae_shifts_dict[shift.id] = shift
 
         # repackage bae schedule as dict with dates as keys to access with .get()
-        bae_commitments = {}
         for commitment in bae_db_commitments:
             date_key = commitment.date.strftime("%Y-%m-%d")
             shift_id = commitment.id
@@ -91,7 +91,7 @@ def get_calendar(
 
     context = CalendarMonthPage(
         current_user=current_user,
-        bae_user=bae_user if bae_user else None,
+        bae_user=None if not bae_user else bae_user,
         days_of_week=calendar_service.DAYS_OF_WEEK,
         current_month=current_month_object,
         prev_month_object=prev_month_object,

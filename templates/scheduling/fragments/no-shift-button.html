@@ -13,11 +13,7 @@
         <label for="shift-{{shift.id}}">Shift</label>
         <input id="shift-{{shift.id}}" name="shift" type="number" value="{{shift.id}}">
     </div>
-    {% if request.path_params.get('day') %}
-    <button
-        type="submit"
-        class="w-full text-center border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
-    {% elif 'edit' in request.headers.get('referer') %}
+    {% if "calendar" in request.path %}
     <button
         type="submit"
         class="w-full text-center border py-1 px-2 rounded-md duration-200 ease-in-out min-w-[100px]">
