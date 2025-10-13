@@ -76,13 +76,13 @@
                         {% else %}
                         <ul>
                         {% for shift in shifts.values() %}
-                            {% if schedules.get(current_month.strftime("%Y-%m-%d")) and schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
-                                {% set commitment = schedules.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                            {% if commitments.get(current_month.strftime("%Y-%m-%d")) and commitments.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
+                                {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d")).get(shift.id) %}
                                 <li class="mb-2 *:w-full">
                                     {% include "/scheduling/fragments/shift-exists-button.html" %}
                                 </li>
                             {% else %}
-                                {% set commitment = schedules.get(current_month.strftime("%Y-%m-%d"))%}
+                                {% set commitment = commitments.get(current_month.strftime("%Y-%m-%d"))%}
                                 {% set date = current_month %}
                                 <li class="mb-2 *:w-full">
                                     {% include "/scheduling/fragments/no-shift-button.html" %}
