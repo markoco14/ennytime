@@ -262,11 +262,12 @@ def signout(
             return RedirectResponse(status_code=303, url=f"/signin")
         
     session_id = request.cookies.get("session-id")
-    if session_id:
-        with sqlite3.connect("db.sqlite3") as conn:
-            conn.execute("PRAGMA foreign_key=ON;")
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
+
+    db_session = Session.get_by_token(token=session_id)
+    if not db_session:
+        return RedirectResponse(status_code=303, url="/")
+    
+    db_session.delete()
 
     if request.headers.get("hx-request"):
         response = Response(status_code=200, headers={"hx-redirect": "/signin"})
