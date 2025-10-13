@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.dependencies import requires_profile_owner, requires_user
 from app.models.user import User
-from app.structs.pages import ProfilePage
+from app.viewmodels.pages import ProfilePage
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

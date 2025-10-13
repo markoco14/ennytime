@@ -10,7 +10,7 @@ from app.dependencies import requires_schedule_owner, requires_user
 from app.models.commitment import Commitment
 from app.models.shift import Shift
 from app.services import calendar_service
-from app.structs.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
+from app.viewmodels.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
 from app.viewmodels.structs import ShiftRow
 from app.viewmodels.user import CurrentUser
 

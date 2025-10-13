@@ -11,7 +11,7 @@ from app.models.commitment import Commitment
 from app.models.shift import Shift
 from app.models.user import User
 from app.services import calendar_service
-from app.structs.pages import CalendarMonthPage
+from app.viewmodels.pages import CalendarMonthPage
 from app.viewmodels.structs import ScheduleRow, ShiftRow, UserRow
 
 
