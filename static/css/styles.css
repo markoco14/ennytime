@@ -410,6 +410,65 @@ display: block;
 
 }
 
+{{/* features styles */}}
+
+.features {
+    padding-block: 6rem;
+    display: grid;
+    gap: 4rem;
+}
+
+.features__section {
+    display: grid;
+}
+
+.features__content {
+    text-align: center;
+    text-wrap: balance;
+    padding: 1rem;
+}
+
+.features__content--right {
+    text-align: center;
+}
+
+.features__title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    color: var(--color-pink-700);
+    margin-bottom: 0.5rem;
+}
+
+.features__img-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--color-pink-50);
+    padding: 1rem;
+}
+
+@media (min-width: 768px) { 
+    .features__section {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4rem;
+    }
+
+    .features__content {
+        text-align: left;
+        padding: 4rem;
+    }
+
+    .features__content--right {
+        order: 2;
+    }
+
+    .features__img-wrapper {
+        padding: 4rem;
+        border-radius: 1rem;
+    }
+ }
+
+
 
 {{/* calendar card modal styles */}}
 

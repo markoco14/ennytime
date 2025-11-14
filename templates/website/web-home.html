@@ -4,18 +4,18 @@ Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
 {# hero section #}
-<section class="hero grid pt-16">
+<section class="hero">
 	<div class="wrapper hero__wrapper">
 		<div
-			 class="hero__content flex flex-col items-center text-center md:text-left md:items-start px-4 md:px-0 md:text-left py-4 md:max-w-[400px] mb-12 md:mb-0">
-			<h1 class="hero__headline text-xl md:text-2xl md:max-w-[65ch] text-white mb-12">
+			 class="hero__content">
+			<h1 class="hero__headline">
 				Easy calendar sharing for couples with changing work schedules.
 			</h1>
-			<h2 class="hero__subheadline order-first text-3xl md:text-6xl md:max-w-[400px] text-white mb-6">
+			<h2 class="hero__subheadline">
 				Make finding time easy again.
 			</h2>
 			<a href="/signup"
-			   class="hero__cta text-xl bg-pink-700 hover:bg-pink-800 active:bg-pink-900 text-white py-2 px-8 rounded-md">
+			   class="hero__cta ">
 				Spend more time together
 			</a>
 		</div>
@@ -27,7 +27,56 @@ Ennytime Couple's Calendar
 		{% include "/svg/waves-down.svg" %}
 	</div>
 </section>
-{% include "/website/sections/features.html" %}
+
+<div class="features min-h-screen py-36 grid gap-16">
+	<section class="wrapper features__section">
+		<div class="features__content text-center">
+			<h2 class="features__title">Save your regular shifts</h2>
+			<p>
+				Set up all your regular shifts so you can quickly update your calendar every time you get your new work
+				schedule.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-new-shift-form.png" alt="New shift type form demo" />
+		</div>
+	</section>
+	<section class="wrapper features__section">
+		<div class="features__content features__content--right">
+			<h2 class="features__title">Add shifts to your calendar</h2>
+			<p>
+				Quick and easy click to schedule your shifts on all your working days.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-edit-schedule.png" alt="Edit schedule form" />
+		</div>
+	</section>
+	<section class="wrapper features__section">
+		<div class="features__content">
+			<h2 class="features__title">Share your calendar with the one you love</h2>
+			<p>
+				Lover Search let's you find your loved one by their username. We value your privacy - there is no public list of users.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-calendar-sharing.png" alt="Share calendar form" />
+		</div>
+	</section>
+	<section class="wrapper features__section">
+		<div class="features__content features__content--right">
+			<h2 class="features__title">See your time together on the calendar</h2>
+			<p>
+				See all the times when you are both free on the Couple's Calendar. Just one glance to know when you'll
+				be together again.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-calendar-view.png" alt="Share calendar form" />
+		</div>
+	</section>
+</div>
+
 {% include "/website/sections/bottom-cta.html" %}
 {% include "website/sections/footer.html" %}
 {% endblock content %}
