@@ -1,23 +1,63 @@
 <header class="header">
     <div class="wrapper header__wrapper">
         <span class="header__logo">Ennytime</span>
-		<button onclick="htmx.toggleClass(htmx.find('nav'), 'open')" class="header__toggle">
-			{% include "svg/hamburger.html" %}
-		</button>
-		<nav class="nav">
-			{% if not current_user %}
-            <a href="/" class="text-white">Home</a>
-            <a href="/signup" class="text-white">Sign up</a>
-            <a href="/signin" class="text-white">Sign in</a>
-			{% else %}
-			<a href="/">Calendar</a>
-            <a href="/scheduling">Scheduling</a>
-            <a href="/shifts">Shifts</a>
-			{% endif %}
+		<div class="header__nav-wrapper">
+			<nav class="nav">
+				{% if not current_user %}
+				<a href="/" class="text-white">Home</a>
+				<a href="/signup" class="text-white">Sign up</a>
+				<a href="/signin" class="text-white">Sign in</a>
+				<button class="header__close" onclick="htmx.toggleClass(htmx.find('nav'), 'open')">
+					{% include "svg/close.html" %}
+				</button>
+				{% else %}
+				<a href="/">Calendar</a>
+				<a href="/scheduling">Scheduling</a>
+				<a href="/shifts">Shifts</a>
+				<button class="header__close" onclick="htmx.toggleClass(htmx.find('nav'), 'open')">
+					{% include "svg/close.html" %}
+				</button>
+				{% endif %}
+			</nav>
 			{% if current_user %}
-			<a href="/signout">Sign Out</a>			
+			
+			<div x-data="{dropdownOpen: false}" 
+				class="header__dropdown"
+				>
+				<button @click="dropdownOpen = !dropdownOpen" 
+						@click.away="dropdownOpen = false"
+						class="header__dropdown-toggle">
+					{% if not current_user.display_name %}
+					New User
+					{% else %}
+					{{current_user.display_name}}
+					{% endif %}
+					{% include "svg/down-arrow.html" %}
+				</button>
+				<div x-show="dropdownOpen"
+					x-cloak
+					class="header__dropdown-menu"
+					x-transition:enter="header__dropdown-menu--enter"
+					x-transition:enter-start="header__dropdown-menu--start">
+					<ul>
+						<li class="header__dropdown__item">
+							<a href="/profile">Profile</a>
+						</li>
+						{% if current_user.is_admin %}
+						<li class="header__dropdown__item">
+							<a href="/admin">Admin</a>
+						</li>
+						{% endif%}
+						<li class="header__dropdown__item">
+							<a hx-get="/signout" href="/signout">Sign out</a>
+						</li>
+					</ul>
+				</div>
+			</div>
 			{% endif %}
-			<button class="header__close" onclick="htmx.toggleClass(htmx.find('nav'), 'open')">{% include "svg/close.html" %}</button>
-		</nav>
+			<button onclick="htmx.toggleClass(htmx.find('nav'), 'open')" class="header__toggle">
+				{% include "svg/hamburger.html" %}
+			</button>
+		</div>
     </div>
 </header>

@@ -159,10 +159,16 @@ a {
     fill: var(--color-white);
 }
 
+.header__nav-wrapper {
+    display:flex;
+    gap: 1rem;
+}
+
 .nav {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 1rem;
+    z-index: 100;
 }
 
 .header__toggle {
@@ -173,8 +179,75 @@ a {
     display: none;
 }
 
+.header__dropdown {
+display: block;
+    position: relative; 
+    z-index: 10;
+}
 
- @media screen and (width <= 639px) {
+.header__dropdown-toggle {
+    display: flex; 
+    gap: 0.5rem; 
+    align-items: center; 
+    white-space: nowrap; 
+    cursor: pointer; 
+    user-select: none; 
+}
+.header__dropdown-toggle > svg {
+    color: var(--color-white);
+    fill: var(--color-white);
+}
+
+.header__dropdown-toggle--open {
+    --transform-rotate: 180deg; 
+    transition-duration: 200ms; 
+}
+
+.header__dropdown-menu {
+    position: absolute; 
+    right: 0; 
+    z-index: 20; 
+    padding: 0.5rem; 
+    border-radius: 0.5rem; 
+    width: 10rem; 
+    color: var(--color-black); 
+    background-color: var(--color-white); 
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); 
+}
+
+.header__dropdown-menu--enter {
+    transition-duration: 300ms; 
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1); 
+}
+
+.header__dropdown-menu--start {
+    --transform-scale-x: .9;
+    --transform-scale-y: .9; 
+    opacity: 0; 
+}
+
+.header__dropdown__item {
+    display: grid; 
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem; 
+    padding-left: 0.5rem;
+    padding-right: 0.5rem; 
+    border-radius: 0.25rem; 
+    cursor: pointer; 
+}
+
+.header__dropdown__item:hover {
+    background-color: var(--color-pink-100); 
+}
+
+
+{{/* @media screen and (min-width: 768px) { 
+    .header__dropdown {
+        display: block; 
+    }
+} */}}
+
+ @media screen and (width <= 768px) {
     .nav {
         display: none;
         position: absolute;
@@ -186,6 +259,7 @@ a {
         background-color: var(--color-pink-500);
         font-size: 1.5rem;
         line-height: 2rem;
+        z-index: 9999;
     }
 
 
