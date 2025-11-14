@@ -49,40 +49,111 @@
     --color-red-700: #B91C1C; 
     --color-red-800: #991B1B; 
     --color-red-900: #7F1D1D; 
+    
+    --font-3xl: 1.875rem;
+    --leading-3xl: 2.25rem; 
+
 }
 
 *, *::before, *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 * {
-  margin: 0;
-  padding: 0;
-  font: inherit; /* Get rid of all font sizes and heights */
+    margin: 0;
+    padding: 0;
+    font: inherit; /* Get rid of all font sizes and heights */
 }
 
 body {
-  min-height: 100vh;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 img, picture, svg, video {
-  display: block;
-  max-width: 100%;
+    display: block;
+    max-width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  text-wrap: balance;
+    text-wrap: balance;
 }
 
 p {
-  max-width: 75ch;
-  text-wrap: pretty; /* Prevents orphans on lines */
+    max-width: 75ch;
+    text-wrap: pretty; /* Prevents orphans on lines */
 }
 
 button {
     border: inherit;
     background: inherit;
+    color: inherit;
 }
+
+ul, ol {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+{{/* layout styles */}}
+
+.wrapper {
+    max-width: 1000px;
+    margin-inline: auto;
+}
+
+{{/* header styles */}}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: white;
+    background-color: var(--color-pink-600);
+}
+
+.header__wrapper {
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__logo {
+    font-size: var(--font-3xl);
+    line-height: var(--leading-3xl);
+}
+
+.header__toggle {
+    {{/* color: inherit; */}}
+}
+
+.header__hamburger {
+    width: 1.5rem; 
+    height: 1.5rem; 
+    cursor: pointer; 
+    user-select: none; 
+}
+
+.header__close {
+    z-index: 20; 
+    width: 1.5rem; 
+    height: 1.5rem; 
+    cursor: pointer; 
+    user-select: none;
+    stroke: white;
+    fill: white;
+}
+
+
+{{/* calendar card modal styles */}}
 
 dialog {
     display: none;
