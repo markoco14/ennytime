@@ -19,12 +19,12 @@ Ennytime Couple's Calendar
 				Spend more time together
 			</a>
 		</div>
-		<div class="hero__lovers bg-pink-100 rounded-full aspect-square">
+		<div class="hero__lovers">
 			{% include "/svg/hero-lovers.html" %}
 		</div>
 	</div>
 	<div class="hero__waves">
-		{% include "/svg/waves-down.svg" %}
+		{% include "/svg/waves-down.html" %}
 	</div>
 </section>
 
@@ -77,6 +77,22 @@ Ennytime Couple's Calendar
 	</section>
 </div>
 
-{% include "/website/sections/bottom-cta.html" %}
-{% include "website/sections/footer.html" %}
+{# bottom cta  #}
+<section class="bottom-cta">
+	<div class="bottom-cta__waves">
+		{% include "/svg/waves-up.html" %}
+	</div>
+	<div class="bottom-cta__content">
+		<h2 class="bottom-cta__title">Spend More Time with the One You Love</h2>
+		<p class="bottom-cta__description mb-16 text-xl text-center">
+			Take the pain out of scheduling and gain more time together!
+		</p>
+		<a href="signup"
+		   class="bottom-cta__cta">Sign Up</a>
+	</div>
+</section>
+
+<footer class="footer">
+	<p>&copy; 2024 Ennytime. All rights reserved.</p>
+</footer>
 {% endblock content %}

@@ -466,9 +466,81 @@ display: block;
         padding: 4rem;
         border-radius: 1rem;
     }
- }
+}
+
+.bottom-cta {
+    min-height: 50vh;
+    background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600)); 
+    padding-bottom: 2rem;
+}
+
+.bottom-cta__waves {
+    width: 100%;
+    margin-bottom: 4rem;
+    padding-top: -0.5rem;
+}
+
+.bottom-cta__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    margin-inline: auto;
+    color: var(--color-white);
+    text-wrap: balance;
+    padding: 1rem;
+}
+
+.bottom-cta__title {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.bottom-cta__description {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.bottom-cta__cta {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    background-color: var(--color-pink-700);
+    padding-block: 0.5rem;
+    padding-inline: 2rem;
+    border-radius: 0.25rem;
+}
+
+.bottom-cta__cta:hover {
+    background-color: var(--color-pink-800);
+}
+
+.bottom-cta__cta:active {
+    background-color: var(--color-pink-900);
+}
 
 
+.footer {
+    display: grid;
+    place-content: center;
+    width: 100%;
+    padding-block: 3rem;
+    color: var(--color-white);
+    text-align: center;
+    background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600));
+}
+
+.footer__rights {
+    width: 100%;
+    text-align: center;
+}
+
+.wave-divider {
+    fill: var(--color-white);
+}
 
 {{/* calendar card modal styles */}}
 
