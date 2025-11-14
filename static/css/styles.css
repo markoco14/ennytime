@@ -49,6 +49,11 @@
     --color-red-700: #B91C1C; 
     --color-red-800: #991B1B; 
     --color-red-900: #7F1D1D; 
+
+    --color-skin-light: #FFB6B6;
+    --color-skin-dark: #9E616A;
+    --color-hair-brown: #804d55ff;
+    
     
     --font-3xl: 1.875rem;
     --leading-3xl: 2.25rem; 
@@ -117,7 +122,7 @@ a {
     left: 0;
     width: 100%;
     color: white;
-    background-color: var(--color-pink-600);
+    background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600)); 
 }
 
 .header__wrapper {
@@ -280,6 +285,131 @@ display: block;
         text-align: center;
     }
 }
+
+{{/* hero styles */}}
+
+.hero {
+    background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600)); 
+    color: var(--color-white);
+    display: grid;
+    padding-top: 96px;
+}
+
+
+
+.hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.hero__headline {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    margin-bottom: 48px;
+}
+
+.hero__subheadline {
+    order: -9999; 
+    font-size: var(--font-3xl);
+    line-height: var(--leading-3xl);
+    margin-bottom: 1.5rem;
+}
+
+.hero__cta {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    background-color: var(--color-pink-700);
+    padding-block: 0.5rem;
+    padding-inline: 2rem;
+    border-radius: 0.25rem;
+}
+.hero__cta:hover {
+    background-color: var(--color-pink-800);
+}
+
+.hero__cta:active {
+    background-color: var(--color-pink-900);
+}
+
+.hero__lovers {
+    background-color: var(--color-pink-100);
+    border-radius: 9999px; 
+
+    aspect-ratio: 1;
+}
+
+.skin-dark {
+    fill: var(--color-skin-dark);
+}
+
+.skin-light {
+    fill: var(--color-skin-light);
+}
+
+.hair-brown {
+    fill: var(--color-hair-brown);
+}
+
+.heart {
+    fill: var(--color-pink-600);
+}
+
+.string {
+    fill: var(--color-pink-300)
+}
+
+.shirt-dark {
+    fill: var(--color-pink-900);
+}
+.shirt-light {
+    fill: var(--color-pink-500);
+}
+
+.hero__waves {
+    background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600)); 
+    background-color: var(--color-pink-500); 
+    background-color: var(--color-pink-600); 
+    width: 100%;
+    padding-bottom: -0.25rem;
+}
+
+@media (min-width: 768px) { 
+    .hero {
+        place-items: center; 
+    }
+
+    .hero__wrapper {
+        text-align: left;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        padding-inline: 0.5rem;
+    }
+
+    .hero__content {
+        max-width: 400px;
+        padding-block: 1rem;
+        text-align: left;
+        align-items: start;
+    }
+
+    .hero__headline {
+        max-width: 65ch;
+        margin-bottom: 3rem;
+        font-size: 1.5rem;
+        line-height: 2rem; 
+    }
+
+    .hero__subheadline {
+        max-width: 400px;
+        font-size: 3.75rem;
+        line-height: 1; 
+    }
+
+}
+
 
 {{/* calendar card modal styles */}}
 
