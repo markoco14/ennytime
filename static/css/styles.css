@@ -60,10 +60,13 @@
     --color-skin-dark: #9E616A;
     --color-hair-brown: #804d55ff;
     
+
     --font-xl: 1.25rem;
+    --font-2xl: 1.5rem;
     --font-3xl: 1.875rem;
 
     --leading-xl: 1.75rem; 
+    --leading-2xl: 2rem; 
     --leading-3xl: 2.25rem; 
 
 }
@@ -1017,4 +1020,62 @@ display: block;
 .shifts-edit__wrapper {
     padding-top: 4em;
     padding-inline: 0.5em;
+}
+
+{{/* profile page styles */}}
+
+.profile {
+    display: grid;
+    gap: 1em;
+    padding-block: 2em;
+}
+
+.profile__wrapper {
+    padding-top: 4em;
+    padding-inline: 0.5em;
+}
+
+.profile__heading {
+    font-size: var(--font-3xl);
+    line-height: var(--leading-3xl);
+    color: var(--color-pink-700);
+}
+
+.profile__heading--2xl {
+    font-size: var(--font-2xl);
+    line-height: var(--leading-2xl);
+    color: var(--color-pink-900);
+}
+
+
+.profile-form__input-group {
+    display: grid;
+    gap: 0.25rem;
+    margin-bottom: 1em;
+}
+
+.profile-form__label {
+    font-size: var(--font-xl);
+    line-height: var(--leading-xl);
+    color: var(--color-pink-700);
+}
+
+.profile-form__input {
+    border: 1px solid var(--color-gray-300);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.profile-form__btn {
+    display: inline-block;
+    min-width: 200px;
+    background-color: var(--color-pink-600);
+    color: var(--color-white);
+    padding-block: 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.profile-form__btn:hover {
+    background-color: var(--color-pink-500);
 }

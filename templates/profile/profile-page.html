@@ -1,126 +1,101 @@
-{% from '/macros/table.html' import heading_row%}
-{% from '/macros/spinner.html' import spinner %}
 {% extends "base.html" %}
-
-{% block title %}
-Ennytime Profile Page
-{% endblock title%}
+{% block title %}Ennytime Profile Page{% endblock title%}
 
 {% block content %}
-<div class="grid gap-4 py-8 max-w-[800px] mx-auto">
-	<section class="bg-white  ">
-		<div class="container mx-auto p-4">
-			<h1 class="text-3xl text-[#D31D6C] ">
-				Your profile
-			</h1>
-			<p>Manage all your personal details and shift information here.</p>
-		</div>
-	</section>
-	<section class="bg-white  ">
-		<div class="container mx-auto md:rounded-md p-4 bg-pink-100 ">
-			<h2 class="text-3xl mb-4">Contact info</h2>
-			<div class="grid divide-y divide-pink-200">
-
-
-
-				{# display name #}
-				<div class="py-2 flex flex-col gap-2">
-					<label 
-						for="display_name"
-						class="text-xl text-gray-900">
-						Display name
-					</label>
-					<p>This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other users.</p>
-					<div class="flex items-center">
-						<input 
-							hx-put="/users/{{current_user.id}}"
-							hx-trigger="keyup changed delay:1s"
-							hx-swap="outerHTML"
-							hx-indicator="next span"
-							hx-on::after-settle="displaySuccess('name-success')"
-							placeholder="Choose the name to use in the app."
-							class="w-full max-w-[400px] p-2 pr-6 rounded-md border border-pink-300 bg-pink-100 focus:bg-white"
-							type="text"
-							id="display_name"
-							name="display_name"
-							value="{{current_user.display_name or ''}}"
-							/>
-						<span class="htmx-indicator -ml-8">{{spinner('spinner', 'h-6', 'w-6', 'text-pink-900')}}</span>
-						<span 
-							id="name-success" 
-							class="hidden opacity-0 -ml-8 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
-							>
-							{% include "svg/success.svg" %}
-						</span>
-						<span id="failure" class="hidden -ml-8">failed</span>
-					</div>
-				</div>
-
-
-
-				{# username #}
-				<div hx-target="this"
+<div class="wrapper--small profile profile__wrapper">
+	<h1 class="profile__heading">Your Profile</h1>
+	<h2 class="profile__heading--2xl text-2xl mb-4">Contact info</h2>
+	<div class="grid divide-y divide-pink-200">
+		{# display name #}
+		<div class="profile-form__input-group py-2 flex flex-col gap-2">
+			<label 
+				for="display_name"
+				class="profile-form__label text-xl text-gray-900">
+				Display name
+			</label>
+			<p>This is the name we'll use if we ever have to contact you. It's also the name that will be displayed to other users.</p>
+			<div class="flex items-center">
+				<input 
+					hx-put="/users/{{current_user.id}}"
+					hx-trigger="keyup changed delay:1s"
 					hx-swap="outerHTML"
-					class="py-2 flex flex-col gap-2">
-					<p class="text-xl text-gray-900 ">Username</p>
-					<p>
-						Choose a unique username for yourself. You need a username before anyone can share their calendar with you.
-					</p>
-					<input 
-						class="w-full max-w-[400px] p-2 bg-pink-100 rounded-md border border-pink-300 focus:bg-white"
-						type="text"
-						id="app_username"
-						name="app_username"
-						value="{{current_user.username or ''}}"
-						placeholder="Choose a username."
-						hx-post="/username-unique"
-						hx-trigger="keyup changed delay:500ms"
-						/>
-				</div>
-
-
-
-				{# birthday #}
-				<div class="py-2 flex flex-col gap-2"
-					hx-target="this"
-					hx-swap="outerHTML">
-					<label for="birthday" class="text-xl text-gray-900 ">Birthday</label>
-					<p>Share your birthday and it will appear on your calendar. If you share your calendar with your
-						special someone, your birthday will also appear on their calendar. </p>
-					<div class="flex items-center">
-						<input 
-							hx-put="/users/{{current_user.id}}"
-							hx-target="this"
-							hx-swap="outerHTML"
-							hx-on::after-settle="displaySuccess('birthday-success')"
-							class="w-full max-w-[400px] p-2 bg-pink-100 focus:bg-white rounded-md border border-pink-300 "
-							type="date"
-							id="birthday"
-							name="birthday"
-							value="{{current_user.birthday}}"
-							/>
-						<span class="htmx-indicator -ml-8">{{spinner('spinner', 'h-6', 'w-6', 'text-pink-900')}}</span>
-						<span 
-							id="birthday-success" 
-							class="hidden opacity-0 -ml-14 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
-							>
-							{% include "svg/success.svg" %}
-						</span>
-					</div>
-				</div>
-
-
-				{# email #}
-				<div class="py-2 flex flex-col gap-2">
-					<p class="text-xl text-gray-900 ">E-mail</p>
-					<p>This is how we'll contact you with app information.</p>
-					<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
-						{{current_user.email}}
-					</p>
-				</div>
+					hx-indicator="next span"
+					hx-on::after-settle="displaySuccess('name-success')"
+					placeholder="Choose the name to use in the app."
+					class="w-full max-w-[400px] p-2 pr-6 rounded-md border border-pink-300 bg-pink-100 focus:bg-white"
+					type="text"
+					id="display_name"
+					name="display_name"
+					value="{{current_user.display_name or ''}}"
+					/>
+				<span class="htmx-indicator -ml-8">...</span>
+				<span 
+					id="name-success" 
+					class="hidden opacity-0 -ml-8 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
+					>
+					{% include "svg/success.svg" %}
+				</span>
+				<span id="failure" class="hidden -ml-8">failed</span>
 			</div>
 		</div>
-	</section>
+		{# username #}
+		<div 
+			hx-target="this"
+			hx-swap="outerHTML"
+			class="profile-form__input-group py-2 flex flex-col gap-2">
+			<label for="app_username" class="profile-form__label text-xl text-gray-900 ">Username</label>
+			<p>
+				Choose a unique username for yourself. You need a username before anyone can share their calendar with you.
+			</p>
+			<input 
+				class="w-full max-w-[400px] p-2 bg-pink-100 rounded-md border border-pink-300 focus:bg-white"
+				type="text"
+				id="app_username"
+				name="app_username"
+				value="{{current_user.username or ''}}"
+				placeholder="Choose a username."
+				hx-post="/username-unique"
+				hx-trigger="keyup changed delay:500ms"
+				/>
+		</div>
+		{# birthday #}
+		<div 
+			hx-target="this"
+			hx-swap="outerHTML"
+			class="profile-form__input-group py-2 flex flex-col gap-2">
+			<label for="birthday" class="profile-form__label text-xl text-gray-900 ">Birthday</label>
+			<p>Share your birthday and it will appear on your calendar. If you share your calendar with your
+				special someone, your birthday will also appear on their calendar. </p>
+			<div class="flex items-center">
+				<input 
+					hx-put="/users/{{current_user.id}}"
+					hx-target="this"
+					hx-swap="outerHTML"
+					hx-on::after-settle="displaySuccess('birthday-success')"
+					class="w-full max-w-[400px] p-2 bg-pink-100 focus:bg-white rounded-md border border-pink-300 "
+					type="date"
+					id="birthday"
+					name="birthday"
+					value="{{current_user.birthday}}"
+					/>
+				<span class="htmx-indicator -ml-8">...</span>
+				<span 
+					id="birthday-success" 
+					class="hidden opacity-0 -ml-14 h-6 w-6 -translate-y-2 transition-all duration-300 ease-in-out stroke-green-300"
+					>
+					{% include "svg/success.svg" %}
+				</span>
+			</div>
+		</div>
+		{# email #}
+		<div class="py-2 flex flex-col gap-2">
+			<p class="profile-form__label text-xl text-gray-900 ">E-mail</p>
+			<p>This is how we'll contact you with app information.</p>
+			<p class="max-w-[400px] p-2 border border-pink-300 rounded-md">
+				{{current_user.email}}
+			</p>
+		</div>
+	</div>
 	<hr class="my-8 border-pink-200"/>
 	{% include "profile/sections/share-section.html" %}
 </div>
