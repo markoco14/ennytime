@@ -60,7 +60,6 @@
     {% if request.path_params.get("day") %}
         {% set day = request.path_params.get("day") %}
         <div class="calendar-modal">
-        {# <dialog id="day-{{current_month.day}}" class="flex flex-col justify-between p-4"> #}
             <dialog open class="calendar-modal__card">
                 <header>
                     <h2 class="card-title">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
@@ -77,63 +76,51 @@
                         {% set date = current_month%}
                         {% for shift in shifts.values() %}
                             {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
-                                {% set commitment = commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
-                                <li class="detail-card__list-item">
-                                    {% include "/scheduling/fragments/shift-exists-button.html" %}
-                                </li>
+                            {% set commitment = commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
+                            <li class="detail-card__list-item">
+                                {% include "/scheduling/fragments/shift-exists-button.html" %}
+                            </li>
                             {% else %}
-                                <li class="detail-card__list-item">
-                                    {% include "/scheduling/fragments/no-shift-button.html" %}
-                                </li>
+                            <li class="detail-card__list-item">
+                                {% include "/scheduling/fragments/no-shift-button.html" %}
+                            </li>
                             {% endif %}
                         {% endfor %}
                         </ul>
-                        {% endif %}
+                    {% endif %}
                         
                     {# Calendar Day Schedule View #}
                     {% else %}
                         {# current user schedule #}
                         {% if commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                            {% set day_commitments = commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                            {% for commitment in day_commitments.values() %}
-                                    <div class="bg-pink-500 rounded-md p-4 mb-2">{{shifts.get(commitment.shift_id).long_name}}</div>
-                            {% endfor %}
+                        {% set day_commitments = commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                        {% for commitment in day_commitments.values() %}
+                        <div class="calendar__shift--user-detail">
+                            {{shifts.get(commitment.shift_id).long_name}}
+                        </div>
+                        {% endfor %}
                         {% endif %}
-                        
                         {# bae user schedule #}
                         {% if bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                            {% set day_commitments = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
-                            {% for commitment in day_commitments.values() %}
-                                    <div class="bg-pink-300 rounded-md p-4 mb-2">{{bae_shifts.get(commitment.shift_id).long_name}}</div>
-                            {% endfor %}
+                        {% set day_commitments = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                        {% for commitment in day_commitments.values() %}
+                        <div class="calendar__shift--bae-detail">
+                            {{bae_shifts.get(commitment.shift_id).long_name}}
+                        </div>
+                        {% endfor %}
                         {% endif %}
                     {% endif %}
                 </main>
                 <footer>
                     {% if "edit" in request.path %}
-                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="inline-block rounded bg-gray-300 px-4 py-1">Close</a>
-                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}" class="inline-block rounded bg-blue-300 px-4 py-1">Back</a>
+                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="calendar-modal__close-btn">Close</a>
+                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}" class="calendar-modal__action-btn">Back</a>
                     {% else %}
-                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="inline-block rounded bg-gray-300 px-4 py-1">Close</a>
-                        <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}/edit" class="inline-block rounded bg-blue-300 px-4 py-1">Edit</a>
+                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="calendar-modal__close-btn">Close</a>
+                    <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}/edit" class="calendar-modal__action-btn">Edit</a>
                     {% endif %}
                 </footer>
             </dialog>
         </div>
-        {# </dialog> #}
     {% endif %}
-    <script>
-        document.addEventListener("DOMContentLoaded", (e) => {
-            console.log('dom loaded')
-            let modal = document.querySelector('dialog');
-            if (!modal)  {
-                return
-            }
-
-            if (modal.getAttribute("id") === "day-{{current_month.day}}") {
-
-                modal.showModal()
-            }
-        })
-    </script>
 {% endblock content %}

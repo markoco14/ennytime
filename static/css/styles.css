@@ -118,6 +118,24 @@ a {
     margin-inline: auto;
 }
 
+.link {
+    color: var(--color-pink-700);
+    text-decoration: underline;
+    text-underline-offset: 0.125em;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0; 
+}
+
 {{/* header styles */}}
 
 .header {
@@ -678,12 +696,24 @@ display: block;
     grid-row-start: 2
 }
 
+.calendar__shift--user-detail {
+    background-color: var(--color-pink-500);
+    border-radius: 0.5rem;
+    padding: 1em;
+    margin-bottom: 0.5em;
+}
+
 .calendar__shift--bae {
     background-color: var(--color-pink-300);
     border-radius: 0.5rem;
     grid-row-start: 3;
 }
 
+.calendar__shift--bae-detail {
+    background-color: var(--color-pink-300);
+    border-radius: 0.5rem;
+    padding: 1em;
+}
 .calendar-modal {
     position: absolute;
     top: 0;
@@ -725,23 +755,6 @@ display: block;
     padding-block: 0.5em;
 }
 
-.link {
-    color: var(--color-pink-700);
-    text-decoration: underline;
-    text-underline-offset: 0.125em;
-}
-
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0; 
-}
 
 .detail-card__list-item {
     margin-bottom: 0.5em;
@@ -759,6 +772,7 @@ display: block;
     border-radius: 0.25em;
     transition: 
         background-color 200ms ease-in,
+     
         border-color 200ms ease-in;
 }
 .shift-btn--delete:hover {
@@ -776,10 +790,37 @@ display: block;
         background-color 200ms ease-in,
         border-color 200ms ease-in;
 }
+
 .shift-btn--save:hover {
     background-color: var(--color-pink-200);
     border-color: var(--color-pink-200);
 }
+
+.calendar-modal__close-btn {
+    display: inline-block;
+    border-radius: 0.25em;
+    background-color: var(--color-gray-400);
+    padding-inline: 1em;
+    padding-block: 0.25em;
+}
+
+.calendar-modal__close-btn:hover {
+    background-color: var(--color-gray-300);
+}
+
+.calendar-modal__action-btn {
+    display: inline-block;
+    border-radius: 0.25em;
+    color: var(--color-white);
+    background-color: var(--color-blue-600);
+    padding-inline: 1em;
+    padding-block: 0.25em;
+}
+
+.calendar-modal__action-btn:hover {
+    background-color: var(--color-blue-500);
+}
+
 
 @media (min-width: 768px) { 
     .calendar__content {
