@@ -59,18 +59,18 @@
     </section>
     {% if request.path_params.get("day") %}
         {% set day = request.path_params.get("day") %}
-        <div class="absolute top-0 left-0 w-full h-full grid place-content-center bg-gray-700/60">
+        <div class="calendar-modal">
         {# <dialog id="day-{{current_month.day}}" class="flex flex-col justify-between p-4"> #}
-            <dialog open class="z-10 m-0 top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] bg-white w-[95%] max-w-[500px] aspect-square p-4 md:p-8 rounded-md flex flex-col justify-between shadow-lg">
+            <dialog open class="calendar-modal__card">
                 <header>
-                    <h2 class="text-3xl">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
-                    <p class="text-xl">{{current_month.strftime("%A")}}</p>
+                    <h2 class="card-title">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
+                    <p class="card-day">{{current_month.strftime("%A")}}</p>
                 </header>
-                <main class="overflow-y-auto py-2 mb-4">
+                <main class="card__main">
                     {# Calendar Day Edit View #}
                     {% if "edit" in request.path %}
                         {% if shifts|length == 0 %}
-                        <p>You have no shifts. <a href="/shifts/new" class="text-pink-700 underline underline-offset-2">Create your first shift.</a></p>
+                        <p>You have no shifts. <a href="/shifts/new" class="link">Create your first shift.</a></p>
                         {% else %}
                         <ul>
                         {% set date_key = current_month.strftime("%Y-%m-%d") %}
@@ -78,11 +78,11 @@
                         {% for shift in shifts.values() %}
                             {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
                                 {% set commitment = commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
-                                <li class="mb-2 *:w-full">
+                                <li class="detail-card__list-item">
                                     {% include "/scheduling/fragments/shift-exists-button.html" %}
                                 </li>
                             {% else %}
-                                <li class="mb-2 *:w-full">
+                                <li class="detail-card__list-item">
                                     {% include "/scheduling/fragments/no-shift-button.html" %}
                                 </li>
                             {% endif %}
