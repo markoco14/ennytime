@@ -619,7 +619,90 @@ display: block;
  }
 
 
+{{/* calendar styles */}}
 
+.calendar__wrapper {
+    padding-top: 4rem;
+    padding-inline: 0.5rem;
+}
+
+.calendar__headline {
+    margin-bottom: 1rem; 
+    font-size: 3rem;
+    line-height: 1; 
+    text-align: center; 
+}
+
+.calendar__content {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr)); 
+    border: 1px solid var(--color-gray-300);
+    border-collapse: collapse;
+}
+
+.calendar__heading {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.75rem; 
+}
+
+.calendar__card--inactive {
+    text-align: center;
+    min-height: 90px;
+    background-color: var(--color-gray-200)
+}
+
+.calendar__card--placeholder {
+    text-align: center;
+    min-height: 90px;
+}
+
+.calendar__card {
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr)); 
+    gap: 0.5rem;
+    text-align: center;
+    min-height: 90px;
+    border: 1px solid var(--color-gray-300);
+    background-color: var(--color-white);
+}
+
+.calendar__shift--user {
+    background-color: var(--color-pink-500);
+    border-radius: 0.5rem;
+    grid-row-start: 2
+}
+
+.calendar__shift--bae {
+    background-color: var(--color-pink-300);
+    border-radius: 0.5rem;
+    grid-row-start: 3;
+}
+
+@media (min-width: 768px) { 
+    .calendar__content {
+        border: none;
+        gap: 0.5rem; 
+    }
+
+    .calendar__card--inactive {
+        border: 1px solid var(--color-gray-400);
+        border-radius: 0.25rem; 
+        padding: 0.5rem;
+    }
+
+    .calendar__card {
+        display: grid;
+        grid-template-rows: repeat(3, minmax(0, 1fr)); 
+        gap: 0.5rem;
+        text-align: center;
+        min-height: 90px;
+        border-color: var(--color-gray-900);
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+    }
+}
 
 {{/* calendar card modal styles */}}
 
