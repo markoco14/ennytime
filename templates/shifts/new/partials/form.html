@@ -1,31 +1,26 @@
-{% from "macros/spinner.html" import spinner %}
-<a href="/shifts" class="mb-2 hover:underline hover:underline-offset-2 hover:text-blue-500 active:text-blue-400n active:scale-95 inline-block">Back</a>
-
 <form 
     hx-post="/shifts/new"
     hx-target="closest div"
     hx-swap="innerHTML">
-    <div class="w-full flex flex-col mb-6">
-        <label for="shift_name"
-            class="text-xl text-pink-700">Shift Name</label>
-        <span class="mb-4">
-            Choose a name for your shift like <strong>Day Shift</strong> or <strong>Night Shift</strong>.
-        </span>
+    <div class="shifts-new__input-group">
+        <label 
+            for="shift_name"
+            class="shifts-new__label">
+            Shift Name
+        </label>
+        <span class="mb-4">Choose a name for your shift like <strong>Day Shift</strong> or <strong>Night Shift</strong>.</span>
         <input 
             type="text"
             id="shift_name"
             name="shift_name"
             required
             placeholder="Night Shift"
-            class="border p-2 shadow rounded"/>
+            class="shifts-new__input"/>
     </div>
-    <button type="submit"
-            class="flex gap-2 justify-center items-center bg-[#E22C7B] px-8 py-2 rounded-md grow-0 text-white">
-            <span class="htmx-indicator-content">
-				Save
-			</span>
-			<span class="htmx-indicator">
-				{{spinner('spinner', 'h-5', 'w-5', 'text-white')}}
-			</span>
+    <button 
+        type="submit"
+        class="shifts-new__btn">
+        <span class="htmx-indicator-content">Save</span>
+        <span class="htmx-indicator">...</span>
     </button>
 </form>

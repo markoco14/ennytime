@@ -115,10 +115,19 @@ a {
     color: inherit;
 }
 
+strong {
+    font-weight: 600;
+}
+
 {{/* layout styles */}}
 
 .wrapper {
     max-width: 1000px;
+    margin-inline: auto;
+}
+
+.wrapper--small {
+    max-width: 600px;
     margin-inline: auto;
 }
 
@@ -957,4 +966,52 @@ display: block;
 
 .shifts__link--new:hover {
     background-color: var(--color-pink-400);
+}
+
+
+{{/* shifts new page styles */}}
+
+
+
+.shifts-new__wrapper {
+    padding-top: 4em;
+    padding-inline: 0.5em;
+}
+
+.shifts-new__heading {
+    font-size: var(--font-3xl);
+    line-height: var(--leading-3xl);
+    color: var(--color-pink-700);
+    margin-bottom: 0.5em;
+}
+
+.shifts-new__description {
+    margin-bottom: 1em;
+}
+
+.shifts-new__input-group {
+    display: grid;
+    gap: 0.25rem;
+    margin-bottom: 1em;
+}
+
+.shifts-new__label {
+    font-size: var(--font-xl);
+    line-height: var(--leading-xl);
+    color: var(--color-pink-700);
+}
+
+.shifts-new__input {
+    border: 1px solid var(--color-gray-300);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.shifts-new__btn {
+    display: inline-block;
+    min-width: 200px;
+    background-color: var(--color-pink-600);
+    color: var(--color-white);
+    padding-block: 0.5rem;
+    border-radius: 0.25rem;
 }
