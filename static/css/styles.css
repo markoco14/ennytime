@@ -1,3 +1,7 @@
+[x-cloak] {
+    display: none !important;
+}
+
 @view-transition {
     navigation: auto;
 }
@@ -873,4 +877,84 @@ display: block;
     .calendar-modal__card {
         padding: 2rem;
     }
+}
+
+
+{{/* shifts index page styles */}}
+
+.divider {
+    border: 1px solid var(--color-pink-300);
+}
+
+.shifts__wrapper {
+    padding-top: 4rem;
+    padding-inline: 0.5em;
+}
+
+.shifts__heading {
+    font-size: var(--font-3xl);
+    line-height: var(--leading-3xl);
+    color: var(--color-pink-700);
+    margin-bottom: 0.5em;
+}
+
+.shifts__description {
+    margin-bottom: 1em;
+}
+
+.shifts__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 2em;
+}
+
+.shifts__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5em;
+    border: 1px solid var(--color-pink-300);
+    border-radius: 0.25em;   
+}
+
+.shifts__buttons {
+    display: flex;
+    gap: 0.5em;
+}
+
+.shifts__btn--edit {
+    cursor: pointer;
+    text-underline-offset: 0.125em;
+}
+
+.shifts__btn--edit:hover {
+    text-decoration: underline;
+    color: var(--color-blue-500);
+}
+
+.shifts__btn--delete {
+    cursor: pointer;
+    text-underline-offset: 0.125em;
+}
+
+.shifts__btn--delete:hover {
+    text-decoration: underline;
+    color: var(--color-red-500);
+}
+
+.shifts__none {
+    margin-bottom: 2em;
+}
+
+.shifts__link--new {
+    display: inline-block;
+    padding-block: 0.5em;
+    padding-inline: 2em;
+    color: var(--color-white);
+    background-color: var(--color-pink-500);
+    border-radius: 0.25em;
+}
+
+.shifts__link--new:hover {
+    background-color: var(--color-pink-400);
 }

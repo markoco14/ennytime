@@ -3,19 +3,18 @@
 Ennytime — Shifts
 {% endblock title %}
 {% block content %}
-<section>
-    <div class="max-w-[800px] mx-auto px-2">
-        <h1 class="mb-2 text-3xl text-pink-700">Your Work Shifts</h1>
-        <p class="mb-4">
-            Manage your work shifts below.
-        </p>
-        <hr class="mb-4 border-pink-200"/>
-        {% include "shifts/partials/_shifts.html" %}
-        <a 
-            href="/shifts/new"
-            class="inline-block cursor-pointer px-8 py-2 bg-pink-500 text-white rounded-md">
-            Add more shifts
-        </a>
-    </div>
-</section>
+<div class="wrapper shifts__wrapper">
+    <h1 class="shifts__heading">Your Work Shifts</h1>
+    <p class="shifts__description mb-4">
+        Manage your work shifts below.
+    </p>
+    <hr class="divider">
+    <br>
+    {% include "shifts/partials/_shifts.html" %}
+    <a 
+        href="/shifts/new"
+        class="shifts__link--new">
+        Add more shifts
+    </a>
+</div>
 {% endblock content %}
