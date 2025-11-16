@@ -1,38 +1,123 @@
 {% extends "base.html" %}
-{% from '/macros/spinner.html' import spinner%}
 {% block title %}Ennytime Couple's Calendar{% endblock title %}
 {% block content %}
-    <section class="py-4">
-        <div class="container mx-auto px-2">
-        {% include "calendar/fragments/calendar-controls.html" %}
-        {% include "calendar/fragments/calendar.html" %}
+<div class="wrapper calendar__wrapper">
+    <h1 class="calendar__headline">{{current_month.strftime("%B, %Y")}}</h1>
+    {% include "/calendar/_controls-buttons.html" %}
+    <div data-js-calendar class="js-calendar calendar__content">
+        {# calendar day headings #}
+        {% for day_name in days_of_week %}
+        <div class="calendar__heading">{{ day_name }}</div>
+        {% endfor %}
+        {# calendar cards #}
+        {% for value in month_calendar.values() %}
+        {% if value.month != current_month.month %}
+        <div class="calendar__card--inactive">
+            <h2>{{value.day}}</h2>
         </div>
-    </section>
-    {% if request.path_params.get("day") %}
-        <div id="overlay"
-            class="p-2 sm:p-0 grid place-items-center fixed top-0 left-0 w-full h-full bg-black/60 transition-all duration-400 ease-in-out">
-            <div id="modal"
-                class="w-full max-w-[500px] aspect-square">
-                <div id="day-{{request.path_params.get('day')}}"
-                        class="grid place-items-center w-full h-full md:border-gray-900 prop bg-white z-50 rounded-md">
-                    {% include "/calendar/calendar-card-detail.html" %}
+        {% else %}
+        {% if request.path_params.get("day") and value.day == request.path_params.get("day")|int %}
+        <div class="calendar__card--placeholder"></div>
+        {% else %}
+        {% set date_key = value.strftime("%Y-%m-%d") %}
+        <a
+            id="day-{{value.day}}"
+            href="/calendar/{{current_month.year}}/{{current_month.month}}/{{value.day}}" class="calendar__card"
+            >
+            <h2>{{value.day}}</h2>
+            {# current user schedule #}
+            {% if commitments.get(value.strftime(date_key)) %}
+            {% set day_commitments = commitments.get(value.strftime(date_key)) %}
+            {% if day_commitments|length > 1 %}
+            <div class="calendar__shift--user">x{{day_commitments|length}}</div>
+            {% else %}
+            {# {{ shifts }} #}
+            {% for commitment in day_commitments.values() %}
+            <div class="calendar__shift--user">{{shifts.get(commitment.shift_id).short_name}}</div>
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+            {# bae user schedule #}
+            {% if bae_commitments.get(value.strftime(date_key)) %}
+            {% set day_commitments = bae_commitments.get(value.strftime(date_key)) %}
+            {% if day_commitments|length > 1 %}
+            <div class="calendar__shift--bae">x{{day_commitments|length}}</div>
+            {% else %}
+            {% for commitment in day_commitments.values() %}
+            <div class="calendar__shift--bae">{{bae_shifts.get(commitment.shift_id).short_name}}</div>
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+        </a>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% if request.path_params.get("day") %}
+{% set day = request.path_params.get("day") %}
+<div class="calendar-modal">
+    <dialog open class="calendar-modal__card">
+        <header>
+            <h2 class="card-title">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
+            <p class="card-day">{{current_month.strftime("%A")}}</p>
+        </header>
+        <main class="card__main">
+            {# Calendar Day Edit View #}
+            {% if "edit" in request.path %}
+                {% if shifts|length == 0 %}
+                <p>You have no shifts. <a href="/shifts/new" class="link">Create your first shift.</a></p>
+                {% else %}
+                <ul>
+                {% set date_key = current_month.strftime("%Y-%m-%d") %}
+                {% set date = current_month%}
+                {% for shift in shifts.values() %}
+                    {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
+                    {% set commitment = commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
+                    <li class="detail-card__list-item">
+                        {% include "/scheduling/fragments/shift-exists-button.html" %}
+                    </li>
+                    {% else %}
+                    <li class="detail-card__list-item">
+                        {% include "/scheduling/fragments/no-shift-button.html" %}
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            {% endif %}
+                
+            {# Calendar Day Schedule View #}
+            {% else %}
+                {# current user schedule #}
+                {% if commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                {% set day_commitments = commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                {% for commitment in day_commitments.values() %}
+                <div class="calendar__shift--user-detail">
+                    {{shifts.get(commitment.shift_id).long_name}}
                 </div>
-            </div>
-        </div>
-    {# {% else %}
-        <div id="overlay"
-            class="p-2 sm:p-0 hidden opacity-0 grid place-items-center fixed top-0 left-0 w-full h-full bg-black/60 transition-all duration-400 ease-in-out">
-            <div id="modal"
-                class="w-full max-w-[500px] aspect-square opacity-100"></div>
-        </div> #}
-    {% endif %}
-    {# {% if current_date_object.month == 12 and current_date_object.day == 25 %}
-        {% include "/holidays/christmas-modal.html" %}
-    {% endif %}
-    {% if (current_date_object.month == 12 and current_date_object.day == 31) or (current_date_object.month == 1 and current_date_object.day == 1) %}
-        {% include "/holidays/nye-modal.html" %}
-    {% endif %}
-    {% if current_date_object.month == 2 and current_date_object.day == 14 %}
-        {% include "/holidays/valentines-modal.html" %}
-    {% endif %} #}
+                {% endfor %}
+                {% endif %}
+                {# bae user schedule #}
+                {% if bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                {% set day_commitments = bae_commitments.get(current_month.strftime("%Y-%m-%d")) %}
+                {% for commitment in day_commitments.values() %}
+                <div class="calendar__shift--bae-detail">
+                    {{bae_shifts.get(commitment.shift_id).long_name}}
+                </div>
+                {% endfor %}
+                {% endif %}
+            {% endif %}
+        </main>
+        <footer>
+            {% if "edit" in request.path %}
+            <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="calendar-modal__close-btn">Close</a>
+            <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}" class="calendar-modal__action-btn">Back</a>
+            {% else %}
+            <a href="/calendar/{{current_month.year}}/{{current_month.month}}" autofocus class="calendar-modal__close-btn">Close</a>
+            <a href="/calendar/{{current_month.year}}/{{current_month.month}}/{{day}}/edit" class="calendar-modal__action-btn">Edit</a>
+            {% endif %}
+        </footer>
+    </dialog>
+</div>
+{% endif %}
 {% endblock content %}

@@ -105,7 +105,7 @@ def get_calendar(
 
     response = templates.TemplateResponse(
         request=request,
-        name="calendar/v2/index.html",
+        name="calendar/index.html",
         context=context,
     )
 
