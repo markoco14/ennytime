@@ -22,7 +22,10 @@
         {% set date_key = value.strftime("%Y-%m-%d") %}
         <a
             id="day-{{value.day}}"
-            href="/calendar/{{current_month.year}}/{{current_month.month}}/{{value.day}}" class="calendar__card"
+            href="/calendar/{{ current_month.year }}/{{ current_month.month }}/{{ value.day }}"
+            class="calendar__card"
+            style="{% if view_transition_day == value.day %}view-transition-name: popout-card;{% endif %}"
+            onclick="toggleCardPopout({{ value.day }})"
             >
             <h2>{{value.day}}</h2>
             {# current user schedule #}
@@ -57,7 +60,7 @@
 {% if request.path_params.get("day") %}
 {% set day = request.path_params.get("day") %}
 <div class="calendar-modal">
-    <dialog open class="calendar-modal__card">
+    <dialog open class="calendar-modal__card" style="view-transition-name: popout-card;">
         <header>
             <h2 class="card-title">{{current_month.strftime("%B")}} {{current_month.strftime("%d, %Y").lstrip("0")}}</h2>
             <p class="card-day">{{current_month.strftime("%A")}}</p>

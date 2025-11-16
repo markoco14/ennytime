@@ -7,17 +7,14 @@
 				<a href="/" class="text-white">Home</a>
 				<a href="/signup" class="text-white">Sign up</a>
 				<a href="/signin" class="text-white">Sign in</a>
-				<button class="header__close" onclick="htmx.toggleClass(htmx.find('nav'), 'open')">
-					{% include "svg/close.html" %}
-				</button>
 				{% else %}
 				<a href="/">Calendar</a>
 				<a href="/scheduling">Scheduling</a>
 				<a href="/shifts">Shifts</a>
+				{% endif %}
 				<button class="header__close" onclick="htmx.toggleClass(htmx.find('nav'), 'open')">
 					{% include "svg/close.html" %}
 				</button>
-				{% endif %}
 			</nav>
 			{% if current_user %}
 			
@@ -55,7 +52,7 @@
 				</div>
 			</div>
 			{% endif %}
-			<button onclick="htmx.toggleClass(htmx.find('nav'), 'open')" class="header__toggle">
+			<button onclick="htmx.toggleClass(htmx.find('nav'), 'open');" class="header__toggle">
 				{% include "svg/hamburger.html" %}
 			</button>
 		</div>

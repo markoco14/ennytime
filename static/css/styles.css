@@ -364,6 +364,8 @@ strong {
     width: 100%;
     color: white;
     background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600)); 
+    z-index: 10000;
+    isolation: isolate;
 }
 
 .header__wrapper {
@@ -505,7 +507,6 @@ display: block;
         background-color: var(--color-pink-500);
         font-size: 1.5rem;
         line-height: 2rem;
-        z-index: 9999;
     }
 
     .open {

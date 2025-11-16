@@ -58,6 +58,18 @@
 				let container = htmx.find(`#container-${event.detail.value}`)
 				htmx.removeClass(container, 'opacity-0')
 			})
+
+			function toggleCardPopout(day) {
+				let cards = document.querySelectorAll('.calendar__card')
+
+				cards.forEach((card) => {
+					card.style.viewTransitionName = ""
+				})
+
+				let card = document.getElementById(`day-${day}`)
+				console.log(card)
+				card.style.viewTransitionName = "popout-card"
+			}
 		</script>
 	</body>
 </html>
