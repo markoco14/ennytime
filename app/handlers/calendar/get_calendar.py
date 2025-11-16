@@ -89,6 +89,19 @@ def get_calendar(
             shift_id = commitment.id
             bae_commitments.setdefault(date_key, {})[shift_id] = commitment
 
+    referer = request.headers.get('referer')
+    referer_date = None
+    if referer:
+        try:
+            referer_date = referer.split("/calendar/")[1]
+        except:
+            pass
+
+    view_transition_day = None
+    if referer_date:
+        if (len(referer_date.split("/")) == 3 or len(referer_date.split("/")) == 4):
+            view_transition_day = int(referer.split('/calendar/')[1].split("/")[2])
+
     context = CalendarMonthPage(
         current_user=current_user,
         bae_user=None if not bae_user else bae_user,
@@ -100,7 +113,8 @@ def get_calendar(
         shifts=shifts_dict,
         commitments=commitments,
         bae_shifts=bae_shifts_dict if bae_shifts_dict else {},
-        bae_commitments=bae_commitments if bae_commitments else {}
+        bae_commitments=bae_commitments if bae_commitments else {},
+        view_transition_day=view_transition_day
     )
 
     response = templates.TemplateResponse(
