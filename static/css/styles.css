@@ -59,7 +59,6 @@
     --color-skin-light: #FFB6B6;
     --color-skin-dark: #9E616A;
     --color-hair-brown: #804d55ff;
-    
 
     --font-xl: 1.25rem;
     --font-2xl: 1.5rem;
@@ -305,7 +304,6 @@ display: block;
         z-index: 9999;
     }
 
-
     .open {
         display: grid;
         text-align: center;
@@ -318,6 +316,8 @@ display: block;
     }
 
     .header__close {
+        margin-top: 2em;
+        width: 100%;
         display: flex;
         justify-content: center;
         text-align: center;
@@ -1138,4 +1138,15 @@ display: block;
 
 .profile-form__btn:hover {
     background-color: var(--color-pink-500);
+}
+
+.profile-share__heading {
+    font-size: var(--font-2xl);
+    line-height: var(--leading-2xl);
+    color: var(--color-pink-800);
+    margin-bottom: 0.5em;
+}
+
+.profile-share__explanation {
+    margin-bottom: 2em;
 }

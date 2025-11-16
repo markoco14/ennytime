@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="wrapper--small profile profile__wrapper">
-	<h1 class="profile__heading">Your Profile</h1>
-	<h2 class="profile__heading--2xl text-2xl mb-4">Contact info</h2>
+	<h1 class="sr-only">Your Profile</h1>
+	<h2 class="profile__heading--2xl">Contact info</h2>
 	<div class="profile__content">
 		{# display name #}
 		<div class="profile-form__input-group">
@@ -68,7 +68,14 @@
 			<p class="profile-form__input disabled">{{current_user.email}}</p>
 		</div>
 	</div>
-	<hr class="my-8 border-pink-200"/>
-	{% include "profile/sections/share-section.html" %}
+	<br>
+	<hr class="divider"/>
+	<br>
+	<div>
+		<h2 class="profile-share__heading">Where is Calendar Sharing?</h2>
+		<p class="profile-share__explanation">We are blocking calendar sharing for now. We are working on changes in the application, and calendar sharing will be back soon.</p>
+		<h2 class="profile-share__heading">Where is Chat?</h2>
+		<p>Chat is also going through some changes and is disabled for now.</p>
+	</div>
 </div>
 {% endblock content %}
