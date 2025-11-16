@@ -1,18 +1,16 @@
 {% from "macros/spinner.html" import spinner %}
 <form 
-	class="py-2 flex flex-col gap-2"
+	class="profile-form__input-group"
 	hx-put="/users/{{current_user.id}}"
 	hx-target="this"
 	hx-swap="outerHTML"
 	>
 	<label 
 		for="app_username"
-		class="text-xl text-gray-900">
+		class="profile-form__label">>
 		Username
 	</label>
-	<p>
-		Choose a unique username for yourself. You need a username before anyone can share their calendar with you.
-	</p>
+	<p class="profile-form__explanation">Choose a unique username for yourself. You need a username before anyone can share their calendar with you.</p>
 	{% include "profile/autofocus-username-input.html" %}
 	{% include "profile/username-errors.html" %}
 </form>

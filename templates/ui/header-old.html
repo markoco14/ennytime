@@ -1,0 +1,206 @@
+{% if not current_user %}
+<header hx-indicator="this"
+		x-data="{mobileNavOpen: false}"
+		class="relative fixed top-0 left-0 w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white"
+        x-bind:class="mobileNavOpen ? 'overflow-none' : ''"
+		>
+{% else %}
+<header hx-indicator="this"
+		x-data="{mobileNavOpen: false}"
+		class="relative fixed top-0 left-0 w-full"
+        x-bind:class="mobileNavOpen ? 'overflow-none' : ''"
+		>
+{% endif %}
+	<div class="h-[48px] flex justify-between items-center max-w-[1000px] mx-auto px-2 lg:px-0">
+        {# logo #}
+		<span class="text-3xl">Ennytime</span>
+
+        {# mobile nav toggle button #}
+        <div class="flex items-center gap-2">
+            {# {% if current_user %}
+                {% if chat_data %}
+                    <span hx-get="/unread"
+                        hx-target="find div"
+                        hx-swap="outerHTML"
+                        class="md:hidden relative p-1"
+                        >
+                        <a href="/chat/{{chat_data['chatroom_id']}}">
+                        {% include "ui/chat-icon.html" %}
+                        </a>
+                        {% include "/chat/unread-counter.html" %}
+                    </span>
+                {% else %}
+                    <span class="md:hidden relative p-1">
+                        <a href="/chat">
+                        {% include "ui/chat-icon.html" %}
+                        </a>
+                    </span>
+                {% endif %}
+            {% endif %} #}
+            <button 
+                x-bind:class="mobileNavOpen ? 'z-20' : ''"
+                class="md:hidden"
+                @click="mobileNavOpen = !mobileNavOpen; document.body.classList.toggle('overflow-hidden')"
+                >
+                <svg x-show="!mobileNavOpen"
+                    class="h-6 w-6 select-none cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="4"
+                        x2="20"
+                        y1="12"
+                        y2="12"></line>
+                    <line x1="4"
+                        x2="20"
+                        y1="6"
+                        y2="6"></line>
+                    <line x1="4"
+                        x2="20"
+                        y1="18"
+                        y2="18"></line>
+                </svg>
+
+                <svg x-show="mobileNavOpen"
+                    x-cloak
+                    class="stroke-white fill-white w-6 h-6 select-none cursor-pointer z-20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    x="0px"
+                    y="0px"
+                    viewBox="0 0 50 50">
+                    <path
+                        d="M 9.15625 6.3125 L 6.3125 9.15625 L 22.15625 25 L 6.21875 40.96875 L 9.03125 43.78125 L 25 27.84375 L 40.9375 43.78125 L 43.78125 40.9375 L 27.84375 25 L 43.6875 9.15625 L 40.84375 6.3125 L 25 22.15625 Z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        {# navigation container #}
+		<nav 
+            x-show="mobileNavOpen"
+            x-cloak
+			class="md:!block h-screen w-screen md:h-auto md:w-auto absolute top-0 left-0 md:relative z-10 text-white md:text-black"
+            >
+			<ul
+				class="flex flex-col items-center justify-center h-full w-full bg-pink-700/90 md:bg-transparent md:flex-row gap-2 text-2xl md:text-base">
+                {% if not current_user %}
+                    <li><a href="/" class="text-white">Home</a></li>                
+                    <li><a href="/signup" class="text-white">Sign up</a></li>                
+                    <li><a href="/signin" class="text-white">Sign in</a></li>                
+                {% else %}
+                    <li><a href="/">Calendar</a></li>
+                    <li><a href="/scheduling">Scheduling</a></li>
+                    <li><a href="/shifts">Shifts</a></li>
+
+                    {# chat and unread messages #}
+                    {# {% if chat_data %}
+                        <li hx-get="/unread"
+                            hx-target="find div"
+                            hx-swap="outerHTML"
+                            class="hidden md:block relative p-1"
+                            >
+                            <a href="/chat/{{chat_data['chatroom_id']}}">
+                            {% include "ui/chat-icon.html" %}
+                            </a>
+                            {% include "/chat/unread-counter.html" %}
+                        </li>
+                    {% else %}
+                        <li class="hidden md:block relative p-1">
+                            <a href="/chat">
+                            {% include "ui/chat-icon.html" %}
+                            </a>
+                        </li>
+                    {% endif %} #}
+
+                    {# {% if chat_data %}
+                        <li class="block md:hidden">
+                            <a 	href="/chat/{{chat_data['chatroom_id']}}"
+                                class="text-right flex gap-2">
+                                Chat
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="block md:hidden">
+                            <a 	href="/chat"
+                                class="text-right flex gap-2">
+                                Chat
+                            </a>
+                        </li>
+                    {% endif %} #}
+                    <li class="block md:hidden">
+                        <a 	href="/profile"
+                            class="text-right">
+                            Profile
+                        </a>
+                    </li>
+                    {% if current_user.is_admin %}
+                    <li class="block md:hidden">
+                        <a  href="/admin"
+                            class="text-right">
+                            Admin
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="block md:hidden">
+                        <a 	hx-get="/signout"
+                            href="/signout"
+                            class="text-right">
+                            Sign Out
+                        </a>
+                    </li>
+
+                    {# large screen drop down menu #}
+                    <li x-data="{dropdownOpen: false}" 
+                        class="relative hidden md:block"
+                        >
+                        <button @click="dropdownOpen = !dropdownOpen" 
+                                @click.away="dropdownOpen = false"
+                                class="flex items-center gap-2 whitespace-nowrap cursor-pointer select-none">
+                            {% if not current_user.display_name %}
+                            New User
+                            {% else %}
+                            {{current_user.display_name}}
+                            {% endif %}
+                            <img class="w-4 h-4"
+                                x-bind:class="dropdownOpen ? 'transform rotate-180 duration-200' : 'transform rotate-0 duration-100'"
+                                src="https://img.icons8.com/small/32/777777/expand-arrow.png" />
+                        </button>
+                        <div x-show="dropdownOpen"
+                            x-cloak
+                            class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
+                            x-transition:enter="duration-300 ease-out"
+                            x-transition:enter-start="opacity-0 -translate-y-5 scale-90">
+                            <ul>
+                                <li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+                                    <a href="/profile"
+                                    class="w-full text-right">Profile</a>
+                                </li>
+                                {% if current_user.is_admin %}
+                                <li class="grid text-right rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+                                    <a href="/admin"
+                                    class="w-full">Admin</a>
+                                </li>
+                                {% endif%}
+                                <li class="grid rounded px-2 py-1 hover:bg-pink-200 cursor-pointer">
+                                    <a
+                                        hx-get="/signout"        
+                                        href="/signout"
+                                        class="w-full text-end"
+                                        >
+                                        Sign out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                {% endif %}
+			</ul>
+		</nav>
+	</div>
+</header>

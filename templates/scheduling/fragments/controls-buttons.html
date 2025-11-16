@@ -1,5 +1,5 @@
 {% from '/macros/spinner.html' import spinner%}
-<div class="grid grid-cols-2 max-w-[250px] mx-auto gap-2">
+<div class="calendar__controls">
     {% if current_date.month == 1 %}
     <a  
         href="/scheduling/{{current_date.year-1}}/12"
@@ -9,7 +9,7 @@
         {# hx-indicator="this" #}
         {# hx-push-url="true" #}
         {# hx-on::before-request="toggleEnterFromLeft('data-js-schedule');" #}
-        class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
+        class="calendar__control-btn text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% else %}
     <a  
         href="/scheduling/{{current_date.year}}/{{current_date.month-1}}"
@@ -19,13 +19,10 @@
         {# hx-indicator="this" #}
         {# hx-push-url="true" #}
         {# hx-on::before-request="toggleEnterFromLeft('data-js-schedule');" #}
-        class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
+        class="calendar__control-btn text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% endif%}
         <span class="htmx-indicator-content">
             {{prev_month_name}}
-        </span>
-        <span class="htmx-indicator">
-            {{spinner('spinner', 'h-5', 'w-5', 'text-black')}}
         </span>
     </a>
     <!-- if end of year -->
@@ -38,7 +35,7 @@
         {# hx-indicator="this" #}
         {# hx-push-url="true" #}
         {# hx-on::before-request="toggleEnterFromRight('data-js-schedule');" #}
-        class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
+        class="calendar__control-btn text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% else %}
     <a  
         href="/scheduling/{{current_date.year}}/{{current_date.month+1}}"
@@ -48,13 +45,10 @@
         {# hx-indicator="this" #}
         {# hx-push-url="true" #}
         {# hx-on::before-request="toggleEnterFromRight('data-js-schedule');" #}
-        class="text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
+        class="calendar__control-btn text-center col-span-1 px-3 py-1 border rounded hover:bg-gray-200 active:bg-gray-300">
     {% endif %}
         <span class="htmx-indicator-content">
             {{next_month_name}}
-        </span>
-        <span class="htmx-indicator">
-            {{spinner('spinner', 'h-5', 'w-5', 'text-black')}}
         </span>
     </a>
 </div>

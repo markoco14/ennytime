@@ -1,11 +1,11 @@
-<div class="flex flex-col gap-1">
-    <label for="username" class="font-semibold text-sm">Email</label>
+<div class="auth__input-group">
+    <label for="username" class="auth__label">Email</label>
     <input 
         id="username"
-        class="border rounded p-2 bg-gray-100"
+        class="auth__input"
         name="username"
         type="email"
         value="{{previous_email}}"
         placeholder="youremail@gmail.com"/>	
-    <div id="email-error" class="text-right text-red-500 text-sm h-5">{{email_error}}</div>
+    <div id="email-error" class="auth__error">{{email_error}}</div>
 </div>

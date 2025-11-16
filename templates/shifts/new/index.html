@@ -4,12 +4,11 @@
 	Register New Shift
 {% endblock title %}
 {% block content %}
-<div class="max-w-[800px] mx-auto min-h-[400px] rounded-md px-2">
-	<h1 class="mb-2 text-3xl text-pink-700">Save New Shift</h1>
-	<p class="mb-4">
-		Save the details of your newest shift with the form below.
-	</p>
-	<hr class="mb-4 border-pink-200"/>
+<div class="wrapper--small shifts-new__wrapper">
+	<h1 class="shifts__heading">Save New Shift</h1>
+	<p class="shifts-new__description">Save the details of your newest shift with the form below.</p>
+	<hr class="divider"/>
+	<br>
 	{% include "/shifts/new/partials/form.html" %}
 </div>
 {% endblock content %}

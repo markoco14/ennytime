@@ -3,8 +3,96 @@
 Ennytime Couple's Calendar
 {% endblock title %}
 {% block content %}
-{% include "/website/sections/hero.html" %}
-{% include "/website/sections/features.html" %}
-{% include "/website/sections/bottom-cta.html" %}
-{% include "website/sections/footer.html" %}
+{# hero section #}
+<section class="hero">
+	<div class="wrapper hero__wrapper">
+		<div
+			 class="hero__content">
+			<h1 class="hero__headline">
+				Easy calendar sharing for couples with changing work schedules.
+			</h1>
+			<h2 class="hero__subheadline">
+				Make finding time easy again.
+			</h2>
+			<a href="/signup"
+			   class="hero__cta ">
+				Spend more time together
+			</a>
+		</div>
+		<div class="hero__lovers">
+			{% include "/svg/hero-lovers.html" %}
+		</div>
+	</div>
+	<div class="hero__waves">
+		{% include "/svg/waves-down.html" %}
+	</div>
+</section>
+
+<div class="features min-h-screen py-36 grid gap-16">
+	<section class="wrapper features__section">
+		<div class="features__content text-center">
+			<h2 class="features__title">Save your regular shifts</h2>
+			<p>
+				Set up all your regular shifts so you can quickly update your calendar every time you get your new work
+				schedule.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-new-shift-form.png" alt="New shift type form demo" />
+		</div>
+	</section>
+	<section class="wrapper features__section">
+		<div class="features__content features__content--right">
+			<h2 class="features__title">Add shifts to your calendar</h2>
+			<p>
+				Quick and easy click to schedule your shifts on all your working days.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-edit-schedule.png" alt="Edit schedule form" />
+		</div>
+	</section>
+	<section class="wrapper features__section">
+		<div class="features__content">
+			<h2 class="features__title">Share your calendar with the one you love</h2>
+			<p>
+				Lover Search let's you find your loved one by their username. We value your privacy - there is no public list of users.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-calendar-sharing.png" alt="Share calendar form" />
+		</div>
+	</section>
+	<section class="wrapper features__section">
+		<div class="features__content features__content--right">
+			<h2 class="features__title">See your time together on the calendar</h2>
+			<p>
+				See all the times when you are both free on the Couple's Calendar. Just one glance to know when you'll
+				be together again.
+			</p>
+		</div>
+		<div class="features__img-wrapper">
+			<img src="../../static/img/features-calendar-view.png" alt="Share calendar form" />
+		</div>
+	</section>
+</div>
+
+{# bottom cta  #}
+<section class="bottom-cta">
+	<div class="bottom-cta__waves">
+		{% include "/svg/waves-up.html" %}
+	</div>
+	<div class="bottom-cta__content">
+		<h2 class="bottom-cta__title">Spend More Time with the One You Love</h2>
+		<p class="bottom-cta__description mb-16 text-xl text-center">
+			Take the pain out of scheduling and gain more time together!
+		</p>
+		<a href="signup"
+		   class="bottom-cta__cta">Sign Up</a>
+	</div>
+</section>
+
+<footer class="footer">
+	<p>&copy; 2024 Ennytime. All rights reserved.</p>
+</footer>
 {% endblock content %}
