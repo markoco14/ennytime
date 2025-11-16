@@ -3,7 +3,7 @@
 {% block content %}
 <div class="wrapper calendar__wrapper">
     <h1 class="calendar__headline">{{current_month.strftime("%B, %Y")}}</h1>
-    {% include "/calendar/fragments/controls-buttons.html" %}
+    {% include "/calendar/_controls-buttons.html" %}
     <div data-js-calendar class="js-calendar calendar__content">
         {# calendar day headings #}
         {% for day_name in days_of_week %}

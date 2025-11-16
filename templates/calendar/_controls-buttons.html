@@ -1,0 +1,8 @@
+<div class="calendar__controls">
+    <a href="/calendar/{{prev_month_object.year}}/{{prev_month_object.month}}" class="calendar__control-btn">
+        {{ prev_month_object.strftime("%B") }}
+    </a>
+    <a  href="/calendar/{{next_month_object.year}}/{{next_month_object.month}}" class="calendar__control-btn">
+        {{ next_month_object.strftime("%B") }}
+    </a>
+</div>
