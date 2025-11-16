@@ -1,40 +1,36 @@
 {% extends "base.html" %}
-{% from '/macros/spinner.html' import spinner%}
-{% block title %}
-Schedule
-{% endblock title %}
+{% block title %}Schedule | Ennytime{% endblock title %}
 {% block content %}
-<section>
-    <div class="max-w-[800px] mx-auto px-2">
-        <h1 class="mb-2 text-3xl text-pink-700">Your Schedule</h1>
-        {% if shifts|length == 0 %}
-        <p>You have no shifts. <a href="/shifts/new" class="text-pink-700 underline underline-offset-2">Create your first shift.</a></p>
-        {% else %}
-        <p class="mb-4">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.
-        </p>
-        <hr class="mb-4 border-pink-200"/>
-        {% include "scheduling/fragments/scheduling-controls.html" %}
-        <ul class="divide-y js-schedule" data-js-schedule>
-            {% for key, date in month_calendar.items() %}
-            <li class="py-2">
-                <p class="text-pink-600 text-semibold text-lg">
-                    <span class="text-2xl text-center md:text-left">{{date.strftime("%A")}}</span>
-                    <span class="text-md text-gray-700 text-center md:text-left">({{date.strftime("%B")}} {{date.day}})</span>
-                </p>
-                <div class="flex flex-wrap gap-2 p-2 border rounded-md">
-                        {% for shift in shifts %}
-                            {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
-                                {% set commitment = commitments[date.strftime("%Y-%m-%d")][shift.id] %}
-                                {% include "/scheduling/fragments/shift-exists-button.html" %}
-                            {% else %}
-                                {% include "/scheduling/fragments/no-shift-button.html" %}
-                            {% endif %}
-                        {% endfor %}
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
-</section>
+<div class="wrapper--small schedule__wrapper">
+    <h1 class="sr-only">Scheduling</h1>
+    {% if shifts|length == 0 %}
+    <p class="schedule__explanation">You have no shifts. <a href="/shifts/new" class="link">Create your first shift.</a></p>
+    {% else %}
+    {% include "scheduling/fragments/scheduling-controls.html" %}
+    <p class="schedule__explanation">Click the buttons to quickly add shifts to your calendar. Click again to remove them from your calendar.</p>
+    <ul class="js-schedule" data-js-schedule>
+        {% for key, date in month_calendar.items() %}
+        <li class="schedule-list__item">
+            <p class="schedule-day__heading">
+                <span>{{date.strftime("%A")}}</span>
+                <span class="schedule-day__date">({{date.strftime("%B")}} {{date.day}})</span>
+            </p>
+            <div class="schedule-button__wrapper">
+                    {% for shift in shifts %}
+                        {% if commitments.get(date.strftime("%Y-%m-%d"), {}).get(shift.id) %}
+                            {% set commitment = commitments[date.strftime("%Y-%m-%d")][shift.id] %}
+                            {% include "/scheduling/fragments/shift-exists-button.html" %}
+                        {% else %}
+                            {% include "/scheduling/fragments/no-shift-button.html" %}
+                        {% endif %}
+                    {% endfor %}
+            </div>
+        </li>
+        <br>
+        <hr class="divider">
+        <br>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
 {% endblock content %}

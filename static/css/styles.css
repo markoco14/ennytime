@@ -60,10 +60,12 @@
     --color-skin-dark: #9E616A;
     --color-hair-brown: #804d55ff;
 
+    --font-lg: 1.125rem;
     --font-xl: 1.25rem;
     --font-2xl: 1.5rem;
     --font-3xl: 1.875rem;
 
+    --leading-lg: 1.75rem; 
     --leading-xl: 1.75rem; 
     --leading-2xl: 2rem; 
     --leading-3xl: 2.25rem; 
@@ -1020,6 +1022,60 @@ display: block;
 .shifts-edit__wrapper {
     padding-top: 4em;
     padding-inline: 0.5em;
+}
+
+{{/* schedule page  */}}
+
+.schedule__wrapper {
+    padding-top: 4em;
+    padding-inline: 0.5em;
+}
+
+.schedule__explanation {
+    margin-bottom: 1em;
+}
+
+.schedule-controls__heading {
+    font-size: 3rem;
+    line-height: 1; 
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.schedule-list__item {
+    margin-bottom: 1rem;
+}
+
+.schedule-day__heading {
+    color: var(--color-pink-600);
+    font-weight: 600;
+    font-size: var(--font-xl);
+    line-height: var(--leading-xl);
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.schedule-day__date {
+    font-size: 1rem;
+    line-height: 1rem;
+    color: var(--color-gray-700);
+}
+
+.schedule-button__wrapper {
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); 
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 0.25rem;
+    background-color: var(--color-gray-100);
+}
+
+.schedule-button__wrapper > form {
+    background-color: var(--color-white);
 }
 
 {{/* profile page styles */}}
