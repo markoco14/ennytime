@@ -1,0 +1,14 @@
+<div class="birthday-modal">
+    <div class="birthday-modal__content">
+        <div>
+        <h2 class="birthday-modal__heading">{{ birthday_message[0] }}</h2>
+        <p class="birthday-modal__message">{{ birthday_message[1] }} <span class="birthday-modal__name">{{ birthday_message[2] }}</span>,</p>
+        <p class="birthday-modal__message">{{ birthday_message[3] }}</p>
+        <p class="birthday-modal__message">{{ birthday_message[4] }}</p>
+        <p class="birthday-modal__message">{{ birthday_message[5] }}</p>
+        <p class="birthday-modal__message sign-out">{{ birthday_message[6] }}</p>
+        <p class="birthday-modal__message last"><span class="birthday-modal__name">{{ birthday_message[7] }}</span></p>
+        </div>
+        <button class="birthday-modal__close-btn" hx-delete="/close-modal" hx-target="closest .birthday-modal" hx-swap="outerHTML swap:0.5s">Close</button>
+    </div>
+</div>
