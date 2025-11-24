@@ -16,6 +16,7 @@ Ennytime Profile Page
 				<table class="w-full caption-bottom text-sm">
 					<thead class="[&amp;_tr]:border-b">
 						<tr>
+							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Id</th>
 							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Display Name</th>
 							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Email</th>
 							<th class="py-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 w-[100px]">Username</th>
@@ -28,6 +29,9 @@ Ennytime Profile Page
 						   hx-swap="outerHTML swap:1s">
 						{% for user in users %}
 						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+							<td class="p-4 align-middle">
+								{{user["id"]}}
+							</td>
 							<td class="p-4 align-middle">
 								{{user["display_name"]}}
 							</td>
