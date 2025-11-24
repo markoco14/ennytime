@@ -20,6 +20,9 @@ routes = [
     ("GET",     "/calendar/{year}/{month}/{day}",       calendar.day,               requires_user),   # User
     ("GET",     "/calendar/{year}/{month}/{day}/edit",  calendar.edit,              requires_user),
 
+    ("GET",     "/birthday-modal",                      calendar.birthday_greeting, requires_user),
+    ("DELETE",  "/close-modal",                         calendar.close_greeting,    requires_user),
+
     ("GET",     "/shifts",                              shifts.index,               requires_user),
     ("GET",     "/shifts/new",                          shifts.new,                 requires_user),
     ("POST",    "/shifts/new",                          shifts.create,              requires_user),

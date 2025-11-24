@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     CLOSED_DOWN: str = os.environ.get('CLOSED_DOWN')
 
     MAINTENANCE_MODE: str = os.environ.get('MAINTENANCE_MODE')
+    
+    BIRTHDAY_LINES: list[str] = os.environ.get("BIRTHDAY_LINES")
+    BIRTHDAY_IDS: list[int] = os.environ.get("BIRTHDAY_IDS")
 
     if ENVIRONMENT == 'dev':
         SLEEP_TIME: float = 0.0

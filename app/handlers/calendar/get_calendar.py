@@ -5,15 +5,16 @@ from typing import Optional
 
 from fastapi import Request
 from fastapi.responses import Response, RedirectResponse
-
+from app.core.config import get_settings
 from app.core.template_utils import templates
 from app.models.commitment import Commitment
 from app.models.shift import Shift
 from app.models.user import User
 from app.services import calendar_service
 from app.viewmodels.pages import CalendarMonthPage
-from app.viewmodels.structs import ScheduleRow, ShiftRow, UserRow
+from app.viewmodels.structs import UserRow
 
+settings = get_settings()
 
 def get_calendar(
     request: Request,
@@ -114,7 +115,8 @@ def get_calendar(
         commitments=commitments,
         bae_shifts=bae_shifts_dict if bae_shifts_dict else {},
         bae_commitments=bae_commitments if bae_commitments else {},
-        view_transition_day=view_transition_day
+        view_transition_day=view_transition_day,
+        birthday_ids=settings.BIRTHDAY_IDS
     )
 
     response = templates.TemplateResponse(
