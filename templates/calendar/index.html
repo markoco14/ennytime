@@ -123,7 +123,4 @@
     </dialog>
 </div>
 {% endif %}
-{% if current_user.id in birthday_ids and not request.path_params.get("day") %}
-<div hx-get="/birthday-modal" hx-target="body" hx-trigger="load delay:300ms" hx-swap="beforeend"></div>
-{% endif %}
 {% endblock content %}
