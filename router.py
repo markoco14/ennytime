@@ -22,6 +22,7 @@ routes = [
 
     ("GET",     "/birthday-modal",                      calendar.birthday_greeting, requires_user),
     ("DELETE",  "/close-modal",                         calendar.close_greeting,    requires_user),
+    ("DELETE",     "/modal-close", calendar.close_holiday_modal, requires_user),
 
     ("GET",     "/shifts",                              shifts.index,               requires_user),
     ("GET",     "/shifts/new",                          shifts.new,                 requires_user),
