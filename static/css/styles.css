@@ -1494,3 +1494,88 @@ display: block;
         max-width: 45ch;
     }
 }
+
+{{/* christmas styles */}}
+
+.christmas-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(185, 28, 28, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 0.5rem;
+    transition: opacity 500ms ease-in-out;
+    z-index: 10001;
+    {{/* opacity: 0; */}}
+}
+
+.christmas-modal {
+    position: relative;
+    width: 100%;
+    background-color: white;
+    border-radius: 0.75rem;
+    padding-block: 4rem;
+    max-width: 500px;
+    transition: opacity 300ms ease-in-out;
+}
+
+.christmas-image {
+    opacity: 0.5;
+    width: 200px;
+    height: 200px;
+    margin-inline: auto;
+    margin-bottom: 1rem;
+}
+
+.christmas-heading {
+    text-align: center;
+    color: var(--color-red-600);
+    font-size: 2.25rem;
+    line-height: 2.5rem; 
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.christmas-content {
+    max-width: 400px;
+    font-weight: 600;
+    margin-inline: auto;
+    padding-inline: 0.5rem;
+    color: #6B7280; 
+}
+
+.christmas-greeting {
+    margin-bottom: 1rem; 
+    font-size: 1.25rem;
+    line-height: 1.75rem; 
+    color: #1F2937; 
+}
+
+.christmas-highlight {
+    color: var(--color-red-700);
+}
+
+.christmas-button {
+    display: block;
+    background-color: var(--color-red-600);
+    color: var(--color-white);
+    padding-inline: 1rem;
+    padding-block: 0.25rem;
+    border-radius: 0.25rem;
+    margin-top: 2rem;
+    place-self: center;
+    cursor: pointer;
+    transition: background-color 100ms ease-in;
+}
+
+.christmas-button:hover {
+    background-color: var(--color-red-500);
+}
+
+.christmas-button:active {
+    background-color: var(--color-red-700);
+}

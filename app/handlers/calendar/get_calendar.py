@@ -1,7 +1,9 @@
 
 import datetime
 import sqlite3
+from types import SimpleNamespace
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from fastapi import Request
 from fastapi.responses import Response, RedirectResponse
@@ -103,6 +105,27 @@ def get_calendar(
         if (len(referer_date.split("/")) == 3 or len(referer_date.split("/")) == 4):
             view_transition_day = int(referer.split('/calendar/')[1].split("/")[2])
 
+    # for development
+    # day = 25
+    # print('YEAR', year)
+    # print('MONTH', month)
+    # print('DAY', day)
+    # holiday = None
+    # iso_date = f"{year}-{month}-{day}"
+    # end for development
+
+    holiday_tz_date_today = datetime.datetime.now(tz=ZoneInfo('Asia/Taipei'))
+    iso_date = holiday_tz_date_today.date().isoformat()
+
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM holiday WHERE iso_date = ?;", (iso_date, ))
+        row = cursor.fetchone()
+    
+    
+    holiday = SimpleNamespace(**row) if row else None
+
     context = CalendarMonthPage(
         current_user=current_user,
         bae_user=None if not bae_user else bae_user,
@@ -116,7 +139,8 @@ def get_calendar(
         bae_shifts=bae_shifts_dict if bae_shifts_dict else {},
         bae_commitments=bae_commitments if bae_commitments else {},
         view_transition_day=view_transition_day,
-        birthday_ids=settings.BIRTHDAY_IDS
+        birthday_ids=settings.BIRTHDAY_IDS,
+        holiday=holiday
     )
 
     response = templates.TemplateResponse(
