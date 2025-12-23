@@ -66,3 +66,6 @@ def birthday_greeting(
 
 def close_greeting(request: Request, current_user: Annotated[CurrentUser, Depends(requires_user)]):
     return Response(status_code=200)
+
+def close_holiday_modal(request: Request, current_user: Annotated[CurrentUser, Depends(requires_user)]):
+    return Response(status_code=200)
