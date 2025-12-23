@@ -121,10 +121,19 @@ def get_calendar(
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM holiday WHERE iso_date = ?;", (iso_date, ))
-        row = cursor.fetchone()
+        holiday_row = cursor.fetchone()
     
-    
-    holiday = SimpleNamespace(**row) if row else None
+    holiday = SimpleNamespace(**dict(holiday_row)) if holiday_row else None
+
+    message_row = None
+    if holiday:
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM holiday_message WHERE holiday_id = ? AND recipient_id = ?;", (holiday.holiday_id, current_user.id ))
+            message_row = cursor.fetchone()
+
+    custom_holiday_message = SimpleNamespace(**dict(message_row)) if message_row else None
 
     context = CalendarMonthPage(
         current_user=current_user,
@@ -140,7 +149,8 @@ def get_calendar(
         bae_commitments=bae_commitments if bae_commitments else {},
         view_transition_day=view_transition_day,
         birthday_ids=settings.BIRTHDAY_IDS,
-        holiday=holiday
+        holiday=holiday,
+        custom_holiday_message=custom_holiday_message
     )
 
     response = templates.TemplateResponse(

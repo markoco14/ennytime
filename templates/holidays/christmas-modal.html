@@ -3,13 +3,17 @@
         <img src="../../../static/winter-bg.png" alt="Christmas Tree" class="christmas-image">
         <h2 class="christmas-heading">Merry Christmas</h2>
         <div class="christmas-content">
-            {% if current_user.display_name %}
-            <p class="christmas-greeting">Dear {{current_user.display_name}},</p>
+            {% if custom_holiday_message %}
+            {{ custom_holiday_message.content | safe }}
             {% else %}
-            <p class="christmas-greeting">Dear New User,</p>
+            {% if current_user.display_name %}
+            <p>Dear {{current_user.display_name}},</p>
+            {% else %}
+            <p>Dear New User,</p>
             {% endif %}
-            <p>Merry Christmas and a Happy New Year from Ennytime <span class="christmas-highlight">❤️</span></p>
+            <p>Merry Christmas and a Happy New Year from Ennytime <span>❤️</span></p>
             <p>Wishing you an amazing year in 2026!</p>
+            {% endif %}
         </div>
         <a hx-delete="/modal-close" hx-target=".christmas-overlay" hx-swap="delete" class="christmas-button">Merry Christmas</a>
     </div>

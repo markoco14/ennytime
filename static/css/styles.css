@@ -1525,8 +1525,8 @@ display: block;
 
 .christmas-image {
     opacity: 0.5;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     margin-inline: auto;
     margin-bottom: 1rem;
 }
@@ -1545,18 +1545,33 @@ display: block;
     font-weight: 600;
     margin-inline: auto;
     padding-inline: 0.5rem;
-    color: #6B7280; 
+    max-height: 200px;
+    overflow-y: auto;
+
+    p { 
+        text-wrap: pretty;
+        margin-bottom: 1rem; 
+        color: #6B7280;
+    }
+
+    p:first-child {
+        margin-bottom: 1rem; 
+        font-size: 1.25rem;
+        line-height: 1.75rem; 
+        color: #1F2937; 
+    }
+
+    span {
+        color: var(--color-red-700);
+    
+    }
 }
 
-.christmas-greeting {
-    margin-bottom: 1rem; 
-    font-size: 1.25rem;
-    line-height: 1.75rem; 
-    color: #1F2937; 
-}
-
-.christmas-highlight {
-    color: var(--color-red-700);
+@media screen and (max-width: 550px) {
+    .christmas-image {
+        width: 100px;
+        height: 100px;
+    }
 }
 
 .christmas-button {
