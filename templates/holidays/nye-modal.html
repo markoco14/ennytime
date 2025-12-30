@@ -1,21 +1,23 @@
-<div class="js-nye-overlay fixed top-0 left-0 w-full h-full bg-sky-900/90 px-2 sm:px-0 duration-500 ease-in-out opacity-0 stacked">
-    <div class="js-nye-fireworks w-full h-full"></div>
-    <div class="js-nye-modal relative w-full sm:w-[500px] rounded-xl py-16 duration-300 ease-in-out opacity-0 translate-y-16">
+<div class="js-nye-overlay nye-overlay">
+    <div class="js-nye-fireworks nye-fireworks"></div>
+    <div class="js-nye-modal nye-modal">
         <button class="js-nye-modal-button absolute top-0 right-0 rounded-full bg-white p-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
-        <img src="../../../static/nye-ribbons.png" alt="NYE Ribbons" class="w-[100px] h-[100px] m-auto mb-4">
-        <h2 class="text-center text-4xl mb-8 font-bold text-amber-300">Happy New Year</h2>
-        <div class="px-4 font-semibold max-w-[400px] mx-auto bg-white rounded-md py-8 text-gray-700">
+        <img src="../../../static/nye-ribbons.png" alt="NYE Ribbons" class="nye-image">
+        <h2>Happy New Year</h2>
+        <div >
             {% if current_user.display_name %}
-            <p class="mb-4 text-xl text-sky-950">Dear {{current_user.display_name}},</p>
+            <p class="greeting">Dear {{current_user.display_name}},</p>
             {% else %}
-            <p class="mb-4 text-xl text-sky-950">Dear New User,</p>
+            <p class="greeting">Dear New User,</p>
             {% endif %}
-            <p class="mb-2">Happy New Year from Ennytime <span class="text-red-700">❤️</span></p>
-            <p>Wishing you all the best and all your dreams come true in 2025!</p>
+            <p>Happy New Year from Ennytime <span class="text-red-700">❤️</span></p>
+            <p>Wishing you all the best and all your dreams come true in 2026!</p>
+
         </div>
+        <a hx-delete="/modal-close" hx-target=".nye-overlay" hx-swap="delete" class="nye-button">Happy New Year</a>
     </div>
 </div>

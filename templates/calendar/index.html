@@ -125,6 +125,6 @@
 {% endif %}
 {% if not request.path_params.get("day") and holiday %}
 {% include holiday.template_name %}
-<script src="/static/js/behaviours/snow.js"></script>
+<script src="{{ holiday.script_name }}"></script>
 {% endif %}
 {% endblock content %}
