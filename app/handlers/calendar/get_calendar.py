@@ -107,11 +107,15 @@ def get_calendar(
 
     # for development
     # day = 25
+    # year = 2026
+    # month = 1
+    # day = 1
     # print('YEAR', year)
     # print('MONTH', month)
     # print('DAY', day)
     # holiday = None
-    # iso_date = f"{year}-{month}-{day}"
+    # iso_date = f"{year}-0{month}-0{day}"
+    # print(iso_date)
     # end for development
 
     holiday_tz_date_today = datetime.datetime.now(tz=ZoneInfo('Asia/Taipei'))
