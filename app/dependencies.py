@@ -18,7 +18,7 @@ def requires_guest(request: Request) -> CurrentUser:
         logging.info("User dependency no session token found")
         return None
     
-    session = Session.get_dependency(token=session_token)
+    session = Session.get_dependency(token=session_token, columns=["id", "user_id"])
 
     if not session:
         logging.info("User dependency no session found")
@@ -36,7 +36,7 @@ def requires_user(request: Request) -> CurrentUser:
         logging.info("User dependency no session token found")
         return None
     
-    session = Session.get_dependency(token=session_token)
+    session = Session.get_dependency(token=session_token, columns=["id", "user_id"])
 
     if not session:
         logging.info("User dependency no session found")

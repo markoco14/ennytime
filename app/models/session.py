@@ -14,14 +14,25 @@ class Session:
     expires_at: Optional[int] = None
     created_at: Optional[datetime] = None
 
+    ALLOWED_COLUMNS = {"id", "token", "user_id", "expires_at", "created_at"}
+
 
     @classmethod
-    def get_dependency(cls, token: str):
+    def get_dependency(cls, token: str, columns: list[str] = None):
+        if not columns:
+            columns = cls.ALLOWED_COLUMNS
+        else:
+            invalid = set(columns) - cls.ALLOWED_COLUMNS
+            if invalid:
+                raise ValueError(f"Invalid columns requested: {invalid}")
+            
+        columns = ", ".join(columns).rstrip(", ")
+
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute("SELECT id, user_id FROM sessions WHERE token = ?", (token, ))
+            cursor.execute(f"SELECT {columns} FROM sessions WHERE token = ?", (token, ))
             session = cursor.fetchone()
 
         return Session(**session) if session else None
