@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 import sqlite3
+from typing import Optional
 
-from app.viewmodels.structs import ShiftRow
 
 @dataclass
 class Shift:
-    id: int
-    long_name: str
-    short_name: str
-    user_id: int
+    id: Optional[int] = None
+    long_name: Optional[str] = None
+    short_name: Optional[str] = None
+    user_id: Optional[int] = None
 
     @classmethod
     def list_user_shifts(cls, user_id: int):
