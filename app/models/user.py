@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
+from typing import Optional
 
 from fastapi.datastructures import FormData
 
@@ -9,20 +10,20 @@ from app.viewmodels.user import CurrentUser
 @dataclass
 class User:
     id: int
-    display_name: str
-    first_name: str
-    last_name: str
-    email: str
-    hashed_password: str
-    birthday: str
-    username: str
-    is_superuser: bool
-    is_admin: bool
-    is_active: bool
-    is_verified: bool
-    verified_at: datetime
-    created_at: datetime
-    updated_at: datetime
+    display_name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    hashed_password: Optional[str] = None
+    birthday: Optional[str] = None
+    username: Optional[str] = None
+    is_superuser: Optional[bool] = None
+    is_admin: Optional[bool] = None
+    is_active: Optional[bool] = None
+    is_verified: Optional[bool] = None
+    verified_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     @classmethod
     def get_current_user(cls, user_id):
@@ -35,7 +36,7 @@ class User:
             if not row:
                 return None
 
-            user = CurrentUser.from_row(row=row)
+            user = User(**row)
 
             return user
 
