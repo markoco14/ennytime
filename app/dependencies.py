@@ -4,6 +4,7 @@ import logging
 
 from fastapi import Request
 
+from app.models.session import Session
 from app.models.user import User
 from app.viewmodels.structs import UserRow
 from app.viewmodels.user import CurrentUser
@@ -11,37 +12,37 @@ from app.viewmodels.user import CurrentUser
 
 def requires_guest(request: Request) -> CurrentUser:
     """Checks for a session and returns a guest user"""
-    session_id = request.cookies.get("session-id")
+    session_token = request.cookies.get("session-id")
 
-    if not session_id:
-        logging.info("User dependency no session id found")
+    if not session_token:
+        logging.info("User dependency no session token found")
         return None
     
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
-        session = cursor.fetchone()
+    session = Session.get_dependency(token=session_token)
+
+    if not session:
+        logging.info("User dependency no session found")
+        return None
         
-    user = User.get_current_user(user_id=session[0])
+    user = User.get_current_user(user_id=session.user_id)
 
     return user
 
 def requires_user(request: Request) -> CurrentUser:
     """Checks for a session and returns an authenticated user"""
-    session_id = request.cookies.get("session-id")
+    session_token = request.cookies.get("session-id")
 
-    if not session_id:
-        logging.info("User dependency no session id found")
+    if not session_token:
+        logging.info("User dependency no session token found")
         return None
     
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
-        session = cursor.fetchone()
+    session = Session.get_dependency(token=session_token)
+
+    if not session:
+        logging.info("User dependency no session found")
+        return None
         
-    user = User.get_current_user(user_id=session[0])
+    user = User.get_current_user(user_id=session.user_id)
 
     return user
 
