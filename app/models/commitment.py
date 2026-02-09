@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
+from typing import Optional
 
 
 @dataclass
 class Commitment:
     id: int
-    shift_id: int
-    user_id: int
-    date: datetime
+    shift_id: Optional[int] = None
+    user_id: Optional[int] = None
+    date: Optional[datetime] = None
 
     @classmethod
     def list_month_for_user(cls, start_of_month: datetime, end_of_month: datetime, user_id: int):

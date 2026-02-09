@@ -4,6 +4,7 @@ import logging
 
 from fastapi import Request
 
+from app.models.commitment import Commitment
 from app.models.session import Session
 from app.models.shift import Shift
 from app.models.user import User
@@ -87,17 +88,25 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> User:
     
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
+
+        cursor.execute("SELECT id, user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
-        
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = User(*cursor.fetchone())
+        if not session: return None
+        session = Session(**session)
 
-        cursor.execute("SELECT user_id FROM schedules WHERE id = ?", (schedule_id, ))
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session.user_id,))
+        user = cursor.fetchone()
+        if not user: return None
+        user = User(**user)
+
+        cursor.execute("SELECT id, user_id FROM schedules WHERE id = ?", (schedule_id, ))
         schedule = cursor.fetchone()
+        if not schedule: return None
+        schedule = Commitment(**schedule)
 
-    if user[0] != schedule[0]:
+    if user.id != schedule.user_id:
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()
