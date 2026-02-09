@@ -1,8 +1,6 @@
 from collections import namedtuple
 
 
-UserLoginRow = namedtuple("UserLoginRow", ("id", "display_name", "is_admin", "birthday", "username", "email", "hashed_password"))
-
 ShiftRow = namedtuple("ShiftRow", ("id", "long_name", "short_name"))
 ShiftCreate = namedtuple("ShiftCreate", ("long_name", "short_name", "user_id"))
 

@@ -13,8 +13,9 @@ from app.auth import auth_service
 from app.core.template_utils import templates
 from app.dependencies import requires_guest, requires_user
 from app.models.session import Session
+from app.models.user import User
 from app.viewmodels.session import SessionCreate
-from app.viewmodels.structs import UserLoginRow
+
 
 router = APIRouter()
 
@@ -183,11 +184,12 @@ def signin(
     # check if email already exists for this app
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT id, display_name, email, is_admin, birthday, username, hashed_password FROM users WHERE email = ?", (email, ))
         user_row = cursor.fetchone()
         if user_row:
-            current_user = UserLoginRow(*user_row)
+            current_user = User(**user_row)
         else:
             context.update({"form_error": "Invalid email or password"})
 
@@ -216,9 +218,10 @@ def signin(
 
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT id, display_name, email, is_admin, birthday, username FROM users WHERE email = ?", (email, ))
-        current_user = UserRow(*cursor.fetchone())
+        current_user = User(**cursor.fetchone())
 
     token = str(uuid.uuid4())
     expires_at = int(time.time()) + 3600
