@@ -148,12 +148,13 @@ def requires_admin(request: Request):
     
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = User(*cursor.fetchone())
+        user = User(**cursor.fetchone())
 
     if not user.is_admin:
         return None
