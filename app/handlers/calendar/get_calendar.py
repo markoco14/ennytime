@@ -60,7 +60,7 @@ def get_calendar(
     start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
     end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
 
-    db_shifts = Shift.list_user_shifts(user_id=current_user.id)
+    db_shifts = Shift.list_user_shifts(user_id=current_user.id, columns=["id", "long_name", "short_name", "user_id"])
     db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
@@ -79,7 +79,7 @@ def get_calendar(
     bae_shifts_dict = {}
     bae_commitments = {}
     if bae_user:
-        bae_db_shifts = Shift.list_user_shifts(user_id=bae_user.id)
+        bae_db_shifts = Shift.list_user_shifts(user_id=bae_user.id, columns=["id", "long_name", "short_name", "user_id"])
         bae_db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=bae_user.id)
 
         # repackage bae shifts as dict with shift ids as keys to access with .get()

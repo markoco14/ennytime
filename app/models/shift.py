@@ -29,7 +29,7 @@ class Shift:
 
             cursor = conn.cursor()
             cursor.execute(f"SELECT {columns} FROM shifts WHERE user_id = ?", (user_id, ))
-            
+
             shifts_rows = [Shift(**row) for row in cursor.fetchall()]
 
         return shifts_rows
@@ -42,7 +42,9 @@ class Shift:
             invalid = set(columns) - cls.ALLOWED_COLUMNS
             if invalid:
                 raise ValueError(f"Invalid columns requested: {invalid}")
-            
+
+        columns = ", ".join(columns).rstrip(", ")
+
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys = ON;")
             conn.row_factory = sqlite3.Row
