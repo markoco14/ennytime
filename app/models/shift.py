@@ -51,12 +51,7 @@ class Shift:
             cursor = conn.cursor()
             cursor.execute(f"SELECT {columns} FROM shifts WHERE id = ?;", (shift_id, ))
             row = cursor.fetchone()
-            shift = Shift(
-                id=row["id"],
-                long_name=row["long_name"],
-                short_name=row["short_name"],
-                user_id=row["user_id"]
-            )
+            shift = Shift(**row)
             return shift
     
     @classmethod

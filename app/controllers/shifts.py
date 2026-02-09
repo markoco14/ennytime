@@ -22,7 +22,7 @@ def index(
             return Response(status_code=200, header={"hx-redirect": f"/signin"})
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
-    
+
     shifts_rows = Shift.list_user_shifts(user_id=current_user.id, columns=["id", "long_name", "short_name", "user_id"])
 
     context = {
@@ -118,7 +118,7 @@ def edit(
         
         return response
 
-    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift = Shift.get(shift_id=shift_type_id, columns=["id", "long_name", "short_name", "user_id"])
 
     if not db_shift:
         if request.headers.get("hx-request"):
@@ -159,7 +159,7 @@ async def update(
         else:
             return RedirectResponse(status_code=303, url=f"/shifts/{shift_type_id}/edit")
         
-    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift = Shift.get(shift_id=shift_type_id, columns=["id", "long_name", "short_name", "user_id"])
 
     if not db_shift:
         if request.headers.get("hx-request"):
@@ -187,7 +187,7 @@ def delete(
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
         
-    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift = Shift.get(shift_id=shift_type_id, columns=["id", "long_name", "short_name", "user_id"])
 
     if not db_shift:
         if request.headers.get("hx-request"):
