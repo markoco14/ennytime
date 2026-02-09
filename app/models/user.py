@@ -5,8 +5,6 @@ from typing import Optional
 
 from fastapi.datastructures import FormData
 
-from app.viewmodels.user import CurrentUser
-
 @dataclass
 class User:
     id: int

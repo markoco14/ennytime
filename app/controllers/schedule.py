@@ -9,10 +9,10 @@ from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
 from app.models.commitment import Commitment
 from app.models.shift import Shift
+from app.models.user import User
 from app.services import calendar_service
 from app.viewmodels.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
 from app.viewmodels.structs import ShiftRow
-from app.viewmodels.user import CurrentUser
 
 
 def index(
@@ -124,7 +124,7 @@ def month(
 
 async def create(
     request: Request,
-    current_user: Annotated[CurrentUser, Depends(requires_user)],
+    current_user: Annotated[User, Depends(requires_user)],
 ):  
     if not current_user:
         if request.headers.get("hx-request"):
