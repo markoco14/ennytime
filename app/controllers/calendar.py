@@ -9,16 +9,16 @@ from app.core.template_utils import templates
 from app.core.config import get_settings
 from app.handlers.calendar.get_calendar import get_calendar
 from app.dependencies import requires_user
-from app.viewmodels.user import CurrentUser
+from app.models.user import User
 
 settings = get_settings()
 
 def month(
     request: Request,
+    current_user: Annotated[User, Depends(requires_user)],
     month: int,
     year: int,
     day: Optional[int] = None,
-    current_user=Depends(requires_user),
 ):  
     if not day:
         day = None
@@ -28,10 +28,10 @@ def month(
 
 def day(
     request: Request,
+    current_user: Annotated[User, Depends(requires_user)],
     month: int,
     year: int,
     day: int,
-    current_user=Depends(requires_user),
 ):
     if not day:
         day = None
@@ -41,10 +41,10 @@ def day(
 
 def edit(
     request: Request,
+    current_user: Annotated[User, Depends(requires_user)],
     month: int,
     year: int,
     day: int,
-    current_user=Depends(requires_user),
 ):
     if not day:
         day = None
@@ -53,7 +53,7 @@ def edit(
 
 def birthday_greeting(
         request: Request,
-        current_user: Annotated[CurrentUser, Depends(requires_user)]
+        current_user: Annotated[User, Depends(requires_user)]
         ):
     if not current_user:
         return Response(status_code=401, content="No user")
@@ -64,8 +64,8 @@ def birthday_greeting(
         context={"birthday_message": settings.BIRTHDAY_LINES},
     )
 
-def close_greeting(request: Request, current_user: Annotated[CurrentUser, Depends(requires_user)]):
+def close_greeting(request: Request, current_user: Annotated[User, Depends(requires_user)]):
     return Response(status_code=200)
 
-def close_holiday_modal(request: Request, current_user: Annotated[CurrentUser, Depends(requires_user)]):
+def close_holiday_modal(request: Request, current_user: Annotated[User, Depends(requires_user)]):
     return Response(status_code=200)

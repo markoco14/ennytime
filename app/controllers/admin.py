@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.dependencies import requires_admin
-from app.viewmodels.signins import SigninRow
+from app.models.user_sign_in import UserSignIn
 
 router = APIRouter(
     prefix="/admin",
@@ -86,22 +86,22 @@ def signins(
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("""
-                       SELECT signins.created_at, signins.status, users.id as user_id, users.display_name 
+                       SELECT 
+                        signins.id as id,
+                        signins.created_at as created_at,
+                        signins.status as status,
+                        users.id as user_id,
+                        users.display_name as display_name
                        FROM user_signins as signins 
                        JOIN users ON users.id = signins.user_id 
                        ORDER BY signins.created_at DESC;
                        """)
-        rows = cursor.fetchall()
+        user_sign_ins = [UserSignIn(**row) for row in cursor.fetchall()]
 
     signin_rows = []
-    for row in rows:
-        date = datetime.strptime(row["created_at"], "%Y-%m-%d %H:%M:%S")
-        localized_date = date + timedelta(hours=8)
-        signin_rows.append(SigninRow(
-            display_name=row["display_name"],
-            created_at=localized_date,
-            status=row["status"]
-            ))
+    for sign_in in user_sign_ins:
+        sign_in.created_at = datetime.strptime(sign_in.created_at, "%Y-%m-%d %H:%M:%S") + timedelta(hours=8)
+        signin_rows.append(sign_in)
 
     context = {
         "current_user": current_user,

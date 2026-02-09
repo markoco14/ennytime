@@ -9,10 +9,10 @@ from app.core.template_utils import templates
 from app.dependencies import requires_schedule_owner, requires_user
 from app.models.commitment import Commitment
 from app.models.shift import Shift
+from app.models.user import User
 from app.services import calendar_service
 from app.viewmodels.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
-from app.viewmodels.structs import ShiftRow
-from app.viewmodels.user import CurrentUser
+
 
 
 def index(
@@ -88,7 +88,7 @@ def month(
     start_of_month = calendar_service.get_start_of_month(year=year, month=month)
     end_of_month = calendar_service.get_end_of_month(year=year, month=month)  
 
-    db_shifts = Shift.list_user_shifts(user_id=current_user.id)
+    db_shifts = Shift.list_user_shifts(user_id=current_user.id, columns=["id", "long_name", "short_name", "user_id"])
     db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage schedule as dict with dates as .get() accessible keys
@@ -124,7 +124,7 @@ def month(
 
 async def create(
     request: Request,
-    current_user: Annotated[CurrentUser, Depends(requires_user)],
+    current_user: Annotated[User, Depends(requires_user)],
 ):  
     if not current_user:
         if request.headers.get("hx-request"):
@@ -151,9 +151,10 @@ async def create(
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
                 conn.execute("PRAGMA foreign_keys=ON;")
+                conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
                 cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (shift_id, ))
-                shift_row = ShiftRow(*cursor.fetchone())
+                shift_row = Shift(**cursor.fetchone())
 
         return templates.TemplateResponse(
             request=request,
@@ -193,9 +194,10 @@ async def delete(
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (db_commitment.shift_id, ))
-            shift_row = ShiftRow(*cursor.fetchone())
+            shift_row = Shift(**cursor.fetchone())
 
         date_obj = datetime.datetime.strptime(db_commitment.date, "%Y-%m-%d %H:%M:%S").date()
 

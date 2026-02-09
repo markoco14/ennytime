@@ -4,49 +4,81 @@ import logging
 
 from fastapi import Request
 
+from app.models.commitment import Commitment
+from app.models.session import Session
+from app.models.shift import Shift
 from app.models.user import User
-from app.viewmodels.structs import UserRow
-from app.viewmodels.user import CurrentUser
 
 
-def requires_guest(request: Request) -> CurrentUser:
+def requires_guest(request: Request) -> User:
     """Checks for a session and returns a guest user"""
-    session_id = request.cookies.get("session-id")
+    session_token = request.cookies.get("session-id")
 
-    if not session_id:
-        logging.info("User dependency no session id found")
+    if not session_token:
+        logging.info("User dependency no session token found")
         return None
     
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
-        session = cursor.fetchone()
+    session = Session.get_dependency(token=session_token, columns=["id", "user_id"])
+
+    if not session:
+        logging.info("User dependency no session found")
+        return None
         
-    user = User.get_current_user(user_id=session[0])
+    user = User.get_current_user(user_id=session.user_id)
 
     return user
 
-def requires_user(request: Request) -> CurrentUser:
+def requires_user(request: Request) -> User:
     """Checks for a session and returns an authenticated user"""
-    session_id = request.cookies.get("session-id")
+    session_token = request.cookies.get("session-id")
 
-    if not session_id:
-        logging.info("User dependency no session id found")
+    if not session_token:
+        logging.info("User dependency no session token found")
         return None
     
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
-        session = cursor.fetchone()
+    session = Session.get_dependency(token=session_token, columns=["id", "user_id"])
+
+    if not session:
+        logging.info("User dependency no session found")
+        return None
         
-    user = User.get_current_user(user_id=session[0])
+    user = User.get_current_user(user_id=session.user_id)
 
     return user
 
 
-def requires_shift_owner(request: Request, shift_type_id: int):
+def requires_shift_owner(request: Request, shift_type_id: int) -> User:
+    """Checks for a session and checks the user owns the resource before returns an authenticated user"""
+    session_token = request.cookies.get("session-id")
+
+    if not session_token:
+        logging.info("User dependency no session token found")
+        return None
+    
+    session = Session.get_dependency(token=session_token, columns=["id", "user_id"])
+
+    if not session:
+        logging.info("User dependency no session found")
+        return None
+    
+    user = User.get_current_user(user_id=session.user_id)
+
+    if not user:
+        return None
+    
+    shift = Shift.get(shift_id=shift_type_id, columns=["id", "user_id"])
+
+    if not shift or user.id != shift.user_id:
+        with sqlite3.connect("db.sqlite3") as conn:
+            conn.execute("PRAGMA foreign_keys=ON;")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM sessions WHERE id = ?", (session.id, ))
+        return None
+
+    return user
+
+
+def requires_schedule_owner(request: Request, schedule_id: int) -> User:
     """Checks for a session and checks the user owns the resource before returns an authenticated user"""
     session_id = request.cookies.get("session-id")
 
@@ -56,47 +88,25 @@ def requires_shift_owner(request: Request, shift_type_id: int):
     
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
+
+        cursor.execute("SELECT id, user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
-        
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
+        if not session: return None
+        session = Session(**session)
+
+        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session.user_id,))
         user = cursor.fetchone()
+        if not user: return None
+        user = User(**user)
 
-        cursor.execute("SELECT user_id FROM shifts WHERE id = ?", (shift_type_id, ))
-        shift = cursor.fetchone()
-
-    if user[0] != shift[0]:
-        with sqlite3.connect("db.sqlite3") as conn:
-            conn.execute("PRAGMA foreign_keys=ON;")
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM sessions WHERE token = ?", (session_id, ))
-        return None
-
-    return user
-
-
-def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
-    """Checks for a session and checks the user owns the resource before returns an authenticated user"""
-    session_id = request.cookies.get("session-id")
-
-    if not session_id:
-        logging.info("User dependency no session id found")
-        return None
-    
-    with sqlite3.connect("db.sqlite3") as conn:
-        conn.execute("PRAGMA foreign_keys=ON;")
-        cursor = conn.cursor()
-        cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
-        session = cursor.fetchone()
-        
-        cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
-
-        cursor.execute("SELECT user_id FROM schedules WHERE id = ?", (schedule_id, ))
+        cursor.execute("SELECT id, user_id FROM schedules WHERE id = ?", (schedule_id, ))
         schedule = cursor.fetchone()
+        if not schedule: return None
+        schedule = Commitment(**schedule)
 
-    if user[0] != schedule[0]:
+    if user.id != schedule.user_id:
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
             cursor = conn.cursor()
@@ -106,7 +116,7 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
     return user
 
 
-def requires_profile_owner(request: Request, user_id: int) -> UserRow:
+def requires_profile_owner(request: Request, user_id: int) -> User:
     session_id = request.cookies.get("session-id")
     if not session_id:
         logging.info("User dependency no session id found")
@@ -119,7 +129,7 @@ def requires_profile_owner(request: Request, user_id: int) -> UserRow:
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
+        user = User(*cursor.fetchone())
 
     if user[0] != user_id:
         with sqlite3.connect("db.sqlite3") as conn:
@@ -138,12 +148,13 @@ def requires_admin(request: Request):
     
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT user_id FROM sessions WHERE token = ?", (session_id, ))
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
+        user = User(**cursor.fetchone())
 
     if not user.is_admin:
         return None

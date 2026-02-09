@@ -1,10 +1,12 @@
 import datetime
 from typing import TypedDict
 
-from app.viewmodels.structs import ScheduleRow, ShiftRow, UserRow
+from app.models.commitment import Commitment
+from app.models.shift import Shift
+from app.models.user import User
 
 class CalendarMonthPage(TypedDict):
-    current_user: UserRow
+    current_user: User
     current_month: datetime.date
     prev_month_object: datetime.date
     next_month_object: datetime.date
@@ -19,7 +21,7 @@ class CalendarMonthPage(TypedDict):
 
 class ScheduleMonthPage(TypedDict):
     current_date: datetime.date
-    current_user: UserRow
+    current_user: User
     prev_month_name: str
     next_month_name: str
     month_calendar: dict
@@ -27,13 +29,13 @@ class ScheduleMonthPage(TypedDict):
     schedules: dict
 
 class YesShiftBtn(TypedDict):
-    shift: ShiftRow
-    schedule: ScheduleRow
+    shift: Shift
+    schedule: Commitment
     
 class NoShiftBtn(TypedDict):
     date: datetime.date
-    shift: ShiftRow
+    shift: Shift
 
 
 class ProfilePage(TypedDict):
-    current_user: UserRow
+    current_user: User

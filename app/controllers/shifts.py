@@ -8,22 +8,22 @@ from fastapi.responses import RedirectResponse
 from app.core.template_utils import templates
 from app.dependencies import requires_shift_owner, requires_user
 from app.models.shift import Shift
-from app.viewmodels.user import CurrentUser
+from app.models.user import User
 
 router = APIRouter(prefix="/shifts")
 
 
 def index(
     request: Request,
-    current_user: Annotated[CurrentUser, Depends(requires_user)]
+    current_user: Annotated[User, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
             return Response(status_code=200, header={"hx-redirect": f"/signin"})
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
-        
-    shifts_rows = Shift.list_user_shifts(user_id=current_user.id)
+
+    shifts_rows = Shift.list_user_shifts(user_id=current_user.id, columns=["id", "long_name", "short_name", "user_id"])
 
     context = {
         "current_user": current_user,
@@ -51,7 +51,7 @@ def index(
 
 def new(
     request: Request,
-    current_user: Annotated[CurrentUser, Depends(requires_user)]
+    current_user: Annotated[User, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -78,7 +78,7 @@ def new(
 def create(
     request: Request,
     shift_name: Annotated[str, Form()],
-    current_user: Annotated[CurrentUser, Depends(requires_user)]
+    current_user: Annotated[User, Depends(requires_user)]
     ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -108,7 +108,7 @@ def create(
 def edit(
     request: Request,
     shift_type_id: int,
-    current_user: Annotated[CurrentUser, Depends(requires_shift_owner)]
+    current_user: Annotated[User, Depends(requires_shift_owner)]
 ):
     if not current_user:
         if request.headers.get("hx-request"):
@@ -118,7 +118,7 @@ def edit(
         
         return response
 
-    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift = Shift.get(shift_id=shift_type_id, columns=["id", "long_name", "short_name", "user_id"])
 
     if not db_shift:
         if request.headers.get("hx-request"):
@@ -140,7 +140,7 @@ def edit(
 async def update(
     request: Request,
     shift_type_id: int,
-    current_user: Annotated[CurrentUser, Depends(requires_shift_owner)]
+    current_user: Annotated[User, Depends(requires_shift_owner)]
 ):  
     """Updates the user's shift. Receives long_name and short_name form fields"""
     if not current_user:
@@ -159,7 +159,7 @@ async def update(
         else:
             return RedirectResponse(status_code=303, url=f"/shifts/{shift_type_id}/edit")
         
-    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift = Shift.get(shift_id=shift_type_id, columns=["id", "long_name", "short_name", "user_id"])
 
     if not db_shift:
         if request.headers.get("hx-request"):
@@ -178,7 +178,7 @@ async def update(
 def delete(
     request: Request,
     shift_type_id: int,
-    current_user: Annotated[CurrentUser, Depends(requires_shift_owner)]
+    current_user: Annotated[User, Depends(requires_shift_owner)]
 ):
     """Delete shift type"""
     if not current_user:
@@ -187,7 +187,7 @@ def delete(
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
         
-    db_shift = Shift.get(shift_id=shift_type_id)
+    db_shift = Shift.get(shift_id=shift_type_id, columns=["id", "long_name", "short_name", "user_id"])
 
     if not db_shift:
         if request.headers.get("hx-request"):

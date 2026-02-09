@@ -14,7 +14,6 @@ from app.models.shift import Shift
 from app.models.user import User
 from app.services import calendar_service
 from app.viewmodels.pages import CalendarMonthPage
-from app.viewmodels.structs import UserRow
 
 settings = get_settings()
 
@@ -42,10 +41,11 @@ def get_calendar(
     
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
         bae_row = cursor.fetchone()
-        bae_user = UserRow(*bae_row) if bae_row else None
+        bae_user = User(**bae_row) if bae_row else None
     
     month_calendar = calendar_service.get_month_calendar(
         year=current_month_object.year, 
@@ -60,7 +60,7 @@ def get_calendar(
     start_of_month = calendar_service.get_start_of_month(year=current_month_object.year, month=current_month_object.month)
     end_of_month = calendar_service.get_end_of_month(year=current_month_object.year, month=current_month_object.month)
 
-    db_shifts = Shift.list_user_shifts(user_id=current_user.id)
+    db_shifts = Shift.list_user_shifts(user_id=current_user.id, columns=["id", "long_name", "short_name", "user_id"])
     db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=current_user.id)
 
     # repackage current user shifts as dict with shift ids as keys to access with .get()
@@ -79,7 +79,7 @@ def get_calendar(
     bae_shifts_dict = {}
     bae_commitments = {}
     if bae_user:
-        bae_db_shifts = Shift.list_user_shifts(user_id=bae_user.id)
+        bae_db_shifts = Shift.list_user_shifts(user_id=bae_user.id, columns=["id", "long_name", "short_name", "user_id"])
         bae_db_commitments = Commitment.list_month_for_user(start_of_month=start_of_month, end_of_month=end_of_month, user_id=bae_user.id)
 
         # repackage bae shifts as dict with shift ids as keys to access with .get()
