@@ -7,7 +7,7 @@ from typing import Optional
 
 @dataclass
 class Session:
-    id: Optional[int]
+    id: int
     token: Optional[str] = None
     user_id: Optional[int] = None
     expires_at: Optional[int] = None

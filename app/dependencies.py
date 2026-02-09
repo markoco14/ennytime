@@ -66,7 +66,7 @@ def requires_shift_owner(request: Request, shift_type_id: int) -> User:
     if not user:
         return None
     
-    shift = Shift.get(shift_id=shift_type_id, columns=["user_id"])
+    shift = Shift.get(shift_id=shift_type_id, columns=["id", "user_id"])
 
     if not shift or user.id != shift.user_id:
         with sqlite3.connect("db.sqlite3") as conn:

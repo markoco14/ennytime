@@ -5,7 +5,7 @@ from typing import Optional
 
 @dataclass
 class Shift:
-    id: Optional[int] = None
+    id: int
     long_name: Optional[str] = None
     short_name: Optional[str] = None
     user_id: Optional[int] = None
