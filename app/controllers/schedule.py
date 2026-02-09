@@ -12,7 +12,7 @@ from app.models.shift import Shift
 from app.models.user import User
 from app.services import calendar_service
 from app.viewmodels.pages import NoShiftBtn, ScheduleMonthPage, YesShiftBtn
-from app.viewmodels.structs import ShiftRow
+
 
 
 def index(
@@ -151,9 +151,10 @@ async def create(
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
                 conn.execute("PRAGMA foreign_keys=ON;")
+                conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
                 cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (shift_id, ))
-                shift_row = ShiftRow(*cursor.fetchone())
+                shift_row = Shift(**cursor.fetchone())
 
         return templates.TemplateResponse(
             request=request,
@@ -193,9 +194,10 @@ async def delete(
     if request.headers.get("hx-request"):
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute("SELECT id, long_name, short_name FROM shifts WHERE id = ?;", (db_commitment.shift_id, ))
-            shift_row = ShiftRow(*cursor.fetchone())
+            shift_row = Shift(**cursor.fetchone())
 
         date_obj = datetime.datetime.strptime(db_commitment.date, "%Y-%m-%d %H:%M:%S").date()
 
