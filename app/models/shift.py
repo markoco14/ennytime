@@ -13,12 +13,24 @@ class Shift:
     ALLOWED_COLUMNS = {"id", "long_name", "short_name", "user_id"}
 
     @classmethod
-    def list_user_shifts(cls, user_id: int):
+    def list_user_shifts(cls, user_id: int, columns: list[str]):
+        if not columns:
+            columns = cls.ALLOWED_COLUMNS
+        else:
+            invalid = set(columns) - cls.ALLOWED_COLUMNS
+            if invalid:
+                raise ValueError(f"Invalid columns requested: {invalid}")
+            
+        columns = ", ".join(columns).rstrip(", ")
+        
         with sqlite3.connect("db.sqlite3") as conn:
             conn.execute("PRAGMA foreign_keys=ON;")
+            conn.row_factory = sqlite3.Row
+
             cursor = conn.cursor()
-            cursor.execute("SELECT id, long_name, short_name, user_id FROM shifts WHERE user_id = ?", (user_id, ))
-            shifts_rows = [Shift(*row) for row in cursor.fetchall()]
+            cursor.execute(f"SELECT {columns} FROM shifts WHERE user_id = ?", (user_id, ))
+            
+            shifts_rows = [Shift(**row) for row in cursor.fetchall()]
 
         return shifts_rows
     

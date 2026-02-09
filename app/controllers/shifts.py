@@ -22,8 +22,8 @@ def index(
             return Response(status_code=200, header={"hx-redirect": f"/signin"})
         else:
             return RedirectResponse(status_code=303, url=f"/signin")
-        
-    shifts_rows = Shift.list_user_shifts(user_id=current_user.id)
+    
+    shifts_rows = Shift.list_user_shifts(user_id=current_user.id, columns=["id", "long_name", "short_name", "user_id"])
 
     context = {
         "current_user": current_user,
