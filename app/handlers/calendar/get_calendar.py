@@ -14,7 +14,6 @@ from app.models.shift import Shift
 from app.models.user import User
 from app.services import calendar_service
 from app.viewmodels.pages import CalendarMonthPage
-from app.viewmodels.structs import UserRow
 
 settings = get_settings()
 
@@ -42,10 +41,11 @@ def get_calendar(
     
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys=ON;")
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT users.id, users.display_name, users.is_admin, users.birthday, users.email, users.email FROM users JOIN shares ON shares.sender_id = ? WHERE users.id = shares.receiver_id;", (current_user.id, ))
         bae_row = cursor.fetchone()
-        bae_user = UserRow(*bae_row) if bae_row else None
+        bae_user = User(**bae_row) if bae_row else None
     
     month_calendar = calendar_service.get_month_calendar(
         year=current_month_object.year, 

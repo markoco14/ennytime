@@ -7,7 +7,6 @@ from fastapi import Request
 from app.models.session import Session
 from app.models.shift import Shift
 from app.models.user import User
-from app.viewmodels.structs import UserRow
 
 
 def requires_guest(request: Request) -> User:
@@ -78,7 +77,7 @@ def requires_shift_owner(request: Request, shift_type_id: int) -> User:
     return user
 
 
-def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
+def requires_schedule_owner(request: Request, schedule_id: int) -> User:
     """Checks for a session and checks the user owns the resource before returns an authenticated user"""
     session_id = request.cookies.get("session-id")
 
@@ -93,7 +92,7 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
+        user = User(*cursor.fetchone())
 
         cursor.execute("SELECT user_id FROM schedules WHERE id = ?", (schedule_id, ))
         schedule = cursor.fetchone()
@@ -108,7 +107,7 @@ def requires_schedule_owner(request: Request, schedule_id: int) -> UserRow:
     return user
 
 
-def requires_profile_owner(request: Request, user_id: int) -> UserRow:
+def requires_profile_owner(request: Request, user_id: int) -> User:
     session_id = request.cookies.get("session-id")
     if not session_id:
         logging.info("User dependency no session id found")
@@ -121,7 +120,7 @@ def requires_profile_owner(request: Request, user_id: int) -> UserRow:
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
+        user = User(*cursor.fetchone())
 
     if user[0] != user_id:
         with sqlite3.connect("db.sqlite3") as conn:
@@ -145,7 +144,7 @@ def requires_admin(request: Request):
         session = cursor.fetchone()
         
         cursor.execute("SELECT id, display_name, is_admin, birthday, username, email FROM users WHERE id = ?", (session[0],))
-        user = UserRow(*cursor.fetchone())
+        user = User(*cursor.fetchone())
 
     if not user.is_admin:
         return None
