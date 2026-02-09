@@ -1,9 +1,9 @@
 import datetime
 from typing import TypedDict
 
+from app.models.commitment import Commitment
 from app.models.shift import Shift
 from app.models.user import User
-from app.viewmodels.structs import ScheduleRow
 
 class CalendarMonthPage(TypedDict):
     current_user: User
@@ -30,7 +30,7 @@ class ScheduleMonthPage(TypedDict):
 
 class YesShiftBtn(TypedDict):
     shift: Shift
-    schedule: ScheduleRow
+    schedule: Commitment
     
 class NoShiftBtn(TypedDict):
     date: datetime.date
