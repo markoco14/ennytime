@@ -260,7 +260,7 @@ strong {
     font-weight: 600;
 }
 
-{{/* layout styles */}}
+/* layout styles */
 
 .wrapper {
     max-width: 1000px;
@@ -290,7 +290,7 @@ strong {
     border-width: 0; 
 }
 
-{{/* header styles */}}
+/* header styles */
 
 .header {
     position: fixed;
@@ -424,11 +424,11 @@ display: block;
 }
 
 
-{{/* @media screen and (min-width: 768px) { 
+/* @media screen and (min-width: 768px) { 
     .header__dropdown {
         display: block; 
     }
-} */}}
+} */
 
  @media screen and (width <= 768px) {
     .nav {
@@ -464,7 +464,7 @@ display: block;
     }
 }
 
-{{/* hero styles */}}
+/* hero styles */
 
 .hero {
     background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-600)); 
@@ -588,7 +588,7 @@ display: block;
 
 }
 
-{{/* features styles */}}
+/* features styles */
 
 .features {
     padding-block: 6rem;
@@ -720,7 +720,7 @@ display: block;
     fill: var(--color-white);
 }
 
-{{/* auth page styles */}}
+/* auth page styles */
 
 .auth {
     background-color: var(--color-white);
@@ -797,7 +797,7 @@ display: block;
  }
 
 
-{{/* calendar styles */}}
+/* calendar styles */
 
 .calendar__wrapper {
     padding-top: 4rem;
@@ -1032,7 +1032,7 @@ display: block;
 }
 
 
-{{/* shifts index page styles */}}
+/* shifts index page styles */
 
 .divider {
     border: 1px solid var(--color-pink-300);
@@ -1112,7 +1112,7 @@ display: block;
 }
 
 
-{{/* shifts new page styles */}}
+/* shifts new page styles */
 
 .shifts-new__wrapper {
     padding-top: 4em;
@@ -1155,14 +1155,14 @@ display: block;
     background-color: var(--color-pink-500);
 }
 
-{{/* shifts edit page styles */}}
+/* shifts edit page styles */
 
 .shifts-edit__wrapper {
     padding-top: 4em;
     padding-inline: 0.5em;
 }
 
-{{/* schedule page  */}}
+/* schedule page  */
 
 .schedule__wrapper {
     padding-top: 4em;
@@ -1216,7 +1216,7 @@ display: block;
     background-color: var(--color-white);
 }
 
-{{/* profile page styles */}}
+/* profile page styles */
 
 .profile {
     display: grid;
@@ -1430,7 +1430,7 @@ display: block;
     }
 }
 
-{{/* christmas styles */}}
+/* christmas styles */
 
 .christmas-overlay {
     position: fixed;
@@ -1445,7 +1445,7 @@ display: block;
     padding-inline: 0.5rem;
     transition: opacity 500ms ease-in-out;
     z-index: 10001;
-    {{/* opacity: 0; */}}
+    /* opacity: 0; */
 }
 
 .christmas-modal {
@@ -1530,7 +1530,7 @@ display: block;
     background-color: var(--color-red-700);
 }
 
-{{/* nye styles */}}
+/* nye styles */
 
 .nye-fireworks {
     position: absolute;
