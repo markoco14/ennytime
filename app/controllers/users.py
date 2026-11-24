@@ -122,7 +122,35 @@ def get_delete_form(request: Request, current_user=Depends(requires_user)):
     )
 
 
+async def confirm_delete(request: Request):
+    form_data = await request.form()
+
+    confirmation = form_data.get("confirmation", "")
+    if not confirmation or confirmation != "Delete my account":
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/delete/submit-btn.html",
+            context={
+                "enabled": False
+            }
+        )
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/delete/submit-btn.html",
+        context={
+            "enabled": True
+        }
+    )
+
+
 async def delete(request: Request, current_user=Depends(requires_user)):
+    form_data = await request.form()
+    
+    confirmation = form_data.get("confirmation", "")
+    if not confirmation or confirmation != "Delete my account":
+        return Response(status_code=204, headers={"Hx-Refresh": "true"})
+
     response = Response(status_code=204, headers={"Hx-Redirect": "/account-deleted"})
     response.delete_cookie("session-id")
     return response

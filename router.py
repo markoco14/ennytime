@@ -39,8 +39,9 @@ routes = [
     ("GET",     "/profile",                             users.profile,              requires_user),   # user
     ("PUT",     "/users/{user_id}",                     users.update,               requires_profile_owner),
     ("POST",    "/username-unique",                     users.unique,               requires_user),   # owner?
-    ("GET",     "/profiles/delete",                     users.get_delete_form,      requires_profile_owner),
-    ("DELETE",  "/profiles/delete",                     users.delete,               requires_profile_owner),
+    ("GET",     "/profile/delete",                      users.get_delete_form,      requires_profile_owner),
+    ("DELETE",  "/profile/delete",                      users.delete,               requires_profile_owner),
+    ("POST",    "/profile/delete/confirm",              users.confirm_delete,       requires_profile_owner),
     ("GET",     "/account-deleted",                     users.deleted,              requires_guest),
 
     # ("GET",     "/share-calendar/{receiver_id}",        relationships.share,        auth_service.user_dependency),   # user?
