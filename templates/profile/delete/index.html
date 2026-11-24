@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Ennytime Profile Page{% endblock title%}
+
+{% block content %}
+<div class="wrapper--small profile profile__wrapper">
+	<h1 >Delete Your Account</h1>
+    <form hx-delete="/profiles/delete">
+        <div>
+            <label>Confirm</label>
+            <p>Type the following message to confirm: Delete my account</p>
+            <input type="text" hx-post="/confirm-delete" hx-trigger="change" hx-sync="closest form:replace"/>
+        </div>
+        <button disabled>Delete account</button>
+    </form>
+</div>
+{% endblock content %}

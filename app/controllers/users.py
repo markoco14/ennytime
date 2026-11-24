@@ -109,3 +109,28 @@ def unique(
         name="profile/username-edit-errors.html",
         context=context
     )
+
+
+def get_delete_form(request: Request, current_user=Depends(requires_user)):
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/delete/index.html",
+        context={
+            "current_user": current_user
+        }
+
+    )
+
+
+async def delete(request: Request, current_user=Depends(requires_user)):
+    response = Response(status_code=204, headers={"Hx-Redirect": "/account-deleted"})
+    response.delete_cookie("session-id")
+    return response
+
+
+def deleted(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="profile/delete/deleted.html",
+        context={}
+    )
