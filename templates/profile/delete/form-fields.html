@@ -1,0 +1,16 @@
+<div style="margin-bottom: 1rem; display: grid;">
+    <label style="font-size: 18px; font-weight: 500; display: inline-block; margin-bottom: 0.5rem;">Confirm</label>
+    <p style="margin-bottom: 0.5rem;">Type <span style="font-style: italic;">"Delete my account"</span> to confirm you want to delete your account.</p>
+    <input 
+        name="confirmation" 
+        type="text" 
+        hx-post="/profile/delete/confirm"
+        hx-target="#submit-btn"
+        hx-swap="outerHTML"
+        hx-trigger="keyup, changed" 
+        hx-sync="closest form:replace"
+        hx-disabled-elt="#submit-btn"
+        style="padding-inline: 0.5rem; padding-block: 0.25rem; border-radius: 0.25rem;"
+        />
+        <span style="color: rgb(159, 7, 7);">{{ error_message|default("") }}</span>
+</div>

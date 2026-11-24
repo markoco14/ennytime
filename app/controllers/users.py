@@ -150,7 +150,13 @@ async def delete(request: Request, current_user=Depends(requires_user)):
     
     confirmation = form_data.get("confirmation", "")
     if not confirmation or confirmation != "Delete my account":
-        return Response(status_code=204, headers={"Hx-Refresh": "true"})
+        return templates.TemplateResponse(
+            request=request,
+            name="profile/delete/form-fields.html",
+            context={
+                "error_message": 'You need to copy "Delete my account" exactly'
+            }
+        )
 
     with sqlite3.connect("db.sqlite3") as conn:
         conn.execute("PRAGMA foreign_keys = ON;")

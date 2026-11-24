@@ -5,25 +5,14 @@
 {% block content %}
 <div class="wrapper--small profile profile__wrapper">
 	<h1 style="font-size: 1.5rem; font-weight: 600; color: rgb(201, 29, 135);">Delete Your Account</h1>
-    <form hx-delete="/profile/delete">
-        <div style="margin-bottom: 1rem;">
-            <label style="font-size: 18px; font-weight: 500; display: inline-block; margin-bottom: 0.5rem;">Confirm</label>
-            <p style="margin-bottom: 0.5rem;">Type <span style="font-style: italic;">"Delete my account"</span> to confirm you want to delete your account.</p>
-            <input 
-                name="confirmation" 
-                type="text" 
-                hx-post="/profile/delete/confirm"
-                hx-target="#submit-btn"
-                hx-swap="outerHTML"
-                hx-trigger="keyup, changed" 
-                hx-sync="closest form:replace"
-                hx-disabled-elt="#submit-btn"
-                style="padding-inline: 0.5rem; padding-block: 0.25rem; border-radius: 0.25rem;"
-                />
-        </div>
+    <form 
+        hx-delete="/profile/delete" 
+        hx-target="find div" 
+        hx-swap="outerHTML"
+        >
+        {% include "profile/delete/form-fields.html" %}
         {% include "profile/delete/submit-btn.html" %}
         <p style="margin-top: 1rem;">Don't want to delete your account? <a href="/profile" style="color: rgb(234, 6, 112); text-decoration: underline;">Back to profile</a></p>
-        
     </form>
 </div>
 {% endblock content %}
