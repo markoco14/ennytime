@@ -77,5 +77,13 @@
 		<h2 class="profile-share__heading">Where is Chat?</h2>
 		<p>Chat is also going through some changes and is disabled for now.</p>
 	</div>
+	<br>
+	<hr class="divider"/>
+	<br>
+	<div>
+		<h2 class="profile-section__heading">Account Deletion</h2>
+		<p class="profile-section__text">You can delete your account any time. All data related to your account will be deleted and can not be recovered. Follow the link below to start deleting your account.</p>
+		<a href="/profile/{{ current_user.id }}/delete" class="profile-section__action profile-section__action--danger">Delete account</a>
+	</div>
 </div>
 {% endblock content %}

@@ -1679,3 +1679,39 @@ display: block;
     border-radius: 0.25rem;
     place-self: center;
 }
+
+
+/* profile section styles */
+
+.profile-section__heading {
+    font-size: var(--font-2xl);
+    line-height: var(--leading-2xl);
+    color: var(--color-pink-800);
+    margin-bottom: 0.5em;
+}
+
+.profile-section__text {
+    margin-bottom: 2em;
+}
+
+.profile-section__action {
+    display: inline-block;
+    padding-inline: 1.5rem;
+    padding-block: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.profile-section__action--danger {
+    background-color: rgb(212, 36, 36);
+    color: white;
+}
+
+@media screen and (hover:hover) {
+    .profile-section__action--danger:hover {
+        background-color: rgb(205, 65, 65);
+    }
+}
+
+.profile-section__action--danger:active {
+    background-color: rgb(153, 26, 26);
+}
