@@ -1,3 +1,4 @@
+import sqlite3
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, Request, Response
@@ -151,6 +152,16 @@ async def delete(request: Request, current_user=Depends(requires_user)):
     if not confirmation or confirmation != "Delete my account":
         return Response(status_code=204, headers={"Hx-Refresh": "true"})
 
+    with sqlite3.connect("db.sqlite3") as conn:
+        conn.execute("PRAGMA foreign_keys = ON;")
+        conn.execute("PRAGMA journal_mode = WAL;")
+        conn.execute("DELETE FROM sessions WHERE user_id = :user_id;", {"user_id": current_user.id})
+        conn.execute("DELETE FROM schedules WHERE user_id = :user_id;", {"user_id": current_user.id})
+        conn.execute("DELETE FROM holiday_message WHERE sender_id = :user_id OR recipient_id = :user_id;", {"user_id": current_user.id})
+        conn.execute("DELETE FROM user_signins WHERE user_id = :user_id;", {"user_id": current_user.id})
+        conn.execute("DELETE FROM shifts WHERE user_id = :user_id;", {"user_id": current_user.id})
+        conn.execute("DELETE FROM users WHERE id = :user_id;", {"user_id": current_user.id})
+    
     response = Response(status_code=204, headers={"Hx-Redirect": "/account-deleted"})
     response.delete_cookie("session-id")
     return response
